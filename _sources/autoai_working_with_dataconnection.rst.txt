@@ -1,0 +1,69 @@
+Working with DataConnection
+===========================
+
+``DataConnection`` is the base class to start working with your data storage needed for AutoAI backend.
+You can use it to fetch training data and store all of the results.
+There are several ways you can use the ``DataConnection`` object. This is a basic scenario.
+
+To start an AutoAI experiment, first specify where your training dataset is located.
+Currently, AutoAI supports Cloud Object Storage (COS) and data assets on Cloud.
+
+Cloud DataConnection Initialization
+-----------------------------------
+
+To upload your experiment dataset, you must initialize ``DataConnection`` with your COS credentials.
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.autoai.helpers.connections import S3Location, DataConnection
+
+    connection_details = client.connections.create({
+        client.connections.ConfigurationMetaNames.NAME: "Connection to COS",
+        client.connections.ConfigurationMetaNames.DATASOURCE_TYPE: client.connections.get_datasource_type_uid_by_name('bluemixcloudobjectstorage'),
+        client.connections.ConfigurationMetaNames.PROPERTIES: {
+            'bucket': 'bucket_name',
+            'access_key': 'COS access key id',
+            'secret_key': 'COS secret access key'
+            'iam_url': 'COS iam url',
+            'url': 'COS endpoint url'
+        }
+    })
+
+    connection_id = client.connections.get_uid(connection_details)
+
+    # note: this DataConnection will be used as a reference where to find your training dataset
+    training_data_connection = DataConnection(
+            connection_asset_id=connection_id,
+            location=S3Location(bucket='bucket_name',   # note: COS bucket name where training dataset is located
+                                path='my_path'  # note: path within bucket where your training dataset is located
+                                )
+        )
+
+    # note: this DataConnection will be used as a reference where to save all of the AutoAI experiment results
+    results_connection = DataConnection(
+            connection_asset_id=connection_id,
+            # note: bucket name and path could be different or the same as specified in the training_data_connection
+            location=S3Location(bucket='bucket_name',
+                                path='my_path'
+                                )
+        )
+
+Upload your training dataset
+----------------------------
+
+An AutoAI experiment should be able to access your training data.
+If you do not have a training dataset stored already,
+you can do it by invoking the ``write()`` method of the ``DataConnection`` object.
+
+.. code-block:: python
+
+    training_data_connection.write(data='local_path_to_the_dataset', remote_name='training_dataset.csv')
+
+Download your training dataset
+------------------------------
+
+To download a stored dataset, use the ``read()`` method of the ``DataConnection`` object.
+
+.. code-block:: python
+
+    dataset = training_data_connection.read()   # note: returns a pandas DataFrame

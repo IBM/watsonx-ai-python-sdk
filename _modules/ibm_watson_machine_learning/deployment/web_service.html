@@ -1,0 +1,585 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+        <title>ibm_watson_machine_learning.deployment.web_service - IBM watsonx.ai</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystyle2.css?v=c40128c6" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --font-stack: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif;
+  --font-stack--monospace: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, Lucida Console, monospace;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">IBM watsonx.ai</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><div class="sidebar-scroll"><a class="sidebar-brand" href="../../../index.html">
+  
+  
+  <span class="sidebar-brand-text">IBM watsonx.ai</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup.html">Setup</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Setup</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup_cloud.html">Cloud Pak for Data as a Service</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup_cpd.html">Cloud Pak for Data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../core_api.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../federated_learning.html">Federated Learning</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoai_working_with_dataconnection.html">Working with DataConnection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoai_experiment.html">AutoAI experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dataconnection_modules.html">DataConnection Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../foundation_models.html">Foundation Models</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Foundation Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../model.html">Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../fm_extensions.html">Extensions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../samples.html">Samples</a></li>
+</ul>
+
+</div></div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for ibm_watson_machine_learning.deployment.web_service</h1><div class="highlight"><pre>
+<span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
+<span class="c1">#  (C) Copyright IBM Corp. 2020- 2023.</span>
+<span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
+<span class="c1">#  -----------------------------------------------------------------------------------------</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+
+<span class="kn">from</span> <span class="nn">.base_deployment</span> <span class="kn">import</span> <span class="n">BaseDeployment</span>
+<span class="kn">from</span> <span class="nn">..wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+    <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+    <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
+    <span class="kn">from</span> <span class="nn">..workspace</span> <span class="kn">import</span> <span class="n">WorkSpace</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;WebService&quot;</span>
+<span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">WebService</span><span class="p">(</span><span class="n">BaseDeployment</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An Online Deployment class aka. WebService.</span>
+<span class="sd">    With this class object you can manage any online (WebService) deployment.</span>
+
+<span class="sd">    :param source_wml_credentials: credentials to Watson Machine Learning instance where training was performed</span>
+<span class="sd">    :type source_wml_credentials: dict</span>
+
+<span class="sd">    :param source_project_id: ID of the Watson Studio project where training was performed</span>
+<span class="sd">    :type source_project_id: str, optional</span>
+
+<span class="sd">    :param source_space_id: ID of the Watson Studio Space where training was performed</span>
+<span class="sd">    :type source_space_id: str, optional</span>
+
+<span class="sd">    :param target_wml_credentials: credentials to Watson Machine Learning instance where you want to deploy</span>
+<span class="sd">    :type target_wml_credentials: dict</span>
+
+<span class="sd">    :param target_project_id: ID of the Watson Studio project where you want to deploy</span>
+<span class="sd">    :type target_project_id: str, optional</span>
+
+<span class="sd">    :param target_space_id: ID of the Watson Studio Space where you want to deploy</span>
+<span class="sd">    :type target_space_id: str, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">source_wml_credentials</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s1">&#39;WorkSpace&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">source_project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">source_space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">target_wml_credentials</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s1">&#39;WorkSpace&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">target_project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">target_space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">wml_credentials</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s1">&#39;WorkSpace&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">deployment_type</span><span class="o">=</span><span class="s1">&#39;online&#39;</span><span class="p">,</span>
+            <span class="n">source_wml_credentials</span><span class="o">=</span><span class="n">source_wml_credentials</span><span class="p">,</span>
+            <span class="n">source_project_id</span><span class="o">=</span><span class="n">source_project_id</span><span class="p">,</span>
+            <span class="n">source_space_id</span><span class="o">=</span><span class="n">source_space_id</span><span class="p">,</span>
+            <span class="n">target_wml_credentials</span><span class="o">=</span><span class="n">target_wml_credentials</span><span class="p">,</span>
+            <span class="n">target_project_id</span><span class="o">=</span><span class="n">target_project_id</span><span class="p">,</span>
+            <span class="n">target_space_id</span><span class="o">=</span><span class="n">target_space_id</span><span class="p">,</span>
+            <span class="n">wml_credentials</span><span class="o">=</span><span class="n">wml_credentials</span><span class="p">,</span>
+            <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+            <span class="n">space_id</span><span class="o">=</span><span class="n">space_id</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scoring_url</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, id: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">, scoring_url: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scoring_url</span><span class="si">}</span><span class="s2">, asset_id: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, id: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">, scoring_url: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scoring_url</span><span class="si">}</span><span class="s2">, asset_id: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+               <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+               <span class="n">serving_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">training_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DataFrame&#39;</span><span class="p">,</span> <span class="s1">&#39;ndarray&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">training_target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DataFrame&#39;</span><span class="p">,</span> <span class="s1">&#39;ndarray&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">experiment_run_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">hardware_spec</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create deployment from a model.</span>
+
+<span class="sd">        :param model: AutoAI model name</span>
+<span class="sd">        :type model: str</span>
+
+<span class="sd">        :param deployment_name: name of the deployment</span>
+<span class="sd">        :type deployment_name: str</span>
+
+<span class="sd">        :param training_data: training data for the model</span>
+<span class="sd">        :type training_data: pandas.DataFrame or numpy.ndarray, optional</span>
+
+<span class="sd">        :param training_target: target/label data for the model</span>
+<span class="sd">        :type training_target: pandas.DataFrame or numpy.ndarray, optional</span>
+
+<span class="sd">        :param serving_name: serving name of the deployment</span>
+<span class="sd">        :type serving_name: str, optional</span>
+
+<span class="sd">        :param metadata: model meta properties</span>
+<span class="sd">        :type metadata: dict, optional</span>
+
+<span class="sd">        :param experiment_run_id: ID of a training/experiment (only applicable for AutoAI deployments)</span>
+<span class="sd">        :type experiment_run_id: str, optional</span>
+
+<span class="sd">        :param hardware_spec: hardware specification for deployment</span>
+<span class="sd">        :type hardware_spec: dict, optional</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from ibm_watson_machine_learning.deployment import WebService</span>
+
+<span class="sd">            deployment = WebService(</span>
+<span class="sd">                   wml_credentials={</span>
+<span class="sd">                         &quot;apikey&quot;: &quot;...&quot;,</span>
+<span class="sd">                         &quot;iam_apikey_description&quot;: &quot;...&quot;,</span>
+<span class="sd">                         &quot;iam_apikey_name&quot;: &quot;...&quot;,</span>
+<span class="sd">                         &quot;iam_role_crn&quot;: &quot;...&quot;,</span>
+<span class="sd">                         &quot;iam_serviceid_crn&quot;: &quot;...&quot;,</span>
+<span class="sd">                         &quot;instance_id&quot;: &quot;...&quot;,</span>
+<span class="sd">                         &quot;url&quot;: &quot;https://us-south.ml.cloud.ibm.com&quot;</span>
+<span class="sd">                       },</span>
+<span class="sd">                    project_id=&quot;...&quot;,</span>
+<span class="sd">                    space_id=&quot;...&quot;)</span>
+
+<span class="sd">            deployment.create(</span>
+<span class="sd">                   experiment_run_id=&quot;...&quot;,</span>
+<span class="sd">                   model=model,</span>
+<span class="sd">                   deployment_name=&#39;My new deployment&#39;,</span>
+<span class="sd">                   serving_name=&#39;my_new_deployment&#39;</span>
+<span class="sd">               )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                              <span class="n">deployment_name</span><span class="o">=</span><span class="n">deployment_name</span><span class="p">,</span>
+                              <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                              <span class="n">serving_name</span><span class="o">=</span><span class="n">serving_name</span><span class="p">,</span>
+                              <span class="n">training_data</span><span class="o">=</span><span class="n">training_data</span><span class="p">,</span>
+                              <span class="n">training_target</span><span class="o">=</span><span class="n">training_target</span><span class="p">,</span>
+                              <span class="n">experiment_run_id</span><span class="o">=</span><span class="n">experiment_run_id</span><span class="p">,</span>
+                              <span class="n">deployment_type</span><span class="o">=</span><span class="s1">&#39;online&#39;</span><span class="p">,</span>
+                              <span class="n">hardware_spec</span><span class="o">=</span><span class="n">hardware_spec</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WebService.get_params">
+<a class="viewcode-back" href="../../../autoai_deployment_modules.html#ibm_watsonx_ai.deployment.WebService.get_params">[docs]</a>
+    <span class="nd">@BaseDeployment</span><span class="o">.</span><span class="n">_project_to_space_to_project</span>
+    <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get deployment parameters.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_params</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="WebService.score">
+<a class="viewcode-back" href="../../../autoai_deployment_modules.html#ibm_watsonx_ai.deployment.WebService.score">[docs]</a>
+    <span class="nd">@BaseDeployment</span><span class="o">.</span><span class="n">_project_to_space_to_project</span>
+    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s1">&#39;DataFrame&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(),</span> <span class="n">transaction_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Online scoring on WML. Payload is passed to the WML scoring endpoint where model have been deployed.</span>
+
+<span class="sd">        :param payload: DataFrame with data to test the model or dictionary with keys `observations`</span>
+<span class="sd">            and `supporting_features` and DataFrames with data for `observations` and `supporting_features`</span>
+<span class="sd">            to score forecasting models</span>
+<span class="sd">        :type payload: pandas.DataFrame or dict</span>
+
+<span class="sd">        :param transaction_id: can be used to indicate under which id the records will be saved into payload table</span>
+<span class="sd">            in IBM OpenScale</span>
+<span class="sd">        :type transaction_id: str, optional</span>
+
+<span class="sd">        :return: dictionary with list od model output/predicted targets</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Examples**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            predictions = web_service.score(payload=test_data)</span>
+<span class="sd">            print(predictions)</span>
+
+<span class="sd">            # Result:</span>
+<span class="sd">            # {&#39;predictions&#39;:</span>
+<span class="sd">            #     [{</span>
+<span class="sd">            #         &#39;fields&#39;: [&#39;prediction&#39;, &#39;probability&#39;],</span>
+<span class="sd">            #         &#39;values&#39;: [[&#39;no&#39;, [0.9221385608558003, 0.07786143914419975]],</span>
+<span class="sd">            #                   [&#39;no&#39;, [0.9798324002736079, 0.020167599726392187]]</span>
+<span class="sd">            #     }]}</span>
+
+<span class="sd">            predictions = web_service.score(payload={&#39;observations&#39;: new_observations_df})</span>
+<span class="sd">            predictions = web_service.score(payload={&#39;observations&#39;: new_observations_df, &#39;supporting_features&#39;: supporting_features_df}) # supporting features time series forecasting sceanrio</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">transaction_id</span><span class="o">=</span><span class="n">transaction_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WebService.delete">
+<a class="viewcode-back" href="../../../autoai_deployment_modules.html#ibm_watsonx_ai.deployment.WebService.delete">[docs]</a>
+    <span class="nd">@BaseDeployment</span><span class="o">.</span><span class="n">_project_to_space_to_project</span>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete deployment on WML.</span>
+
+<span class="sd">        :param deployment_id: ID of the deployment to delete, if empty, current deployment will be deleted</span>
+<span class="sd">        :type deployment_id: str, optional</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            deployment = WebService(workspace=...)</span>
+<span class="sd">            # Delete current deployment</span>
+<span class="sd">            deployment.delete()</span>
+<span class="sd">            # Or delete a specific deployment</span>
+<span class="sd">            deployment.delete(deployment_id=&#39;...&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span><span class="p">,</span> <span class="n">deployment_type</span><span class="o">=</span><span class="s1">&#39;online&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WebService.list">
+<a class="viewcode-back" href="../../../autoai_deployment_modules.html#ibm_watsonx_ai.deployment.WebService.list">[docs]</a>
+    <span class="nd">@BaseDeployment</span><span class="o">.</span><span class="n">_project_to_space_to_project</span>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DataFrame&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List WML deployments.</span>
+
+<span class="sd">        :param limit: set the limit of how many deployments to list,</span>
+<span class="sd">            default is `None` (all deployments should be fetched)</span>
+<span class="sd">        :type limit: int, optional</span>
+
+<span class="sd">        :return: Pandas DataFrame with information about deployments</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            deployment = WebService(workspace=...)</span>
+<span class="sd">            deployments_list = deployment.list()</span>
+<span class="sd">            print(deployments_list)</span>
+
+<span class="sd">            # Result:</span>
+<span class="sd">            #                  created_at  ...  status</span>
+<span class="sd">            # 0  2020-03-06T10:50:49.401Z  ...   ready</span>
+<span class="sd">            # 1  2020-03-06T13:16:09.789Z  ...   ready</span>
+<span class="sd">            # 4  2020-03-11T14:46:36.035Z  ...  failed</span>
+<span class="sd">            # 3  2020-03-11T14:49:55.052Z  ...  failed</span>
+<span class="sd">            # 2  2020-03-11T15:13:53.708Z  ...   ready</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">deployment_type</span><span class="o">=</span><span class="s1">&#39;online&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WebService.get">
+<a class="viewcode-back" href="../../../autoai_deployment_modules.html#ibm_watsonx_ai.deployment.WebService.get">[docs]</a>
+    <span class="nd">@BaseDeployment</span><span class="o">.</span><span class="n">_project_to_space_to_project</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get WML deployment.</span>
+
+<span class="sd">        :param deployment_id: ID of the deployment to work with</span>
+<span class="sd">        :type deployment_id: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            deployment = WebService(workspace=...)</span>
+<span class="sd">            deployment.get(deployment_id=&quot;...&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span><span class="p">,</span> <span class="n">deployment_type</span><span class="o">=</span><span class="s1">&#39;online&#39;</span><span class="p">)</span></div>
+
+
+    <span class="nd">@BaseDeployment</span><span class="o">.</span><span class="n">_project_to_space_to_project</span>
+    <span class="k">def</span> <span class="nf">_deploy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">pipeline_model</span><span class="p">:</span> <span class="s1">&#39;Pipeline&#39;</span><span class="p">,</span>
+                <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                <span class="n">meta_props</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+                <span class="n">serving_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">result_client</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">hardware_spec</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deploy model into WML.</span>
+
+<span class="sd">        :param pipeline_model: model of the pipeline to deploy</span>
+<span class="sd">        :type pipeline_model: Pipeline or str</span>
+
+<span class="sd">        :param deployment_name: name of the deployment</span>
+<span class="sd">        :type deployment_name: str</span>
+
+<span class="sd">        :param meta_props: model meta properties</span>
+<span class="sd">        :type meta_props: dict</span>
+
+<span class="sd">        :param serving_name: serving name of the deployment</span>
+<span class="sd">        :type serving_name: str</span>
+
+<span class="sd">        :param result_client: tuple with Result DataConnection object and initialized COS client</span>
+<span class="sd">        :rtype: tuple[DataConnection, resource]</span>
+
+<span class="sd">        :return: deployment details</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">asset_uid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_publish_model</span><span class="p">(</span><span class="n">pipeline_model</span><span class="o">=</span><span class="n">pipeline_model</span><span class="p">,</span>
+                                        <span class="n">meta_props</span><span class="o">=</span><span class="n">meta_props</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span> <span class="o">=</span> <span class="n">asset_uid</span>
+
+        <span class="n">conf_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_workspace</span><span class="o">.</span><span class="n">wml_client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span>
+
+        <span class="n">deployment_props</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">conf_names</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">deployment_name</span><span class="p">,</span>
+            <span class="n">conf_names</span><span class="o">.</span><span class="n">ONLINE</span><span class="p">:</span> <span class="p">{}</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">hardware_spec</span><span class="p">:</span>
+            <span class="n">deployment_props</span><span class="p">[</span><span class="n">conf_names</span><span class="o">.</span><span class="n">HARDWARE_SPEC</span><span class="p">]</span> <span class="o">=</span> <span class="n">hardware_spec</span>
+
+        <span class="k">if</span> <span class="n">serving_name</span><span class="p">:</span>
+            <span class="n">deployment_props</span><span class="p">[</span><span class="n">conf_names</span><span class="o">.</span><span class="n">ONLINE</span><span class="p">][</span><span class="s2">&quot;parameters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">conf_names</span><span class="o">.</span><span class="n">SERVING_NAME</span><span class="p">:</span> <span class="n">serving_name</span><span class="p">}</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Deploying model </span><span class="si">{}</span><span class="s2"> using V4 client.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">asset_uid</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="n">deployment_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_workspace</span><span class="o">.</span><span class="n">wml_client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">artifact_uid</span><span class="o">=</span><span class="n">asset_uid</span><span class="p">,</span>
+                <span class="n">meta_props</span><span class="o">=</span><span class="n">deployment_props</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_workspace</span><span class="o">.</span><span class="n">wml_client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">get_uid</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">WMLClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="k">return</span> <span class="n">deployment_details</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023, IBM
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>

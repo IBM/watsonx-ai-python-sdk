@@ -1,0 +1,1251 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="DataConnection Modules" href="dataconnection_modules.html" /><link rel="prev" title="Working with DataConnection" href="autoai_working_with_dataconnection.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+        <title>AutoAI experiment - IBM watsonx.ai</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="_static/mystyle2.css?v=c40128c6" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --font-stack: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif;
+  --font-stack--monospace: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, Lucida Console, monospace;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">IBM watsonx.ai</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><div class="sidebar-scroll"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">IBM watsonx.ai</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="setup.html">Setup</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Setup</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup_cloud.html">Cloud Pak for Data as a Service</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup_cpd.html">Cloud Pak for Data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="api.html">API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="core_api.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="federated_learning.html">Federated Learning</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="autoai.html">AutoAI</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoai_working_with_dataconnection.html">Working with DataConnection</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">AutoAI experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dataconnection_modules.html">DataConnection Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="foundation_models.html">Foundation Models</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Foundation Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="model.html">Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_extensions.html">Extensions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="samples.html">Samples</a></li>
+</ul>
+
+</div></div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="autoai-experiment">
+<h1>AutoAI experiment<a class="headerlink" href="#autoai-experiment" title="Link to this heading">#</a></h1>
+<section id="autoai">
+<h2>AutoAI<a class="headerlink" href="#autoai" title="Link to this heading">#</a></h2>
+<dl class="py class" id="autoai-class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.experiment.autoai.autoai.</span></span><span class="sig-name descname"><span class="pre">AutoAI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wml_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/experiment/autoai/autoai.html#AutoAI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AutoAI</span></code></p>
+<p>AutoAI class for pipeline models optimization automation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wml_credentials</strong> (<em>dict</em>) – credentials to watsonx.ai instance</p></li>
+<li><p><strong>project_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the watsonx.ai project</p></li>
+<li><p><strong>space_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the watsonx.ai Space</p></li>
+<li><p><strong>verify</strong> (<em>bool</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – <p>user can pass as verify one of following:</p>
+<ul>
+<li><p>the path to a CA_BUNDLE file</p></li>
+<li><p>the path of directory with certificates of trusted CAs</p></li>
+<li><p><cite>True</cite> - default path to truststore will be taken</p></li>
+<li><p><cite>False</cite> - no verification will be made</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Example</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.experiment</span> <span class="kn">import</span> <span class="n">AutoAI</span>
+
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">AutoAI</span><span class="p">(</span>
+    <span class="n">wml_credentials</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;apikey&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;iam_apikey_description&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;iam_apikey_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;iam_role_crn&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;iam_serviceid_crn&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;instance_id&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span>
+    <span class="p">},</span>
+    <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="n">space_id</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ClassificationAlgorithms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Classification algorithms that AutoAI could use for IBM Cloud.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.DT">
+<span class="sig-name descname"><span class="pre">DT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DecisionTreeClassifier'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.DT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.EX_TREES">
+<span class="sig-name descname"><span class="pre">EX_TREES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ExtraTreesClassifier'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.EX_TREES" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.GB">
+<span class="sig-name descname"><span class="pre">GB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'GradientBoostingClassifier'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.GB" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.LGBM">
+<span class="sig-name descname"><span class="pre">LGBM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'LGBMClassifier'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.LGBM" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.LR">
+<span class="sig-name descname"><span class="pre">LR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'LogisticRegression'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.LR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.RF">
+<span class="sig-name descname"><span class="pre">RF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'RandomForestClassifier'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.RF" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.SnapBM">
+<span class="sig-name descname"><span class="pre">SnapBM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SnapBoostingMachineClassifier'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.SnapBM" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.SnapDT">
+<span class="sig-name descname"><span class="pre">SnapDT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SnapDecisionTreeClassifier'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.SnapDT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.SnapLR">
+<span class="sig-name descname"><span class="pre">SnapLR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SnapLogisticRegression'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.SnapLR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.SnapRF">
+<span class="sig-name descname"><span class="pre">SnapRF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SnapRandomForestClassifier'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.SnapRF" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.SnapSVM">
+<span class="sig-name descname"><span class="pre">SnapSVM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SnapSVMClassifier'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.SnapSVM" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.XGB">
+<span class="sig-name descname"><span class="pre">XGB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'XGBClassifier'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.XGB" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DataConnectionTypes</span></span><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Supported types of DataConnection.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes.CA">
+<span class="sig-name descname"><span class="pre">CA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'connection_asset'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes.CA" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes.CN">
+<span class="sig-name descname"><span class="pre">CN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'container'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes.CN" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes.DS">
+<span class="sig-name descname"><span class="pre">DS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'data_asset'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes.DS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes.FS">
+<span class="sig-name descname"><span class="pre">FS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fs'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes.FS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes.S3">
+<span class="sig-name descname"><span class="pre">S3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'s3'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes.S3" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ForecastingAlgorithms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Forecasting algorithms that AutoAI could use for IBM Cloud Pak® for Data(CP4D).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.ARIMA">
+<span class="sig-name descname"><span class="pre">ARIMA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ARIMA'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.ARIMA" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.BATS">
+<span class="sig-name descname"><span class="pre">BATS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BATS'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.BATS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.ENSEMBLER">
+<span class="sig-name descname"><span class="pre">ENSEMBLER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Ensembler'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.ENSEMBLER" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.HW">
+<span class="sig-name descname"><span class="pre">HW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'HoltWinters'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.HW" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.LR">
+<span class="sig-name descname"><span class="pre">LR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'LinearRegression'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.LR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.RF">
+<span class="sig-name descname"><span class="pre">RF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'RandomForest'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.RF" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.SVM">
+<span class="sig-name descname"><span class="pre">SVM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SVM'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.SVM" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Metrics</span></span><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Supported types of classification and regression metrics in autoai.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.ACCURACY_AND_DISPARATE_IMPACT_SCORE">
+<span class="sig-name descname"><span class="pre">ACCURACY_AND_DISPARATE_IMPACT_SCORE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'accuracy_and_disparate_impact'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.ACCURACY_AND_DISPARATE_IMPACT_SCORE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.ACCURACY_SCORE">
+<span class="sig-name descname"><span class="pre">ACCURACY_SCORE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'accuracy'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.ACCURACY_SCORE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.AVERAGE_PRECISION_SCORE">
+<span class="sig-name descname"><span class="pre">AVERAGE_PRECISION_SCORE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'average_precision'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.AVERAGE_PRECISION_SCORE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.EXPLAINED_VARIANCE_SCORE">
+<span class="sig-name descname"><span class="pre">EXPLAINED_VARIANCE_SCORE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'explained_variance'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.EXPLAINED_VARIANCE_SCORE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.F1_SCORE">
+<span class="sig-name descname"><span class="pre">F1_SCORE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'f1'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.F1_SCORE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.F1_SCORE_MACRO">
+<span class="sig-name descname"><span class="pre">F1_SCORE_MACRO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'f1_macro'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.F1_SCORE_MACRO" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.F1_SCORE_MICRO">
+<span class="sig-name descname"><span class="pre">F1_SCORE_MICRO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'f1_micro'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.F1_SCORE_MICRO" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.F1_SCORE_WEIGHTED">
+<span class="sig-name descname"><span class="pre">F1_SCORE_WEIGHTED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'f1_weighted'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.F1_SCORE_WEIGHTED" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.LOG_LOSS">
+<span class="sig-name descname"><span class="pre">LOG_LOSS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'neg_log_loss'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.LOG_LOSS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.MEAN_ABSOLUTE_ERROR">
+<span class="sig-name descname"><span class="pre">MEAN_ABSOLUTE_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'neg_mean_absolute_error'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.MEAN_ABSOLUTE_ERROR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.MEAN_SQUARED_ERROR">
+<span class="sig-name descname"><span class="pre">MEAN_SQUARED_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'neg_mean_squared_error'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.MEAN_SQUARED_ERROR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.MEAN_SQUARED_LOG_ERROR">
+<span class="sig-name descname"><span class="pre">MEAN_SQUARED_LOG_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'neg_mean_squared_log_error'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.MEAN_SQUARED_LOG_ERROR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.MEDIAN_ABSOLUTE_ERROR">
+<span class="sig-name descname"><span class="pre">MEDIAN_ABSOLUTE_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'neg_median_absolute_error'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.MEDIAN_ABSOLUTE_ERROR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.PRECISION_SCORE">
+<span class="sig-name descname"><span class="pre">PRECISION_SCORE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'precision'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.PRECISION_SCORE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.PRECISION_SCORE_MACRO">
+<span class="sig-name descname"><span class="pre">PRECISION_SCORE_MACRO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'precision_macro'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.PRECISION_SCORE_MACRO" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.PRECISION_SCORE_MICRO">
+<span class="sig-name descname"><span class="pre">PRECISION_SCORE_MICRO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'precision_micro'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.PRECISION_SCORE_MICRO" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.PRECISION_SCORE_WEIGHTED">
+<span class="sig-name descname"><span class="pre">PRECISION_SCORE_WEIGHTED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'precision_weighted'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.PRECISION_SCORE_WEIGHTED" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.R2_AND_DISPARATE_IMPACT_SCORE">
+<span class="sig-name descname"><span class="pre">R2_AND_DISPARATE_IMPACT_SCORE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'r2_and_disparate_impact'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.R2_AND_DISPARATE_IMPACT_SCORE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.R2_SCORE">
+<span class="sig-name descname"><span class="pre">R2_SCORE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'r2'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.R2_SCORE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.RECALL_SCORE">
+<span class="sig-name descname"><span class="pre">RECALL_SCORE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'recall'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.RECALL_SCORE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.RECALL_SCORE_MACRO">
+<span class="sig-name descname"><span class="pre">RECALL_SCORE_MACRO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'recall_macro'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.RECALL_SCORE_MACRO" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.RECALL_SCORE_MICRO">
+<span class="sig-name descname"><span class="pre">RECALL_SCORE_MICRO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'recall_micro'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.RECALL_SCORE_MICRO" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.RECALL_SCORE_WEIGHTED">
+<span class="sig-name descname"><span class="pre">RECALL_SCORE_WEIGHTED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'recall_weighted'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.RECALL_SCORE_WEIGHTED" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.ROC_AUC_SCORE">
+<span class="sig-name descname"><span class="pre">ROC_AUC_SCORE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'roc_auc'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.ROC_AUC_SCORE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.ROOT_MEAN_SQUARED_ERROR">
+<span class="sig-name descname"><span class="pre">ROOT_MEAN_SQUARED_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'neg_root_mean_squared_error'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.ROOT_MEAN_SQUARED_ERROR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.ROOT_MEAN_SQUARED_LOG_ERROR">
+<span class="sig-name descname"><span class="pre">ROOT_MEAN_SQUARED_LOG_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'neg_root_mean_squared_log_error'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.ROOT_MEAN_SQUARED_LOG_ERROR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PipelineTypes">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PipelineTypes</span></span><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PipelineTypes" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Supported types of Pipelines.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PipelineTypes.LALE">
+<span class="sig-name descname"><span class="pre">LALE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lale'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PipelineTypes.LALE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PipelineTypes.SKLEARN">
+<span class="sig-name descname"><span class="pre">SKLEARN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sklearn'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PipelineTypes.SKLEARN" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PredictionType</span></span><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Supported types of learning.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.BINARY">
+<span class="sig-name descname"><span class="pre">BINARY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'binary'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.BINARY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.CLASSIFICATION">
+<span class="sig-name descname"><span class="pre">CLASSIFICATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'classification'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.CLASSIFICATION" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.FORECASTING">
+<span class="sig-name descname"><span class="pre">FORECASTING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'forecasting'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.FORECASTING" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.MULTICLASS">
+<span class="sig-name descname"><span class="pre">MULTICLASS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'multiclass'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.MULTICLASS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.REGRESSION">
+<span class="sig-name descname"><span class="pre">REGRESSION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'regression'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.REGRESSION" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.TIMESERIES_ANOMALY_PREDICTION">
+<span class="sig-name descname"><span class="pre">TIMESERIES_ANOMALY_PREDICTION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'timeseries_anomaly_prediction'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.TIMESERIES_ANOMALY_PREDICTION" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RegressionAlgorithms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Regression algorithms that AutoAI could use for IBM Cloud.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.DT">
+<span class="sig-name descname"><span class="pre">DT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DecisionTreeRegressor'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.DT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.EX_TREES">
+<span class="sig-name descname"><span class="pre">EX_TREES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ExtraTreesRegressor'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.EX_TREES" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.GB">
+<span class="sig-name descname"><span class="pre">GB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'GradientBoostingRegressor'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.GB" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.LGBM">
+<span class="sig-name descname"><span class="pre">LGBM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'LGBMRegressor'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.LGBM" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.LR">
+<span class="sig-name descname"><span class="pre">LR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'LinearRegression'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.LR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.RF">
+<span class="sig-name descname"><span class="pre">RF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'RandomForestRegressor'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.RF" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.RIDGE">
+<span class="sig-name descname"><span class="pre">RIDGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Ridge'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.RIDGE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.SnapBM">
+<span class="sig-name descname"><span class="pre">SnapBM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SnapBoostingMachineRegressor'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.SnapBM" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.SnapDT">
+<span class="sig-name descname"><span class="pre">SnapDT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SnapDecisionTreeRegressor'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.SnapDT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.SnapRF">
+<span class="sig-name descname"><span class="pre">SnapRF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SnapRandomForestRegressor'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.SnapRF" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.XGB">
+<span class="sig-name descname"><span class="pre">XGB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'XGBRegressor'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.XGB" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.SamplingTypes">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SamplingTypes</span></span><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.SamplingTypes" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Types of training data sampling.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.SamplingTypes.FIRST_VALUES">
+<span class="sig-name descname"><span class="pre">FIRST_VALUES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'first_n_records'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.SamplingTypes.FIRST_VALUES" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.SamplingTypes.LAST_VALUES">
+<span class="sig-name descname"><span class="pre">LAST_VALUES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'truncate'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.SamplingTypes.LAST_VALUES" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.SamplingTypes.RANDOM">
+<span class="sig-name descname"><span class="pre">RANDOM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'random'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.SamplingTypes.RANDOM" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.SamplingTypes.STRATIFIED">
+<span class="sig-name descname"><span class="pre">STRATIFIED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'stratified'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.SamplingTypes.STRATIFIED" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TShirtSize</span></span><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Possible sizes of the AutoAI POD.
+Depends on the POD size, AutoAI could support different data sets sizes.</p>
+<ul class="simple">
+<li><p>S - small (2vCPUs and 8GB of RAM)</p></li>
+<li><p>M - Medium (4vCPUs and 16GB of RAM)</p></li>
+<li><p>L - Large (8vCPUs and 32GB of RAM))</p></li>
+<li><p>XL - Extra Large (16vCPUs and 64GB of RAM)</p></li>
+</ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize.L">
+<span class="sig-name descname"><span class="pre">L</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'l'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize.L" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize.M">
+<span class="sig-name descname"><span class="pre">M</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'m'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize.M" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize.S">
+<span class="sig-name descname"><span class="pre">S</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'s'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize.S" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize.XL">
+<span class="sig-name descname"><span class="pre">XL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'xl'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize.XL" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Transformers</span></span><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Supported types of congito transformers names in autoai.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.ABS">
+<span class="sig-name descname"><span class="pre">ABS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'abs'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.ABS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.CBRT">
+<span class="sig-name descname"><span class="pre">CBRT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cbrt'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.CBRT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.COS">
+<span class="sig-name descname"><span class="pre">COS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cos'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.COS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.CUBE">
+<span class="sig-name descname"><span class="pre">CUBE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cube'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.CUBE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.DIFF">
+<span class="sig-name descname"><span class="pre">DIFF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'diff'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.DIFF" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.DIVIDE">
+<span class="sig-name descname"><span class="pre">DIVIDE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'divide'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.DIVIDE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.FEATUREAGGLOMERATION">
+<span class="sig-name descname"><span class="pre">FEATUREAGGLOMERATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'featureagglomeration'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.FEATUREAGGLOMERATION" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.ISOFORESTANOMALY">
+<span class="sig-name descname"><span class="pre">ISOFORESTANOMALY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'isoforestanomaly'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.ISOFORESTANOMALY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.LOG">
+<span class="sig-name descname"><span class="pre">LOG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'log'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.LOG" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.MAX">
+<span class="sig-name descname"><span class="pre">MAX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'max'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.MAX" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.MINMAXSCALER">
+<span class="sig-name descname"><span class="pre">MINMAXSCALER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'minmaxscaler'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.MINMAXSCALER" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.NXOR">
+<span class="sig-name descname"><span class="pre">NXOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nxor'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.NXOR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.PCA">
+<span class="sig-name descname"><span class="pre">PCA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pca'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.PCA" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.PRODUCT">
+<span class="sig-name descname"><span class="pre">PRODUCT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'product'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.PRODUCT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.ROUND">
+<span class="sig-name descname"><span class="pre">ROUND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'round'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.ROUND" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.SIGMOID">
+<span class="sig-name descname"><span class="pre">SIGMOID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sigmoid'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.SIGMOID" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.SIN">
+<span class="sig-name descname"><span class="pre">SIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sin'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.SIN" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.SQRT">
+<span class="sig-name descname"><span class="pre">SQRT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sqrt'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.SQRT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.SQUARE">
+<span class="sig-name descname"><span class="pre">SQUARE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'square'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.SQUARE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.STDSCALER">
+<span class="sig-name descname"><span class="pre">STDSCALER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'stdscaler'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.STDSCALER" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.SUM">
+<span class="sig-name descname"><span class="pre">SUM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sum'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.SUM" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.TAN">
+<span class="sig-name descname"><span class="pre">TAN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tan'</span></em><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.TAN" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.optimizer">
+<span class="sig-name descname"><span class="pre">optimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prediction_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prediction_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prediction_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp_column_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">holdout_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_number_of_estimators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_sample_rows_test_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_only_estimators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">daub_include_only_estimators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_batched_ensemble_estimators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backtest_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lookback_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forecast_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backtest_gap_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">supporting_features_at_forecast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cognito_transform_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_join_graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excel_sheet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_join_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_duplicates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outliers_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_processing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">word2vec_feature_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">daub_give_priority_to_runtime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fairness_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rows_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_percentage_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_parallel_data_connections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_batch_rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_imputation_strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_imputation_strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_imputation_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imputation_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retrain_on_holdout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_data_csv_separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_data_excel_sheet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_data_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incremental_learning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">early_stop_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">early_stop_window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.optimizer" title="Link to this definition">#</a></dt>
+<dd><p>Initialize an AutoAi optimizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name for the AutoPipelines</p></li>
+<li><p><strong>prediction_type</strong> (<a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType" title="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType"><em>PredictionType</em></a>) – type of the prediction</p></li>
+<li><p><strong>prediction_column</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the target/label column, required for <cite>multiclass</cite>, <cite>binary</cite> and <cite>regression</cite>
+prediction types</p></li>
+<li><p><strong>prediction_columns</strong> (<em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – names of the target/label columns, required for <cite>forecasting</cite> prediction type</p></li>
+<li><p><strong>timestamp_column_name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of timestamp column for time series forecasting</p></li>
+<li><p><strong>scoring</strong> (<a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics" title="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics"><em>Metrics</em></a><em>, </em><em>optional</em>) – type of the metric to optimize with, not used for forecasting</p></li>
+<li><p><strong>desc</strong> (<em>str</em><em>, </em><em>optional</em>) – description</p></li>
+<li><p><strong>test_size</strong> – deprecated, use <cite>holdout_size</cite> instead</p></li>
+<li><p><strong>holdout_size</strong> (<em>float</em><em>, </em><em>optional</em>) – percentage of the entire dataset to leave as a holdout</p></li>
+<li><p><strong>max_number_of_estimators</strong> (<em>int</em><em>, </em><em>optional</em>) – maximum number (top-K ranked by DAUB model selection)
+of the selected algorithm, or estimator types, for example <cite>LGBMClassifierEstimator</cite>,
+<cite>XGBoostClassifierEstimator</cite>, or <cite>LogisticRegressionEstimator</cite> to use in pipeline composition,
+the default is <cite>None</cite> that means the true default value will be determined by
+the internal different algorithms, where only the highest ranked by model selection algorithm type is used</p></li>
+<li><p><strong>train_sample_rows_test_size</strong> (<em>float</em><em>, </em><em>optional</em>) – training data sampling percentage</p></li>
+<li><p><strong>daub_include_only_estimators</strong> – deprecated, use <cite>include_only_estimators</cite> instead</p></li>
+<li><p><strong>include_batched_ensemble_estimators</strong> (<em>list</em><em>[</em><em>BatchedClassificationAlgorithms</em><em> or </em><em>BatchedRegressionAlgorithms</em><em>]</em><em>, </em><em>optional</em>) – list of batched ensemble estimators to include 
+in computation process, see: AutoAI.BatchedClassificationAlgorithms, AutoAI.BatchedRegressionAlgorithms</p></li>
+<li><p><strong>include_only_estimators</strong> (<em>List</em><em>[</em><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms" title="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms"><em>ClassificationAlgorithms</em></a><em> or </em><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms" title="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms"><em>RegressionAlgorithms</em></a><em> or </em><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms" title="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms"><em>ForecastingAlgorithms</em></a><em>]</em><em>]</em><em>, </em><em>optional</em>) – list of estimators to include in computation process, see:
+AutoAI.ClassificationAlgorithms, AutoAI.RegressionAlgorithms or AutoAI.ForecastingAlgorithms</p></li>
+<li><p><strong>backtest_num</strong> (<em>int</em><em>, </em><em>optional</em>) – number of backtests used for forecasting prediction type, default value: 4,
+value from range [0, 20]</p></li>
+<li><p><strong>lookback_window</strong> (<em>int</em><em>, </em><em>optional</em>) – length of lookback window used for forecasting prediction type,
+default value: 10, if set to -1 lookback window will be auto-detected</p></li>
+<li><p><strong>forecast_window</strong> (<em>int</em><em>, </em><em>optional</em>) – length of forecast window used for forecasting prediction type, default value: 1,
+value from range [1, 60]</p></li>
+<li><p><strong>backtest_gap_length</strong> (<em>int</em><em>, </em><em>optional</em>) – gap between backtests used for forecasting prediction type,
+default value: 0, value from range [0, data length / 4]</p></li>
+<li><p><strong>feature_columns</strong> (<em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – list of feature columns used for forecasting prediction type,
+may contain target column and/or supporting feature columns, list of columns to be detected whether there are anomalies for timeseries anomaly prediction type</p></li>
+<li><p><strong>pipeline_types</strong> (<em>list</em><em>[</em><a class="reference internal" href="core_api.html#ibm_watsonx_ai.utils.autoai.enums.ForecastingPipelineTypes" title="ibm_watsonx_ai.utils.autoai.enums.ForecastingPipelineTypes"><em>ForecastingPipelineTypes</em></a><em> or </em><a class="reference internal" href="core_api.html#ibm_watsonx_ai.utils.autoai.enums.TimeseriesAnomalyPredictionPipelineTypes" title="ibm_watsonx_ai.utils.autoai.enums.TimeseriesAnomalyPredictionPipelineTypes"><em>TimeseriesAnomalyPredictionPipelineTypes</em></a><em>]</em><em>, </em><em>optional</em>) – list of pipeline types to be used for forecasting or timeseries anomaly prediction type</p></li>
+<li><p><strong>supporting_features_at_forecast</strong> (<em>bool</em><em>, </em><em>optional</em>) – enables usage of future supporting feature values during forecast</p></li>
+<li><p><strong>cognito_transform_names</strong> (<em>list</em><em>[</em><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers" title="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers"><em>Transformers</em></a><em>]</em><em>, </em><em>optional</em>) – list of transformers to include in the feature enginnering computation process,
+see: AutoAI.Transformers</p></li>
+<li><p><strong>csv_separator</strong> (<em>list</em><em>[</em><em>str</em><em>] or </em><em>str</em><em>, </em><em>optional</em>) – the separator, or list of separators to try for separating columns in a CSV file,
+not used if the file_name is not a CSV file, default is ‘,’</p></li>
+<li><p><strong>excel_sheet</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the excel sheet to use, only applicable when xlsx file is an input,
+support for number of the sheet is deprecated, by default first sheet is used</p></li>
+<li><p><strong>encoding</strong> (<em>str</em><em>, </em><em>optional</em>) – encoding type for CSV training file</p></li>
+<li><p><strong>positive_label</strong> (<em>str</em><em>, </em><em>optional</em>) – the positive class to report when binary classification, when multiclass or regression,
+this will be ignored</p></li>
+<li><p><strong>t_shirt_size</strong> (<a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize" title="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize"><em>TShirtSize</em></a><em>, </em><em>optional</em>) – the size of the remote AutoAI POD instance (computing resources),
+only applicable to a remote scenario, see: AutoAI.TShirtSize</p></li>
+<li><p><strong>data_join_graph</strong> (<em>DataJoinGraph</em><em>, </em><em>optional</em>) – a graph object with definition of join structure for multiple input data sources,
+data preprocess step for multiple files</p></li>
+<li><p><strong>data_join_only</strong> (<em>bool</em><em>, </em><em>optional</em>) – if <cite>True</cite> only preprocessing will be executed</p></li>
+<li><p><strong>drop_duplicates</strong> (<em>bool</em><em>, </em><em>optional</em>) – if <cite>True</cite> duplicated rows in data will be removed before further processing</p></li>
+<li><p><strong>outliers_columns</strong> (<em>list</em><em>, </em><em>optional</em>) – replace outliers with NaN using IQR method for specified columns. By default,
+turned ON for regression learning_type and target column. To turn OFF empty list of columns must be passed</p></li>
+<li><p><strong>text_processing</strong> (<em>bool</em><em>, </em><em>optional</em>) – if <cite>True</cite> text processing will be enabled, applicable only on Cloud</p></li>
+<li><p><strong>word2vec_feature_number</strong> (<em>int</em><em>, </em><em>optional</em>) – number of features which will be generated from text column,
+will be applied only if <cite>text_processing</cite> is <cite>True</cite>, if <cite>None</cite> the default value will be taken</p></li>
+<li><p><strong>daub_give_priority_to_runtime</strong> (<em>float</em><em>, </em><em>optional</em>) – the importance of run time over score for pipelines ranking,
+can take values between 0 and 5, if set to 0.0 only score is used,
+if set to 1 equally score and runtime are used, if set to value higher than 1
+the runtime gets higher importance over score</p></li>
+<li><p><strong>fairness_info</strong> (<em>fairness_info</em>) – dictionary that specifies metadata needed for measuring fairness,
+it contains three key values: <cite>favorable_labels</cite>, <cite>unfavorable_labels</cite> and <cite>protected_attributes</cite>,
+the <cite>favorable_labels</cite> attribute indicates that when the class column contains one of the value from list,
+that is considered a positive outcome, the <cite>unfavorable_labels</cite> is oposite to the <cite>favorable_labels</cite>
+and is obligatory for regression learning type, a protected attribute is a list of features that partition
+the population into groups whose outcome should have parity, if protected attribute is empty list
+then automatic detection of protected attributes will be run,
+if <cite>fairness_info</cite> is passed then fairness metric will be calculated</p></li>
+<li><p><strong>n_parallel_data_connections</strong> (<em>int</em><em>, </em><em>optional</em>) – number of maximum parallel connection to data source,
+supported only for IBM Cloud Pak® for Data 4.0.1 and above</p></li>
+<li><p><strong>categorical_imputation_strategy</strong> (<a class="reference internal" href="core_api.html#ibm_watsonx_ai.utils.autoai.enums.ImputationStrategy" title="ibm_watsonx_ai.utils.autoai.enums.ImputationStrategy"><em>ImputationStrategy</em></a><em>, </em><em>optional</em>) – <p>missing values imputation strategy for categorical columns</p>
+<p>Possible values (only non-forecasting scenario):</p>
+<ul>
+<li><p>ImputationStrategy.MEAN</p></li>
+<li><p>ImputationStrategy.MEDIAN</p></li>
+<li><p>ImputationStrategy.MOST_FREQUENT (default)</p></li>
+</ul>
+</p></li>
+<li><p><strong>numerical_imputation_strategy</strong> – <p>missing values imputation strategy for numerical columns</p>
+<p>Possible values (non-forecasting scenario):</p>
+<ul>
+<li><p>ImputationStrategy.MEAN</p></li>
+<li><p>ImputationStrategy.MEDIAN (default)</p></li>
+<li><p>ImputationStrategy.MOST_FREQUENT</p></li>
+</ul>
+<p>Possible values (forecasting scenario):</p>
+<ul>
+<li><p>ImputationStrategy.MEAN</p></li>
+<li><p>ImputationStrategy.MEDIAN</p></li>
+<li><p>ImputationStrategy.BEST_OF_DEFAULT_IMPUTERS (default)</p></li>
+<li><p>ImputationStrategy.VALUE</p></li>
+<li><p>ImputationStrategy.FLATTEN_ITERATIVE</p></li>
+<li><p>ImputationStrategy.LINEAR</p></li>
+<li><p>ImputationStrategy.CUBIC</p></li>
+<li><p>ImputationStrategy.PREVIOUS</p></li>
+<li><p>ImputationStrategy.NEXT</p></li>
+<li><p>ImputationStrategy.NO_IMPUTATION</p></li>
+</ul>
+</p></li>
+<li><p><strong>numerical_imputation_value</strong> (<em>float</em><em>, </em><em>optional</em>) – value for filling missing values if numerical_imputation_strategy
+is set to ImputationStrategy.VALUE, for forecasting only</p></li>
+<li><p><strong>imputation_threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – maximum threshold of missing values imputation, for forecasting only</p></li>
+<li><p><strong>retrain_on_holdout</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True final pipelines will be train also on holdout data</p></li>
+<li><p><strong>categorical_columns</strong> (<em>list</em><em>, </em><em>optional</em>) – list of columns names that must be treated as categorical</p></li>
+<li><p><strong>numerical_columns</strong> (<em>list</em><em>, </em><em>optional</em>) – list of columns names that must be treated as numerical</p></li>
+<li><p><strong>sampling_type</strong> (<em>str</em><em>, </em><em>optional</em>) – type of sampling data for training, one of SamplingTypes enum values,
+default is SamplingTypes.FIRST_N_RECORDS, supported only for IBM Cloud Pak® for Data 4.0.1 and above</p></li>
+<li><p><strong>sample_size_limit</strong> (<em>int</em><em>, </em><em>optional</em>) – the size of sample upper bound (in bytes). The default value is 1GB,
+supported only for IBM Cloud Pak® for Data 4.5 and above</p></li>
+<li><p><strong>sample_rows_limit</strong> (<em>int</em><em>, </em><em>optional</em>) – the size of sample upper bound (in rows),
+supported only for IBM Cloud Pak® for Data 4.6 and above</p></li>
+<li><p><strong>sample_percentage_limit</strong> (<em>float</em><em>, </em><em>optional</em>) – the size of sample upper bound (as fraction of dataset size),
+supported only for IBM Cloud Pak® for Data 4.6 and above</p></li>
+<li><p><strong>number_of_batch_rows</strong> (<em>int</em><em>, </em><em>optional</em>) – number of rows to read in each batch when reading from flight connection</p></li>
+<li><p><strong>test_data_csv_separator</strong> (<em>list</em><em>[</em><em>str</em><em>] or </em><em>str</em><em>, </em><em>optional</em>) – the separator, or list of separators to try for separating
+columns in a CSV user-defined holdout/test file, not used if the file_name is not a CSV file,
+default is ‘,’</p></li>
+<li><p><strong>test_data_excel_sheet</strong> (<em>str</em><em> or </em><em>int</em><em>, </em><em>optional</em>) – name of the excel sheet to use for user-defined holdout/test data, 
+only use when xlsx file is an test, dataset file, by default first sheet is used</p></li>
+<li><p><strong>test_data_encoding</strong> (<em>str</em><em>, </em><em>optional</em>) – encoding type for CSV user-defined holdout/test file</p></li>
+<li><p><strong>confidence_level</strong> (<em>float</em><em>, </em><em>optional</em>) – when the pipeline “PointwiseBoundedHoltWinters” or “PointwiseBoundedBATS” is used, 
+the prediction interval is calculated at a given confidence_level to decide if a data record 
+is an anomaly or not, optional for timeseries anomaly prediction</p></li>
+<li><p><strong>incremental_learning</strong> (<em>bool</em><em>, </em><em>optional</em>) – triggers incremental learning process for supported pipelines</p></li>
+<li><p><strong>early_stop_enabled</strong> (<em>bool</em><em>, </em><em>optional</em>) – enables early stop for incremental learning process</p></li>
+<li><p><strong>early_stop_window_size</strong> (<em>int</em><em>, </em><em>optional</em>) – the number of iterations without score improvements before training stop</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>RemoteAutoPipelines or LocalAutoPipelines, depends on how you initialize the AutoAI object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>RemoteAutoPipelines or LocalAutoPipelines</p>
+</dd>
+</dl>
+<p><strong>Examples</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.experiment</span> <span class="kn">import</span> <span class="n">AutoAI</span>
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">AutoAI</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="n">fairness_info</span> <span class="o">=</span> <span class="p">{</span>
+           <span class="s2">&quot;protected_attributes&quot;</span><span class="p">:</span> <span class="p">[</span>
+               <span class="p">{</span><span class="s2">&quot;feature&quot;</span><span class="p">:</span> <span class="s2">&quot;Sex&quot;</span><span class="p">,</span> <span class="s2">&quot;reference_group&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;male&#39;</span><span class="p">],</span> <span class="s2">&quot;monitored_group&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;female&#39;</span><span class="p">]},</span>
+               <span class="p">{</span><span class="s2">&quot;feature&quot;</span><span class="p">:</span> <span class="s2">&quot;Age&quot;</span><span class="p">,</span> <span class="s2">&quot;reference_group&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">50</span><span class="p">,</span><span class="mi">60</span><span class="p">]],</span> <span class="s2">&quot;monitored_group&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">18</span><span class="p">,</span> <span class="mi">49</span><span class="p">]]}</span>
+           <span class="p">],</span>
+           <span class="s2">&quot;favorable_labels&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;No Risk&quot;</span><span class="p">],</span>
+           <span class="s2">&quot;unfavorable_labels&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Risk&quot;</span><span class="p">],</span>
+           <span class="p">}</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">optimizer</span><span class="p">(</span>
+       <span class="n">name</span><span class="o">=</span><span class="s2">&quot;name of the optimizer.&quot;</span><span class="p">,</span>
+       <span class="n">prediction_type</span><span class="o">=</span><span class="n">AutoAI</span><span class="o">.</span><span class="n">PredictionType</span><span class="o">.</span><span class="n">BINARY</span><span class="p">,</span>
+       <span class="n">prediction_column</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span>
+       <span class="n">scoring</span><span class="o">=</span><span class="n">AutoAI</span><span class="o">.</span><span class="n">Metrics</span><span class="o">.</span><span class="n">ROC_AUC_SCORE</span><span class="p">,</span>
+       <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Some description.&quot;</span><span class="p">,</span>
+       <span class="n">holdout_size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+       <span class="n">max_number_of_estimators</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+       <span class="n">fairness_info</span><span class="o">=</span> <span class="n">fairness_info</span><span class="p">,</span>
+       <span class="n">cognito_transform_names</span><span class="o">=</span><span class="p">[</span><span class="n">AutoAI</span><span class="o">.</span><span class="n">Transformers</span><span class="o">.</span><span class="n">SUM</span><span class="p">,</span><span class="n">AutoAI</span><span class="o">.</span><span class="n">Transformers</span><span class="o">.</span><span class="n">MAX</span><span class="p">],</span>
+       <span class="n">train_sample_rows_test_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+       <span class="n">include_only_estimators</span><span class="o">=</span><span class="p">[</span><span class="n">AutoAI</span><span class="o">.</span><span class="n">ClassificationAlgorithms</span><span class="o">.</span><span class="n">LGBM</span><span class="p">,</span> <span class="n">AutoAI</span><span class="o">.</span><span class="n">ClassificationAlgorithms</span><span class="o">.</span><span class="n">XGB</span><span class="p">],</span>
+       <span class="n">t_shirt_size</span><span class="o">=</span><span class="n">AutoAI</span><span class="o">.</span><span class="n">TShirtSize</span><span class="o">.</span><span class="n">L</span>
+   <span class="p">)</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">optimizer</span><span class="p">(</span>
+       <span class="n">name</span><span class="o">=</span><span class="s2">&quot;name of the optimizer.&quot;</span><span class="p">,</span>
+       <span class="n">prediction_type</span><span class="o">=</span><span class="n">AutoAI</span><span class="o">.</span><span class="n">PredictionType</span><span class="o">.</span><span class="n">MULTICLASS</span><span class="p">,</span>
+       <span class="n">prediction_column</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span>
+       <span class="n">scoring</span><span class="o">=</span><span class="n">AutoAI</span><span class="o">.</span><span class="n">Metrics</span><span class="o">.</span><span class="n">ROC_AUC_SCORE</span><span class="p">,</span>
+       <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Some description.&quot;</span><span class="p">,</span>
+   <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.runs">
+<span class="sig-name descname"><span class="pre">runs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.runs" title="Link to this definition">#</a></dt>
+<dd><p>Get the historical runs but with WML Pipeline name filter (for remote scenario).
+Get the historical runs but with experiment name filter (for local scenario).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filter</strong> (<em>str</em>) – WML Pipeline name to filter the historical runs or experiment name to filter
+the local historical runs</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>object managing the list of runs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>AutoPipelinesRuns or LocalAutoPipelinesRuns</p>
+</dd>
+</dl>
+<p><strong>Example</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.experiment</span> <span class="kn">import</span> <span class="n">AutoAI</span>
+
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">AutoAI</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">runs</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="s1">&#39;Test&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="dataconnection_modules.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">DataConnection Modules</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="autoai_working_with_dataconnection.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Working with DataConnection</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023, IBM
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">AutoAI experiment</a><ul>
+<li><a class="reference internal" href="#autoai">AutoAI</a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI"><code class="docutils literal notranslate"><span class="pre">AutoAI</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms"><code class="docutils literal notranslate"><span class="pre">AutoAI.ClassificationAlgorithms</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.DT"><code class="docutils literal notranslate"><span class="pre">AutoAI.ClassificationAlgorithms.DT</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.EX_TREES"><code class="docutils literal notranslate"><span class="pre">AutoAI.ClassificationAlgorithms.EX_TREES</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.GB"><code class="docutils literal notranslate"><span class="pre">AutoAI.ClassificationAlgorithms.GB</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.LGBM"><code class="docutils literal notranslate"><span class="pre">AutoAI.ClassificationAlgorithms.LGBM</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.LR"><code class="docutils literal notranslate"><span class="pre">AutoAI.ClassificationAlgorithms.LR</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.RF"><code class="docutils literal notranslate"><span class="pre">AutoAI.ClassificationAlgorithms.RF</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.SnapBM"><code class="docutils literal notranslate"><span class="pre">AutoAI.ClassificationAlgorithms.SnapBM</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.SnapDT"><code class="docutils literal notranslate"><span class="pre">AutoAI.ClassificationAlgorithms.SnapDT</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.SnapLR"><code class="docutils literal notranslate"><span class="pre">AutoAI.ClassificationAlgorithms.SnapLR</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.SnapRF"><code class="docutils literal notranslate"><span class="pre">AutoAI.ClassificationAlgorithms.SnapRF</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.SnapSVM"><code class="docutils literal notranslate"><span class="pre">AutoAI.ClassificationAlgorithms.SnapSVM</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ClassificationAlgorithms.XGB"><code class="docutils literal notranslate"><span class="pre">AutoAI.ClassificationAlgorithms.XGB</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes"><code class="docutils literal notranslate"><span class="pre">AutoAI.DataConnectionTypes</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes.CA"><code class="docutils literal notranslate"><span class="pre">AutoAI.DataConnectionTypes.CA</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes.CN"><code class="docutils literal notranslate"><span class="pre">AutoAI.DataConnectionTypes.CN</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes.DS"><code class="docutils literal notranslate"><span class="pre">AutoAI.DataConnectionTypes.DS</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes.FS"><code class="docutils literal notranslate"><span class="pre">AutoAI.DataConnectionTypes.FS</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.DataConnectionTypes.S3"><code class="docutils literal notranslate"><span class="pre">AutoAI.DataConnectionTypes.S3</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms"><code class="docutils literal notranslate"><span class="pre">AutoAI.ForecastingAlgorithms</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.ARIMA"><code class="docutils literal notranslate"><span class="pre">AutoAI.ForecastingAlgorithms.ARIMA</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.BATS"><code class="docutils literal notranslate"><span class="pre">AutoAI.ForecastingAlgorithms.BATS</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.ENSEMBLER"><code class="docutils literal notranslate"><span class="pre">AutoAI.ForecastingAlgorithms.ENSEMBLER</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.HW"><code class="docutils literal notranslate"><span class="pre">AutoAI.ForecastingAlgorithms.HW</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.LR"><code class="docutils literal notranslate"><span class="pre">AutoAI.ForecastingAlgorithms.LR</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.RF"><code class="docutils literal notranslate"><span class="pre">AutoAI.ForecastingAlgorithms.RF</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.ForecastingAlgorithms.SVM"><code class="docutils literal notranslate"><span class="pre">AutoAI.ForecastingAlgorithms.SVM</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.ACCURACY_AND_DISPARATE_IMPACT_SCORE"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.ACCURACY_AND_DISPARATE_IMPACT_SCORE</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.ACCURACY_SCORE"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.ACCURACY_SCORE</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.AVERAGE_PRECISION_SCORE"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.AVERAGE_PRECISION_SCORE</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.EXPLAINED_VARIANCE_SCORE"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.EXPLAINED_VARIANCE_SCORE</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.F1_SCORE"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.F1_SCORE</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.F1_SCORE_MACRO"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.F1_SCORE_MACRO</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.F1_SCORE_MICRO"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.F1_SCORE_MICRO</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.F1_SCORE_WEIGHTED"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.F1_SCORE_WEIGHTED</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.LOG_LOSS"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.LOG_LOSS</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.MEAN_ABSOLUTE_ERROR"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.MEAN_ABSOLUTE_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.MEAN_SQUARED_ERROR"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.MEAN_SQUARED_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.MEAN_SQUARED_LOG_ERROR"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.MEAN_SQUARED_LOG_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.MEDIAN_ABSOLUTE_ERROR"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.MEDIAN_ABSOLUTE_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.PRECISION_SCORE"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.PRECISION_SCORE</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.PRECISION_SCORE_MACRO"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.PRECISION_SCORE_MACRO</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.PRECISION_SCORE_MICRO"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.PRECISION_SCORE_MICRO</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.PRECISION_SCORE_WEIGHTED"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.PRECISION_SCORE_WEIGHTED</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.R2_AND_DISPARATE_IMPACT_SCORE"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.R2_AND_DISPARATE_IMPACT_SCORE</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.R2_SCORE"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.R2_SCORE</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.RECALL_SCORE"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.RECALL_SCORE</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.RECALL_SCORE_MACRO"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.RECALL_SCORE_MACRO</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.RECALL_SCORE_MICRO"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.RECALL_SCORE_MICRO</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.RECALL_SCORE_WEIGHTED"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.RECALL_SCORE_WEIGHTED</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.ROC_AUC_SCORE"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.ROC_AUC_SCORE</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.ROOT_MEAN_SQUARED_ERROR"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.ROOT_MEAN_SQUARED_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Metrics.ROOT_MEAN_SQUARED_LOG_ERROR"><code class="docutils literal notranslate"><span class="pre">AutoAI.Metrics.ROOT_MEAN_SQUARED_LOG_ERROR</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PipelineTypes"><code class="docutils literal notranslate"><span class="pre">AutoAI.PipelineTypes</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PipelineTypes.LALE"><code class="docutils literal notranslate"><span class="pre">AutoAI.PipelineTypes.LALE</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PipelineTypes.SKLEARN"><code class="docutils literal notranslate"><span class="pre">AutoAI.PipelineTypes.SKLEARN</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType"><code class="docutils literal notranslate"><span class="pre">AutoAI.PredictionType</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.BINARY"><code class="docutils literal notranslate"><span class="pre">AutoAI.PredictionType.BINARY</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.CLASSIFICATION"><code class="docutils literal notranslate"><span class="pre">AutoAI.PredictionType.CLASSIFICATION</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.FORECASTING"><code class="docutils literal notranslate"><span class="pre">AutoAI.PredictionType.FORECASTING</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.MULTICLASS"><code class="docutils literal notranslate"><span class="pre">AutoAI.PredictionType.MULTICLASS</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.REGRESSION"><code class="docutils literal notranslate"><span class="pre">AutoAI.PredictionType.REGRESSION</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.PredictionType.TIMESERIES_ANOMALY_PREDICTION"><code class="docutils literal notranslate"><span class="pre">AutoAI.PredictionType.TIMESERIES_ANOMALY_PREDICTION</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms"><code class="docutils literal notranslate"><span class="pre">AutoAI.RegressionAlgorithms</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.DT"><code class="docutils literal notranslate"><span class="pre">AutoAI.RegressionAlgorithms.DT</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.EX_TREES"><code class="docutils literal notranslate"><span class="pre">AutoAI.RegressionAlgorithms.EX_TREES</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.GB"><code class="docutils literal notranslate"><span class="pre">AutoAI.RegressionAlgorithms.GB</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.LGBM"><code class="docutils literal notranslate"><span class="pre">AutoAI.RegressionAlgorithms.LGBM</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.LR"><code class="docutils literal notranslate"><span class="pre">AutoAI.RegressionAlgorithms.LR</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.RF"><code class="docutils literal notranslate"><span class="pre">AutoAI.RegressionAlgorithms.RF</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.RIDGE"><code class="docutils literal notranslate"><span class="pre">AutoAI.RegressionAlgorithms.RIDGE</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.SnapBM"><code class="docutils literal notranslate"><span class="pre">AutoAI.RegressionAlgorithms.SnapBM</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.SnapDT"><code class="docutils literal notranslate"><span class="pre">AutoAI.RegressionAlgorithms.SnapDT</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.SnapRF"><code class="docutils literal notranslate"><span class="pre">AutoAI.RegressionAlgorithms.SnapRF</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.RegressionAlgorithms.XGB"><code class="docutils literal notranslate"><span class="pre">AutoAI.RegressionAlgorithms.XGB</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.SamplingTypes"><code class="docutils literal notranslate"><span class="pre">AutoAI.SamplingTypes</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.SamplingTypes.FIRST_VALUES"><code class="docutils literal notranslate"><span class="pre">AutoAI.SamplingTypes.FIRST_VALUES</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.SamplingTypes.LAST_VALUES"><code class="docutils literal notranslate"><span class="pre">AutoAI.SamplingTypes.LAST_VALUES</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.SamplingTypes.RANDOM"><code class="docutils literal notranslate"><span class="pre">AutoAI.SamplingTypes.RANDOM</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.SamplingTypes.STRATIFIED"><code class="docutils literal notranslate"><span class="pre">AutoAI.SamplingTypes.STRATIFIED</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize"><code class="docutils literal notranslate"><span class="pre">AutoAI.TShirtSize</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize.L"><code class="docutils literal notranslate"><span class="pre">AutoAI.TShirtSize.L</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize.M"><code class="docutils literal notranslate"><span class="pre">AutoAI.TShirtSize.M</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize.S"><code class="docutils literal notranslate"><span class="pre">AutoAI.TShirtSize.S</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.TShirtSize.XL"><code class="docutils literal notranslate"><span class="pre">AutoAI.TShirtSize.XL</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.ABS"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.ABS</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.CBRT"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.CBRT</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.COS"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.COS</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.CUBE"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.CUBE</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.DIFF"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.DIFF</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.DIVIDE"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.DIVIDE</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.FEATUREAGGLOMERATION"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.FEATUREAGGLOMERATION</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.ISOFORESTANOMALY"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.ISOFORESTANOMALY</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.LOG"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.LOG</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.MAX"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.MAX</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.MINMAXSCALER"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.MINMAXSCALER</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.NXOR"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.NXOR</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.PCA"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.PCA</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.PRODUCT"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.PRODUCT</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.ROUND"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.ROUND</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.SIGMOID"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.SIGMOID</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.SIN"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.SIN</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.SQRT"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.SQRT</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.SQUARE"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.SQUARE</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.STDSCALER"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.STDSCALER</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.SUM"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.SUM</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.Transformers.TAN"><code class="docutils literal notranslate"><span class="pre">AutoAI.Transformers.TAN</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.optimizer"><code class="docutils literal notranslate"><span class="pre">AutoAI.optimizer()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.runs"><code class="docutils literal notranslate"><span class="pre">AutoAI.runs()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>

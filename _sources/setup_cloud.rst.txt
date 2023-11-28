@@ -1,0 +1,58 @@
+Cloud Pak for Data as a Service
+===============================
+
+Requirements
+------------
+Starting work with IBM Cloud Pak for Data as a Service refer to `Getting started <https://dataplatform.cloud.ibm.com/docs/content/wsj/getting-started/get-started-wdp.html?audience=wdp>`__ section in main product documentation.
+
+Supported machine learning frameworks
+-------------------------------------
+For the list of supported machine learning frameworks (models) on IBM Cloud Pak for Data as a Service, refer to
+`watsonx.ai Documentation <https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/pm_service_supported_frameworks.html?context=wx&audience=wdp&locale=en>`__.
+
+Authentication
+--------------
+To use watsonx.ai APIs, create an instance of APIClient with authentication details.
+
+**Note:** Depending on the region of your provisioned service instance, use one of the following as your url:
+
+    * Dallas: `https://us-south.ml.cloud.ibm.com`
+    * London: `https://eu-gb.ml.cloud.ibm.com`
+    * Frankfurt: `https://eu-de.ml.cloud.ibm.com`
+    * Tokyo: `https://jp-tok.ml.cloud.ibm.com`
+
+**Note:** To determine `apikey` go to https://cloud.ibm.com/iam/apikeys and generate your apikey.
+
+Example of creating the client using apikey:
+
+.. code-block:: python
+
+   from ibm_watsonx_ai import APIClient
+
+   wml_credentials = {
+                      "url": "https://us-south.ml.cloud.ibm.com",
+                      "apikey":"***********"
+                     }
+
+   client = APIClient(wml_credentials)
+
+
+
+
+Example of creating the client using token:
+
+.. code-block:: python
+
+   from ibm_watsonx_ai import APIClient
+
+   wml_credentials = {
+                      "url": "https://us-south.ml.cloud.ibm.com",
+                      "token":"***********",
+                     }
+
+   client = APIClient(wml_credentials)
+
+**Note:** Setting default space/project id is mandatory. For details, refer to ``client.set.default_space()`` API in this document.
+
+.. hint::
+    You can copy the project_id from Project's Manage tab (Project -> Manage -> General -> Details).

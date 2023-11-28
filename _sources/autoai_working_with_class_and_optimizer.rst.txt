@@ -1,0 +1,428 @@
+Working with AutoAI class and optimizer
+=======================================
+
+The :ref:`AutoAI experiment class<autoai-class>` is responsible for creating experiments and scheduling training.
+All experiment results are stored automatically in the user-specified Cloud Object Storage (COS).
+Then, the AutoAI feature can fetch the results and provide them directly to the user for further usage.
+
+Configure optimizer with one data source
+----------------------------------------
+
+For an AutoAI object initialization watsonx.ai credentials (with apikey and url) and one of ``project_id`` or ``space_id``.
+
+.. hint::
+        You can copy the project_id from Project's Manage tab (Project -> Manage -> General -> Details).
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.experiment import AutoAI
+
+    experiment = AutoAI(wx_credentials,
+        space_id='76g53e0-0b32-4a0e-9152-3d50324855ddb')
+    )
+
+    pipeline_optimizer = experiment.optimizer(
+                name='test name',
+                desc='test description',
+                prediction_type=AutoAI.PredictionType.BINARY,
+                prediction_column='y',
+                scoring=AutoAI.Metrics.ACCURACY_SCORE,
+                test_size=0.1,
+                max_num_daub_ensembles=1,
+                train_sample_rows_test_size=1.,
+                daub_include_only_estimators = [
+                     AutoAI.ClassificationAlgorithms.XGB,
+                     AutoAI.ClassificationAlgorithms.LGBM
+                     ],
+                cognito_transform_names = [
+                     AutoAI.Transformers.SUM,
+                     AutoAI.Transformers.MAX
+                     ]
+            )
+
+Configure optimizer for time series forecasting
+----------------------------------------------------------------
+
+**Note:** Supported for IBM Cloud Pak for Data 4.0 and higher.
+
+Time series forecasting is a special AutoAI prediction scenario, with specific parameters used to configure forecasting:
+``prediction_columns``, ``timestamp_column_name``, ``backtest_num``, ``lookback_window``, ``forecast_window``, ``backtest_gap_length``
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.experiment import AutoAI
+
+    experiment = AutoAI(wx_credentials,
+        space_id='76g53e0-0b32-4a0e-9152-3d50324855ddb')
+    )
+
+    pipeline_optimizer = experiment.optimizer(
+        name='forecasting optimiser',
+        desc='description',
+        prediction_type=experiment.PredictionType.FORECASTING,
+        prediction_columns=['value'],
+        timestamp_column_name='timestamp',
+        backtest_num=4,
+        lookback_window=5,
+        forecast_window=2,
+        holdout_size=0.05,
+        max_number_of_estimators=1,
+        include_only_estimators=[AutoAI.ForecastingAlgorithms.ENSEMBLER],
+        t_shirt_size=TShirtSize.L
+    )
+
+Optimizer and deployment fitting procedures are the same as in the basic scenario.
+
+Configure optimizer for time series forecasting with supporting features
+-----------------------------------------------------------------------------------------
+
+**Note** Supported for IBM Cloud and IBM Cloud Pak for Data version 4.5 and higher.
+
+Additional parameters can be passed to run time series forecasting scenarios with supporting features:
+``feature_columns``, ``pipeline_types``, ``supporting_features_at_forecast``
+
+For more information about supporting features refer to `time series documentation <https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/autoai-timeseries.html?context=cpdaas&audience=wdp>`_ .
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.experiment import AutoAI
+    from ibm_watsonx_ai.utils.autoai.enums import ForecastingPipelineTypes
+
+    experiment = AutoAI(wx_credentials,
+        space_id='76g53e0-0b32-4a0e-9152-3d50324855ddb')
+    )
+
+    pipeline_optimizer = experiment.optimizer(
+        name='forecasting optimizer',
+        desc='description',
+        prediction_type=experiment.PredictionType.FORECASTING,
+        prediction_columns=['value'],
+        timestamp_column_name='week',
+        feature_columns=['a', 'b', 'value'],
+        pipeline_types=[ForecastingPipelineTypes.FlattenEnsembler] + ForecastingPipelineTypes.get_exogenous(),
+        supporting_features_at_forecast=True
+    )
+
+Predicting for time series forecasting scenario with supporting features:
+
+.. code-block:: python
+
+    # Example data:
+    #   new_observations:
+    #       week       a   b  value
+    #       14.0       0   0  134
+    #       15.0       1   4  96
+    #       ...
+    #
+    #   supporting_features:
+    #       week       a   b
+    #       16.0       1   3
+    #       ...
+
+    # with DataFrame or np.array:
+    pipeline_optimizer.predict(new_observations, supporting_features=supporting_features)
+
+Online scoring for time series forecasting scenario with supporting features:
+
+.. code-block:: python
+
+    # with DataFrame:
+    web_service.score(payload={'observations': new_observations_df, 'supporting_features': supporting_features_df})
+
+Batch scoring for time series forecasting scenario with supporting features:
+
+.. code-block:: python
+
+    # with DataFrame:
+    batch_service.run_job(payload={'observations': new_observations_df, 'supporting_features': supporting_features_df})
+
+    # with DataConnection:
+    batch_service.run_job(payload={'observations': new_observations_data_connection, 'supporting_features': supporting_features_data_connection})
+
+Get configuration parameters
+----------------------------
+
+To see current configuration parameters, call the ``get_params()`` method.
+
+.. code-block:: python
+
+    config_parameters = pipeline_optimizer.get_params()
+    print(config_parameters)
+    {
+        'name': 'test name',
+        'desc': 'test description',
+        'prediction_type': 'classification',
+        'prediction_column': 'y',
+        'scoring': 'roc_auc',
+        'test_size': 0.1,
+        'max_num_daub_ensembles': 1
+    }
+
+Fit optimizer
+-------------
+
+To schedule an AutoAI experiment, call the ``fit()`` method. This will trigger a training and an optimization process on watsonx.ai. The ``fit()`` method can be synchronous (``background_mode=False``), or asynchronous (``background_mode=True``).
+If you don't want to wait for fit to end, invoke the async version. It immediately returns only fit/run details.
+If you invoke the async version, you see a progress bar with information about the learning/optimization process.
+
+.. code-block:: python
+
+    fit_details = pipeline_optimizer.fit(
+            training_data_references=[training_data_connection],
+            training_results_reference=results_connection,
+            background_mode=True)
+
+    # OR
+
+    fit_details = pipeline_optimizer.fit(
+            training_data_references=[training_data_connection],
+            training_results_reference=results_connection,
+            background_mode=False)
+
+To run AutoAI experiment with separate holdout data you can use ``fit()`` method with ``test_data_references`` parameter. See the example below:
+
+.. code-block:: python
+
+    fit_details = pipeline_optimizer.fit(
+            training_data_references=[training_data_connection],
+            test_data_references=[test_data_connection],
+            training_results_reference=results_connection)
+
+Get run status, get run details
+-------------------------------
+
+If you use the ``fit()`` method asynchronously, you can monitor the run/fit details and status, using the following two methods:
+
+.. code-block:: python
+
+    status = pipeline_optimizer.get_run_status()
+    print(status)
+    'running'
+
+    # OR
+
+    'completed'
+
+    run_details = pipeline_optimizer.get_run_details()
+    print(run_details)
+    {'entity': {'pipeline': {'href': '/v4/pipelines/5bfeb4c5-90df-48b8-9e03-ba232d8c0838'},
+            'results_reference': {'connection': { 'id': ...},
+                                  'location': {'bucket': '...',
+                                               'logs': '53c8cb7b-c8b5-44aa-8b52-6fde3c588462',
+                                               'model': '53c8cb7b-c8b5-44aa-8b52-6fde3c588462/model',
+                                               'path': '.',
+                                               'pipeline': './33825fa2-5fca-471a-ab1a-c84820b3e34e/pipeline.json',
+                                               'training': './33825fa2-5fca-471a-ab1a-c84820b3e34e',
+                                               'training_status': './33825fa2-5fca-471a-ab1a-c84820b3e34e/training-status.json'},
+                                  'type': 'connected_asset'},
+            'space': {'href': '/v4/spaces/71ab11ea-bb77-4ae6-b98a-a77f30ade09d'},
+            'status': {'completed_at': '2020-02-17T10:46:32.962Z',
+                       'message': {'level': 'info',
+                                   'text': 'Training job '
+                                           '33825fa2-5fca-471a-ab1a-c84820b3e34e '
+                                           'completed'},
+                       'state': 'completed'},
+            'training_data_references': [{'connection': {'id': '...'},
+                                          'location': {'bucket': '...',
+                                                       'path': '...'},
+                                          'type': 'connected_asset'}]},
+     'metadata': {'created_at': '2020-02-17T10:44:22.532Z',
+                  'guid': '33825fa2-5fca-471a-ab1a-c84820b3e34e',
+                  'href': '/v4/trainings/33825fa2-5fca-471a-ab1a-c84820b3e34e',
+                  'id': '33825fa2-5fca-471a-ab1a-c84820b3e34e',
+                  'modified_at': '2020-02-17T10:46:32.987Z'}}
+
+Get data connections
+--------------------
+
+The ``data_connections`` list contains all training connections that you referenced while calling the ``fit()`` method.
+
+.. code-block:: python
+
+    data_connections = pipeline_optimizer.get_data_connections()
+
+Get preprocessed data connection (joined data only)
+---------------------------------------------------
+
+**Warning!** Not supported for IBM Cloud.
+
+The preprocessed_data_connection contains connection to joined training data. You can read joined data using code in below cell.
+
+.. code-block:: python
+
+    train_df = pipeline_optimizer.get_preprocessed_data_connection().read()
+
+Summary
+-------
+
+It is possible to get a ranking of all the computed pipeline models, sorted based on a scoring metric supplied when configuring the optimizer (``scoring`` parameter). The output type is a ``pandas.DataFrame`` with pipeline names, computation timestamps, machine learning metrics, and the number of enhancements implemented in each of the pipelines.
+
+.. code-block:: python
+
+    results = pipeline_optimizer.summary()
+    print(results)
+                   Number of enhancements  ...  training_f1
+    Pipeline Name                          ...
+    Pipeline_4                          3  ...     0.555556
+    Pipeline_3                          2  ...     0.554978
+    Pipeline_2                          1  ...     0.503175
+    Pipeline_1                          0  ...     0.529928
+
+Get pipeline details
+--------------------
+
+To see pipeline composition steps and nodes, use the ``get_pipeline_details()`` method.
+If you leave ``pipeline_name`` empty, the method returns the details of the best computed pipeline.
+
+.. code-block:: python
+
+    pipeline_params = pipeline_optimizer.get_pipeline_details(pipeline_name='Pipeline_1')
+    print(pipeline_params)
+    {
+        'composition_steps': [
+            'TrainingDataset_full_199_16', 'Split_TrainingHoldout',
+            'TrainingDataset_full_179_16', 'Preprocessor_default', 'DAUB'
+            ],
+        'pipeline_nodes': [
+            'PreprocessingTransformer', 'LogisticRegressionEstimator'
+            ]
+    }
+
+Get pipeline
+------------
+
+Use the ``get_pipeline()`` method to load a specific pipeline. By default, ``get_pipeline()`` returns a lale pipeline. For information on lale pipelines, refer to (https://github.com/ibm/lale).
+
+.. code-block:: python
+
+    pipeline = pipeline_optimizer.get_pipeline(pipeline_name='Pipeline_4')
+    print(type(pipeline))
+    'lale.operators.TrainablePipeline'
+
+You can also load a pipeline as a scikit learn (sklearn) pipeline model type.
+
+.. code-block:: python
+
+    pipeline = pipeline_optimizer.get_pipeline(pipeline_name='Pipeline_4', astype=AutoAI.PipelineTypes.SKLEARN)
+    print(type(pipeline))
+    # <class 'sklearn.pipeline.Pipeline'>
+
+Working with deployments
+------------------------
+
+This section describes classes that enable you to work with watsonx.ai deployments.
+
+.. _working-with-web-service:
+
+Web Service
+-----------
+
+Web Service is an online type of deployment. It allows you to upload and deploy your model, to score it through an online web service. You must pass the location where the training was performed (``source_space_id`` or ``source_project_id``). The model can be deployed to any space or project (``target_space_id`` or ``target_project_id``).
+
+**Note:** WebService supports only the AutoAI deployment type.
+
+.. code-block:: python
+
+   from ibm_watsonx_ai.deployment import WebService
+
+   service = WebService(wx_credentials,
+        source_space_id='76g53e0-0b32-4a0e-9152-3d50324855ddb',
+        target_space_id='1234abc1234abc1234abc1234abc1234abcd')
+    )
+
+   service.create(
+          experiment_run_id="...",
+          model=model,
+          deployment_name='My new deployment'
+      )
+
+.. _working-with-batch:
+
+Batch
+-----
+
+Batch manages the batch type of deployment. It allows you to upload and deploy a model and
+run a batch deployment job. As in Web Service, you must pass the location where
+the training was performed (``source_space_id`` or ``source_project_id``).
+The model can be deployed to any space or project (``target_space_id`` or ``target_project_id``).
+
+The input data can be provided as a ``pandas.DataFrame``, a data-asset, or a Cloud Object Storage (COS) file.
+
+**Note:** WebService supports only the AutoAI deployment type.
+
+Example of a batch deployment creation:
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.deployment import Batch
+
+    service_batch = Batch(wx_credentials, source_space_id='76g53e0-0b32-4a0e-9152-3d50324855ddb')
+    service_batch.create(
+            experiment_run_id="6ce62a02-3e41-4d11-89d1-484c2deaed75",
+            model="Pipeline_4",
+            deployment_name='Batch deployment')
+
+
+Example of a batch job creation with inline data as ``pandas.DataFrame`` type:
+
+.. code-block:: python
+
+    scoring_params = service_batch.run_job(
+                payload=test_X_df,
+                background_mode=False)
+
+Example of batch job creation with a COS object:
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.helpers.connections import S3Location, DataConnection
+
+    connection_details = client.connections.create({
+        client.connections.ConfigurationMetaNames.NAME: "Connection to COS",
+        client.connections.ConfigurationMetaNames.DATASOURCE_TYPE: client.connections.get_datasource_type_uid_by_name('bluemixcloudobjectstorage'),
+        client.connections.ConfigurationMetaNames.PROPERTIES: {
+            'bucket': 'bucket_name',
+            'access_key': 'COS access key id',
+            'secret_key': 'COS secret access key'
+            'iam_url': 'COS iam url',
+            'url': 'COS endpoint url'
+        }
+    })
+
+    connection_id = client.connections.get_uid(connection_details)
+
+    payload_reference = DataConnection(
+            connection_asset_id=connection_id,
+            location=S3Location(bucket='bucket_name',   # note: COS bucket name where deployment payload dataset is located
+                                path='my_path'  # note: path within bucket where your deployment payload dataset is located
+                                )
+        )
+
+    results_reference = DataConnection(
+            connection_asset_id=connection_id,
+            location=S3Location(bucket='bucket_name',   # note: COS bucket name where deployment output should be located
+                                path='my_path_where_output_will_be_saved'  # note: path within bucket where your deployment output should be located
+                                )
+        )
+    payload_reference.write("local_path_to_the_batch_payload_csv_file", remote_name="batch_payload_location.csv"])
+
+    scoring_params = service_batch.run_job(
+        payload=[payload_reference],
+        output_data_reference=results_reference,
+        background_mode=False)   # If background_mode is False, then synchronous mode is started. Otherwise job status need to be monitored.
+
+
+Example of a batch job creation with a data-asset object:
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.helpers.connections import DataConnection, CloudAssetLocation, DeploymentOutputAssetLocation
+
+    payload_reference = DataConnection(location=CloudAssetLocation(asset_id=asset_id))
+    results_reference = DataConnection(
+            location=DeploymentOutputAssetLocation(name="batch_output_file_name.csv"))
+
+        scoring_params = service_batch.run_job(
+            payload=[payload_reference],
+            output_data_reference=results_reference,
+            background_mode=False)

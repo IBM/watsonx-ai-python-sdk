@@ -1,0 +1,113 @@
+Federated Learning
+==================
+
+Federated Learning provides the tools for training a model collaboratively, by coordinating local training runs
+and fusing the results. Even though data sources are never moved, combined, or shared among parties or the aggregator,
+all of them contribute to training and improving the quality of the global model.
+
+`Tutorial and Samples for IBM Cloud <https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fl-demo.html?context=cpdaas&audience=wdp>`_
+
+`Tutorial and Samples for IBM Cloud Pak for Data, IBM watsonx.ai Server <https://www.ibm.com/docs/en/cloud-paks/cp-data/4.0?topic=learning-federated-tutorial-samples>`_
+
+Aggregation
+-----------
+
+The aggregator process, which fuses the parties’ training results, runs as a watsonx.ai training job.
+For more information on creating and querying a training job, see the API documentation for the ``client.training`` class.
+The parameters available to configure a Federated Learning training are described in the `IBM Cloud API Docs <https://cloud.ibm.com/apidocs/machine-learning-cp#trainings-create>`_.
+
+Configure and start aggregation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient
+
+    client = APIClient( credentials )
+
+    PROJECT_ID = "8ae1a720-83ed-4c57-b719-8dd086bd7ce0"
+    client.set.default_project( PROJECT_ID )
+
+    aggregator_metadata = {
+        client.training.ConfigurationMetaNames.NAME: 'Federated Tensorflow MNIST',
+        client.training.ConfigurationMetaNames.DESCRIPTION: 'MNIST digit recognition with Federated Learning using Tensorflow',
+        client.training.ConfigurationMetaNames.TRAINING_DATA_REFERENCES: [],
+        client.training.ConfigurationMetaNames.TRAINING_RESULTS_REFERENCE: {
+            'type': 'container',
+            'name': 'outputData',
+            'connection': {},
+            'location': {
+               'path': '/projects/' + PROJECT_ID + '/assets/trainings/'
+            }
+
+        },
+        client.training.ConfigurationMetaNames.FEDERATED_LEARNING: {
+            'model': {
+                'type': 'tensorflow',
+                'spec': {
+                   'id': untrained_model_id
+                },
+                'model_file': untrained_model_name
+            },
+            'fusion_type': 'iter_avg',
+            'metrics': 'accuracy',
+            'epochs': 3,
+            'rounds': 99,
+            'remote_training' : {
+                'quorum': 1.0,
+                'max_timeout': 3600,
+                'remote_training_systems': [ { 'id': rts_1_id }, { 'id': rts_2_id} ]
+            },
+            'hardware_spec': {
+                'name': 'S'
+            },
+            'software_spec': {
+                'name': 'runtime-22.1-py3.9'
+            }
+        }
+    }
+
+
+    aggregator = client.training.run(aggregator_metadata, asynchronous=True)
+    aggregator_id = client.training.get_id(aggregator)
+
+
+Local training
+--------------
+Training is performed locally by parties which connect to the aggregator.  The parties must be members of the project
+or space in which the aggregator is running and are identified to the Federated Learning aggregator as Remote Training Systems.
+
+
+Configure and start local training
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient
+
+    client = APIClient( party_1_credentials )
+
+    PROJECT_ID = "8ae1a720-83ed-4c57-b719-8dd086bd7ce0"
+    client.set.default_project( PROJECT_ID )
+
+    # The party needs, at mimimum, to specify how the data are loaded for training.  The data
+    # handler class and any input to the class is provided.  In this case, the info block
+    # contains a key to locate the training data from the current working directory.
+    party_metadata = {
+                        client.remote_training_systems.ConfigurationMetaNames.DATA_HANDLER: {
+                           "class": MNISTDataHandler,
+                           "info": {
+                              "npz_file": "./training_data.npz"
+                           }
+                     }
+    # The party object is created
+    party = client.remote_training_systems.create_party(remote_training_system_id = "d516d42c-6c59-41f2-b7ca-c63d11ea79a1", party_metadata)
+    # Send training logging to standard output
+    party.monitor_logs()
+    # Start training.  Training will run in the Python process that is executing this code.
+    # The supplied aggregator_id refers to the watsonx.ai training job that will perform aggregation.
+    party.run(aggregator_id = "564fb126-9bfd-409b-beb3-5d401e4c50ec", asynchronous = False)
+
+.. autoclass:: remote_training_system.RemoteTrainingSystem
+    :members:
+
+.. autoclass:: party_wrapper.Party
+    :members:
