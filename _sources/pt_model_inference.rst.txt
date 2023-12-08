@@ -1,9 +1,59 @@
-Foundation Models Inference on watsonx.ai
-=========================================
+Tuned Model Inference
+=====================
 
 .. _pt-model-inference-module:
 
-This section shows how to use ModelInference module with created deployment. To create a model, the user must first define its parameters.
+This section shows how to deploy model and use ModelInference module with created deployment.
+
+There are two ways to query ``generate_text`` using the :ref:`deployments<generate_text_deployments>` module or using :ref:`ModelInference<generate_text_ModelInference>` module .
+
+Working with deployments
+------------------------
+
+This section describes methods that enable user to work with deployments. But first it will be needed to create client and set ``project_id`` or ``space_id``.
+
+.. _api_client_init:
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient
+
+    client = APIClient(credentials)
+    client.set.default_project("7ac03029-8bdd-4d5f-a561-2c4fd1e40705")
+
+To create deployment with specific parameters call following lines.
+
+.. code-block:: python
+
+    from datetime import datetime
+
+    model_id = prompt_tuner.get_model_id()
+
+    meta_props = {
+        client.deployments.ConfigurationMetaNames.NAME: "PT DEPLOYMENT SDK - project",
+        client.deployments.ConfigurationMetaNames.ONLINE: {},
+        client.deployments.ConfigurationMetaNames.SERVING_NAME : f"pt_sdk_deployment_{datetime.utcnow().strftime('%Y_%m_%d_%H%M%S')}"
+    }
+    deployment_details = client.deployments.create(model_id, meta_props)
+
+To get a deployment_id from details, use ``id`` from ``metadata``.
+
+.. code-block:: python
+
+    deployment_id = deployment_details['metadata']['id']
+    print(deployment_id)
+    '7091629c-f88a-4e90-b7f0-4f414aec9c3a'
+
+
+.. _generate_text_deployments:
+
+You can directly query ``generate_text`` using the deployments module.
+
+.. code-block:: python
+
+    client.deployments.generate_text(
+        prompt="Example prompt",
+        deployment_id=deployment_id)
+
 
 Creating ModelInference module
 ------------------------------
@@ -40,6 +90,14 @@ Create the ModelInference itself, using credentials and ``project_id`` / ``space
         api_client=client
     )
 
+.. _generate_text_ModelInference:
+
+You can directly query ``generate_text`` using the ``ModelInference`` module.
+
+.. code-block:: python
+
+        tuned_model.generate_text(prompt="Example prompt")
+
 Importing data
 --------------
 
@@ -52,9 +110,9 @@ To use ModelInference, an example data may be need.
     filename = 'car_rental_prompt_tuning_testing_data.json'
 
     url = "https://raw.github.com/IBM/watson-machine-learning-samples/master/cloud/data/prompt_tuning/car_rental_prompt_tuning_testing_data.json"
-    if not os.path.isfile(filename): 
+    if not os.path.isfile(filename):
         wget.download(url)
-        
+
     data = pd.read_json(filename)
 
 Analyzing satisfaction
@@ -75,6 +133,8 @@ Calculate accuracy of based model:
 
 .. code-block:: python
 
+    from sklearn.metrics import accuracy_score, f1_score
+
     base_model = ModelInference(
         model_id='google/flan-t5-xl',
         params=generate_params,
@@ -87,8 +147,6 @@ Calculate accuracy of based model:
 Calculate accuracy of tuned model:
 
 .. code-block:: python
-
-    from sklearn.metrics import accuracy_score, f1_score
 
     tuned_model_results = tuned_model.generate_text(prompt=prompts_batch)
     print(f'accuracy_score: {accuracy_score(satisfaction, [int(x) for x in tuned_model_results])}, f1_score: {f1_score(satisfaction, [int(x) for x in tuned_model_results])}')

@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Tune Experiment" href="tune_experiment.html" /><link rel="prev" title="Working with TuneExperiment and PromptTuner" href="pt_working_with_class_and_prompt_tuner.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Tune Experiment" href="tune_experiment.html" /><link rel="prev" title="Tune Experiment run" href="pt_tune_experiment_run.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Foundation Models Inference on watsonx.ai - IBM watsonx.ai</title>
+        <title>Tuned Model Inference - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -182,8 +182,11 @@
 </ul>
 </li>
 <li class="toctree-l3 current has-children"><a class="reference internal" href="prompt_tuner.html">Prompt Tuning</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Prompt Tuning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="pt_working_with_class_and_prompt_tuner.html">Working with TuneExperiment and PromptTuner</a></li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">Foundation Models Inference on watsonx.ai</a></li>
+<li class="toctree-l4 current has-children"><a class="reference internal" href="pt_working_with_class_and_prompt_tuner.html">Working with TuneExperiment and PromptTuner</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Working with TuneExperiment and PromptTuner</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="pt_tune_experiment_run.html">Tune Experiment run</a></li>
+<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">Tuned Model Inference</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="tune_experiment.html">Tune Experiment</a></li>
 </ul>
 </li>
@@ -226,9 +229,45 @@
           </label>
         </div>
         <article role="main">
-          <section id="foundation-models-inference-on-watsonx-ai">
-<h1>Foundation Models Inference on watsonx.ai<a class="headerlink" href="#foundation-models-inference-on-watsonx-ai" title="Link to this heading">#</a></h1>
-<p id="pt-model-inference-module">This section shows how to use ModelInference module with created deployment. To create a model, the user must first define its parameters.</p>
+          <section id="tuned-model-inference">
+<h1>Tuned Model Inference<a class="headerlink" href="#tuned-model-inference" title="Link to this heading">#</a></h1>
+<p id="pt-model-inference-module">This section shows how to deploy model and use ModelInference module with created deployment.</p>
+<p>There are two ways to query <code class="docutils literal notranslate"><span class="pre">generate_text</span></code> using the <a class="reference internal" href="#generate-text-deployments"><span class="std std-ref">deployments</span></a> module or using <a class="reference internal" href="#generate-text-modelinference"><span class="std std-ref">ModelInference</span></a> module .</p>
+<section id="working-with-deployments">
+<h2>Working with deployments<a class="headerlink" href="#working-with-deployments" title="Link to this heading">#</a></h2>
+<p>This section describes methods that enable user to work with deployments. But first it will be needed to create client and set <code class="docutils literal notranslate"><span class="pre">project_id</span></code> or <code class="docutils literal notranslate"><span class="pre">space_id</span></code>.</p>
+<div class="highlight-python notranslate" id="api-client-init"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_project</span><span class="p">(</span><span class="s2">&quot;7ac03029-8bdd-4d5f-a561-2c4fd1e40705&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To create deployment with specific parameters call following lines.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="n">model_id</span> <span class="o">=</span> <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">get_model_id</span><span class="p">()</span>
+
+<span class="n">meta_props</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="s2">&quot;PT DEPLOYMENT SDK - project&quot;</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">ONLINE</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">SERVING_NAME</span> <span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;pt_sdk_deployment_</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y_%m_</span><span class="si">%d</span><span class="s1">_%H%M%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">}</span>
+<span class="n">deployment_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To get a deployment_id from details, use <code class="docutils literal notranslate"><span class="pre">id</span></code> from <code class="docutils literal notranslate"><span class="pre">metadata</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">deployment_id</span> <span class="o">=</span> <span class="n">deployment_details</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">)</span>
+<span class="s1">&#39;7091629c-f88a-4e90-b7f0-4f414aec9c3a&#39;</span>
+</pre></div>
+</div>
+<p id="generate-text-deployments">You can directly query <code class="docutils literal notranslate"><span class="pre">generate_text</span></code> using the deployments module.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">generate_text</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Example prompt&quot;</span><span class="p">,</span>
+    <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="creating-modelinference-module">
 <h2>Creating ModelInference module<a class="headerlink" href="#creating-modelinference-module" title="Link to this heading">#</a></h2>
 <p>At the beginning, it is recommended to define parameters (later used by module).</p>
@@ -240,7 +279,7 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Create the ModelInference itself, using credentials and <code class="docutils literal notranslate"><span class="pre">project_id</span></code> / <code class="docutils literal notranslate"><span class="pre">space_id</span></code> or the previously initialized APIClient (see <a class="reference internal" href="pt_working_with_class_and_prompt_tuner.html#api-client-init"><span class="std std-ref">APIClient initialization</span></a>).</p>
+<p>Create the ModelInference itself, using credentials and <code class="docutils literal notranslate"><span class="pre">project_id</span></code> / <code class="docutils literal notranslate"><span class="pre">space_id</span></code> or the previously initialized APIClient (see <a class="reference internal" href="#api-client-init"><span class="std std-ref">APIClient initialization</span></a>).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models</span> <span class="kn">import</span> <span class="n">ModelInference</span>
 
 <span class="n">tuned_model</span> <span class="o">=</span> <span class="n">ModelInference</span><span class="p">(</span>
@@ -257,6 +296,10 @@
     <span class="n">params</span><span class="o">=</span><span class="n">generate_params</span><span class="p">,</span>
     <span class="n">api_client</span><span class="o">=</span><span class="n">client</span>
 <span class="p">)</span>
+</pre></div>
+</div>
+<p id="generate-text-modelinference">You can directly query <code class="docutils literal notranslate"><span class="pre">generate_text</span></code> using the <code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> module.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tuned_model</span><span class="o">.</span><span class="n">generate_text</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Example prompt&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -288,7 +331,9 @@
 </pre></div>
 </div>
 <p>Calculate accuracy of based model:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">base_model</span> <span class="o">=</span> <span class="n">ModelInference</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span>
+
+<span class="n">base_model</span> <span class="o">=</span> <span class="n">ModelInference</span><span class="p">(</span>
     <span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;google/flan-t5-xl&#39;</span><span class="p">,</span>
     <span class="n">params</span><span class="o">=</span><span class="n">generate_params</span><span class="p">,</span>
     <span class="n">api_client</span><span class="o">=</span><span class="n">client</span>
@@ -299,9 +344,7 @@
 </pre></div>
 </div>
 <p>Calculate accuracy of tuned model:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span>
-
-<span class="n">tuned_model_results</span> <span class="o">=</span> <span class="n">tuned_model</span><span class="o">.</span><span class="n">generate_text</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompts_batch</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tuned_model_results</span> <span class="o">=</span> <span class="n">tuned_model</span><span class="o">.</span><span class="n">generate_text</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompts_batch</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;accuracy_score: </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">satisfaction</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">tuned_model_results</span><span class="p">])</span><span class="si">}</span><span class="s1">, f1_score: </span><span class="si">{</span><span class="n">f1_score</span><span class="p">(</span><span class="n">satisfaction</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">tuned_model_results</span><span class="p">])</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="s1">&#39;accuracy_score: 0.972027972027972, f1_score: 0.9811320754716981&#39;</span>
 </pre></div>
@@ -351,14 +394,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="pt_working_with_class_and_prompt_tuner.html">
+          <a class="prev-page" href="pt_tune_experiment_run.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Working with TuneExperiment and PromptTuner</div>
+                <div class="title">Tune Experiment run</div>
                 
               </div>
             </a>
@@ -392,7 +435,8 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Foundation Models Inference on watsonx.ai</a><ul>
+<li><a class="reference internal" href="#">Tuned Model Inference</a><ul>
+<li><a class="reference internal" href="#working-with-deployments">Working with deployments</a></li>
 <li><a class="reference internal" href="#creating-modelinference-module">Creating ModelInference module</a></li>
 <li><a class="reference internal" href="#importing-data">Importing data</a></li>
 <li><a class="reference internal" href="#analyzing-satisfaction">Analyzing satisfaction</a></li>
