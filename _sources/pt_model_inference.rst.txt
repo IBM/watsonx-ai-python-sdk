@@ -1,0 +1,128 @@
+Foundation Models Inference on watsonx.ai
+=========================================
+
+.. _pt-model-inference-module:
+
+This section shows how to use ModelInference module with created deployment. To create a model, the user must first define its parameters.
+
+Creating ModelInference module
+------------------------------
+
+At the beginning, it is recommended to define parameters (later used by module).
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
+
+    generate_params = {
+        GenParams.MAX_NEW_TOKENS: 25,
+        GenParams.STOP_SEQUENCES: ["\n"]
+    }
+
+Create the ModelInference itself, using credentials and ``project_id`` / ``space_id`` or the previously initialized APIClient (see :ref:`APIClient initialization<api_client_init>`).
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.foundation_models import ModelInference
+
+    tuned_model = ModelInference(
+        deployment_id=deployment_id,
+        params=generate_params,
+        credentials=credentials,
+        project_id=project_id
+    )
+
+    # OR
+
+    tuned_model = ModelInference(
+        deployment_id=deployment_id,
+        params=generate_params,
+        api_client=client
+    )
+
+Importing data
+--------------
+
+To use ModelInference, an example data may be need.
+
+.. code-block:: python
+
+    import pandas as pd
+
+    filename = 'car_rental_prompt_tuning_testing_data.json'
+
+    url = "https://raw.github.com/IBM/watson-machine-learning-samples/master/cloud/data/prompt_tuning/car_rental_prompt_tuning_testing_data.json"
+    if not os.path.isfile(filename): 
+        wget.download(url)
+        
+    data = pd.read_json(filename)
+
+Analyzing satisfaction
+----------------------
+
+.. note::
+    The satisfaction analysis was performed for a specific example - **car rental**, it may not work in the case of other data sets.
+
+To analyze satisfaction prepare batch with prompts, calculate the accuracy of tuned model and compare it with base model.
+
+.. code-block:: python
+
+    prompts = list(data.input)
+    satisfaction = list(data.output)
+    prompts_batch = ["\n".join([prompt]) for prompt in prompts]
+
+Calculate accuracy of based model:
+
+.. code-block:: python
+
+    base_model = ModelInference(
+        model_id='google/flan-t5-xl',
+        params=generate_params,
+        api_client=client
+    )
+    base_model_results = base_model.generate_text(prompt=prompts_batch)
+    print(f'base model accuracy_score: {accuracy_score(satisfaction, [int(x) for x in base_model_results])}, base model f1_score: {f1_score(satisfaction, [int(x) for x in base_model_results])}')
+    'base model accuracy_score: 0.965034965034965, base model f1_score: 0.9765258215962441'
+
+Calculate accuracy of tuned model:
+
+.. code-block:: python
+
+    from sklearn.metrics import accuracy_score, f1_score
+
+    tuned_model_results = tuned_model.generate_text(prompt=prompts_batch)
+    print(f'accuracy_score: {accuracy_score(satisfaction, [int(x) for x in tuned_model_results])}, f1_score: {f1_score(satisfaction, [int(x) for x in tuned_model_results])}')
+    'accuracy_score: 0.972027972027972, f1_score: 0.9811320754716981'
+
+Generate methods 
+--------------------
+
+The detailed explanation of available generate methods with exact parameters can be found in the :ref:`ModelInferece class<model-inference-class>`.
+
+With previously created ``tuned_model`` object, it is possible to generate a text stream (generator) using defined inference and ``generate_text_stream()`` method.
+
+.. code-block:: python
+
+    for token in tuned_model.generate_text_stream(prompt=input_prompt):
+        print(token, end="")
+    '$10 Powerchill Leggings'
+
+And also receive more detailed result with ``generate()``.
+
+.. code-block:: python
+
+    details = tuned_model.generate(prompt=input_prompt, params=gen_params)
+    print(details)
+    {
+        'model_id': 'google/flan-t5-xl',
+        'created_at': '2023-11-17T15:32:57.401Z',
+        'results': [
+            {
+            'generated_text': '$10 Powerchill Leggings',
+            'generated_token_count': 8,
+            'input_token_count': 73,
+            'stop_reason': 'eos_token'
+            }
+        ],
+        'system': {'warnings': []}
+    }

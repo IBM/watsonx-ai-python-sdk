@@ -176,7 +176,18 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="foundation_models.html">Foundation Models</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Foundation Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="model.html">Model</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="fm_model.html">Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fm_model_inference.html">ModelInference</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="prompt_tuner.html">Prompt Tuning</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Prompt Tuning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="pt_working_with_class_and_prompt_tuner.html">Working with TuneExperiment and PromptTuner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pt_model_inference.html">Foundation Models Inference on watsonx.ai</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tune_experiment.html">Tune Experiment</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_extensions.html">Extensions</a></li>
 </ul>
 </li>
@@ -994,28 +1005,84 @@ details of the completed or canceled jobs when hard_delete parameter is set to T
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="client.Deployments.download">
-<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">virtual_deployment_uid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#client.Deployments.download" title="Link to this definition">#</a></dt>
-<dd><p>Downloads file deployment of specified deployment Id. Currently supported format is Core ML.
-Supported only for IBM Cloud Pak® for Data 3.0 and below.</p>
+<dt class="sig sig-object py" id="client.Deployments.generate">
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deployment_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails_hap_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails_pii_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concurrency_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#client.Deployments.generate" title="Link to this definition">#</a></dt>
+<dd><p>Generate a raw response with <cite>prompt</cite> for given <cite>deployment_id</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>virtual_deployment_uid</strong> (<em>str</em>) – Unique Id of virtual deployment</p></li>
-<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – filename of downloaded archive</p></li>
+<li><p><strong>deployment_id</strong> (<em>str</em>) – Id of deployment</p></li>
+<li><p><strong>prompt</strong> (<em>(</em><em>str</em><em> | </em><em>None</em><em>)</em><em>, </em><em>optional</em>) – prompt needed for text generation. If deployment_id points to Prompt Template asset then prompt argument must be None, defaults to None</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) – meta props for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
+<li><p><strong>guardrails</strong> (<em>bool</em>) – If True then potentially hateful, abusive, and/or profane language (HAP) detection 
+filter is toggle on for both prompt and generated text, defaults to False</p></li>
+<li><p><strong>guardrails_hap_params</strong> – meta props for HAP moderations, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()</span></code>
+to view the list of MetaNames</p></li>
+<li><p><strong>concurrency_limit</strong> (<em>int</em><em>, </em><em>optional</em>) – number of requests that will be sent in parallel, max is 10</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>path to downloaded file</p>
+<dd class="field-even"><p>scoring result containing generated content.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.Deployments.generate_text">
+<span class="sig-name descname"><span class="pre">generate_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deployment_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails_hap_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails_pii_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concurrency_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#client.Deployments.generate_text" title="Link to this definition">#</a></dt>
+<dd><p>Given the selected deployment (deployment_id), a text prompt as input, parameters and concurrency_limit,
+the selected inference will generate a completion text as generated_text response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>deployment_id</strong> (<em>str</em>) – Id of deployment</p></li>
+<li><p><strong>prompt</strong> (<em>(</em><em>str</em><em> | </em><em>None</em><em>)</em><em>, </em><em>optional</em>) – the prompt string or list of strings. If list of strings is passed requests will be managed in parallel with the rate of concurency_limit, defaults to None</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) – meta props for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
+<li><p><strong>raw_response</strong> (<em>bool</em><em>, </em><em>optional</em>) – return the whole response object</p></li>
+<li><p><strong>guardrails</strong> (<em>bool</em>) – If True then potentially hateful, abusive, and/or profane language (HAP) detection 
+filter is toggle on for both prompt and generated text, defaults to False</p></li>
+<li><p><strong>guardrails_hap_params</strong> – meta props for HAP moderations, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()</span></code>
+to view the list of MetaNames</p></li>
+<li><p><strong>concurrency_limit</strong> (<em>int</em>) – number of requests that will be sent in parallel, max is 10</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>generated content</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
-<p><strong>Example</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">virtual_deployment_uid</span><span class="p">)</span>
-</pre></div>
-</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.Deployments.generate_text_stream">
+<span class="sig-name descname"><span class="pre">generate_text_stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deployment_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails_hap_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails_pii_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#client.Deployments.generate_text_stream" title="Link to this definition">#</a></dt>
+<dd><p>Given the selected deployment (deployment_id), a text prompt as input and parameters,
+the selected inference will generate a streamed text as generate_text_stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>deployment_id</strong> (<em>str</em>) – Id of deployment</p></li>
+<li><p><strong>prompt</strong> (<em>(</em><em>str</em><em> | </em><em>None</em><em>)</em><em>, </em><em>optional</em>) – the prompt string, defaults to None</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) – meta props for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
+<li><p><strong>raw_response</strong> (<em>bool</em><em>, </em><em>optional</em>) – yields the whole response object</p></li>
+<li><p><strong>guardrails</strong> (<em>bool</em>) – If True then potentially hateful, abusive, and/or profane language (HAP) detection 
+filter is toggle on for both prompt and generated text, defaults to False</p></li>
+<li><p><strong>guardrails_hap_params</strong> – meta props for HAP moderations, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()</span></code>
+to view the list of MetaNames</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>generated content</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1466,47 +1533,65 @@ and it starts a deployment with the provided asset id/rev. Deployment id remains
 <td></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">{'id':</span> <span class="pre">'4cedab6d-e8e4-4214-b81a-2ddb122db2ab',</span> <span class="pre">'rev':</span> <span class="pre">'1'}</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p>HARDWARE_SPEC</p></td>
+<tr class="row-odd"><td><p>PROMPT_TEMPLATE</p></td>
+<td><p>dict</p></td>
+<td><p>N</p></td>
+<td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{'id':</span> <span class="pre">'4cedab6d-e8e4-4214-b81a-2ddb122db2ab'}</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>HARDWARE_SPEC</p></td>
 <td><p>dict</p></td>
 <td><p>N</p></td>
 <td></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">{'id':</span> <span class="pre">'3342-1ce536-20dc-4444-aac7-7284cf3befc'}</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p>HYBRID_PIPELINE_HARDWARE_SPECS</p></td>
+<tr class="row-odd"><td><p>HYBRID_PIPELINE_HARDWARE_SPECS</p></td>
 <td><p>list</p></td>
 <td><p>N</p></td>
 <td></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">[{'node_runtime_id':</span> <span class="pre">'auto_ai.kb',</span> <span class="pre">'hardware_spec':</span> <span class="pre">{'id':</span> <span class="pre">'3342-1ce536-20dc-4444-aac7-7284cf3befc',</span> <span class="pre">'num_nodes':</span> <span class="pre">'2'}}]</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p>ONLINE</p></td>
+<tr class="row-even"><td><p>ONLINE</p></td>
 <td><p>dict</p></td>
 <td><p>N</p></td>
 <td></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">{}</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p>BATCH</p></td>
+<tr class="row-odd"><td><p>BATCH</p></td>
 <td><p>dict</p></td>
 <td><p>N</p></td>
 <td></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">{}</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p>R_SHINY</p></td>
+<tr class="row-even"><td><p>R_SHINY</p></td>
 <td><p>dict</p></td>
 <td><p>N</p></td>
 <td></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">{'authentication':</span> <span class="pre">'anyone_with_url'}</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p>VIRTUAL</p></td>
+<tr class="row-odd"><td><p>VIRTUAL</p></td>
 <td><p>dict</p></td>
 <td><p>N</p></td>
 <td></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">{}</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p>OWNER</p></td>
+<tr class="row-even"><td><p>OWNER</p></td>
 <td><p>str</p></td>
 <td><p>N</p></td>
 <td></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;owner_id&gt;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>BASE_MODEL_ID</p></td>
+<td><p>str</p></td>
+<td><p>N</p></td>
+<td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">google/flan-ul2</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>PROMPT_VARIABLES</p></td>
+<td><p>dict</p></td>
+<td><p>N</p></td>
+<td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{'key':</span> <span class="pre">'value'}</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -3908,11 +3993,28 @@ returning less records than stated by set <cite>limit</cite>.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="client.Repository.list">
-<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#client.Repository.list" title="Link to this definition">#</a></dt>
-<dd><p>Print stored models, pipelines, runtimes, libraries, functions, spaces and experiments in a table format.
-If limit is set to None there will be only first 50 records shown.</p>
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">framework_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_as_df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#client.Repository.list" title="Link to this definition">#</a></dt>
+<dd><p>Print/get stored models, pipelines, runtimes, libraries, functions, spaces and experiments in a table/DataFrame format.
+If limit is set to None there will be only first 50 records śshown.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>framework_filter</strong> (<em>str</em><em>, </em><em>optional</em>) – Get only frameworks with desired names</p></li>
+<li><p><strong>return_as_df</strong> (<em>bool</em><em>, </em><em>optional</em>) – Determinate if table should be returned as pandas.DataFrame object, default: True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame with listed names and ids of stored models or None if return_as_df is False</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame or None</p>
+</dd>
+</dl>
 <p><strong>Example</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+<span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">return_as_df</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">framework_filter</span><span class="o">=</span><span class="s1">&#39;prompt_tune&#39;</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">framework_filter</span><span class="o">=</span><span class="s1">&#39;prompt_tune&#39;</span><span class="p">,</span> <span class="n">return_as_df</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -4194,7 +4296,7 @@ If limit is set to None there will be only first 50 records shown.</p>
 <dt class="sig sig-object py" id="client.Repository.promote_model">
 <span class="sig-name descname"><span class="pre">promote_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_space_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#client.Repository.promote_model" title="Link to this definition">#</a></dt>
 <dd><p>Promote model from project to space. Supported only for IBM Cloud Pak® for Data.</p>
-<p><em>Deprecated:</em> Use <cite>client.spaces.promote(model_id, source_project_id, target_space_id)</cite> instead.</p>
+<p><em>Deprecated:</em> Use <cite>client.spaces.promote(asset_id, source_project_id, target_space_id)</cite> instead.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4290,7 +4392,7 @@ In this situation it is possible to pass some variables:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="client.Repository.store_model">
-<span class="sig-name descname"><span class="pre">store_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_props</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_column_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtrainingId</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#client.Repository.store_model" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">store_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_props</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_column_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtrainingId</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#client.Repository.store_model" title="Link to this definition">#</a></dt>
 <dd><p>Create a model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -4345,7 +4447,7 @@ this is applicable only in the case where the training data is not of type - pan
 <li><p><strong>round_number</strong> (<em>int</em><em>, </em><em>optional</em>) – round number of a Federated Learning experiment that has been configured to save
 intermediate models, this applies when model is a training id</p></li>
 <li><p><strong>experiment_metadata</strong> (<em>dict</em><em>, </em><em>optional</em>) – metadata retrieved from the experiment that created the model</p></li>
-<li><p><strong>training_id</strong> (<em>str</em><em>, </em><em>optional</em>) – Run id of AutoAI experiment.</p></li>
+<li><p><strong>training_id</strong> (<em>str</em><em>, </em><em>optional</em>) – Run id of AutoAI or TuneExperiment experiment.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -4431,6 +4533,11 @@ multiple schemas as dictionaries inside a list.</p></li>
 <span class="n">stored_model_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">store_model</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;Pipeline_1&quot;</span><span class="p">,</span> <span class="n">meta_props</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="n">training_id</span> <span class="o">=</span> <span class="n">training_id</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Example of storing a prompt tuned model:
+.. code-block:: python</p>
+<blockquote>
+<div><p>stored_model_details = client.repository.store_model(training_id = prompt_tuning_run_id)</p>
+</div></blockquote>
 </dd></dl>
 
 <dl class="py method">
@@ -6940,7 +7047,7 @@ in case of unsupported or deprecated software specs</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="client.PlatformSpaces.list">
-<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_as_df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#client.PlatformSpaces.list" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_as_df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#client.PlatformSpaces.list" title="Link to this definition">#</a></dt>
 <dd><p>Print stored spaces in a table format. If limit is set to None there will be only first 50 records shown.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -6950,6 +7057,7 @@ in case of unsupported or deprecated software specs</p></li>
 is a member</p></li>
 <li><p><strong>roles</strong> (<em>str</em><em>, </em><em>optional</em>) – limit number of fetched records</p></li>
 <li><p><strong>return_as_df</strong> (<em>bool</em><em>, </em><em>optional</em>) – determinate if table should be returned as pandas.DataFrame object, default: True</p></li>
+<li><p><strong>space_type</strong> (<em>str</em><em>, </em><em>optional</em>) – filter spaces by their type; available types: ‘wx’, ‘cpd’, ‘wca’</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -7049,14 +7157,15 @@ cloud. Note that STORAGE and COMPUTE are applicable only for cloud.</p>
 </dl>
 <p><strong>Example</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="s1">&#39;my_space&#39;</span><span class="p">,</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DESCRIPTION</span><span class="p">:</span> <span class="s1">&#39;spaces&#39;</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="s2">&quot;my_space&quot;</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DESCRIPTION</span><span class="p">:</span> <span class="s2">&quot;spaces&quot;</span><span class="p">,</span>
     <span class="n">client</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">STORAGE</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;resource_crn&quot;</span><span class="p">:</span> <span class="s2">&quot;provide crn of the COS storage&quot;</span><span class="p">},</span>
     <span class="n">client</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">COMPUTE</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;test_instance&quot;</span><span class="p">,</span>
                                                    <span class="s2">&quot;crn&quot;</span><span class="p">:</span> <span class="s2">&quot;provide crn of the instance&quot;</span><span class="p">},</span>
     <span class="n">client</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">STAGE</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;production&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
                                                  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;stage_name&quot;</span><span class="p">},</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">TAGS</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sample_tag_1&quot;</span><span class="p">,</span> <span class="s2">&quot;sample_tag_2&quot;</span><span class="p">]</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">TAGS</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sample_tag_1&quot;</span><span class="p">,</span> <span class="s2">&quot;sample_tag_2&quot;</span><span class="p">],</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">TYPE</span><span class="p">:</span> <span class="s2">&quot;cpd&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 <span class="n">spaces_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">meta_props</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
 </pre></div>
@@ -7166,6 +7275,11 @@ STORAGE and COMPUTE are applicable only for cloud.</p>
 <td><p>list</p></td>
 <td><p>N</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">['sample_tag']</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>TYPE</p></td>
+<td><p>str</p></td>
+<td><p>N</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cpd</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -9120,7 +9234,9 @@ Depends on the POD size, AutoAI could support different data sets sizes.</p>
 <li><a class="reference internal" href="#client.Deployments.create_job"><code class="docutils literal notranslate"><span class="pre">Deployments.create_job()</span></code></a></li>
 <li><a class="reference internal" href="#client.Deployments.delete"><code class="docutils literal notranslate"><span class="pre">Deployments.delete()</span></code></a></li>
 <li><a class="reference internal" href="#client.Deployments.delete_job"><code class="docutils literal notranslate"><span class="pre">Deployments.delete_job()</span></code></a></li>
-<li><a class="reference internal" href="#client.Deployments.download"><code class="docutils literal notranslate"><span class="pre">Deployments.download()</span></code></a></li>
+<li><a class="reference internal" href="#client.Deployments.generate"><code class="docutils literal notranslate"><span class="pre">Deployments.generate()</span></code></a></li>
+<li><a class="reference internal" href="#client.Deployments.generate_text"><code class="docutils literal notranslate"><span class="pre">Deployments.generate_text()</span></code></a></li>
+<li><a class="reference internal" href="#client.Deployments.generate_text_stream"><code class="docutils literal notranslate"><span class="pre">Deployments.generate_text_stream()</span></code></a></li>
 <li><a class="reference internal" href="#client.Deployments.get_details"><code class="docutils literal notranslate"><span class="pre">Deployments.get_details()</span></code></a></li>
 <li><a class="reference internal" href="#client.Deployments.get_download_url"><code class="docutils literal notranslate"><span class="pre">Deployments.get_download_url()</span></code></a></li>
 <li><a class="reference internal" href="#client.Deployments.get_href"><code class="docutils literal notranslate"><span class="pre">Deployments.get_href()</span></code></a></li>
