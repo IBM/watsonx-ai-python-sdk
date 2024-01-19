@@ -229,7 +229,7 @@
         <article role="main">
           <h1>Source code for ibm_watsonx_ai.experiment.fm_tune.tune_runs</h1><div class="highlight"><pre>
 <span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="c1">#  (C) Copyright IBM Corp. 2023.</span>
+<span class="c1">#  (C) Copyright IBM Corp. 2023-2024.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
@@ -237,14 +237,16 @@
     <span class="s2">&quot;TuneRuns&quot;</span>
 <span class="p">]</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watson_machine_learning.experiment.fm_tune.tune_runs</span> <span class="kn">import</span> <span class="n">TuneRuns</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.change_methods_docstring</span> <span class="kn">import</span> <span class="n">change_docstrings</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.prompt_tuner</span> <span class="kn">import</span> <span class="n">PromptTuner</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
 
 
 <div class="viewcode-block" id="TuneRuns">
 <a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.experiment.fm_tune.TuneRuns">[docs]</a>
-<span class="nd">@change_docstrings</span>
-<span class="k">class</span> <span class="nc">TuneRuns</span><span class="p">(</span><span class="n">TuneRuns</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">TuneRuns</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;TuneRuns class is used to work with historical PromptTuner runs.</span>
 
 <span class="sd">    :param client: APIClient to handle service operations</span>
@@ -256,7 +258,155 @@
 <span class="sd">    :param limit: int number of records to be returned</span>
 <span class="sd">    :type limit: int</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="s1">&#39;APIClient&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tuning_name</span> <span class="o">=</span> <span class="nb">filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">limit</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;TuneRuns&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tuning_name</span> <span class="o">=</span> <span class="nb">filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">limit</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+<div class="viewcode-block" id="TuneRuns.list">
+<a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.experiment.fm_tune.TuneRuns.list">[docs]</a>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DataFrame&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lists historical runs with status. If user has a lot of runs stored in the service,</span>
+<span class="sd">        it may take long time to fetch all the information. If there is no limit set,</span>
+<span class="sd">        get last 50 records.</span>
+
+<span class="sd">        :return: Pandas DataFrame with runs IDs and state</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+
+<span class="sd">        **Examples**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from ibm_watsonx_ai.experiment import TuneExperiment</span>
+
+<span class="sd">            experiment = TuneExperiment(...)</span>
+<span class="sd">            df = experiment.runs.list()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">runs_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">get_all</span><span class="o">=</span><span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tuning_name</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
+                                                        <span class="n">limit</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tuning_name</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span>
+                                                        <span class="n">tag_value</span><span class="o">=</span><span class="s1">&#39;prompt_tuning&#39;</span><span class="p">,</span>
+                                                        <span class="n">_internal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">,</span> <span class="s1">&#39;run_id&#39;</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;prompt tuning name&#39;</span><span class="p">]</span>
+
+        <span class="n">records</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs_details</span><span class="p">[</span><span class="s1">&#39;resources&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">:</span>
+                <span class="k">break</span>
+
+            <span class="k">if</span> <span class="p">{</span><span class="s1">&#39;entity&#39;</span><span class="p">,</span> <span class="s1">&#39;metadata&#39;</span><span class="p">}</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+
+                <span class="n">timestamp</span> <span class="o">=</span> <span class="n">run</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;modified_at&#39;</span><span class="p">)</span>
+                <span class="n">run_id</span> <span class="o">=</span> <span class="n">run</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="n">run</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;guid&#39;</span><span class="p">))</span>
+                <span class="n">state</span> <span class="o">=</span> <span class="n">run</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;state&#39;</span><span class="p">)</span>
+                <span class="n">tuning_name</span> <span class="o">=</span> <span class="n">run</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;Unknown&#39;</span><span class="p">)</span>
+
+                <span class="n">record</span> <span class="o">=</span> <span class="p">[</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">run_id</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">tuning_name</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tuning_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tuning_name</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">tuning_name</span> <span class="o">==</span> <span class="n">tuning_name</span><span class="p">):</span>
+                    <span class="n">records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+
+        <span class="n">runs</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">records</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">runs</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TuneRuns.get_tuner">
+<a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.experiment.fm_tune.TuneRuns.get_tuner">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_tuner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PromptTuner</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create instance of PromptTuner based on tuning run with specific run_id.</span>
+
+<span class="sd">        :param run_id: ID of the run</span>
+<span class="sd">        :type run_id: str</span>
+
+<span class="sd">        :return: prompt tuner object</span>
+<span class="sd">        :rtype: PromptTuner class instance</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from ibm_watsonx_ai.experiment import TuneExperiment</span>
+
+<span class="sd">            experiment = TuneExperiment(credentials, ...)</span>
+<span class="sd">            historical_tuner = experiment.runs.get_tuner(run_id=&#39;02bab973-ae83-4283-9d73-87b9fd462d35&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># note: normal scenario</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided run_id type was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">run_id</span><span class="p">)</span><span class="si">}</span><span class="s2"> (should be a string)&quot;</span><span class="p">)</span>
+
+        <span class="n">entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">run_id</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;entity&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">entity</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Provided run_id was invalid&quot;</span><span class="p">)</span>
+
+        <span class="n">tuning_params</span> <span class="o">=</span> <span class="n">entity</span><span class="p">[</span><span class="s1">&#39;prompt_tuning&#39;</span><span class="p">]</span>
+
+        <span class="n">prompt_tuner</span> <span class="o">=</span> <span class="n">PromptTuner</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">),</span>
+                                   <span class="n">task_id</span><span class="o">=</span><span class="n">tuning_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;task_id&#39;</span><span class="p">),</span>
+                                   <span class="n">description</span><span class="o">=</span><span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">),</span>
+                                   <span class="n">base_model</span><span class="o">=</span><span class="n">tuning_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;base_model&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">),</span>
+                                   <span class="n">accumulate_steps</span><span class="o">=</span><span class="n">tuning_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;accumulate_steps&#39;</span><span class="p">),</span>
+                                   <span class="n">batch_size</span><span class="o">=</span><span class="n">tuning_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;batch_size&#39;</span><span class="p">),</span>
+                                   <span class="n">init_method</span><span class="o">=</span><span class="n">tuning_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;init_method&#39;</span><span class="p">),</span>
+                                   <span class="n">init_text</span><span class="o">=</span><span class="n">tuning_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;init_text&#39;</span><span class="p">),</span>
+                                   <span class="n">learning_rate</span><span class="o">=</span><span class="n">tuning_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">),</span>
+                                   <span class="n">max_input_tokens</span><span class="o">=</span><span class="n">tuning_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;max_input_tokens&#39;</span><span class="p">),</span>
+                                   <span class="n">max_output_tokens</span><span class="o">=</span><span class="n">tuning_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;max_output_tokens&#39;</span><span class="p">),</span>
+                                   <span class="n">num_epochs</span><span class="o">=</span><span class="n">tuning_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_epochs&#39;</span><span class="p">),</span>
+                                   <span class="n">tuning_type</span><span class="o">=</span><span class="n">tuning_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tuning_type&#39;</span><span class="p">),</span>
+                                   <span class="n">verbalizer</span><span class="o">=</span><span class="n">tuning_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;verbalizer&#39;</span><span class="p">),</span>
+                                   <span class="n">auto_update_model</span><span class="o">=</span><span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;auto_update_model&#39;</span><span class="p">))</span>
+
+        <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">run_id</span>
+        <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span>
+        <span class="k">return</span> <span class="n">prompt_tuner</span></div>
+
+
+<div class="viewcode-block" id="TuneRuns.get_run_details">
+<a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.experiment.fm_tune.TuneRuns.get_run_details">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_run_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">include_metrics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get run details. If run_id is not supplied, last run will be taken.</span>
+
+<span class="sd">        :param run_id: ID of the run</span>
+<span class="sd">        :type run_id: str, optional</span>
+
+<span class="sd">        :param include_metrics: indicates to include metrics in the training details output</span>
+<span class="sd">        :type include_metrics: bool, optional</span>
+
+<span class="sd">        :return: run configuration parameters</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from ibm_watsonx_ai.experiment import TuneExperiment</span>
+<span class="sd">            experiment = TuneExperiment(credentials, ...)</span>
+
+<span class="sd">            experiment.runs.get_run_details(run_id=&#39;02bab973-ae83-4283-9d73-87b9fd462d35&#39;)</span>
+<span class="sd">            experiment.runs.get_run_details()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">run_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tag_value</span><span class="o">=</span><span class="s1">&#39;prompt_tuning&#39;</span><span class="p">,</span> <span class="n">_internal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resources&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">training_uid</span><span class="o">=</span><span class="n">run_id</span><span class="p">,</span> <span class="n">_internal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">include_metrics</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">details</span>
+
+        <span class="k">if</span> <span class="n">details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metrics&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">del</span> <span class="n">details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">details</span></div>
+</div>
 
 </pre></div>
         </article>

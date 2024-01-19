@@ -229,19 +229,25 @@
         <article role="main">
           <h1>Source code for ibm_watsonx_ai.experiment.fm_tune.tune_experiment</h1><div class="highlight"><pre>
 <span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="c1">#  (C) Copyright IBM Corp. 2023.</span>
+<span class="c1">#  (C) Copyright IBM Corp. 2023-2024.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watson_machine_learning.experiment.fm_tune.tune_experiment</span> <span class="kn">import</span> <span class="n">TuneExperiment</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.change_methods_docstring</span> <span class="kn">import</span> <span class="n">change_docstrings</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.prompt_tuner</span> <span class="kn">import</span> <span class="n">PromptTuner</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.enums</span> <span class="kn">import</span> <span class="n">PromptTuningTypes</span><span class="p">,</span> <span class="n">PromptTuningInitMethods</span><span class="p">,</span> <span class="n">TuneExperimentTasks</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.utils</span> <span class="kn">import</span> <span class="n">get_model_specs_with_prompt_tuning_support</span><span class="p">,</span> <span class="n">_check_model_state</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.experiment.base_experiment</span> <span class="kn">import</span> <span class="n">BaseExperiment</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+
+<span class="kn">from</span> <span class="nn">.tune_runs</span> <span class="kn">import</span> <span class="n">TuneRuns</span>
 
 
 <div class="viewcode-block" id="TuneExperiment">
 <a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.experiment.fm_tune.TuneExperiment">[docs]</a>
-<span class="nd">@change_docstrings</span>
-<span class="k">class</span> <span class="nc">TuneExperiment</span><span class="p">(</span><span class="n">TuneExperiment</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">TuneExperiment</span><span class="p">(</span><span class="n">BaseExperiment</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;TuneExperiment class for tuning models with prompts.</span>
 
 <span class="sd">    :param credentials: credentials to Watson Machine Learning instance</span>
@@ -254,6 +260,7 @@
 <span class="sd">    :type space_id: str, optional</span>
 
 <span class="sd">    :param verify: user can pass as verify one of following:</span>
+
 <span class="sd">        - the path to a CA_BUNDLE file</span>
 <span class="sd">        - the path of directory with certificates of trusted CAs</span>
 <span class="sd">        - `True` - default path to truststore will be taken</span>
@@ -279,7 +286,207 @@
 <span class="sd">            project_id=&quot;...&quot;,</span>
 <span class="sd">            space_id=&quot;...&quot;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">credentials</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                 <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">verify</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;</span> <span class="mf">4.8</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">error_msg</span><span class="o">=</span><span class="s2">&quot;Operation is unsupported for this release.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">project_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_project</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_space</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">PromptTuningTypes</span> <span class="o">=</span> <span class="n">PromptTuningTypes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PromptTuningInitMethods</span> <span class="o">=</span> <span class="n">PromptTuningInitMethods</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tasks_enum</span><span class="p">()</span>  <span class="c1"># Note: Dynamically create enum with supported ENUM Tasks</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">runs</span> <span class="o">=</span> <span class="n">TuneRuns</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TuneExperiment.runs">
+<a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.experiment.fm_tune.TuneExperiment.runs">[docs]</a>
+    <span class="k">def</span> <span class="nf">runs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">filter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;TuneRuns&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the historical tuning runs but with name filter.</span>
+
+<span class="sd">        :param filter: filter, user can choose which runs to fetch specifying tuning name</span>
+<span class="sd">        :type filter: str</span>
+
+<span class="sd">        **Examples**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from ibm_watsonx_ai.experiment import TuneExperiment</span>
+
+<span class="sd">            experiment = TuneExperiment(...)</span>
+<span class="sd">            experiment.runs(filter=&#39;prompt tuning name&#39;).list()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">TuneRuns</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="nb">filter</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TuneExperiment.prompt_tuner">
+<a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.experiment.fm_tune.TuneExperiment.prompt_tuner">[docs]</a>
+    <span class="k">def</span> <span class="nf">prompt_tuner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1"># Note: Rest API does not require name,</span>
+                     <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">base_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">accumulate_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">init_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">init_text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">max_input_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">max_output_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">num_epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">verbalizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">tuning_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">auto_update_model</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                     <span class="n">group_by_name</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PromptTuner</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a PromptTuner module.</span>
+
+<span class="sd">        :param name: name for the PromptTuner</span>
+<span class="sd">        :type name: str</span>
+
+<span class="sd">        :param task_id: task that is targeted for this model. Example: `experiment.Tasks.CLASSIFICATION`</span>
+
+<span class="sd">            Possible values:</span>
+
+<span class="sd">            - experiment.Tasks.CLASSIFICATION: &#39;classification&#39; (default)</span>
+<span class="sd">            - experiment.Tasks.QUESTION_ANSWERING: &#39;question_answering&#39;</span>
+<span class="sd">            - experiment.Tasks.SUMMARIZATION: &#39;summarization&#39;</span>
+<span class="sd">            - experiment.Tasks.RETRIEVAL_AUGMENTED_GENERATION: &#39;retrieval_augmented_generation&#39;</span>
+<span class="sd">            - experiment.Tasks.GENERATION: &#39;generation&#39;</span>
+<span class="sd">            - experiment.Tasks.CODE_GENERATION_AND_CONVERSION: &#39;code&#39;</span>
+<span class="sd">            - experiment.Tasks.EXTRACTION: &#39;extraction</span>
+
+<span class="sd">        :type task_id: str</span>
+
+<span class="sd">        :param description: description</span>
+<span class="sd">        :type description: str, optional</span>
+
+<span class="sd">        :param base_model: model id of the base model for this prompt tuning. Example: google/flan-t5-xl</span>
+<span class="sd">        :type base_model: str, optional</span>
+
+<span class="sd">        :param accumulate_steps: Number of steps to be used for gradient accumulation. Gradient accumulation </span>
+<span class="sd">            refers to a method of collecting gradient for configured number of steps instead of updating </span>
+<span class="sd">            the model variables at every step and then applying the update to model variables. </span>
+<span class="sd">            This can be used as a tool to overcome smaller batch size limitation. </span>
+<span class="sd">            Often also referred in conjunction with &quot;effective batch size&quot;. Possible values: 1 ≤ value ≤ 128,</span>
+<span class="sd">            default value: 16</span>
+<span class="sd">        :type accumulate_steps: int, optional</span>
+
+<span class="sd">        :param batch_size: The batch size is a number of samples processed before the model is updated. </span>
+<span class="sd">            Possible values: 1 ≤ value ≤ 16, default value: 16</span>
+<span class="sd">        :type batch_size: int, optional</span>
+
+<span class="sd">        :param init_method: `text` method requires `init_text` to be set. Allowable values: [`random`, `text`],</span>
+<span class="sd">            default value: `random`</span>
+<span class="sd">        :type init_method: str, optional</span>
+
+<span class="sd">        :param init_text: initialization text to be used if `init_method` is set to `text` otherwise this will be ignored.</span>
+<span class="sd">        :type init_text: str, optional</span>
+
+<span class="sd">        :param learning_rate: learning rate to be used while tuning prompt vectors. Possible values: 0.01 ≤ value ≤ 0.5,</span>
+<span class="sd">            default value: 0.3</span>
+<span class="sd">        :type learning_rate: float, optional</span>
+
+<span class="sd">        :param max_input_tokens: maximum length of input tokens being considered. Possible values: 1 ≤ value ≤ 256,</span>
+<span class="sd">            default value: 256</span>
+<span class="sd">        :type max_input_tokens: int, optional</span>
+
+<span class="sd">        :param max_output_tokens: maximum length of output tokens being predicted. Possible values: 1 ≤ value ≤ 128</span>
+<span class="sd">            default value: 128</span>
+<span class="sd">        :type max_output_tokens: int, optional</span>
+
+<span class="sd">        :param num_epochs: number of epochs to tune the prompt vectors, this affects the quality of the trained model.</span>
+<span class="sd">            Possible values: 1 ≤ value ≤ 50, default value: 20</span>
+<span class="sd">        :type num_epochs: int, optional</span>
+
+<span class="sd">        :param verbalizer: verbalizer template to be used for formatting data at train and inference time. </span>
+<span class="sd">            This template may use brackets to indicate where fields from the data model must be rendered. </span>
+<span class="sd">            The default value is &quot;{{input}}&quot; which means use the raw text, default value: `Input: {{input}} Output:`</span>
+<span class="sd">        :type verbalizer: str, optional</span>
+
+<span class="sd">        :param tuning_type: type of Peft (Parameter-Efficient Fine-Tuning) config to build. </span>
+<span class="sd">            Allowable values: [`experiment.PromptTuningTypes.PT`], default value: `experiment.PromptTuningTypes.PT`</span>
+<span class="sd">        :type tuning_type: str, optional</span>
+
+<span class="sd">        :param auto_update_model: define if model should be automatically updated, default value: `True`</span>
+<span class="sd">        :type auto_update_model: bool, optional</span>
+
+<span class="sd">        :param group_by_name: define if tunings should be grouped by name, default value: `False`</span>
+<span class="sd">        :type group_by_name: bool, optional</span>
+
+<span class="sd">        **Examples**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from ibm_watsonx_ai.experiment import TuneExperiment</span>
+
+<span class="sd">            experiment = TuneExperiment(...)</span>
+
+<span class="sd">            prompt_tuner = experiment.prompt_tuner(</span>
+<span class="sd">                name=&quot;prompt tuning name&quot;,</span>
+<span class="sd">                task_id=experiment.Tasks.CLASSIFICATION,</span>
+<span class="sd">                base_model=&#39;google/flan-t5-xl&#39;,</span>
+<span class="sd">                accumulate_steps=32,</span>
+<span class="sd">                batch_size=16,</span>
+<span class="sd">                learning_rate=0.2,</span>
+<span class="sd">                max_input_tokens=256,</span>
+<span class="sd">                max_output_tokens=2,</span>
+<span class="sd">                num_epochs=6,</span>
+<span class="sd">                tuning_type=experiment.PromptTuningTypes.PT,</span>
+<span class="sd">                verbalizer=&quot;Extract the satisfaction from the comment. Return simple &#39;1&#39; for satisfied customer or &#39;0&#39; for unsatisfied. Input: {{input}} Output: &quot;,</span>
+<span class="sd">                auto_update_model=True)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">task_id</span><span class="p">,</span> <span class="n">base_model</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">enum_possible_field</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">enum_possible_field</span><span class="p">,</span> <span class="n">Enum</span><span class="p">)</span> <span class="k">else</span> <span class="n">enum_possible_field</span> <span class="k">for</span>
+            <span class="n">enum_possible_field</span> <span class="ow">in</span> <span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">base_model</span><span class="p">)]</span>
+
+        <span class="n">prompt_tuning_supported_models</span> <span class="o">=</span> <span class="p">[</span><span class="n">model_spec</span><span class="p">[</span><span class="s1">&#39;model_id&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">model_spec</span> <span class="ow">in</span>
+                                          <span class="n">get_model_specs_with_prompt_tuning_support</span><span class="p">(</span>
+                                              <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">wml_credentials</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resources&#39;</span><span class="p">,</span> <span class="p">[])]</span>
+        <span class="k">if</span> <span class="n">base_model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">prompt_tuning_supported_models</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Base model &#39;</span><span class="si">{</span><span class="n">base_model</span><span class="si">}</span><span class="s2">&#39; is not supported. Supported models: </span><span class="si">{</span><span class="n">prompt_tuning_supported_models</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check if model is in constricted mode</span>
+        <span class="n">_check_model_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">wml_credentials</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">),</span> <span class="n">base_model</span><span class="p">)</span>
+
+        <span class="n">prompt_tuner</span> <span class="o">=</span> <span class="n">PromptTuner</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                                   <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
+                                   <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+                                   <span class="n">base_model</span><span class="o">=</span><span class="n">base_model</span><span class="p">,</span>
+                                   <span class="n">accumulate_steps</span><span class="o">=</span><span class="n">accumulate_steps</span><span class="p">,</span>
+                                   <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                                   <span class="n">init_method</span><span class="o">=</span><span class="n">init_method</span><span class="p">,</span>
+                                   <span class="n">init_text</span><span class="o">=</span><span class="n">init_text</span><span class="p">,</span>
+                                   <span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">,</span>
+                                   <span class="n">max_input_tokens</span><span class="o">=</span><span class="n">max_input_tokens</span><span class="p">,</span>
+                                   <span class="n">max_output_tokens</span><span class="o">=</span><span class="n">max_output_tokens</span><span class="p">,</span>
+                                   <span class="n">num_epochs</span><span class="o">=</span><span class="n">num_epochs</span><span class="p">,</span>
+                                   <span class="n">tuning_type</span><span class="o">=</span><span class="n">tuning_type</span><span class="p">,</span>
+                                   <span class="n">verbalizer</span><span class="o">=</span><span class="n">verbalizer</span><span class="p">,</span>
+                                   <span class="n">auto_update_model</span><span class="o">=</span><span class="n">auto_update_model</span><span class="p">,</span>
+                                   <span class="n">group_by_name</span><span class="o">=</span><span class="n">group_by_name</span><span class="p">)</span>
+
+        <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span>
+
+        <span class="k">return</span> <span class="n">prompt_tuner</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_get_tasks_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.utils</span> <span class="kn">import</span> <span class="n">get_all_supported_tasks_dict</span>
+            <span class="k">return</span> <span class="n">Enum</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;TuneExperimentTasks&#39;</span><span class="p">,</span>
+                        <span class="n">names</span><span class="o">=</span><span class="n">get_all_supported_tasks_dict</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">wml_credentials</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">)))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">TuneExperimentTasks</span></div>
 
 </pre></div>
         </article>

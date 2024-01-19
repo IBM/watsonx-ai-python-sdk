@@ -229,18 +229,25 @@
         <article role="main">
           <h1>Source code for ibm_watsonx_ai.foundation_models.extensions.langchain.llm</h1><div class="highlight"><pre>
 <span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="c1">#  (C) Copyright IBM Corp. 2023.</span>
+<span class="c1">#  (C) Copyright IBM Corp. 2023-2024.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="kn">from</span> <span class="nn">ibm_watson_machine_learning.foundation_models.extensions.langchain</span> <span class="kn">import</span> <span class="n">WatsonxLLM</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.change_methods_docstring</span> <span class="kn">import</span> <span class="n">change_docstrings</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">langchain.llms.base</span> <span class="kn">import</span> <span class="n">LLM</span>
+    <span class="kn">from</span> <span class="nn">langchain.llms.utils</span> <span class="kn">import</span> <span class="n">enforce_stop_tokens</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Could not import langchain: Please install langchain extension.&quot;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">ModelInference</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="WatsonxLLM">
 <a class="viewcode-back" href="../../../../../fm_extensions.html#ibm_watsonx_ai.foundation_models.extensions.langchain.WatsonxLLM">[docs]</a>
-<span class="nd">@change_docstrings</span>
-<span class="k">class</span> <span class="nc">WatsonxLLM</span><span class="p">(</span><span class="n">WatsonxLLM</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">WatsonxLLM</span><span class="p">(</span><span class="n">LLM</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `LangChain CustomLLM &lt;https://python.langchain.com/docs/modules/model_io/models/llms/custom_llm&gt;`_ wrapper for watsonx foundation models.</span>
 
@@ -280,7 +287,48 @@
 <span class="sd">        custom_llm = WatsonxLLM(model=model)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
+    <span class="n">model</span><span class="p">:</span> <span class="n">Model</span> <span class="o">|</span> <span class="n">ModelInference</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">llm_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;IBM watsonx.ai&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Model</span> <span class="o">|</span> <span class="n">ModelInference</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WatsonxLLM</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_identifying_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the identifying parameters.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_identifying_params</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_llm_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return type of llm.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_type</span>
+
+    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the IBM watsonx.ai inference endpoint.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            prompt: The prompt to pass into the model.</span>
+<span class="sd">            stop: Optional list of stop words to use when generating.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            The string generated by the model.</span>
+<span class="sd">        Example:</span>
+<span class="sd">            .. code-block:: python</span>
+<span class="sd">                model = Model(</span>
+<span class="sd">                    model_id=&quot;google/flan-ul2&quot;,</span>
+<span class="sd">                    credentials={</span>
+<span class="sd">                        &quot;apikey&quot;: &quot;***&quot;,</span>
+<span class="sd">                        &quot;url&quot;: &quot;https://us-south.ml.cloud.ibm.com&quot;</span>
+<span class="sd">                        },</span>
+<span class="sd">                    project_id=&quot;*****&quot;</span>
+<span class="sd">                    )</span>
+<span class="sd">                llm = WatsonxLLM(model=model)</span>
+<span class="sd">                response = llm(&quot;What is a molecule&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">generate_text</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Output of watsonx.ai call: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">enforce_stop_tokens</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">text</span></div>
 
 </pre></div>
         </article>
