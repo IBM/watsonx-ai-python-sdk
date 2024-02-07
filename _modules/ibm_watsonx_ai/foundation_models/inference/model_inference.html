@@ -278,6 +278,9 @@
 <span class="sd">    :param api_client: Initialized APIClient object with set project or space ID. If passed, ``credentials`` and ``project_id``/``space_id`` are not required.</span>
 <span class="sd">    :type api_client: APIClient, optional</span>
 
+<span class="sd">    :param validate: Model id validation, defaults to True</span>
+<span class="sd">    :type validate: bool, optional</span>
+
 <span class="sd">    .. note::</span>
 <span class="sd">        One of these parameters is required: [``model_id``, ``deployment_id``]</span>
 
@@ -336,7 +339,8 @@
                  <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">verify</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                 <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">validate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="o">=</span> <span class="n">model_id</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span> <span class="n">ModelTypes</span><span class="p">):</span>
@@ -375,7 +379,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span> <span class="o">=</span> <span class="n">FMModelInference</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span>
                                                <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
-                                               <span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
+                                               <span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+                                               <span class="n">validate</span><span class="o">=</span><span class="n">validate</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span> <span class="o">=</span> <span class="n">DeploymentModelInference</span><span class="p">(</span><span class="n">deployment_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span><span class="p">,</span>
                                                        <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
