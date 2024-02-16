@@ -71,32 +71,32 @@ If you don't want to wait for training to end, invoke the async version. It imme
 
 .. code-block:: python
 
-    from ibm_watsonx_ai.helpers import DataConnection, ContainerLocation
+    from ibm_watsonx_ai.helpers import DataConnection, ContainerLocation, S3Location
 
     tuning_details = prompt_tuner.run(
-        training_data_connection=[DataConnection(
+        training_data_references=[DataConnection(
             connection_asset_id=connection_id,
             location=S3Location(
                 bucket='prompt_tuning_data',
-                path='pt_train_data.json')
+                path='pt_train_data.json'
             )
-        )]
+        )],
         background_mode=False)
 
     # OR
 
     tuning_details = prompt_tuner.run(
-        training_data_connection=[DataConnection(
+        training_data_references=[DataConnection(
             data_asset_id='5d99c11a-2060-4ef6-83d5-dc593c6455e2')
-        ]
+        ],
         background_mode=True)
 
     # OR
 
     tuning_details = prompt_tuner.run(
-        training_data_connection=[DataConnection(
+        training_data_references=[DataConnection(
             location=ContainerLocation("path_to_file.json"))
-        ]
+        ],
         background_mode=True)
 
 Get run status, get run details
