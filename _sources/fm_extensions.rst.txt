@@ -4,20 +4,24 @@ Extensions
 LangChain
 ---------
 
-.. autoclass:: ibm_watsonx_ai.foundation_models.extensions.langchain.WatsonxLLM
+IBM integration with langchain is available under `link <https://python.langchain.com/docs/integrations/providers/ibm>`_.
+
+
+.. autoclass:: langchain_ibm.WatsonxLLM
     :members:
+    :exclude-members: Config, is_lc_serializable, lc_secrets, validate_environment
 
 
 Example of **SimpleSequentialChain** usage
 
 .. code-block:: python
 
-    from ibm_watsonx_ai.foundation_models.extensions.langchain import WatsonxLLM
+    from langchain_ibm import WatsonxLLM
+    from ibm_watsonx_ai.foundation_models import ModelInference
     from ibm_watsonx_ai.foundation_models.utils.enums import ModelTypes, DecodingMethods
     from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
-    from ibm_watsonx_ai.foundation_models import Model
 
-    from langchain import PromptTemplate
+    from langchain_core.prompts import PromptTemplate
     from langchain.chains import LLMChain, SimpleSequentialChain
 
     params = {
@@ -41,18 +45,18 @@ Example of **SimpleSequentialChain** usage
         input_variables=["question"],
         template="Answer the following question: {question}")
 
-    flan_ul2_model = Model(
+    flan_ul2_model = ModelInference(
         model_id='google/flan-ul2',
         credentials=credentials,
         params=params,
         project_id=project_id)
-    flan_ul2_llm = WatsonxLLM(model=flan_ul2_model)
+    flan_ul2_llm = WatsonxLLM(watsonx_model=flan_ul2_model)
 
-    flan_t5_model = Model(
+    flan_t5_model = ModelInference(
         model_id="google/flan-t5-xxl",
         credentials=credentials,
         project_id=project_id)
-    flan_t5_llm = WatsonxLLM(model=flan_t5_model)
+    flan_t5_llm = WatsonxLLM(watsonx_model=flan_t5_model)
 
     prompt_to_flan_ul2 = LLMChain(llm=flan_ul2_llm, prompt=pt1)
     flan_ul2_to_flan_t5 = LLMChain(llm=flan_t5_llm, prompt=pt2)

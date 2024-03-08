@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Samples" href="samples.html" /><link rel="prev" title="Prompt Template Manager" href="prompt_template_manager.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Helpers" href="fm_helpers.html" /><link rel="prev" title="Prompt Template Manager" href="prompt_template_manager.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
         <title>Extensions - IBM watsonx.ai</title>
@@ -182,6 +182,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="fm_model_inference.html">ModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="prompt_tuner.html">Prompt Tuning</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Prompt Tuning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -195,6 +196,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Extensions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_helpers.html">Helpers</a></li>
 </ul>
 </li>
 </ul>
@@ -236,57 +238,134 @@
 <h1>Extensions<a class="headerlink" href="#extensions" title="Link to this heading">#</a></h1>
 <section id="langchain">
 <h2>LangChain<a class="headerlink" href="#langchain" title="Link to this heading">#</a></h2>
+<p>IBM integration with langchain is available under <a class="reference external" href="https://python.langchain.com/docs/integrations/providers/ibm">link</a>.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.langchain.WatsonxLLM">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.extensions.langchain.</span></span><span class="sig-name descname"><span class="pre">WatsonxLLM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/langchain/llm.html#WatsonxLLM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.langchain.WatsonxLLM" title="Link to this definition">#</a></dt>
-<dd><p><a class="reference external" href="https://python.langchain.com/docs/modules/model_io/models/llms/custom_llm">LangChain CustomLLM</a> wrapper for watsonx foundation models.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>model</strong> (<a class="reference internal" href="fm_model.html#ibm_watsonx_ai.foundation_models.Model" title="ibm_watsonx_ai.foundation_models.Model"><em>Model</em></a>) – foundation model inference object instance</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt><strong>Supported chain types:</strong></dt><dd><ul class="simple">
-<li><p><cite>LLMChain</cite>,</p></li>
-<li><p><cite>TransformChain</cite>,</p></li>
-<li><p><cite>SequentialChain</cite>,</p></li>
-<li><p><cite>SimpleSequentialChain</cite></p></li>
-<li><p><cite>ConversationChain</cite> (including <cite>ConversationBufferMemory</cite>)</p></li>
-<li><p><cite>LLMMathChain</cite> (<code class="docutils literal notranslate"><span class="pre">bigscience/mt0-xxl</span></code>, <code class="docutils literal notranslate"><span class="pre">eleutherai/gpt-neox-20b</span></code>, <code class="docutils literal notranslate"><span class="pre">ibm/mpt-7b-instruct2</span></code>, <code class="docutils literal notranslate"><span class="pre">bigcode/starcoder</span></code>, <code class="docutils literal notranslate"><span class="pre">meta-llama/llama-2-70b-chat</span></code>, <code class="docutils literal notranslate"><span class="pre">ibm/granite-13b-instruct-v1</span></code> models only)</p></li>
-</ul>
-</dd>
-</dl>
-<p><strong>Instantiate the WatsonxLLM interface</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models</span> <span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">GenTextParamsMetaNames</span> <span class="k">as</span> <span class="n">GenParams</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.extensions.langchain</span> <span class="kn">import</span> <span class="n">WatsonxLLM</span>
-
-<span class="n">generate_params</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">GenParams</span><span class="o">.</span><span class="n">MAX_NEW_TOKENS</span><span class="p">:</span> <span class="mi">25</span>
+<dt class="sig sig-object py" id="langchain_ibm.WatsonxLLM">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">langchain_ibm.</span></span><span class="sig-name descname"><span class="pre">WatsonxLLM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_manager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apikey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streaming</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">watsonx_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/langchain_ibm/llms.html#WatsonxLLM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langchain_ibm.WatsonxLLM" title="Link to this definition">#</a></dt>
+<dd><p>IBM watsonx.ai large language models.</p>
+<p>To use, you should have <code class="docutils literal notranslate"><span class="pre">langchain_ibm</span></code> python package installed,
+and the environment variable <code class="docutils literal notranslate"><span class="pre">WATSONX_APIKEY</span></code> set with your API key, or pass
+it as a named parameter to the constructor.</p>
+<dl>
+<dt>Example:</dt><dd><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">GenTextParamsMetaNames</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">GenTextParamsMetaNames</span><span class="o">.</span><span class="n">DECODING_METHOD</span><span class="p">:</span> <span class="s2">&quot;sample&quot;</span><span class="p">,</span>
+    <span class="n">GenTextParamsMetaNames</span><span class="o">.</span><span class="n">MAX_NEW_TOKENS</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">GenTextParamsMetaNames</span><span class="o">.</span><span class="n">MIN_NEW_TOKENS</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">GenTextParamsMetaNames</span><span class="o">.</span><span class="n">TEMPERATURE</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">GenTextParamsMetaNames</span><span class="o">.</span><span class="n">TOP_K</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="n">GenTextParamsMetaNames</span><span class="o">.</span><span class="n">TOP_P</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+<span class="kn">from</span> <span class="nn">langchain_ibm</span> <span class="kn">import</span> <span class="n">WatsonxLLM</span>
+<span class="n">watsonx_llm</span> <span class="o">=</span> <span class="n">WatsonxLLM</span><span class="p">(</span>
     <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;google/flan-ul2&quot;</span><span class="p">,</span>
-    <span class="n">credentials</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;apikey&quot;</span><span class="p">:</span> <span class="s2">&quot;***&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span>
-    <span class="p">},</span>
-    <span class="n">params</span><span class="o">=</span><span class="n">generate_params</span><span class="p">,</span>
-    <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;*****&quot;</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">,</span>
+    <span class="n">apikey</span><span class="o">=</span><span class="s2">&quot;*****&quot;</span><span class="p">,</span>
+    <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;*****&quot;</span><span class="p">,</span>
+    <span class="n">params</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
 <span class="p">)</span>
-
-<span class="n">custom_llm</span> <span class="o">=</span> <span class="n">WatsonxLLM</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langchain_ibm.WatsonxLLM.apikey">
+<span class="sig-name descname"><span class="pre">apikey</span></span><a class="headerlink" href="#langchain_ibm.WatsonxLLM.apikey" title="Link to this definition">#</a></dt>
+<dd><p>Apikey to Watson Machine Learning or CPD instance</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langchain_ibm.WatsonxLLM.deployment_id">
+<span class="sig-name descname"><span class="pre">deployment_id</span></span><a class="headerlink" href="#langchain_ibm.WatsonxLLM.deployment_id" title="Link to this definition">#</a></dt>
+<dd><p>Type of deployed model to use.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langchain_ibm.WatsonxLLM.instance_id">
+<span class="sig-name descname"><span class="pre">instance_id</span></span><a class="headerlink" href="#langchain_ibm.WatsonxLLM.instance_id" title="Link to this definition">#</a></dt>
+<dd><p>Instance_id of CPD instance</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langchain_ibm.WatsonxLLM.model_id">
+<span class="sig-name descname"><span class="pre">model_id</span></span><a class="headerlink" href="#langchain_ibm.WatsonxLLM.model_id" title="Link to this definition">#</a></dt>
+<dd><p>Type of model to use.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langchain_ibm.WatsonxLLM.params">
+<span class="sig-name descname"><span class="pre">params</span></span><a class="headerlink" href="#langchain_ibm.WatsonxLLM.params" title="Link to this definition">#</a></dt>
+<dd><p>Model parameters to use during generate requests.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langchain_ibm.WatsonxLLM.password">
+<span class="sig-name descname"><span class="pre">password</span></span><a class="headerlink" href="#langchain_ibm.WatsonxLLM.password" title="Link to this definition">#</a></dt>
+<dd><p>Password to CPD instance</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langchain_ibm.WatsonxLLM.project_id">
+<span class="sig-name descname"><span class="pre">project_id</span></span><a class="headerlink" href="#langchain_ibm.WatsonxLLM.project_id" title="Link to this definition">#</a></dt>
+<dd><p>ID of the Watson Studio project.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langchain_ibm.WatsonxLLM.space_id">
+<span class="sig-name descname"><span class="pre">space_id</span></span><a class="headerlink" href="#langchain_ibm.WatsonxLLM.space_id" title="Link to this definition">#</a></dt>
+<dd><p>ID of the Watson Studio space.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langchain_ibm.WatsonxLLM.streaming">
+<span class="sig-name descname"><span class="pre">streaming</span></span><a class="headerlink" href="#langchain_ibm.WatsonxLLM.streaming" title="Link to this definition">#</a></dt>
+<dd><p>Whether to stream the results or not.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langchain_ibm.WatsonxLLM.token">
+<span class="sig-name descname"><span class="pre">token</span></span><a class="headerlink" href="#langchain_ibm.WatsonxLLM.token" title="Link to this definition">#</a></dt>
+<dd><p>Token to CPD instance</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langchain_ibm.WatsonxLLM.url">
+<span class="sig-name descname"><span class="pre">url</span></span><a class="headerlink" href="#langchain_ibm.WatsonxLLM.url" title="Link to this definition">#</a></dt>
+<dd><p>Url to Watson Machine Learning or CPD instance</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langchain_ibm.WatsonxLLM.username">
+<span class="sig-name descname"><span class="pre">username</span></span><a class="headerlink" href="#langchain_ibm.WatsonxLLM.username" title="Link to this definition">#</a></dt>
+<dd><p>Username to CPD instance</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langchain_ibm.WatsonxLLM.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><a class="headerlink" href="#langchain_ibm.WatsonxLLM.verify" title="Link to this definition">#</a></dt>
+<dd><p>User can pass as verify one of following:
+the path to a CA_BUNDLE file
+the path of directory with certificates of trusted CAs
+True - default path to truststore will be taken
+False - no verification will be made</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langchain_ibm.WatsonxLLM.version">
+<span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#langchain_ibm.WatsonxLLM.version" title="Link to this definition">#</a></dt>
+<dd><p>Version of CPD instance</p>
+</dd></dl>
+
 </dd></dl>
 
 <p>Example of <strong>SimpleSequentialChain</strong> usage</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.extensions.langchain</span> <span class="kn">import</span> <span class="n">WatsonxLLM</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">langchain_ibm</span> <span class="kn">import</span> <span class="n">WatsonxLLM</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models</span> <span class="kn">import</span> <span class="n">ModelInference</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.enums</span> <span class="kn">import</span> <span class="n">ModelTypes</span><span class="p">,</span> <span class="n">DecodingMethods</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">GenTextParamsMetaNames</span> <span class="k">as</span> <span class="n">GenParams</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models</span> <span class="kn">import</span> <span class="n">Model</span>
 
-<span class="kn">from</span> <span class="nn">langchain</span> <span class="kn">import</span> <span class="n">PromptTemplate</span>
+<span class="kn">from</span> <span class="nn">langchain_core.prompts</span> <span class="kn">import</span> <span class="n">PromptTemplate</span>
 <span class="kn">from</span> <span class="nn">langchain.chains</span> <span class="kn">import</span> <span class="n">LLMChain</span><span class="p">,</span> <span class="n">SimpleSequentialChain</span>
 
 <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
@@ -310,18 +389,18 @@
     <span class="n">input_variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;question&quot;</span><span class="p">],</span>
     <span class="n">template</span><span class="o">=</span><span class="s2">&quot;Answer the following question: </span><span class="si">{question}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="n">flan_ul2_model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+<span class="n">flan_ul2_model</span> <span class="o">=</span> <span class="n">ModelInference</span><span class="p">(</span>
     <span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;google/flan-ul2&#39;</span><span class="p">,</span>
     <span class="n">credentials</span><span class="o">=</span><span class="n">credentials</span><span class="p">,</span>
     <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
     <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">)</span>
-<span class="n">flan_ul2_llm</span> <span class="o">=</span> <span class="n">WatsonxLLM</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">flan_ul2_model</span><span class="p">)</span>
+<span class="n">flan_ul2_llm</span> <span class="o">=</span> <span class="n">WatsonxLLM</span><span class="p">(</span><span class="n">watsonx_model</span><span class="o">=</span><span class="n">flan_ul2_model</span><span class="p">)</span>
 
-<span class="n">flan_t5_model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+<span class="n">flan_t5_model</span> <span class="o">=</span> <span class="n">ModelInference</span><span class="p">(</span>
     <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;google/flan-t5-xxl&quot;</span><span class="p">,</span>
     <span class="n">credentials</span><span class="o">=</span><span class="n">credentials</span><span class="p">,</span>
     <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">)</span>
-<span class="n">flan_t5_llm</span> <span class="o">=</span> <span class="n">WatsonxLLM</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">flan_t5_model</span><span class="p">)</span>
+<span class="n">flan_t5_llm</span> <span class="o">=</span> <span class="n">WatsonxLLM</span><span class="p">(</span><span class="n">watsonx_model</span><span class="o">=</span><span class="n">flan_t5_model</span><span class="p">)</span>
 
 <span class="n">prompt_to_flan_ul2</span> <span class="o">=</span> <span class="n">LLMChain</span><span class="p">(</span><span class="n">llm</span><span class="o">=</span><span class="n">flan_ul2_llm</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="n">pt1</span><span class="p">)</span>
 <span class="n">flan_ul2_to_flan_t5</span> <span class="o">=</span> <span class="n">LLMChain</span><span class="p">(</span><span class="n">llm</span><span class="o">=</span><span class="n">flan_t5_llm</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="n">pt2</span><span class="p">)</span>
@@ -338,12 +417,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="samples.html">
+          <a class="next-page" href="fm_helpers.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Samples</div>
+                <div class="title">Helpers</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -390,7 +469,23 @@
             <ul>
 <li><a class="reference internal" href="#">Extensions</a><ul>
 <li><a class="reference internal" href="#langchain">LangChain</a><ul>
-<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.langchain.WatsonxLLM"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM</span></code></a></li>
+<li><a class="reference internal" href="#langchain_ibm.WatsonxLLM"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM</span></code></a><ul>
+<li><a class="reference internal" href="#langchain_ibm.WatsonxLLM.apikey"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM.apikey</span></code></a></li>
+<li><a class="reference internal" href="#langchain_ibm.WatsonxLLM.deployment_id"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM.deployment_id</span></code></a></li>
+<li><a class="reference internal" href="#langchain_ibm.WatsonxLLM.instance_id"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM.instance_id</span></code></a></li>
+<li><a class="reference internal" href="#langchain_ibm.WatsonxLLM.model_id"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM.model_id</span></code></a></li>
+<li><a class="reference internal" href="#langchain_ibm.WatsonxLLM.params"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM.params</span></code></a></li>
+<li><a class="reference internal" href="#langchain_ibm.WatsonxLLM.password"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM.password</span></code></a></li>
+<li><a class="reference internal" href="#langchain_ibm.WatsonxLLM.project_id"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM.project_id</span></code></a></li>
+<li><a class="reference internal" href="#langchain_ibm.WatsonxLLM.space_id"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM.space_id</span></code></a></li>
+<li><a class="reference internal" href="#langchain_ibm.WatsonxLLM.streaming"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM.streaming</span></code></a></li>
+<li><a class="reference internal" href="#langchain_ibm.WatsonxLLM.token"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM.token</span></code></a></li>
+<li><a class="reference internal" href="#langchain_ibm.WatsonxLLM.url"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM.url</span></code></a></li>
+<li><a class="reference internal" href="#langchain_ibm.WatsonxLLM.username"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM.username</span></code></a></li>
+<li><a class="reference internal" href="#langchain_ibm.WatsonxLLM.verify"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM.verify</span></code></a></li>
+<li><a class="reference internal" href="#langchain_ibm.WatsonxLLM.version"><code class="docutils literal notranslate"><span class="pre">WatsonxLLM.version</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
