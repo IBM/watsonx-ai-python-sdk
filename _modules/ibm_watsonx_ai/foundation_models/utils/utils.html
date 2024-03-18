@@ -159,8 +159,8 @@
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../setup.html">Setup</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Setup</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../setup_cloud.html">Cloud Pak for Data as a Service</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../setup_cpd.html">Cloud Pak for Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../setup_cloud.html">IBM watsonx.ai for IBM Cloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../setup_cpd.html">IBM watsonx.ai software</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -285,7 +285,7 @@
     <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_foundation_models&quot;</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_foundation_models&quot;</span><span class="p">),</span> <span class="n">logg_messages</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">operation_name</span><span class="si">}</span><span class="s2"> failed. Reason: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -670,9 +670,9 @@
 
 
 <span class="k">def</span> <span class="nf">_raise_watsonxllm_deprecation_warning</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ibm_watsonx_ai.foundation_models.extensions.langchain.WatsonxLLM &quot;</span>
-                  <span class="sa">f</span><span class="s2">&quot;is deprecated and the modules it contains will not be supported in the future. &quot;</span>
-                  <span class="sa">f</span><span class="s2">&quot;Please import from langchain-ibm instead.</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;ibm_watsonx_ai.foundation_models.extensions.langchain.WatsonxLLM&quot;</span>
+                  <span class="s2">&quot; is deprecated and will not be supported in the future. &quot;</span>
+                  <span class="s2">&quot;Please import from langchain-ibm instead.</span><span class="se">\n</span><span class="s2">&quot;</span>
                   <span class="s2">&quot;To install langchain-ibm run `pip install -U langchain-ibm`.&quot;</span><span class="p">,</span>
                   <span class="n">category</span><span class="o">=</span><span class="n">WatsonxLLMDeprecationWarning</span><span class="p">,</span>
                   <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span>
