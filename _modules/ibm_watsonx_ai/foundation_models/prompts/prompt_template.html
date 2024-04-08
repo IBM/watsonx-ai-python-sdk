@@ -201,6 +201,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../samples.html">Samples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
 </ul>
 
 </div></div>
@@ -304,8 +305,8 @@
 
 <span class="sd">    :param input_variables: Input variables can be present in fields: `instruction`, </span>
 <span class="sd">                            `input_prefix`, `output_prefix`, `input_text`, `examples`</span>
-<span class="sd">                            and are indentified by braces (&#39;{&#39; and &#39;}&#39;), defaults to None.</span>
-<span class="sd">    :type temaplate_parameters: (List | Dict[str, Dict[str, str]] | None), optional</span>
+<span class="sd">                            and are identified by braces (&#39;{&#39; and &#39;}&#39;), defaults to None.</span>
+<span class="sd">    :type input_variables: (List | Dict[str, Dict[str, str]] | None), optional</span>
 
 <span class="sd">    :param instruction: Instruction for model, defaults to None.</span>
 <span class="sd">    :type instruction: Optional[str], optional</span>
@@ -316,8 +317,8 @@
 <span class="sd">    :param output_prefix: Prefix before model response, defaults to None.</span>
 <span class="sd">    :type output_prefix: Optional[str], optional</span>
 
-<span class="sd">    :param exmaples: Examples may help the model to adjust the response; [[input1, output1], ...], defaults to None.</span>
-<span class="sd">    :type exmaples: Optional[List[List[str]]], optional</span>
+<span class="sd">    :param examples: Examples may help the model to adjust the response; [[input1, output1], ...], defaults to None.</span>
+<span class="sd">    :type examples: Optional[List[List[str]]], optional</span>
 
 <span class="sd">    :param validate_template: If True, the Prompt Template is validated for the presence of input variables, defaults to True.</span>
 <span class="sd">    :type validate_template: bool, optional</span>
@@ -797,10 +798,39 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">langchain.prompts</span> <span class="kn">import</span> <span class="n">PromptTemplate</span> <span class="k">as</span> <span class="n">LcPromptTemplate</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="n">LcPromptTemplate</span><span class="p">):</span>
-                <span class="n">prompt_template</span> <span class="o">=</span> <span class="n">PromptTemplate</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;My prompt&quot;</span><span class="p">,</span>
-                                                 <span class="n">model_id</span><span class="o">=</span><span class="n">ModelTypes</span><span class="o">.</span><span class="n">FLAN_UL2</span><span class="p">,</span>
-                                                 <span class="n">input_text</span><span class="o">=</span><span class="n">prompt_template</span><span class="o">.</span><span class="n">template</span><span class="p">,</span>
-                                                 <span class="n">input_variables</span><span class="o">=</span><span class="n">prompt_template</span><span class="o">.</span><span class="n">input_variables</span><span class="p">)</span>
+                <span class="k">def</span> <span class="nf">get_metadata_value</span><span class="p">(</span><span class="n">prompt_temp</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">must_be_list</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">must_be_nested_list</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prompt_temp</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">prompt_temp</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">prompt_temp</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">must_be_list</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_temp</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                                <span class="k">return</span> <span class="p">[</span><span class="n">prompt_temp</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span>
+                            <span class="k">return</span> <span class="n">prompt_temp</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                        <span class="k">elif</span> <span class="n">must_be_nested_list</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_temp</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                                <span class="k">return</span> <span class="p">[[</span><span class="n">prompt_temp</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]]]</span>
+                            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_temp</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+                                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_temp</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                                    <span class="k">return</span> <span class="p">[</span><span class="n">prompt_temp</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span>
+                                <span class="k">return</span> <span class="n">prompt_temp</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">prompt_temp</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">default</span>
+
+                <span class="n">prompt_template</span> <span class="o">=</span> <span class="n">PromptTemplate</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;My prompt&quot;</span><span class="p">),</span>
+                    <span class="n">model_id</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;model_id&quot;</span><span class="p">,</span> <span class="n">ModelTypes</span><span class="o">.</span><span class="n">FLAN_UL2</span><span class="p">),</span>
+                    <span class="n">model_params</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;model_params&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                    <span class="n">template_version</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;template_version&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                    <span class="n">task_ids</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;task_ids&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">must_be_list</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                    <span class="n">description</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                    <span class="n">input_text</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;input_text&quot;</span><span class="p">,</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">template</span><span class="p">),</span>
+                    <span class="n">input_variables</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;input_variables&quot;</span><span class="p">,</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">input_variables</span><span class="p">),</span>
+                    <span class="n">instruction</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;instruction&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                    <span class="n">input_prefix</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;input_prefix&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                    <span class="n">output_prefix</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;output_prefix&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                    <span class="n">examples</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;examples&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">must_be_nested_list</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                    <span class="n">validate_template</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;validate_template&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">error_msg</span><span class="o">=</span><span class="s2">&quot;Unsupported type for `prompt_template`&quot;</span><span class="p">)</span>
             
