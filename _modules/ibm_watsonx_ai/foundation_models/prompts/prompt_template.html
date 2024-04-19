@@ -178,6 +178,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../foundation_models.html">Foundation Models</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Foundation Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fm_embeddings.html">Embeddings</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_model_inference.html">ModelInference</a></li>
@@ -274,13 +275,13 @@
 <span class="sd">    :type prompt_id: Optional[str], attribute setting not allowed</span>
 
 <span class="sd">    :param created_at: Time the prompt was created (UTC), defaults to None.</span>
-<span class="sd">    :type created_at: Optional[str], attribute setting not allowed </span>
+<span class="sd">    :type created_at: Optional[str], attribute setting not allowed</span>
 
 <span class="sd">    :param lock: Locked state of asset, defaults to None.</span>
 <span class="sd">    :type lock: Optional[PromptTemplateLock], attribute setting not allowed</span>
 
 <span class="sd">    :param is_template: True if prompt is a template, False otherwise; defaults to None.</span>
-<span class="sd">    :type is_template: Optional[bool], attribute setting not allowed </span>
+<span class="sd">    :type is_template: Optional[bool], attribute setting not allowed</span>
 
 <span class="sd">    :param name: Prompt template name, defaults to None.</span>
 <span class="sd">    :type name: Optional[str], optional</span>
@@ -303,7 +304,7 @@
 <span class="sd">    :param input_text: Input text for prompt, defaults to None.</span>
 <span class="sd">    :type input_text: Optional[str], optional</span>
 
-<span class="sd">    :param input_variables: Input variables can be present in fields: `instruction`, </span>
+<span class="sd">    :param input_variables: Input variables can be present in fields: `instruction`,</span>
 <span class="sd">                            `input_prefix`, `output_prefix`, `input_text`, `examples`</span>
 <span class="sd">                            and are identified by braces (&#39;{&#39; and &#39;}&#39;), defaults to None.</span>
 <span class="sd">    :type input_variables: (List | Dict[str, Dict[str, str]] | None), optional</span>
@@ -381,9 +382,9 @@
         <span class="c1"># template validation</span>
         <span class="k">if</span> <span class="n">validate_template</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_validation</span><span class="p">()</span>
-            
+
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> 
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="w"> </span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
 
@@ -393,7 +394,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">created_at</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcfromtimestamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_created_at</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">))</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_created_at</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">))</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">lock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -426,7 +427,7 @@
                 <span class="k">if</span> <span class="n">template_text</span><span class="p">:</span>
                     <span class="n">_validate</span><span class="p">(</span><span class="n">template_text</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">key</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">additional_msg</span><span class="o">=</span><span class="s2">&quot;One can turn off validation step setting `validate_template` to False.&quot;</span> <span class="p">)</span>
 
 
 <div class="viewcode-block" id="PromptTemplateManager">
@@ -520,7 +521,7 @@
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">api_client</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span><span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;space_id&quot;</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">],</span>
                                            <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;</span> <span class="mf">4.8</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">error_msg</span><span class="o">=</span><span class="s2">&quot;Operation is unsupported for this release.&quot;</span><span class="p">)</span>
 
@@ -624,7 +625,7 @@
 <span class="sd">        :param limit: limit number of fetched records, defaults to None.</span>
 <span class="sd">        :type limit: Optional[int]</span>
 
-<span class="sd">        :return: List of prompts metadata </span>
+<span class="sd">        :return: List of prompts metadata</span>
 <span class="sd">        :rtype: List</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
@@ -833,7 +834,7 @@
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">error_msg</span><span class="o">=</span><span class="s2">&quot;Unsupported type for `prompt_template`&quot;</span><span class="p">)</span>
-            
+
         <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
 
         <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">prompt_template</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -862,7 +863,7 @@
     <span class="k">def</span> <span class="nf">delete_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove prompt template from project or space.</span>
 
-<span class="sd">        :param prompt_id: Id of prompt template that will be delete. </span>
+<span class="sd">        :param prompt_id: Id of prompt template that will be delete.</span>
 <span class="sd">        :type prompt_id: str</span>
 
 <span class="sd">        :param force: If True then prompt template is unlocked and then delete, defaults to False.</span>
@@ -870,7 +871,7 @@
 
 <span class="sd">        :return: Status &#39;SUCESS&#39; if the prompt template is successfully deleted.</span>
 <span class="sd">        :rtype: str</span>
-<span class="sd">        </span>
+
 <span class="sd">        **Example**</span>
 
 <span class="sd">        .. code-block:: python</span>
@@ -899,7 +900,7 @@
 <span class="sd">        :type prompt_id: str</span>
 
 <span class="sd">        :param prompt: PromptTemplate with new data.</span>
-<span class="sd">        :type prompt: PromptTemplate </span>
+<span class="sd">        :type prompt: PromptTemplate</span>
 
 <span class="sd">        :return: metadata of updated deployment</span>
 <span class="sd">        :rtype: dict</span>
@@ -909,8 +910,8 @@
 <span class="sd">        .. code-block:: python</span>
 
 <span class="sd">            updataed_prompt_template = PromptTemplate(name=&quot;New name&quot;)</span>
-<span class="sd">            prompt_mgr.update_prompt(prompt_id, prompt_template)  # {&#39;name&#39;: &#39;New name&#39;} in metadata  </span>
-<span class="sd">            </span>
+<span class="sd">            prompt_mgr.update_prompt(prompt_id, prompt_template)  # {&#39;name&#39;: &#39;New name&#39;} in metadata</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">|</span> <span class="p">{</span><span class="s2">&quot;prompt_id&quot;</span><span class="p">:</span> <span class="n">prompt_id</span><span class="p">})</span>
@@ -967,7 +968,7 @@
 <div class="viewcode-block" id="PromptTemplateManager.lock">
 <a class="viewcode-back" href="../../../../prompt_template_manager.html#ibm_watsonx_ai.foundation_models.prompts.PromptTemplateManager.lock">[docs]</a>
     <span class="k">def</span> <span class="nf">lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lock the prompt template if it is unlocked and user has permission to do that. </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lock the prompt template if it is unlocked and user has permission to do that.</span>
 
 <span class="sd">        :param promp_id: Id of prompt template.</span>
 <span class="sd">        :type promp_id: str</span>

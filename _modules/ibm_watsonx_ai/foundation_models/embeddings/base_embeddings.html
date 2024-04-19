@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>ibm_watsonx_ai.foundation_models.utils.enums - IBM watsonx.ai</title>
+        <title>ibm_watsonx_ai.foundation_models.embeddings.base_embeddings - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -234,100 +234,80 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for ibm_watsonx_ai.foundation_models.utils.enums</h1><div class="highlight"><pre>
+          <h1>Source code for ibm_watsonx_ai.foundation_models.embeddings.base_embeddings</h1><div class="highlight"><pre>
 <span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="c1">#  (C) Copyright IBM Corp. 2023-2024.</span>
+<span class="c1">#  (C) Copyright IBM Corp. 2024.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;ModelTypes&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DecodingMethods&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PromptTuningTypes&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PromptTuningInitMethods&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;TuneExperimentTasks&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PromptTemplateFormats&quot;</span><span class="p">,</span>
-<span class="p">]</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 
 
-<div class="viewcode-block" id="ModelTypes">
-<a class="viewcode-back" href="../../../../fm_model.html#ibm_watsonx_ai.foundation_models.utils.enums.ModelTypes">[docs]</a>
-<span class="k">class</span> <span class="nc">ModelTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Supported foundation models.&quot;&quot;&quot;</span>
-    <span class="n">FLAN_T5_XXL</span> <span class="o">=</span> <span class="s2">&quot;google/flan-t5-xxl&quot;</span>
-    <span class="n">FLAN_UL2</span> <span class="o">=</span> <span class="s2">&quot;google/flan-ul2&quot;</span>
-    <span class="n">MT0_XXL</span> <span class="o">=</span> <span class="s2">&quot;bigscience/mt0-xxl&quot;</span>
-    <span class="n">GPT_NEOX</span> <span class="o">=</span> <span class="s1">&#39;eleutherai/gpt-neox-20b&#39;</span>
-    <span class="n">MPT_7B_INSTRUCT2</span> <span class="o">=</span> <span class="s1">&#39;ibm/mpt-7b-instruct2&#39;</span>
-    <span class="n">STARCODER</span> <span class="o">=</span> <span class="s1">&#39;bigcode/starcoder&#39;</span>
-    <span class="n">LLAMA_2_70B_CHAT</span> <span class="o">=</span> <span class="s1">&#39;meta-llama/llama-2-70b-chat&#39;</span>
-    <span class="n">LLAMA_2_13B_CHAT</span> <span class="o">=</span> <span class="s1">&#39;meta-llama/llama-2-13b-chat&#39;</span>
-    <span class="n">GRANITE_13B_INSTRUCT</span> <span class="o">=</span> <span class="s1">&#39;ibm/granite-13b-instruct-v1&#39;</span>
-    <span class="n">GRANITE_13B_CHAT</span> <span class="o">=</span> <span class="s1">&#39;ibm/granite-13b-chat-v1&#39;</span>
-    <span class="n">FLAN_T5_XL</span> <span class="o">=</span> <span class="s1">&#39;google/flan-t5-xl&#39;</span>
-    <span class="n">GRANITE_13B_CHAT_V2</span> <span class="o">=</span> <span class="s1">&#39;ibm/granite-13b-chat-v2&#39;</span>
-    <span class="n">GRANITE_13B_INSTRUCT_V2</span> <span class="o">=</span> <span class="s1">&#39;ibm/granite-13b-instruct-v2&#39;</span>
-    <span class="n">ELYZA_JAPANESE_LLAMA_2_7B_INSTRUCT</span> <span class="o">=</span> <span class="s1">&#39;elyza/elyza-japanese-llama-2-7b-instruct&#39;</span>
-    <span class="n">MIXTRAL_8X7B_INSTRUCT_V01_Q</span> <span class="o">=</span> <span class="s1">&#39;ibm-mistralai/mixtral-8x7b-instruct-v01-q&#39;</span>
-    <span class="n">CODELLAMA_34B_INSTRUCT_HF</span> <span class="o">=</span> <span class="s2">&quot;codellama/codellama-34b-instruct-hf&quot;</span>
-    <span class="n">GRANITE_20B_MULTILINGUAL</span> <span class="o">=</span> <span class="s2">&quot;ibm/granite-20b-multilingual&quot;</span></div>
+<div class="viewcode-block" id="BaseEmbeddings">
+<a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings">[docs]</a>
+<span class="k">class</span> <span class="nc">BaseEmbeddings</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Langchain-like embedding function interface.&quot;&quot;&quot;</span>
 
-    
-
-<div class="viewcode-block" id="DecodingMethods">
-<a class="viewcode-back" href="../../../../fm_model.html#ibm_watsonx_ai.foundation_models.utils.enums.DecodingMethods">[docs]</a>
-<span class="k">class</span> <span class="nc">DecodingMethods</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Supported decoding methods for text generation.&quot;&quot;&quot;</span>
-    <span class="n">SAMPLE</span> <span class="o">=</span> <span class="s2">&quot;sample&quot;</span>
-    <span class="n">GREEDY</span> <span class="o">=</span> <span class="s2">&quot;greedy&quot;</span></div>
+<div class="viewcode-block" id="BaseEmbeddings.embed_documents">
+<a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings.embed_documents">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">embed_documents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Embed search docs.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
-
-<div class="viewcode-block" id="PromptTuningTypes">
-<a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.foundation_models.utils.enums.PromptTuningTypes">[docs]</a>
-<span class="k">class</span> <span class="nc">PromptTuningTypes</span><span class="p">:</span>
-    <span class="n">PT</span> <span class="o">=</span> <span class="s2">&quot;prompt_tuning&quot;</span></div>
-
-
-
-<div class="viewcode-block" id="PromptTuningInitMethods">
-<a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.foundation_models.utils.enums.PromptTuningInitMethods">[docs]</a>
-<span class="k">class</span> <span class="nc">PromptTuningInitMethods</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Supported methods for prompt initialization in prompt tuning.&quot;&quot;&quot;</span>
-    <span class="n">RANDOM</span> <span class="o">=</span> <span class="s2">&quot;random&quot;</span>
-    <span class="n">TEXT</span> <span class="o">=</span> <span class="s2">&quot;text&quot;</span></div>
-
-    <span class="c1"># PRESET ?</span>
+<div class="viewcode-block" id="BaseEmbeddings.embed_query">
+<a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings.embed_query">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">embed_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Embed query text.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="TuneExperimentTasks">
-<a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.foundation_models.utils.enums.TuneExperimentTasks">[docs]</a>
-<span class="k">class</span> <span class="nc">TuneExperimentTasks</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="n">QUESTION_ANSWERING</span> <span class="o">=</span> <span class="s2">&quot;question_answering&quot;</span>
-    <span class="n">SUMMARIZATION</span> <span class="o">=</span> <span class="s2">&quot;summarization&quot;</span>
-    <span class="n">RETRIEVAL_AUGMENTED_GENERATION</span> <span class="o">=</span> <span class="s2">&quot;retrieval_augmented_generation&quot;</span>
-    <span class="n">CLASSIFICATION</span> <span class="o">=</span> <span class="s2">&quot;classification&quot;</span>
-    <span class="n">GENERATION</span> <span class="o">=</span> <span class="s2">&quot;generation&quot;</span>
-    <span class="n">CODE_GENERATION_AND_CONVERSION</span> <span class="o">=</span> <span class="s2">&quot;code&quot;</span>
-    <span class="n">EXTRACTION</span> <span class="o">=</span> <span class="s2">&quot;extraction&quot;</span></div>
+<div class="viewcode-block" id="BaseEmbeddings.to_dict">
+<a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings.to_dict">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize Embeddings.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: serializes this Embeddings so that it can be reconstructed by ``from_dict`` class method.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;__class__&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;__module__&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span><span class="p">}</span></div>
 
 
+<div class="viewcode-block" id="BaseEmbeddings.from_dict">
+<a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings.from_dict">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseEmbeddings</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deserialize ``BaseEmbeddings`` into concrete one using arguments</span>
 
-<div class="viewcode-block" id="PromptTemplateFormats">
-<a class="viewcode-back" href="../../../../prompt_template_manager.html#ibm_watsonx_ai.foundation_models.utils.enums.PromptTemplateFormats">[docs]</a>
-<span class="k">class</span> <span class="nc">PromptTemplateFormats</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Supported formats of loaded prompt template.&quot;&quot;&quot;</span>
-    <span class="n">PROMPTTEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;prompt&quot;</span>
-    <span class="n">STRING</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span>
-    <span class="n">LANGCHAIN</span> <span class="o">=</span> <span class="s2">&quot;langchain&quot;</span></div>
+<span class="sd">        :return: concrete Embeddings or None if data is incorrect</span>
+<span class="sd">        :rtype: BaseEmbeddings | None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">class_type</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;__class__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">module_name</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;__module__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
+            <span class="k">if</span> <span class="n">module_name</span><span class="p">:</span>
+                <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
 
-<span class="k">class</span> <span class="nc">EmbeddingTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Supported Embedding Models.&quot;&quot;&quot;</span>
-    <span class="n">IBM_SLATE_30M_ENG</span> <span class="o">=</span> <span class="s2">&quot;ibm/slate-30m-english-rtrvr&quot;</span>
-    <span class="n">IBM_SLATE_125M_ENG</span> <span class="o">=</span> <span class="s2">&quot;ibm/slate-125m-english-rtrvr&quot;</span>
+                <span class="k">if</span> <span class="n">class_type</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="bp">cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">class_type</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Module: </span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2"> has no attribute </span><span class="si">{</span><span class="n">class_type</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+
+                    <span class="k">if</span> <span class="bp">cls</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
 
 </pre></div>
         </article>
