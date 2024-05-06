@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>ibm_watsonx_ai.pkg_extn - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
@@ -164,6 +164,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -197,12 +198,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -240,19 +243,538 @@
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watson_machine_learning.pkg_extn</span> <span class="kn">import</span> <span class="n">PkgExtn</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">PkgExtnMetaNames</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.change_methods_docstring</span> <span class="kn">import</span> <span class="n">change_docstrings</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Response</span>
+
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai._wrappers</span> <span class="kn">import</span> <span class="n">requests</span>
+
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">PkgExtnMetaNames</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="n">PKG_EXTN_DETAILS_TYPE</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span><span class="p">,</span> <span class="n">ApiRequestFailure</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+
+<span class="n">_DEFAULT_LIST_LENGTH</span> <span class="o">=</span> <span class="mi">50</span>
+
 
 <div class="viewcode-block" id="PkgExtn">
 <a class="viewcode-back" href="../../core_api.html#client.PkgExtn">[docs]</a>
-<span class="nd">@change_docstrings</span>
-<span class="k">class</span> <span class="nc">PkgExtn</span><span class="p">(</span><span class="n">PkgExtn</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">PkgExtn</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Store and manage software Packages Extension specs.&quot;&quot;&quot;</span>
 
     <span class="n">ConfigurationMetaNames</span> <span class="o">=</span> <span class="n">PkgExtnMetaNames</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;MetaNames for Package Extensions creation.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;MetaNames for Package Extensions creation.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">):</span>
+        <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PkgExtn.get_details">
+<a class="viewcode-back" href="../../core_api.html#client.PkgExtn.get_details">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkg_extn_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get package extensions details.</span>
+
+<span class="sd">        :param pkg_extn_id: Unique Id of package extension</span>
+<span class="sd">        :type pkg_extn_id: str</span>
+
+<span class="sd">        :return: details of the package extensions</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            pkg_extn_details = client.pkg_extn.get_details(pkg_extn_id)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">PkgExtn</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">pkg_extn_id</span><span class="p">,</span> <span class="s2">&quot;pkg_extn_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_pkg_extn_href</span><span class="p">(</span>
+                <span class="n">pkg_extn_id</span>
+            <span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_required_element_from_response</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;get hw spec details&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;get hw spec details&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PkgExtn.store">
+<a class="viewcode-back" href="../../core_api.html#client.PkgExtn.store">[docs]</a>
+    <span class="k">def</span> <span class="nf">store</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a package extensions.</span>
+
+<span class="sd">        :param meta_props: meta data of the package extension. To see available meta names use:</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                client.package_extensions.ConfigurationMetaNames.get()</span>
+
+<span class="sd">        :type meta_props: dict</span>
+
+<span class="sd">        :param file_path:  path to file which will be uploaded as package extension</span>
+<span class="sd">        :type file_path: str</span>
+
+<span class="sd">        :return: metadata of the package extensions</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            meta_props = {</span>
+<span class="sd">                client.package_extensions.ConfigurationMetaNames.NAME: &quot;skl_pipeline_heart_problem_prediction&quot;,</span>
+<span class="sd">                client.package_extensions.ConfigurationMetaNames.DESCRIPTION: &quot;description scikit-learn_0.20&quot;,</span>
+<span class="sd">                client.package_extensions.ConfigurationMetaNames.TYPE: &quot;conda_yml&quot;</span>
+<span class="sd">            }</span>
+
+<span class="sd">            pkg_extn_details = client.package_extensions.store(meta_props=meta_props, file_path=&quot;/path/to/file&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># quick support for COS credentials instead of local path</span>
+        <span class="c1"># TODO add error handling and cleaning (remove the file)</span>
+        <span class="n">PkgExtn</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">meta_props</span><span class="p">,</span> <span class="s2">&quot;meta_props&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">pkg_extn_meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">_generate_resource_metadata</span><span class="p">(</span>
+            <span class="n">meta_props</span><span class="p">,</span> <span class="n">with_validation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span>
+        <span class="p">)</span>
+
+        <span class="n">pkg_extn_meta_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">pkg_extn_meta</span><span class="p">)</span>
+
+        <span class="n">PkgExtn</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;file_path&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Step1  : Create an asset</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating package extensions&quot;</span><span class="p">)</span>
+        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_pkg_extns_href</span><span class="p">()</span>
+
+        <span class="n">creation_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">href</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">pkg_extn_meta_json</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">pkg_extn_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+            <span class="mi">201</span><span class="p">,</span> <span class="s2">&quot;creating new package_extensions&quot;</span><span class="p">,</span> <span class="n">creation_response</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Step2: upload pkg extension file to presigned url</span>
+        <span class="k">if</span> <span class="n">creation_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span><span class="p">:</span>
+            <span class="n">pkg_extn_asset_id</span> <span class="o">=</span> <span class="n">pkg_extn_details</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">]</span>
+            <span class="n">pkg_extn_presigned_url</span> <span class="o">=</span> <span class="n">pkg_extn_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;package_extension&quot;</span><span class="p">][</span>
+                <span class="s2">&quot;href&quot;</span>
+            <span class="p">]</span>
+
+            <span class="n">FILE_SIZE_LIMIT</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.3</span> <span class="o">*</span> <span class="mi">1073741824</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">read_in_chunks</span><span class="p">(</span>
+                <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">FILE_SIZE_LIMIT</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_object</span><span class="p">:</span>
+                    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="n">file_object</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+                            <span class="k">break</span>
+                        <span class="k">yield</span> <span class="n">data</span>
+
+            <span class="k">def</span> <span class="nf">send_multipart_request</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+                <span class="n">content_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+                <span class="n">content_size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">content_path</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span>
+
+                <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">read_in_chunks</span><span class="p">(</span><span class="n">FILE_SIZE_LIMIT</span><span class="p">):</span>
+                        <span class="n">offset</span> <span class="o">=</span> <span class="n">index</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+                        <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Content-Range&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bytes </span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="n">index</span><span class="p">,</span>
+                            <span class="n">offset</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                            <span class="n">content_size</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="n">index</span> <span class="o">=</span> <span class="n">offset</span>
+
+                        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+                            <span class="n">url</span><span class="p">,</span>
+                            <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="s2">&quot;application/octet-stream&quot;</span><span class="p">)},</span>
+                        <span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">deletion_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_pkg_extn_href</span><span class="p">(</span>
+                            <span class="n">pkg_extn_asset_id</span>
+                        <span class="p">),</span>
+                        <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+                        <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+                    <span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">deletion_response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Failed while reading a file.&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="n">response</span>
+
+            <span class="c1"># chunking, when finally it will work on service side. to confirm it&#39;s working, the downloaded file needs to be the same as 400MB+ upladed file</span>
+            <span class="c1">#</span>
+            <span class="c1"># put_response = send_multipart_request(file_path,</span>
+            <span class="c1">#   (self._client.service_instance._wml_credentials.url if self._client.ICP_PLATFORM_SPACES else &quot;&quot;) + pkg_extn_presigned_url)</span>
+
+            <span class="n">href</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">url</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span>
+                <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="p">)</span> <span class="o">+</span> <span class="n">pkg_extn_presigned_url</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Package extension file cannot be empty&quot;</span><span class="p">)</span>
+
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_object</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
+                        <span class="n">put_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">href</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">file_object</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">put_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+                            <span class="n">href</span><span class="p">,</span>
+                            <span class="n">files</span><span class="o">=</span><span class="p">{</span>
+                                <span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="p">(</span>
+                                    <span class="n">file_path</span><span class="p">,</span>
+                                    <span class="n">file_object</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span>
+                                    <span class="s2">&quot;application/octet-stream&quot;</span><span class="p">,</span>
+                                <span class="p">)</span>
+                            <span class="p">},</span>
+                        <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">deletion_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_pkg_extn_href</span><span class="p">(</span>
+                        <span class="n">pkg_extn_asset_id</span>
+                    <span class="p">),</span>
+                    <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+                    <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">deletion_response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Failed while reading a file.&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">put_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span> <span class="ow">or</span> <span class="n">put_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="c1"># Step3: Mark the upload complete</span>
+                <span class="n">complete_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_pkg_extn_href</span><span class="p">(</span>
+                        <span class="n">pkg_extn_asset_id</span>
+                    <span class="p">)</span>
+                    <span class="o">+</span> <span class="s2">&quot;/upload_complete&quot;</span><span class="p">,</span>
+                    <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+                    <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">complete_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">204</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_required_element_from_response</span><span class="p">(</span><span class="n">pkg_extn_details</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">pkg_extn_asset_id</span><span class="p">)</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                    <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                        <span class="s2">&quot;Failed while creating a package extensions &quot;</span>
+                        <span class="o">+</span> <span class="n">complete_response</span><span class="o">.</span><span class="n">text</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">pkg_extn_asset_id</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed while creating a package extensions &quot;</span> <span class="o">+</span> <span class="n">put_response</span><span class="o">.</span><span class="n">text</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Failed while creating a package extensions &quot;</span> <span class="o">+</span> <span class="n">creation_response</span><span class="o">.</span><span class="n">text</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PkgExtn.list">
+<a class="viewcode-back" href="../../core_api.html#client.PkgExtn.list">[docs]</a>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lists package extensions in a table format.</span>
+
+<span class="sd">        :return: pandas.DataFrame with listed package extensions</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.package_extensions.list()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_pkg_extns_href</span><span class="p">()</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">href</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;list pkg_extn&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+        <span class="n">asset_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;list assets&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+        <span class="n">pkg_extn_values</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;package_extension&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;created_at&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">asset_details</span>
+        <span class="p">]</span>
+
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span>
+            <span class="n">pkg_extn_values</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;ASSET_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;TYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;CREATED_AT&quot;</span><span class="p">],</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="n">_DEFAULT_LIST_LENGTH</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">table</span></div>
+
+
+<div class="viewcode-block" id="PkgExtn.get_id">
+<a class="viewcode-back" href="../../core_api.html#client.PkgExtn.get_id">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="n">pkg_extn_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Unique Id of package extensions.</span>
+
+<span class="sd">        :param pkg_extn_details: details of the package extensions</span>
+<span class="sd">        :type pkg_extn_details: dict</span>
+
+<span class="sd">        :return: Unique Id of package extension</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            asset_id = client.package_extensions.get_id(pkg_extn_details)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">PkgExtn</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">pkg_extn_details</span><span class="p">,</span> <span class="s2">&quot;pkg_extn_details&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">PkgExtn</span><span class="o">.</span><span class="n">_validate_type_of_details</span><span class="p">(</span><span class="n">pkg_extn_details</span><span class="p">,</span> <span class="n">PKG_EXTN_DETAILS_TYPE</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">WMLResource</span><span class="o">.</span><span class="n">_get_required_element_from_dict</span><span class="p">(</span>
+            <span class="n">pkg_extn_details</span><span class="p">,</span> <span class="s2">&quot;pkg_extn_details&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="s2">&quot;asset_id&quot;</span><span class="p">]</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PkgExtn.get_id_by_name">
+<a class="viewcode-back" href="../../core_api.html#client.PkgExtn.get_id_by_name">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_id_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkg_extn_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get ID of package extensions.</span>
+
+<span class="sd">        :param pkg_extn_name:  name of the package extension</span>
+<span class="sd">        :type pkg_extn_name: str</span>
+
+<span class="sd">        :return: Unique Id of package extension</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            asset_id = client.package_extensions.get_id_by_name(pkg_extn_name)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">PkgExtn</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">pkg_extn_name</span><span class="p">,</span> <span class="s2">&quot;pkg_extn_name&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">pkg_extn_name</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_pkg_extns_href</span><span class="p">(),</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">total_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;get pkg extn&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)[</span>
+            <span class="s2">&quot;total_results&quot;</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">total_values</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">pkg_extn_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;get pkg extn&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)[</span>
+                <span class="s2">&quot;resources&quot;</span>
+            <span class="p">]</span>
+            <span class="k">return</span> <span class="n">pkg_extn_details</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Not Found&quot;</span></div>
+
+
+<div class="viewcode-block" id="PkgExtn.get_href">
+<a class="viewcode-back" href="../../core_api.html#client.PkgExtn.get_href">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_href</span><span class="p">(</span><span class="n">pkg_extn_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get url of stored package extensions.</span>
+
+<span class="sd">        :param pkg_extn_details: details of the package extensions</span>
+<span class="sd">        :type pkg_extn_details: dict</span>
+
+<span class="sd">        :return: href of package extension</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            pkg_extn_details = client.package_extensions.get_details(pkg_extn_id)</span>
+<span class="sd">            pkg_extn_href = client.package_extensions.get_href(pkg_extn_details)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">PkgExtn</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">pkg_extn_details</span><span class="p">,</span> <span class="s2">&quot;pkg_extn_details&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">PkgExtn</span><span class="o">.</span><span class="n">_validate_type_of_details</span><span class="p">(</span><span class="n">pkg_extn_details</span><span class="p">,</span> <span class="n">PKG_EXTN_DETAILS_TYPE</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">WMLResource</span><span class="o">.</span><span class="n">_get_required_element_from_dict</span><span class="p">(</span>
+            <span class="n">pkg_extn_details</span><span class="p">,</span>
+            <span class="s2">&quot;pkg_extn_details&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">,</span> <span class="s2">&quot;package_extension&quot;</span><span class="p">,</span> <span class="s2">&quot;href&quot;</span><span class="p">],</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PkgExtn.delete">
+<a class="viewcode-back" href="../../core_api.html#client.PkgExtn.delete">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkg_extn_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a package extension.</span>
+
+<span class="sd">        :param pkg_extn_id: Unique Id of package extension</span>
+<span class="sd">        :type pkg_extn_id: str</span>
+
+<span class="sd">        :return: status (&quot;SUCCESS&quot; or &quot;FAILED&quot;) if deleted synchronously or dictionary with response</span>
+<span class="sd">        :rtype: str or dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.package_extensions.delete(pkg_extn_id)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">PkgExtn</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">pkg_extn_id</span><span class="p">,</span> <span class="s2">&quot;pkg_extn_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_pkg_extn_href</span><span class="p">(</span>
+                <span class="n">pkg_extn_id</span>
+            <span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_required_element_from_response</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="s2">&quot;delete pkg extn specification&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_get_required_element_from_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+
+        <span class="n">WMLResource</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">response_data</span><span class="p">,</span> <span class="s2">&quot;pkg_extn_response&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_el</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;space_id&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;space_id&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;asset_id&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;asset_type&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_type&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;created_at&quot;</span><span class="p">]</span>
+                    <span class="c1">#&#39;updated_at&#39;: response_data[&#39;metadata&#39;][&#39;updated_at&#39;]</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;entity&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">],</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_el</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;project_id&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;asset_id&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;asset_type&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_type&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;created_at&quot;</span><span class="p">],</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;entity&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">],</span>
+            <span class="p">}</span>
+
+        <span class="k">if</span> <span class="s2">&quot;href&quot;</span> <span class="ow">in</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]:</span>
+            <span class="n">href_without_host</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;href&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.com&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;href&quot;</span><span class="p">:</span> <span class="n">href_without_host</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">new_el</span>
+
+<div class="viewcode-block" id="PkgExtn.download">
+<a class="viewcode-back" href="../../core_api.html#client.PkgExtn.download">[docs]</a>
+    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkg_extn_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download a package extension.</span>
+
+<span class="sd">        :param pkg_extn_id: Unique Id of the package extension to be downloaded</span>
+<span class="sd">        :type pkg_extn_id: str</span>
+
+<span class="sd">        :param filename:  filename to be used for the downloaded file</span>
+<span class="sd">        :type filename: str</span>
+
+<span class="sd">        :return: path to the downloaded package extension content</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.package_extensions.download(pkg_extn_id,&quot;sample_conda.yml/custom_library.zip&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">PkgExtn</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">pkg_extn_id</span><span class="p">,</span> <span class="s2">&quot;pkg_extn_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">pkg_extn_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_pkg_extn_href</span><span class="p">(</span>
+                <span class="n">pkg_extn_id</span>
+            <span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">pkg_extn_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;get assets&quot;</span><span class="p">,</span> <span class="n">pkg_extn_response</span><span class="p">)</span>
+
+        <span class="n">artifact_content_url</span> <span class="o">=</span> <span class="n">pkg_extn_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;package_extension&quot;</span><span class="p">][</span><span class="s2">&quot;href&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">pkg_extn_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
+                <span class="n">att_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">artifact_content_url</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">att_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">url</span> <span class="o">+</span> <span class="n">artifact_content_url</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">att_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ApiRequestFailure</span><span class="p">(</span>
+                    <span class="s2">&quot;Failure during </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;downloading package extension&quot;</span><span class="p">),</span>
+                    <span class="n">att_response</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="n">downloaded_asset</span> <span class="o">=</span> <span class="n">att_response</span><span class="o">.</span><span class="n">content</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">downloaded_asset</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;Successfully saved package extension content to file: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">filename</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">filename</span>
+            <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                    <span class="s2">&quot;Saving asset with artifact_url: &#39;</span><span class="si">{}</span><span class="s2">&#39; failed.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span>
+                    <span class="n">e</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Failed while downloading the package extension &quot;</span> <span class="o">+</span> <span class="n">pkg_extn_id</span>
+            <span class="p">)</span></div>
+</div>
 
 </pre></div>
         </article>
@@ -287,7 +809,7 @@
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

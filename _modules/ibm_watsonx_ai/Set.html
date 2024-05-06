@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>ibm_watsonx_ai.Set - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
@@ -164,6 +164,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -197,12 +198,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -240,16 +243,183 @@
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watson_machine_learning.Set</span> <span class="kn">import</span> <span class="n">Set</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Literal</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.change_methods_docstring</span> <span class="kn">import</span> <span class="n">change_docstrings</span>
+<span class="kn">import</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="k">as</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.utils</span> <span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">CannotSetProjectOrSpace</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.service_instance</span> <span class="kn">import</span> <span class="n">ServiceInstance</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+
 
 <div class="viewcode-block" id="Set">
 <a class="viewcode-back" href="../../core_api.html#client.Set">[docs]</a>
-<span class="nd">@change_docstrings</span>
-<span class="k">class</span> <span class="nc">Set</span><span class="p">(</span><span class="n">Set</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Set</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set a space_id/project_id to be used in the subsequent actions.&quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">):</span>
+        <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Set.default_space">
+<a class="viewcode-back" href="../../core_api.html#client.Set.default_space">[docs]</a>
+    <span class="k">def</span> <span class="nf">default_space</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set a space ID.</span>
+
+<span class="sd">        :param space_id: ID of the space to be used</span>
+<span class="sd">        :type space_id: str</span>
+
+<span class="sd">        :return: status (&quot;SUCCESS&quot; if succeeded)</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.set.default_space(space_id)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">space_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span>
+            <span class="n">kwargs</span><span class="p">,</span> <span class="n">space_id</span><span class="p">,</span> <span class="s2">&quot;space&quot;</span><span class="p">,</span> <span class="n">can_be_none</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
+        <span class="n">space_endpoint</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_platform_space_href</span><span class="p">(</span>
+                <span class="n">space_id</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">space_details</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">space_endpoint</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">space_details</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Space with id &#39;</span><span class="si">{}</span><span class="s2">&#39; does not exist&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">CannotSetProjectOrSpace</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">error_msg</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">space_details</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span> <span class="o">=</span> <span class="n">space_id</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unsetting the project_id ...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">project_type</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
+                <span class="n">instance_id</span> <span class="o">=</span> <span class="s2">&quot;not found&quot;</span>
+                <span class="n">comp_obj_type</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">space_details_json</span> <span class="o">=</span> <span class="n">space_details</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+                <span class="k">if</span> <span class="s2">&quot;compute&quot;</span> <span class="ow">in</span> <span class="n">space_details</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">in</span> <span class="n">space_details_json</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;compute&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="n">space_details_json</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;compute&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span>
+                            <span class="s2">&quot;machine_learning&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;code-assistant&quot;</span><span class="p">,</span>
+                        <span class="p">]:</span>
+                            <span class="n">instance_id</span> <span class="o">=</span> <span class="n">space_details_json</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;compute&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span>
+                                <span class="s2">&quot;guid&quot;</span>
+                            <span class="p">]</span>
+                            <span class="n">comp_obj_type</span> <span class="o">=</span> <span class="n">space_details_json</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;compute&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span>
+                                <span class="s2">&quot;type&quot;</span>
+                            <span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span> <span class="o">=</span> <span class="n">ServiceInstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_instance_id</span> <span class="o">=</span> <span class="n">instance_id</span>
+                    <span class="k">if</span> <span class="n">comp_obj_type</span> <span class="o">==</span> <span class="s2">&quot;code-assistant&quot;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">WCA</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">get_details</span><span class="p">()</span>
+                        <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># It&#39;s possible that a previous space is used in the context of</span>
+                    <span class="c1"># this client which had compute but this space doesn&#39;t have</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span> <span class="o">=</span> <span class="n">ServiceInstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="s2">&quot;SUCCESS&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CannotSetProjectOrSpace</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">space_details</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Setting project ID</span>
+<div class="viewcode-block" id="Set.default_project">
+<a class="viewcode-back" href="../../core_api.html#client.Set.default_project">[docs]</a>
+    <span class="k">def</span> <span class="nf">default_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set a project ID.</span>
+
+<span class="sd">        :param project_id: ID of the project</span>
+<span class="sd">        :type project_id: str</span>
+
+<span class="sd">        :return: status (&quot;SUCCESS&quot; if succeeded)</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.set.default_project(project_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span> <span class="o">=</span> <span class="n">project_id</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unsetting the space_id ...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="n">project_endpoint</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_project_href</span><span class="p">(</span>
+                    <span class="n">project_id</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">project_details</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">project_endpoint</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">project_details</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span>
+                <span class="ow">and</span> <span class="n">project_details</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">204</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="n">CannotSetProjectOrSpace</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">project_details</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">project_type</span> <span class="o">=</span> <span class="n">project_details</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;storage&quot;</span><span class="p">][</span>
+                    <span class="s2">&quot;type&quot;</span>
+                <span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
+                    <span class="n">instance_id</span> <span class="o">=</span> <span class="s2">&quot;not_found&quot;</span>
+                    <span class="n">comp_obj_type</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">if</span> <span class="s2">&quot;compute&quot;</span> <span class="ow">in</span> <span class="n">project_details</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="k">for</span> <span class="n">comp_obj</span> <span class="ow">in</span> <span class="n">project_details</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;compute&quot;</span><span class="p">]:</span>
+                            <span class="k">if</span> <span class="n">comp_obj</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span>
+                                <span class="s2">&quot;machine_learning&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;code-assistant&quot;</span><span class="p">,</span>
+                            <span class="p">]:</span>
+                                <span class="n">comp_obj_type</span> <span class="o">=</span> <span class="n">comp_obj</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+                                <span class="n">instance_id</span> <span class="o">=</span> <span class="n">comp_obj</span><span class="p">[</span><span class="s2">&quot;guid&quot;</span><span class="p">]</span>
+                                <span class="k">break</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span> <span class="o">=</span> <span class="n">ServiceInstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_instance_id</span> <span class="o">=</span> <span class="n">instance_id</span>
+                        <span class="k">if</span> <span class="n">comp_obj_type</span> <span class="o">==</span> <span class="s2">&quot;code-assistant&quot;</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="kc">None</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">WCA</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">get_details</span><span class="p">()</span>
+                            <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># It`s possible that a previous project is used in the context of</span>
+                        <span class="c1"># this client which had compute but this project doesn&#39;t have</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span> <span class="o">=</span> <span class="n">ServiceInstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span> <span class="o">=</span> <span class="n">ServiceInstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s2">&quot;SUCCESS&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Project id cannot be None.&quot;</span>
+            <span class="k">raise</span> <span class="n">CannotSetProjectOrSpace</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">error_msg</span><span class="p">)</span></div>
+</div>
 
 </pre></div>
         </article>
@@ -284,7 +454,7 @@
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>ibm_watsonx_ai.foundation_models.inference.model_inference - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
@@ -164,6 +164,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -197,12 +198,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -239,13 +242,23 @@
 <span class="c1">#  (C) Copyright IBM Corp. 2023-2024.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span><span class="p">,</span> <span class="n">ParamOutOfRange</span><span class="p">,</span> <span class="n">InvalidMultipleArguments</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">WMLClientError</span><span class="p">,</span>
+    <span class="n">ParamOutOfRange</span><span class="p">,</span>
+    <span class="n">InvalidMultipleArguments</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.enums</span> <span class="kn">import</span> <span class="n">ModelTypes</span>
 <span class="kn">from</span> <span class="nn">.base_model_inference</span> <span class="kn">import</span> <span class="n">BaseModelInference</span>
 <span class="kn">from</span> <span class="nn">.fm_model_inference</span> <span class="kn">import</span> <span class="n">FMModelInference</span>
 <span class="kn">from</span> <span class="nn">.deployment_model_inference</span> <span class="kn">import</span> <span class="n">DeploymentModelInference</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
+    <span class="kn">from</span> <span class="nn">langchain_ibm</span> <span class="kn">import</span> <span class="n">WatsonxLLM</span>
 
 
 <div class="viewcode-block" id="ModelInference">
@@ -337,18 +350,19 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="o">*</span><span class="p">,</span>
-                 <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">credentials</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">verify</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">validate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">credentials</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Credentials</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">validate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="o">=</span> <span class="n">model_id</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span> <span class="n">ModelTypes</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="o">.</span><span class="n">value</span>
@@ -356,47 +370,63 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span> <span class="o">=</span> <span class="n">deployment_id</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span><span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;model_id&quot;</span><span class="p">,</span> <span class="s2">&quot;deployment_id&quot;</span><span class="p">],</span>
-                                           <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Both arguments were provided.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span>
+                <span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;model_id&quot;</span><span class="p">,</span> <span class="s2">&quot;deployment_id&quot;</span><span class="p">],</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Both arguments were provided.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span><span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;model_id&quot;</span><span class="p">,</span> <span class="s2">&quot;deployment_id&quot;</span><span class="p">],</span>
-                                           <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span>
+                <span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;model_id&quot;</span><span class="p">,</span> <span class="s2">&quot;deployment_id&quot;</span><span class="p">],</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
-        <span class="n">ModelInference</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;params&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">ModelInference</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">credentials</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">)</span> 
+            <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">api_client</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">api_client</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span><span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;credentials&quot;</span><span class="p">,</span> <span class="s2">&quot;api_client&quot;</span><span class="p">],</span>
-                                           <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span>
+                <span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;credentials&quot;</span><span class="p">,</span> <span class="s2">&quot;api_client&quot;</span><span class="p">],</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">space_id</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_space</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">project_id</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_project</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">api_client</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span><span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;space_id&quot;</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">],</span>
-                                           <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span>
+                <span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;space_id&quot;</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">],</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;</span> <span class="mf">4.8</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">error_msg</span><span class="o">=</span><span class="s2">&quot;Operation is unsupported for this release.&quot;</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="p">:</span> <span class="n">BaseModelInference</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span> <span class="o">=</span> <span class="n">FMModelInference</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span>
-                                               <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
-                                               <span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
-                                               <span class="n">validate</span><span class="o">=</span><span class="n">validate</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span> <span class="o">=</span> <span class="n">FMModelInference</span><span class="p">(</span>
+                <span class="n">model_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span>
+                <span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+                <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+                <span class="n">validate</span><span class="o">=</span><span class="n">validate</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span> <span class="o">=</span> <span class="n">DeploymentModelInference</span><span class="p">(</span><span class="n">deployment_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span><span class="p">,</span>
-                                                       <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
-                                                       <span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span> <span class="o">=</span> <span class="n">DeploymentModelInference</span><span class="p">(</span>
+                <span class="n">deployment_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span><span class="p">,</span>
+                <span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+                <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="n">BaseModelInference</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ModelInference.get_details">
 <a class="viewcode-back" href="../../../../fm_model_inference.html#ibm_watsonx_ai.foundation_models.inference.ModelInference.get_details">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_details</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get model interface&#39;s details</span>
 
 <span class="sd">        :return: details of model or deployment</span>
@@ -414,14 +444,16 @@
 
 <div class="viewcode-block" id="ModelInference.generate">
 <a class="viewcode-back" href="../../../../fm_model_inference.html#ibm_watsonx_ai.foundation_models.inference.ModelInference.generate">[docs]</a>
-    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">prompt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">guardrails</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">concurrency_limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                 <span class="n">async_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">async_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="n">Generator</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a text prompt as input, and parameters the selected model (model_id) or deployment (deployment_id)</span>
 <span class="sd">        will generate a completion text as generated_text. For prompt template deployment `prompt` should be None.</span>
 
@@ -434,7 +466,7 @@
 <span class="sd">        :param prompt: the prompt string or list of strings. If list of strings is passed requests will be managed in parallel with the rate of concurency_limit, defaults to None</span>
 <span class="sd">        :type prompt: (str | list | None), optional</span>
 
-<span class="sd">        :param guardrails: If True then potentially hateful, abusive, and/or profane language (HAP) detection </span>
+<span class="sd">        :param guardrails: If True then potentially hateful, abusive, and/or profane language (HAP) detection</span>
 <span class="sd">                           filter is toggle on for both prompt and generated text, defaults to False</span>
 <span class="sd">        :type guardrails: bool</span>
 
@@ -459,35 +491,46 @@
 <span class="sd">            print(generated_response[&#39;results&#39;][0][&#39;generated_text&#39;])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;params&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">concurrency_limit</span><span class="p">,</span> <span class="s1">&#39;concurrency_limit&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="kc">False</span><span class="p">,</span>
-                            <span class="n">raise_error_for_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+            <span class="n">concurrency_limit</span><span class="p">,</span>
+            <span class="s2">&quot;concurrency_limit&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="n">raise_error_for_list</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">concurrency_limit</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>  <span class="c1"># convert float (ex. 10.0) to int</span>
             <span class="n">concurrency_limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">concurrency_limit</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">concurrency_limit</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="ow">or</span> <span class="n">concurrency_limit</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ParamOutOfRange</span><span class="p">(</span><span class="n">param_name</span><span class="o">=</span><span class="s1">&#39;concurrency_limit&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ParamOutOfRange</span><span class="p">(</span>
+                <span class="n">param_name</span><span class="o">=</span><span class="s2">&quot;concurrency_limit&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">10</span>
+            <span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
-                                        <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
-                                        <span class="n">guardrails</span><span class="o">=</span><span class="n">guardrails</span><span class="p">,</span>
-                                        <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="n">guardrails_hap_params</span><span class="p">,</span>
-                                        <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">,</span>
-                                        <span class="n">concurrency_limit</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">,</span>
-                                        <span class="n">async_mode</span><span class="o">=</span><span class="n">async_mode</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">guardrails</span><span class="o">=</span><span class="n">guardrails</span><span class="p">,</span>
+            <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="n">guardrails_hap_params</span><span class="p">,</span>
+            <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">,</span>
+            <span class="n">concurrency_limit</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">,</span>
+            <span class="n">async_mode</span><span class="o">=</span><span class="n">async_mode</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ModelInference.generate_text">
 <a class="viewcode-back" href="../../../../fm_model_inference.html#ibm_watsonx_ai.foundation_models.inference.ModelInference.generate_text">[docs]</a>
-    <span class="k">def</span> <span class="nf">generate_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                      <span class="n">prompt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                      <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                      <span class="n">guardrails</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                      <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                      <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                      <span class="n">raw_response</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                      <span class="n">concurrency_limit</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">generate_text</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">raw_response</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a text prompt as input, and parameters the selected model (model_id)</span>
 <span class="sd">        will generate a completion text as generated_text. For prompt template deployment `prompt` should be None.</span>
 
@@ -512,7 +555,7 @@
 <span class="sd">        :type raw_response: bool, optional</span>
 
 <span class="sd">        :return: generated content</span>
-<span class="sd">        :rtype: str</span>
+<span class="sd">        :rtype: str or dict</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            By default only the first occurance of `HAPDetectionWarning` is displayed. To enable printing all warnings of this category, use:</span>
@@ -523,7 +566,7 @@
 <span class="sd">                from ibm_watsonx_ai.foundation_models.utils import HAPDetectionWarning</span>
 
 <span class="sd">                warnings.filterwarnings(&quot;always&quot;, category=HAPDetectionWarning)</span>
-<span class="sd">            </span>
+
 
 <span class="sd">        **Example**</span>
 
@@ -534,29 +577,38 @@
 <span class="sd">            print(generated_text)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
-                                 <span class="n">guardrails</span><span class="o">=</span><span class="n">guardrails</span><span class="p">,</span>
-                                 <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="n">guardrails_hap_params</span><span class="p">,</span>
-                                 <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">,</span>
-                                 <span class="n">concurrency_limit</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">guardrails</span><span class="o">=</span><span class="n">guardrails</span><span class="p">,</span>
+            <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="n">guardrails_hap_params</span><span class="p">,</span>
+            <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">,</span>
+            <span class="n">concurrency_limit</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">raw_response</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">metadata</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_return_guardrails_stats</span><span class="p">(</span><span class="n">single_response</span><span class="p">)[</span><span class="s1">&#39;generated_text&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">single_response</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">]</span>
+                <span class="k">return</span> <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_return_guardrails_stats</span><span class="p">(</span><span class="n">single_response</span><span class="p">)[</span><span class="s2">&quot;generated_text&quot;</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">single_response</span> <span class="ow">in</span> <span class="n">metadata</span>
+                <span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_guardrails_stats</span><span class="p">(</span><span class="n">metadata</span><span class="p">)[</span><span class="s1">&#39;generated_text&#39;</span><span class="p">]</span></div>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_guardrails_stats</span><span class="p">(</span><span class="n">metadata</span><span class="p">)[</span><span class="s2">&quot;generated_text&quot;</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="ModelInference.generate_text_stream">
 <a class="viewcode-back" href="../../../../fm_model_inference.html#ibm_watsonx_ai.foundation_models.inference.ModelInference.generate_text_stream">[docs]</a>
-    <span class="k">def</span> <span class="nf">generate_text_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                             <span class="n">prompt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                             <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                             <span class="n">raw_response</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                             <span class="n">guardrails</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                             <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                             <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">generate_text_stream</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">raw_response</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a text prompt as input, and parameters the selected model (model_id)</span>
 <span class="sd">        will generate a streamed text as generate_text_stream. For prompt template deployment `prompt` should be None.</span>
 
@@ -584,7 +636,7 @@
 <span class="sd">            By default only the first occurance of `HAPDetectionWarning` is displayed. To enable printing all warnings of this category, use:</span>
 
 <span class="sd">            .. code-block:: python</span>
-<span class="sd">            </span>
+
 <span class="sd">                import warnings</span>
 <span class="sd">                from ibm_watsonx_ai.foundation_models.utils import HAPDetectionWarning</span>
 
@@ -601,21 +653,21 @@
 <span class="sd">                print(chunk, end=&#39;&#39;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;params&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">generate_text_stream</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
-                                                    <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
-                                                    <span class="n">raw_response</span><span class="o">=</span><span class="n">raw_response</span><span class="p">,</span>
-                                                    <span class="n">guardrails</span><span class="o">=</span><span class="n">guardrails</span><span class="p">,</span>
-                                                    <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="n">guardrails_hap_params</span><span class="p">,</span>
-                                                    <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">generate_text_stream</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">raw_response</span><span class="o">=</span><span class="n">raw_response</span><span class="p">,</span>
+            <span class="n">guardrails</span><span class="o">=</span><span class="n">guardrails</span><span class="p">,</span>
+            <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="n">guardrails_hap_params</span><span class="p">,</span>
+            <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ModelInference.tokenize">
 <a class="viewcode-back" href="../../../../fm_model_inference.html#ibm_watsonx_ai.foundation_models.inference.ModelInference.tokenize">[docs]</a>
-    <span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">prompt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">return_tokens</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_tokens</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The text tokenize operation allows you to check the conversion of provided input to tokens for a given model.</span>
 <span class="sd">        It splits text into words or sub-words, which then are converted to ids through a look-up table (vocabulary).</span>
@@ -642,13 +694,12 @@
 <span class="sd">            print(tokenized_response[&quot;result&quot;])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
-                                        <span class="n">return_tokens</span><span class="o">=</span><span class="n">return_tokens</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span> <span class="n">return_tokens</span><span class="o">=</span><span class="n">return_tokens</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ModelInference.to_langchain">
 <a class="viewcode-back" href="../../../../fm_model_inference.html#ibm_watsonx_ai.foundation_models.inference.ModelInference.to_langchain">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_langchain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">to_langchain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WatsonxLLM</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :return: WatsonxLLM wrapper for watsonx foundation models</span>
@@ -702,7 +753,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">langchain_ibm</span> <span class="kn">import</span> <span class="n">WatsonxLLM</span>
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Could not import langchain_ibm: Please install `langchain_ibm` extension.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                <span class="s2">&quot;Could not import langchain_ibm: Please install `langchain_ibm` extension.&quot;</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">WatsonxLLM</span><span class="p">(</span><span class="n">watsonx_model</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
 
 
@@ -746,7 +799,7 @@
     </aside>
   </div>
 </div><script src="../../../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

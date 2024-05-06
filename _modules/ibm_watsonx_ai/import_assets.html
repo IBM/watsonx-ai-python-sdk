@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>ibm_watsonx_ai.import_assets - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
@@ -164,6 +164,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -197,12 +198,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -240,15 +243,391 @@
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watson_machine_learning.import_assets</span> <span class="kn">import</span> <span class="n">Import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.change_methods_docstring</span> <span class="kn">import</span> <span class="n">change_docstrings</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="k">as</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+    <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">_DEFAULT_LIST_LENGTH</span> <span class="o">=</span> <span class="mi">50</span>
+
 
 <div class="viewcode-block" id="Import">
 <a class="viewcode-back" href="../../core_api.html#client.Import">[docs]</a>
-<span class="nd">@change_docstrings</span>
-<span class="k">class</span> <span class="nc">Import</span><span class="p">(</span><span class="n">Import</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+<span class="k">class</span> <span class="nc">Import</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">):</span>
+        <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">client</span>
+
+<div class="viewcode-block" id="Import.start">
+<a class="viewcode-back" href="../../core_api.html#client.Import.start">[docs]</a>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the import. Either `space_id` or `project_id` has to be provided.</span>
+
+<span class="sd">        :param file_path: file path to zip file with exported assets</span>
+<span class="sd">        :type file_path: str</span>
+<span class="sd">        :param space_id: space identifier</span>
+<span class="sd">        :type space_id: str, optional</span>
+<span class="sd">        :param project_id: project identifier</span>
+<span class="sd">        :type project_id: str, optional</span>
+
+<span class="sd">        :return: response json</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            details = client.import_assets.start(space_id=&quot;98a53931-a8c0-4c2f-8319-c793155e4598&quot;,</span>
+<span class="sd">                                                 file_path=&quot;/home/user/data_to_be_imported.zip&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Either &#39;space_id&#39; or &#39;project_id&#39; has to be provided&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Either &#39;space_id&#39; or &#39;project_id&#39; can be provided, not both&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;File with name: &#39;</span><span class="si">{}</span><span class="s2">&#39; does not exist&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">imports_href</span><span class="p">()</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;space_id&quot;</span><span class="p">:</span> <span class="n">space_id</span><span class="p">})</span>
+        <span class="k">elif</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="n">project_id</span><span class="p">})</span>
+
+        <span class="n">creation_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">href</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/zip&quot;</span><span class="p">),</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+            <span class="n">expected_status_code</span><span class="o">=</span><span class="mi">202</span><span class="p">,</span>
+            <span class="n">operationName</span><span class="o">=</span><span class="s2">&quot;import start&quot;</span><span class="p">,</span>
+            <span class="n">response</span><span class="o">=</span><span class="n">creation_response</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">import_id</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;import job with id </span><span class="si">{}</span><span class="s2"> has started. Monitor status using client.import_assets.get_details api. &quot;</span>
+            <span class="s2">&quot;Check &#39;help(client.import_assets.get_details)&#39; for details on the api usage&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">import_id</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">details</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_validate_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Its mandatory to provide &#39;NAME&#39; in meta_props. Example: &quot;</span>
+                <span class="s2">&quot;client.import_assets.ConfigurationMetaNames.NAME: &#39;name&#39;&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;all_assets&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">meta_props</span> <span class="ow">and</span> <span class="s2">&quot;asset_ids&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Its mandatory to provide either &#39;ALL_ASSETS&#39; or &#39;ASSET_IDS&#39; in meta_props. Example: &quot;</span>
+                <span class="s2">&quot;client.import_assets.ConfigurationMetaNames.ALL_ASSETS: True&quot;</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="Import.cancel">
+<a class="viewcode-back" href="../../core_api.html#client.Import.cancel">[docs]</a>
+    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">import_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancel an import job. Either `space_id` or `project_id` has to be provided.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            To delete an import_id job, use delete() api</span>
+
+<span class="sd">        :param import_id: import job identifier</span>
+<span class="sd">        :type import_id: str</span>
+<span class="sd">        :param space_id: space identifier</span>
+<span class="sd">        :type space_id: str, optional</span>
+<span class="sd">        :param project_id: project identifier</span>
+<span class="sd">        :type project_id: str, optional</span>
+
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.import_assets.cancel(import_id=&#39;6213cf1-252f-424b-b52d-5cdd9814956c&#39;,</span>
+<span class="sd">                                        space_id=&#39;3421cf1-252f-424b-b52d-5cdd981495fe&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Import</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">import_id</span><span class="p">,</span> <span class="s2">&quot;import_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Its mandatory to provide space_id or project_id&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Either &#39;space_id&#39; or &#39;project_id&#39; can be provided, not both&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">import_href</span><span class="p">(</span><span class="n">import_id</span><span class="p">)</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;space_id&quot;</span><span class="p">:</span> <span class="n">space_id</span><span class="p">})</span>
+        <span class="k">elif</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="n">project_id</span><span class="p">})</span>
+
+        <span class="n">cancel_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="n">href</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+            <span class="n">expected_status_code</span><span class="o">=</span><span class="mi">204</span><span class="p">,</span>
+            <span class="n">operationName</span><span class="o">=</span><span class="s2">&quot;cancel import&quot;</span><span class="p">,</span>
+            <span class="n">response</span><span class="o">=</span><span class="n">cancel_response</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;SUCCESS&quot;</span> <span class="o">==</span> <span class="n">details</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Import job cancelled&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Import.delete">
+<a class="viewcode-back" href="../../core_api.html#client.Import.delete">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">import_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes the given `import_id` job. `space_id` or `project_id` has to be provided.</span>
+
+<span class="sd">        :param import_id: import job identifier</span>
+<span class="sd">        :type import_id: str</span>
+<span class="sd">        :param space_id: space identifier</span>
+<span class="sd">        :type space_id: str, optional</span>
+<span class="sd">        :param project_id: project identifier</span>
+<span class="sd">        :type project_id: str, optional</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.import_assets.delete(import_id=&#39;6213cf1-252f-424b-b52d-5cdd9814956c&#39;,</span>
+<span class="sd">                                        space_id= &#39;98a53931-a8c0-4c2f-8319-c793155e4598&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Its mandatory to provide space_id or project_id&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Either &#39;space_id&#39; or &#39;project_id&#39; can be provided, not both&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">Import</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">import_id</span><span class="p">,</span> <span class="s2">&quot;import_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">import_href</span><span class="p">(</span><span class="n">import_id</span><span class="p">)</span>
+
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;hard_delete&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;space_id&quot;</span><span class="p">:</span> <span class="n">space_id</span><span class="p">})</span>
+        <span class="k">elif</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="n">project_id</span><span class="p">})</span>
+
+        <span class="n">delete_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="n">href</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+            <span class="n">expected_status_code</span><span class="o">=</span><span class="mi">204</span><span class="p">,</span>
+            <span class="n">operationName</span><span class="o">=</span><span class="s2">&quot;delete import job&quot;</span><span class="p">,</span>
+            <span class="n">response</span><span class="o">=</span><span class="n">delete_response</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;SUCCESS&quot;</span> <span class="o">==</span> <span class="n">details</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Import job deleted&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Import.get_details">
+<a class="viewcode-back" href="../../core_api.html#client.Import.get_details">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">import_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of the given import job. if no `import_id` is specified, all imports metadata is returned.</span>
+
+<span class="sd">        :param import_id: import job identifier</span>
+<span class="sd">        :type import_id: str, optional</span>
+<span class="sd">        :param space_id: space identifier</span>
+<span class="sd">        :type space_id: str, optional</span>
+<span class="sd">        :param project_id: project identifier</span>
+<span class="sd">        :type project_id: str, optional</span>
+<span class="sd">        :param limit: limit number of fetched records</span>
+<span class="sd">        :type limit: int, optional</span>
+<span class="sd">        :param asynchronous: if `True`, it will work as a generator</span>
+<span class="sd">        :type asynchronous: bool, optional</span>
+<span class="sd">        :param get_all: if `True`, it will get all entries in &#39;limited&#39; chunks</span>
+<span class="sd">        :type get_all: bool, optional</span>
+
+<span class="sd">        :return: import(s) metadata</span>
+<span class="sd">        :rtype: dict (if import_id is not None) or {&quot;resources&quot;: [dict]} (if import_id is None)</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            details = client.import_assets.get_details(import_id)</span>
+<span class="sd">            details = client.import_assets.get_details()</span>
+<span class="sd">            details = client.import_assets.get_details(limit=100)</span>
+<span class="sd">            details = client.import_assets.get_details(limit=100, get_all=True)</span>
+<span class="sd">            details = []</span>
+<span class="sd">            for entry in client.import_assets.get_details(limit=100, asynchronous=True, get_all=True):</span>
+<span class="sd">                details.extend(entry)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Its mandatory to provide space_id or project_id&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Either &#39;space_id&#39; or &#39;project_id&#39; can be provided, not both&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">Import</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">import_id</span><span class="p">,</span> <span class="s2">&quot;import_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">Import</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">imports_href</span><span class="p">()</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;space_id&quot;</span><span class="p">:</span> <span class="n">space_id</span><span class="p">})</span>
+        <span class="k">elif</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="n">project_id</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">import_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_artifact_details</span><span class="p">(</span>
+                <span class="n">href</span><span class="p">,</span>
+                <span class="n">import_id</span><span class="p">,</span>
+                <span class="n">limit</span><span class="p">,</span>
+                <span class="s2">&quot;import job&quot;</span><span class="p">,</span>
+                <span class="n">query_params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+                <span class="n">_async</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
+                <span class="n">_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_artifact_details</span><span class="p">(</span>
+                <span class="n">href</span><span class="p">,</span> <span class="n">import_id</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="s2">&quot;import job&quot;</span><span class="p">,</span> <span class="n">query_params</span><span class="o">=</span><span class="n">params</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Import.list">
+<a class="viewcode-back" href="../../core_api.html#client.Import.list">[docs]</a>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns import jobs in a table format. If limit is set to None there will be only first 50 records shown.</span>
+
+<span class="sd">        :param space_id: space identifier</span>
+<span class="sd">        :type space_id: str, optional</span>
+<span class="sd">        :param project_id: project identifier</span>
+<span class="sd">        :type project_id: str, optional</span>
+<span class="sd">        :param limit: limit number of fetched records</span>
+<span class="sd">        :type limit: int, optional</span>
+
+<span class="sd">        :return: pandas.DataFrame with listed assets</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.import_assets.list()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Its mandatory to provide space_id or project_id&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Either &#39;space_id&#39; or &#39;project_id&#39; can be provided, not both&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">space_id</span><span class="o">=</span><span class="n">space_id</span><span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;created_at&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;state&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">resources</span>
+        <span class="p">]</span>
+
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span>
+            <span class="n">values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CREATED&quot;</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">],</span> <span class="n">limit</span><span class="p">,</span> <span class="n">_DEFAULT_LIST_LENGTH</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">table</span></div>
+
+
+<div class="viewcode-block" id="Import.get_id">
+<a class="viewcode-back" href="../../core_api.html#client.Import.get_id">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="n">import_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get ID of import job from import details.</span>
+
+<span class="sd">        :param import_details: metadata of the import job</span>
+<span class="sd">        :type import_details: dict</span>
+
+<span class="sd">        :return: ID of the import job</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            id = client.import_assets.get_id(import_details)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Import</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">import_details</span><span class="p">,</span> <span class="s2">&quot;import_details&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">WMLResource</span><span class="o">.</span><span class="n">_get_required_element_from_dict</span><span class="p">(</span>
+            <span class="n">import_details</span><span class="p">,</span> <span class="s2">&quot;import_details&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">]</span>
+        <span class="p">)</span></div>
+</div>
 
 </pre></div>
         </article>
@@ -283,7 +662,7 @@
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

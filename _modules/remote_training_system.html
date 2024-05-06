@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>remote_training_system - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -164,6 +164,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -197,12 +198,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -240,18 +243,569 @@
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watson_machine_learning.remote_training_system</span> <span class="kn">import</span> <span class="n">RemoteTrainingSystem</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.change_methods_docstring</span> <span class="kn">import</span> <span class="n">change_docstrings</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai._wrappers</span> <span class="kn">import</span> <span class="n">requests</span>
+
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">RemoteTrainingSystemMetaNames</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.party_wrapper</span> <span class="kn">import</span> <span class="n">Party</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+    <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+
+<span class="n">_DEFAULT_LIST_LENGTH</span> <span class="o">=</span> <span class="mi">50</span>
+
 
 <div class="viewcode-block" id="RemoteTrainingSystem">
 <a class="viewcode-back" href="../federated_learning.html#remote_training_system.RemoteTrainingSystem">[docs]</a>
-<span class="nd">@change_docstrings</span>
-<span class="k">class</span> <span class="nc">RemoteTrainingSystem</span><span class="p">(</span><span class="n">RemoteTrainingSystem</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">RemoteTrainingSystem</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The RemoteTrainingSystem class represents a Federated Learning party and provides a list of identities</span>
 <span class="sd">    that are permitted to join training as the RemoteTrainingSystem.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">):</span>
+        <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span> <span class="o">=</span> <span class="n">RemoteTrainingSystemMetaNames</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RemoteTrainingSystem.store">
+<a class="viewcode-back" href="../federated_learning.html#remote_training_system.RemoteTrainingSystem.store">[docs]</a>
+    <span class="k">def</span> <span class="nf">store</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a remote training system. Either `space_id` or `project_id` has to be provided.</span>
+
+<span class="sd">        :param meta_props:  metadata, to see available meta names use</span>
+<span class="sd">            ``client.remote_training_systems.ConfigurationMetaNames.get()``</span>
+<span class="sd">        :type meta_props: dict</span>
+
+<span class="sd">        :return: response json</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            metadata = {</span>
+<span class="sd">                client.remote_training_systems.ConfigurationMetaNames.NAME: &quot;my-resource&quot;,</span>
+<span class="sd">                client.remote_training_systems.ConfigurationMetaNames.TAGS: [&quot;tag1&quot;, &quot;tag2&quot;],</span>
+<span class="sd">                client.remote_training_systems.ConfigurationMetaNames.ORGANIZATION: {&quot;name&quot;: &quot;name&quot;, &quot;region&quot;: &quot;EU&quot;}</span>
+<span class="sd">                client.remote_training_systems.ConfigurationMetaNames.ALLOWED_IDENTITIES: [{&quot;id&quot;: &quot;43689024&quot;, &quot;type&quot;: &quot;user&quot;}],</span>
+<span class="sd">                client.remote_training_systems.ConfigurationMetaNames.REMOTE_ADMIN: {&quot;id&quot;: &quot;43689020&quot;, &quot;type&quot;: &quot;user&quot;}</span>
+<span class="sd">            }</span>
+<span class="sd">            client.set.default_space(&#39;3fc54cf1-252f-424b-b52d-5cdd9814987f&#39;)</span>
+<span class="sd">            details = client.remote_training_systems.store(meta_props=metadata)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
+
+        <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">meta_props</span><span class="p">,</span> <span class="s2">&quot;meta_props&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_input</span><span class="p">(</span><span class="n">meta_props</span><span class="p">)</span>
+
+        <span class="n">meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">_generate_resource_metadata</span><span class="p">(</span>
+            <span class="n">meta_props</span><span class="p">,</span> <span class="n">with_validation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;space_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;project_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span>
+
+        <span class="n">href</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">remote_training_systems_href</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="n">creation_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">href</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">meta</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+            <span class="n">expected_status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span>
+            <span class="n">operationName</span><span class="o">=</span><span class="s2">&quot;store remote training system specification&quot;</span><span class="p">,</span>
+            <span class="n">response</span><span class="o">=</span><span class="n">creation_response</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">details</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_validate_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Its mandatory to provide &#39;NAME&#39; in meta_props. Example: &quot;</span>
+                <span class="s2">&quot;client.remote_training_systems.ConfigurationMetaNames.NAME&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;allowed_identities&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Its mandatory to provide &#39;ALLOWED_IDENTITIES&#39; in meta_props. Example: &quot;</span>
+                <span class="s2">&quot;client.remote_training_systems.ConfigurationMetaNames.ALLOWED_IDENTITIES&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;organization&quot;</span> <span class="ow">in</span> <span class="n">meta_props</span> <span class="ow">and</span> <span class="s2">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">[</span><span class="s2">&quot;organization&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Its mandatory to provide &#39;name&#39; for ORGANIZATION meta_prop. Eg: &quot;</span>
+                <span class="s2">&quot;client.remote_training_systems.ConfigurationMetaNames.ORGANIZATION: &quot;</span>
+                <span class="s2">&quot;{&#39;name&#39;: &#39;org&#39;} &quot;</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="RemoteTrainingSystem.delete">
+<a class="viewcode-back" href="../federated_learning.html#remote_training_system.RemoteTrainingSystem.delete">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_training_systems_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes the given `remote_training_systems_id` definition. `space_id` or `project_id` has to be provided.</span>
+
+<span class="sd">        :param remote_training_systems_id: remote training system identifier</span>
+<span class="sd">        :type remote_training_systems_id: str</span>
+
+<span class="sd">        :return: status (&quot;SUCCESS&quot; or &quot;FAILED&quot;)</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.remote_training_systems.delete(remote_training_systems_id=&#39;6213cf1-252f-424b-b52d-5cdd9814956c&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
+        <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+            <span class="n">remote_training_systems_id</span><span class="p">,</span> <span class="s2">&quot;remote_training_systems_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="n">href</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">remote_training_system_href</span><span class="p">(</span>
+                <span class="n">remote_training_systems_id</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">delete_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="n">href</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+            <span class="n">expected_status_code</span><span class="o">=</span><span class="mi">204</span><span class="p">,</span>
+            <span class="n">operationName</span><span class="o">=</span><span class="s2">&quot;delete remote training system definition&quot;</span><span class="p">,</span>
+            <span class="n">response</span><span class="o">=</span><span class="n">delete_response</span><span class="p">,</span>
+            <span class="n">json_response</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;SUCCESS&quot;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Remote training system deleted&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">status</span></div>
+
+
+<div class="viewcode-block" id="RemoteTrainingSystem.get_details">
+<a class="viewcode-back" href="../federated_learning.html#remote_training_system.RemoteTrainingSystem.get_details">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">remote_training_system_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of the given remote training system. If `remote_training_system_id` is not specified,</span>
+<span class="sd">            metadata is returned for all remote training systems.</span>
+
+<span class="sd">        :param remote_training_system_id: remote training system identifier</span>
+<span class="sd">        :type remote_training_system_id: str, optional</span>
+<span class="sd">        :param limit: limit number of fetched records</span>
+<span class="sd">        :type limit: int, optional</span>
+<span class="sd">        :param asynchronous: if `True`, it will work as a generator</span>
+<span class="sd">        :type asynchronous: bool, optional</span>
+<span class="sd">        :param get_all: if `True`, it will get all entries in &#39;limited&#39; chunks</span>
+<span class="sd">        :type get_all: bool, optional</span>
+
+<span class="sd">        :return: remote training system(s) metadata</span>
+<span class="sd">        :rtype: dict (if remote_training_systems_id is not None) or {&quot;resources&quot;: [dict]} (if remote_training_systems_id is None)</span>
+
+
+<span class="sd">        **Examples**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            details = client.remote_training_systems.get_details(remote_training_systems_id)</span>
+<span class="sd">            details = client.remote_training_systems.get_details()</span>
+<span class="sd">            details = client.remote_training_systems.get_details(limit=100)</span>
+<span class="sd">            details = client.remote_training_systems.get_details(limit=100, get_all=True)</span>
+<span class="sd">            details = []</span>
+<span class="sd">            for entry in client.remote_training_systems.get_details(limit=100, asynchronous=True, get_all=True):</span>
+<span class="sd">                details.extend(entry)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
+
+        <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+            <span class="n">remote_training_system_id</span><span class="p">,</span> <span class="s2">&quot;remote_training_systems_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">href</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">remote_training_systems_href</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">remote_training_system_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_artifact_details</span><span class="p">(</span>
+                <span class="n">href</span><span class="p">,</span>
+                <span class="n">remote_training_system_id</span><span class="p">,</span>
+                <span class="n">limit</span><span class="p">,</span>
+                <span class="s2">&quot;remote_training_systems&quot;</span><span class="p">,</span>
+                <span class="n">_async</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
+                <span class="n">_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_artifact_details</span><span class="p">(</span>
+                <span class="n">href</span><span class="p">,</span> <span class="n">remote_training_system_id</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="s2">&quot;remote_training_systems&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RemoteTrainingSystem.list">
+<a class="viewcode-back" href="../federated_learning.html#remote_training_system.RemoteTrainingSystem.list">[docs]</a>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lists stored remote training systems in a table format.</span>
+<span class="sd">        If limit is set to None, only the first 50 records are shown.</span>
+
+<span class="sd">        :param limit: limit number of fetched records</span>
+<span class="sd">        :type limit: int, optional</span>
+
+<span class="sd">        :return: pandas.DataFrame with listed remote training systems</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.remote_training_systems.list()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
+
+        <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">()[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;created_at&quot;</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">resources</span>
+        <span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span>
+            <span class="n">values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;CREATED&quot;</span><span class="p">],</span> <span class="n">limit</span><span class="p">,</span> <span class="n">_DEFAULT_LIST_LENGTH</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RemoteTrainingSystem.get_id">
+<a class="viewcode-back" href="../federated_learning.html#remote_training_system.RemoteTrainingSystem.get_id">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="n">remote_training_system_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get ID of remote training system.</span>
+
+<span class="sd">        :param remote_training_system_details: metadata of the stored remote training system</span>
+<span class="sd">        :type remote_training_system_details: dict</span>
+
+<span class="sd">        :return: ID of stored remote training system</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            details = client.remote_training_systems.get_details(remote_training_system_id)</span>
+<span class="sd">            id = client.remote_training_systems.get_id(details)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+            <span class="n">remote_training_system_details</span><span class="p">,</span>
+            <span class="s2">&quot;remote_training_system_details&quot;</span><span class="p">,</span>
+            <span class="nb">object</span><span class="p">,</span>
+            <span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">WMLResource</span><span class="o">.</span><span class="n">_get_required_element_from_dict</span><span class="p">(</span>
+            <span class="n">remote_training_system_details</span><span class="p">,</span>
+            <span class="s2">&quot;remote_training_system_details&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">],</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RemoteTrainingSystem.update">
+<a class="viewcode-back" href="../federated_learning.html#remote_training_system.RemoteTrainingSystem.update">[docs]</a>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_training_system_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">changes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates existing remote training system metadata.</span>
+
+<span class="sd">        :param remote_training_system_id: remote training system identifier</span>
+<span class="sd">        :type remote_training_system_id: str</span>
+<span class="sd">        :param changes: elements which should be changed, where keys are ConfigurationMetaNames</span>
+<span class="sd">        :type changes: dict</span>
+
+<span class="sd">        :return: updated remote training system details</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            metadata = {</span>
+<span class="sd">                client.remote_training_systems.ConfigurationMetaNames.NAME:&quot;updated_remote_training_system&quot;</span>
+<span class="sd">            }</span>
+<span class="sd">            details = client.remote_training_systems.update(remote_training_system_id, changes=metadata)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+            <span class="n">remote_training_system_id</span><span class="p">,</span> <span class="s2">&quot;remote_training_system_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">changes</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">remote_training_system_id</span><span class="p">)</span>
+
+        <span class="n">patch_payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">_generate_patch_payload</span><span class="p">(</span>
+            <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">],</span> <span class="n">changes</span><span class="p">,</span> <span class="n">with_validation</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="n">href</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">remote_training_system_href</span><span class="p">(</span>
+                <span class="n">remote_training_system_id</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+            <span class="n">href</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">patch_payload</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">updated_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+            <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;remote training system patch&quot;</span><span class="p">,</span> <span class="n">response</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">updated_details</span></div>
+
+
+<div class="viewcode-block" id="RemoteTrainingSystem.create_revision">
+<a class="viewcode-back" href="../federated_learning.html#remote_training_system.RemoteTrainingSystem.create_revision">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_training_system_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new remote training system revision.</span>
+
+<span class="sd">        :param remote_training_system_id: Unique remote training system ID</span>
+<span class="sd">        :type remote_training_system_id: str</span>
+
+<span class="sd">        :return: remote training system details</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.remote_training_systems.create_revision(remote_training_system_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+            <span class="n">remote_training_system_id</span><span class="p">,</span> <span class="s2">&quot;remote_training_system_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span>
+        <span class="p">)</span>
+
+        <span class="n">href</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">remote_training_systems_href</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_revision_artifact</span><span class="p">(</span>
+            <span class="n">href</span><span class="p">,</span> <span class="n">remote_training_system_id</span><span class="p">,</span> <span class="s2">&quot;remote training system&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RemoteTrainingSystem.get_revision_details">
+<a class="viewcode-back" href="../federated_learning.html#remote_training_system.RemoteTrainingSystem.get_revision_details">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_revision_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_training_system_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata from the specific revision of a stored remote system.</span>
+
+<span class="sd">        :param remote_training_system_id: ID of remote training system</span>
+<span class="sd">        :type remote_training_system_id: str</span>
+
+<span class="sd">        :param rev_id: Unique id of the remote system revision</span>
+<span class="sd">        :type rev_id: str</span>
+
+<span class="sd">        :return: stored remote system revision metadata</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            details = client.remote_training_systems.get_details(remote_training_system_id, rev_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
+
+        <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+            <span class="n">remote_training_system_id</span><span class="p">,</span> <span class="s2">&quot;remote_training_system_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">rev_id</span><span class="p">,</span> <span class="s2">&quot;rev_id&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">href</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">remote_training_system_href</span><span class="p">(</span>
+                <span class="n">remote_training_system_id</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_with_or_without_limit</span><span class="p">(</span>
+            <span class="n">href</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">op_name</span><span class="o">=</span><span class="s2">&quot;remote_training_system_id&quot;</span><span class="p">,</span>
+            <span class="n">summary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">pre_defined</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">revision</span><span class="o">=</span><span class="n">rev_id</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RemoteTrainingSystem.list_revisions">
+<a class="viewcode-back" href="../federated_learning.html#remote_training_system.RemoteTrainingSystem.list_revisions">[docs]</a>
+    <span class="k">def</span> <span class="nf">list_revisions</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">remote_training_system_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print all revisions for the given remote_training_system_id in a table format.</span>
+
+<span class="sd">        :param remote_training_system_id: Unique id of stored remote system</span>
+<span class="sd">        :type remote_training_system_id: str</span>
+
+<span class="sd">        :param limit: limit number of fetched records</span>
+<span class="sd">        :type limit: int, optional</span>
+
+<span class="sd">        :return: pandas.DataFrame with listed remote training system revisions</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.remote_training_systems.list_revisions(remote_training_system_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
+
+        <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+            <span class="n">remote_training_system_id</span><span class="p">,</span> <span class="s2">&quot;remote_training_system_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_function_href</span><span class="p">(</span>
+            <span class="n">remote_training_system_id</span>
+        <span class="p">)</span>
+
+        <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_artifact_details</span><span class="p">(</span>
+            <span class="n">href</span> <span class="o">+</span> <span class="s2">&quot;/revisions&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="s2">&quot;remote system revisions&quot;</span>
+        <span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;rev&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;created_at&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">resources</span>
+        <span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span>
+            <span class="n">values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;REV&quot;</span><span class="p">,</span> <span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;CREATED&quot;</span><span class="p">],</span> <span class="n">limit</span><span class="p">,</span> <span class="n">_DEFAULT_LIST_LENGTH</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_validate_party_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">party_metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="s2">&quot;data_handler&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">party_metadata</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Its mandatory to provide &#39;DATA_HANDLER&#39; in meta_props. Example: &quot;</span>
+                <span class="s2">&quot;client.remote_training_systems.ConfigurationMetaNames.DATA_HANDLER&quot;</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="RemoteTrainingSystem.create_party">
+<a class="viewcode-back" href="../federated_learning.html#remote_training_system.RemoteTrainingSystem.create_party">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_party</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">remote_training_system_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">party_metadata</span><span class="p">:</span> <span class="nb">dict</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Party</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a party object using the specified remote training system id and the party metadata.</span>
+
+<span class="sd">        :param remote_training_system_id: remote training system identifier</span>
+<span class="sd">        :type remote_training_system_id: str</span>
+<span class="sd">        :param party_metadata: the party configuration</span>
+<span class="sd">        :type party_metadata: dict</span>
+
+<span class="sd">        :return: a party object with the specified rts_id and configuration</span>
+<span class="sd">        :rtype: Party</span>
+
+<span class="sd">        **Examples**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            party_metadata = {</span>
+<span class="sd">                client.remote_training_systems.ConfigurationMetaNames.DATA_HANDLER: {</span>
+<span class="sd">                    &quot;info&quot;: {</span>
+<span class="sd">                        &quot;npz_file&quot;: &quot;./data_party0.npz&quot;</span>
+<span class="sd">                    },</span>
+<span class="sd">                    &quot;name&quot;: &quot;MnistTFDataHandler&quot;,</span>
+<span class="sd">                    &quot;path&quot;: &quot;./mnist_keras_data_handler.py&quot;</span>
+<span class="sd">                },</span>
+<span class="sd">                client.remote_training_systems.ConfigurationMetaNames.LOCAL_TRAINING: {</span>
+<span class="sd">                    &quot;name&quot;: &quot;LocalTrainingHandler&quot;,</span>
+<span class="sd">                    &quot;path&quot;: &quot;ibmfl.party.training.local_training_handler&quot;</span>
+<span class="sd">                },</span>
+<span class="sd">                client.remote_training_systems.ConfigurationMetaNames.HYPERPARAMS: {</span>
+<span class="sd">                    &quot;epochs&quot;: 3</span>
+<span class="sd">                },</span>
+<span class="sd">            }</span>
+<span class="sd">            party = client.remote_training_systems.create_party(remote_training_system_id, party_metadata)</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            party_metadata = {</span>
+<span class="sd">                client.remote_training_systems.ConfigurationMetaNames.DATA_HANDLER: {</span>
+<span class="sd">                    &quot;info&quot;: {</span>
+<span class="sd">                        &quot;npz_file&quot;: &quot;./data_party0.npz&quot;</span>
+<span class="sd">                    },</span>
+<span class="sd">                    &quot;class&quot;: MnistTFDataHandler</span>
+<span class="sd">                }</span>
+<span class="sd">            }</span>
+<span class="sd">            party = client.remote_training_systems.create_party(remote_training_system_id, party_metadata)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+            <span class="n">remote_training_system_id</span><span class="p">,</span> <span class="s2">&quot;remote_training_system_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+            <span class="n">party_metadata</span><span class="p">,</span> <span class="s2">&quot;party_metadata&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_party_input</span><span class="p">(</span><span class="n">party_metadata</span><span class="p">)</span>
+
+        <span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;//&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">party_config</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;aggregator&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ip&quot;</span><span class="p">:</span> <span class="n">host</span><span class="p">},</span>
+            <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;info&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">remote_training_system_id</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">party_metadata</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">remote_training_systems</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DATA_HANDLER</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;protocol_handler&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;PartyProtocolHandler&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;ibmfl.party.party_protocol_handler&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="s2">&quot;local_training&quot;</span> <span class="ow">in</span> <span class="n">party_metadata</span><span class="p">:</span>
+            <span class="n">party_config</span><span class="p">[</span><span class="s2">&quot;local_training&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">party_metadata</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">remote_training_systems</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">LOCAL_TRAINING</span>
+            <span class="p">]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;hyperparams&quot;</span> <span class="ow">in</span> <span class="n">party_metadata</span><span class="p">:</span>
+            <span class="n">party_config</span><span class="p">[</span><span class="s2">&quot;hyperparams&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">party_metadata</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">remote_training_systems</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">HYPERPARAMS</span>
+            <span class="p">]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;model&quot;</span> <span class="ow">in</span> <span class="n">party_metadata</span><span class="p">:</span>
+            <span class="n">party_config</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">party_metadata</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">remote_training_systems</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">MODEL</span>
+            <span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">Party</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">config_dict</span><span class="o">=</span><span class="n">party_config</span><span class="p">)</span></div>
+</div>
 
 </pre></div>
         </article>
@@ -286,7 +840,7 @@
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Setup" href="setup.html" /><link rel="prev" title="The ibm-watsonx-ai library" href="index.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Migration from ibm_watson_machine_learning" href="migration.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
-        <title>Installation - IBM watsonx.ai</title>
+        <title>V1 Migration Guide - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -158,7 +158,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="setup.html">Setup</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Setup</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="setup_cloud.html">IBM watsonx.ai for IBM Cloud</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setup_cpd.html">IBM watsonx.ai software</a></li>
@@ -206,7 +206,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="migration_v1.html">V1 Migration Guide</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -239,37 +239,139 @@
           </label>
         </div>
         <article role="main">
-          <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
-<p>The <cite>ibm-watsonx-ai</cite> Python library is publicly available
-on PyPI: <a class="reference external" href="https://pypi.org/project/ibm-watsonx-ai/">https://pypi.org/project/ibm-watsonx-ai/</a>.</p>
-<p>The package can be installed with pip:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install ibm-watsonx-ai
+          <section id="v1-migration-guide">
+<h1>V1 Migration Guide<a class="headerlink" href="#v1-migration-guide" title="Link to this heading">¶</a></h1>
+<div style="text-align: justify;"><p>New <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai</span></code> Python SDK 1.0 is backward compatible in most common scenarios,
+but few minor adjustments in code may be needed.</p>
+</div><section id="what-s-new">
+<h2>What’s new?<a class="headerlink" href="#what-s-new" title="Link to this heading">¶</a></h2>
+<section id="refactor-and-cleanup">
+<h3>Refactor and Cleanup<a class="headerlink" href="#refactor-and-cleanup" title="Link to this heading">¶</a></h3>
+<p>This major release marks a thorough refactoring and cleanup of the codebase.
+We’ve diligently worked to improve code readability, and enhance overall performance.
+As a result, users can expect a more efficient and maintainable package.</p>
+</section>
+<section id="new-authorization">
+<h3>New authorization<a class="headerlink" href="#new-authorization" title="Link to this heading">¶</a></h3>
+<p>In <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai</span></code> 1.0 new class <code class="docutils literal notranslate"><span class="pre">Credentials</span></code> was introduced which replaces the dictionary with credentials.
+See examples and more in docs: <a class="reference internal" href="setup_cloud.html"><span class="doc">Authentication Cloud</span></a> and <a class="reference internal" href="setup_cpd.html"><span class="doc">Authentication</span></a></p>
+<p>✅ New approach</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">Credentials</span>
+
+<span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span>
+                   <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">,</span>
+                   <span class="n">token</span> <span class="o">=</span> <span class="s2">&quot;***********&quot;</span><span class="p">,</span>
+                  <span class="p">)</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The <cite>ibm-watsonx-ai</cite> Python library is available by default in all watsonx.ai notebook runtimes.</p>
+<p>❌ Old approach</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+
+<span class="n">credentials</span> <span class="o">=</span> <span class="p">{</span>
+                   <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;token&quot;</span><span class="p">:</span><span class="s2">&quot;***********&quot;</span><span class="p">,</span>
+                  <span class="p">}</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+</pre></div>
 </div>
-<section id="product-offerings">
-<span id="id1"></span><h2>Product Offerings<a class="headerlink" href="#product-offerings" title="Link to this heading">¶</a></h2>
-<p>The python package supports the following product offerings:</p>
+</section>
+<section id="easier-project-and-space-setup">
+<h3>Easier project and space setup<a class="headerlink" href="#easier-project-and-space-setup" title="Link to this heading">¶</a></h3>
+<p>Starting from <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai</span></code> 1.0 release users can set the default space
+or project while initializing APIClient object.</p>
+<p>✅ New approach</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client_project</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">project_id</span> <span class="o">=</span> <span class="n">project_id</span><span class="p">)</span>
+<span class="n">client_space</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">space_id</span> <span class="o">=</span> <span class="n">space_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>❌ Old approach</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client_project</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+<span class="n">client_project</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_project</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+
+<span class="n">client_space</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+<span class="n">client_space</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_space</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="breaking-changes">
+<h3>Breaking changes<a class="headerlink" href="#breaking-changes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li><p><a class="reference external" href="https://dataplatform.cloud.ibm.com/docs/content/wsj/getting-started/welcome-main.html?audience=wdp&amp;context=wx">IBM watsonx.ai for IBM Cloud</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">client.&lt;resource&gt;.list()</span></code> methods don’t print the table with listed assets. They return the table as <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>. The optional parameter for the methods <code class="docutils literal notranslate"><span class="pre">return_as_df</span></code> was removed.</p></li>
+</ul>
+<p>✅ New approach - Access to credentials fields as class attributes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">conn_list</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>  <span class="c1">## table not printed</span>
+</pre></div>
+</div>
+<p>❌ Old approach - Table with listed resources printed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">conn_list</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+<span class="c1">### Table returned as pandas.DataFrame `conn_list` object and printed output:</span>
+<span class="o">---------------------------</span>  <span class="o">------------------------------------</span>  <span class="o">--------------------</span>  <span class="o">------------------------------------</span>
+<span class="n">NAME</span>                         <span class="n">ID</span>                                    <span class="n">CREATED</span>               <span class="n">DATASOURCE_TYPE_ID</span>
+<span class="n">Connection</span> <span class="n">to</span> <span class="n">COS</span>            <span class="mi">71738</span><span class="n">a79</span><span class="o">-</span><span class="mi">6585</span><span class="o">-</span><span class="mi">4</span><span class="n">f33</span><span class="o">-</span><span class="n">bf4a</span><span class="o">-</span><span class="mi">18907</span><span class="n">abcf06a</span>  <span class="mi">2024</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">25</span><span class="n">T10</span><span class="p">:</span><span class="mi">42</span><span class="p">:</span><span class="mi">23</span><span class="n">Z</span>  <span class="mi">193</span><span class="n">a97c1</span><span class="o">-</span><span class="mi">4475</span><span class="o">-</span><span class="mi">4</span><span class="n">a19</span><span class="o">-</span><span class="n">b90c</span><span class="o">-</span><span class="mi">295</span><span class="n">c4fdc6517</span>
+<span class="o">---------------------------</span>  <span class="o">------------------------------------</span>  <span class="o">--------------------</span>  <span class="o">------------------------------------</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Methods and parameters that were marked as deprecated in <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai</span> <span class="pre">v0</span></code> were removed. For example:</p></li>
+</ul>
+<p>✅ New approach - Use method that replaced deprecated one, for <code class="docutils literal notranslate"><span class="pre">get_uid</span></code> it’s <code class="docutils literal notranslate"><span class="pre">get_id</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">asset_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">data_assets</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">asset_details</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>❌ Old approach - Deprecated <code class="docutils literal notranslate"><span class="pre">get_uid</span></code> method  called</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">data_assets</span><span class="o">.</span><span class="n">get_uid</span><span class="p">(</span><span class="n">asset_details</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">client.credentials</span></code> and <code class="docutils literal notranslate"><span class="pre">client.wml_credentials</span></code> returns <code class="docutils literal notranslate"><span class="pre">Credentials</span></code> object instead of dictionary.</p></li>
+</ul>
+<p>✅ New approach - Access to credentials fields as class attributes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">Credentials</span>
+
+<span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span>
+                   <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">,</span>
+                   <span class="n">token</span> <span class="o">=</span> <span class="s2">&quot;***********&quot;</span><span class="p">,</span>
+                  <span class="p">)</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span>
+<span class="c1"># OR</span>
+<span class="n">url</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">url</span>
+</pre></div>
+</div>
+<p>❌ Old approach - Access to credentials fields as keys in dictionary.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+
+<span class="n">credentials</span> <span class="o">=</span> <span class="p">{</span>
+                   <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;token&quot;</span><span class="p">:</span><span class="s2">&quot;***********&quot;</span><span class="p">,</span>
+                  <span class="p">}</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+<span class="n">url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">wml_credentials</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="deprecations">
+<h3>Deprecations<a class="headerlink" href="#deprecations" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Initializing <code class="docutils literal notranslate"><span class="pre">APIClient</span></code> with <code class="docutils literal notranslate"><span class="pre">credentials</span></code> as dictionary is deprecated.</p></li>
 <li><dl class="simple">
-<dt>IBM watsonx.ai software:</dt><dd><ul>
-<li><p><a class="reference external" href="https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x">With IBM Cloud Pak for Data 4.8</a></p></li>
+<dt>All parameters with <code class="docutils literal notranslate"><span class="pre">wml</span></code> in name are deprecated. They were renamed to:</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">wml_credentials</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">credentials</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wml_client</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">api_client</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
 </li>
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code> naming was aligned in parameters and methods, now all <code class="docutils literal notranslate"><span class="pre">uid</span></code> should be replaced by <code class="docutils literal notranslate"><span class="pre">id</span></code>. Methods that were using <code class="docutils literal notranslate"><span class="pre">uid</span></code> were either removed or mark as deprecated.</p></li>
 </ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If you are using Watson Machine Learning within IBM Cloud Pack for Data 4.0 - 4.7 versions, we recommend using <cite>ibm-watson-machine-learning</cite> package -
-<a class="reference external" href="file:///Users/mateuszszewczyk/Documents/GitHub/python-client/python/ibm_watson_machine_learning/docs/_build/html/install.html">see documentation.</a></p>
-</div>
-<p>Differences in above product offerings are further described in section <a class="reference internal" href="setup.html"><span class="doc">Setup</span></a>.</p>
+</section>
 </section>
 </section>
 
@@ -278,23 +380,15 @@ on PyPI: <a class="reference external" href="https://pypi.org/project/ibm-watson
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="setup.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Setup</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="index.html">
+          
+          <a class="prev-page" href="migration.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Home</div>
+                <div class="title">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></div>
                 
               </div>
             </a>
@@ -328,8 +422,15 @@ on PyPI: <a class="reference external" href="https://pypi.org/project/ibm-watson
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Installation</a><ul>
-<li><a class="reference internal" href="#product-offerings">Product Offerings</a></li>
+<li><a class="reference internal" href="#">V1 Migration Guide</a><ul>
+<li><a class="reference internal" href="#what-s-new">What’s new?</a><ul>
+<li><a class="reference internal" href="#refactor-and-cleanup">Refactor and Cleanup</a></li>
+<li><a class="reference internal" href="#new-authorization">New authorization</a></li>
+<li><a class="reference internal" href="#easier-project-and-space-setup">Easier project and space setup</a></li>
+<li><a class="reference internal" href="#breaking-changes">Breaking changes</a></li>
+<li><a class="reference internal" href="#deprecations">Deprecations</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>ibm_watsonx_ai.foundation_models.utils.utils - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
@@ -164,6 +164,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -197,12 +198,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -239,55 +242,69 @@
 <span class="c1">#  (C) Copyright IBM Corp. 2023-2024.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">Formatter</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Mapping</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">KW_ONLY</span><span class="p">,</span> <span class="n">asdict</span>
 <span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">loads</span> <span class="k">as</span> <span class="n">json_loads</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai._wrappers</span> <span class="kn">import</span> <span class="n">requests</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers</span> <span class="kn">import</span> <span class="n">DataConnection</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.messages.messages</span> <span class="kn">import</span> <span class="n">Messages</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span><span class="p">,</span> <span class="n">InvalidMultipleArguments</span><span class="p">,</span> <span class="n">InvalidValue</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">WMLClientError</span><span class="p">,</span>
+    <span class="n">InvalidMultipleArguments</span><span class="p">,</span>
+    <span class="n">InvalidValue</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="n">NextResourceGenerator</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.utils</span> <span class="kn">import</span> <span class="n">load_file_from_file_system_nonautoai</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.enums</span> <span class="kn">import</span> <span class="n">ModelTypes</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.enums</span> <span class="kn">import</span> <span class="n">DataConnectionTypes</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.lifecycle</span> <span class="kn">import</span> <span class="n">SpecStates</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
 
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">PromptTuningParams</span><span class="p">:</span>
     <span class="n">base_model</span><span class="p">:</span> <span class="nb">dict</span>
     <span class="n">_</span><span class="p">:</span> <span class="n">KW_ONLY</span>
-    <span class="n">accumulate_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">init_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">init_text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">max_input_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">max_output_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">num_epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">tuning_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">verbalizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">accumulate_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">init_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">init_text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">max_input_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">max_output_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">num_epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tuning_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">verbalizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">_get_foundation_models_spec</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">operation_name</span><span class="p">,</span> <span class="n">additional_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_foundation_models_spec</span><span class="p">(</span>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">operation_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">additional_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;2023-09-30&quot;</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">additional_params</span><span class="p">:</span>
         <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">additional_params</span><span class="p">)</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span>
-                            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
-                            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;X-WML-User-Client&#39;</span><span class="p">:</span> <span class="s1">&#39;PythonClient&#39;</span><span class="p">})</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-WML-User-Client&quot;</span><span class="p">:</span> <span class="s2">&quot;PythonClient&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_foundation_models&quot;</span><span class="p">),</span> <span class="n">logg_messages</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_foundation_models&quot;</span><span class="p">),</span>
+            <span class="n">logg_messages</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">operation_name</span><span class="si">}</span><span class="s2"> failed. Reason: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -295,9 +312,11 @@
 
 <div class="viewcode-block" id="get_model_specs">
 <a class="viewcode-back" href="../../../../fm_helpers.html#ibm_watsonx_ai.foundation_models.get_model_specs">[docs]</a>
-<span class="k">def</span> <span class="nf">get_model_specs</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">get_model_specs</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Operations to retrieve the list of deployed foundation models specifications.</span>
+
+<span class="sd">    *Decrecated:* `get_model_specs()` function is deprecated, please use `client.foundation_models.get_model_specs()` function instead.</span>
 
 <span class="sd">    :param url: environment url</span>
 <span class="sd">    :type url: str</span>
@@ -325,39 +344,66 @@
 <span class="sd">            model_id=&quot;google/flan-ul2&quot;</span>
 <span class="sd">            )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;`get_model_specs()` function is deprecated, please use `client.foundation_models.get_model_specs()` function instead.&quot;</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">model_id</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">ModelTypes</span><span class="p">):</span>
                 <span class="n">model_id</span> <span class="o">=</span> <span class="n">model_id</span><span class="o">.</span><span class="n">value</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="p">[</span><span class="n">res</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1/foundation_model_specs&quot;</span><span class="p">,</span>
-                                                                   <span class="s2">&quot;Get available foundation models&quot;</span><span class="p">)[</span><span class="s1">&#39;resources&#39;</span><span class="p">]</span>
-                        <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;model_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">model_id</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">return</span> <span class="p">[</span>
+                    <span class="n">res</span>
+                    <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1/foundation_model_specs&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;Get available foundation models&quot;</span><span class="p">,</span>
+                    <span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;model_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">model_id</span>
+                <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">except</span> <span class="n">WMLClientError</span><span class="p">:</span>  <span class="c1"># Remove on CPD 5.0 release</span>
-                <span class="k">return</span> <span class="p">[</span><span class="n">res</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1-beta/foundation_model_specs&quot;</span><span class="p">,</span>
-                                                                   <span class="s2">&quot;Get available foundation models&quot;</span><span class="p">)[</span><span class="s1">&#39;resources&#39;</span><span class="p">]</span>
-                        <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;model_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">model_id</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">return</span> <span class="p">[</span>
+                    <span class="n">res</span>
+                    <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1-beta/foundation_model_specs&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;Get available foundation models&quot;</span><span class="p">,</span>
+                    <span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;model_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">model_id</span>
+                <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1/foundation_model_specs&quot;</span><span class="p">,</span>
-                                                   <span class="s2">&quot;Get available foundation models&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1/foundation_model_specs&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Get available foundation models&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="k">except</span> <span class="n">WMLClientError</span><span class="p">:</span>  <span class="c1"># Remove on CPD 5.0 release</span>
-                <span class="k">return</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1-beta/foundation_model_specs&quot;</span><span class="p">,</span>
-                                                   <span class="s2">&quot;Get available foundation models&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1-beta/foundation_model_specs&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Get available foundation models&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
     <span class="k">except</span> <span class="n">WMLClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_model_specs&quot;</span><span class="p">),</span> <span class="n">e</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_model_specs&quot;</span><span class="p">),</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">reason</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 
-<span class="k">def</span> <span class="nf">get_custom_model_specs</span><span class="p">(</span><span class="n">credentials</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                           <span class="n">api_client</span><span class="p">:</span> <span class="s1">&#39;APIClient&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                           <span class="n">model_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                           <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> 
-                           <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-                           <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                           <span class="n">verify</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get details on available custom model(s) as dict or as generator (``asynchronous``). </span>
+<span class="k">def</span> <span class="nf">get_custom_model_specs</span><span class="p">(</span>
+    <span class="n">credentials</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">verify</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">NextResourceGenerator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get details on available custom model(s) as dict or as generator (``asynchronous``).</span>
 <span class="sd">    If ``asynchronous`` or ``get_all`` is set, then ``model_id`` is ignored.</span>
+
+<span class="sd">    *Decrecated:* `get_custom_model_specs()` function is deprecated, please use `client.foundation_models.get_custom_model_specs()` function instead.</span>
 
 <span class="sd">    :param credentials: credentials to watsonx.ai instance</span>
 <span class="sd">    :type credentials: dict, optional</span>
@@ -403,53 +449,76 @@
 <span class="sd">            print(spec, end=&quot;&quot;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Model needs to be first stored via client.repository.store_model(model_id, meta_props=metadata)&quot;</span>
-                  <span class="s2">&quot; and deployed via client.deployments.create(asset_id, metadata) to be used.&quot;</span><span class="p">)</span>
+    <span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;`get_custom_model_specs()` function is deprecated, please use `client.foundation_models.get_custom_model_specs()` function instead.&quot;</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;Model needs to be first stored via client.repository.store_model(model_id, meta_props=metadata)&quot;</span>
+        <span class="s2">&quot; and deployed via client.deployments.create(asset_id, metadata) to be used.&quot;</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">credentials</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">api_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span><span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;credentials&quot;</span><span class="p">,</span> <span class="s2">&quot;api_client&quot;</span><span class="p">],</span>
-                                       <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span>
+            <span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;credentials&quot;</span><span class="p">,</span> <span class="s2">&quot;api_client&quot;</span><span class="p">],</span>
+            <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">elif</span> <span class="n">credentials</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+
         <span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">client</span> <span class="o">=</span> <span class="n">api_client</span>
 
-    <span class="n">url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">wml_credentials</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span>
 
     <span class="n">params</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">_params</span><span class="p">(</span><span class="n">skip_for_create</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">limit</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">limit</span> <span class="o">&gt;</span> <span class="mi">200</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">InvalidValue</span><span class="p">(</span><span class="n">value_name</span><span class="o">=</span><span class="s2">&quot;limit&quot;</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;The given value </span><span class="si">{</span><span class="n">limit</span><span class="si">}</span><span class="s2"> is not in the range &lt;1, 200&gt;&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">InvalidValue</span><span class="p">(</span>
+            <span class="n">value_name</span><span class="o">=</span><span class="s2">&quot;limit&quot;</span><span class="p">,</span>
+            <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;The given value </span><span class="si">{</span><span class="n">limit</span><span class="si">}</span><span class="s2"> is not in the range &lt;1, 200&gt;&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;limit&#39;</span><span class="p">:</span> <span class="n">limit</span><span class="p">})</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="n">limit</span><span class="p">})</span>
 
+    <span class="n">url</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">asynchronous</span> <span class="ow">or</span> <span class="n">get_all</span><span class="p">:</span>
-        <span class="n">resource_generator</span> <span class="o">=</span> <span class="n">NextResourceGenerator</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
-                                                   <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
-                                                   <span class="n">href</span><span class="o">=</span><span class="s2">&quot;ml/v4/custom_foundation_models&quot;</span><span class="p">,</span>
-                                                   <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
-                                                   <span class="n">_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">)</span>
+        <span class="n">resource_generator</span> <span class="o">=</span> <span class="n">NextResourceGenerator</span><span class="p">(</span>
+            <span class="n">client</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
+            <span class="n">href</span><span class="o">=</span><span class="s2">&quot;ml/v4/custom_foundation_models&quot;</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">asynchronous</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">resource_generator</span>
 
         <span class="n">resources</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">resource_generator</span><span class="p">:</span>
-            <span class="n">resources</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;resources&#39;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;resources&quot;</span><span class="p">:</span> <span class="n">resources</span>
-        <span class="p">}</span>
+            <span class="n">resources</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;resources&quot;</span><span class="p">:</span> <span class="n">resources</span><span class="p">}</span>
 
-    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v4/custom_foundation_models&quot;</span><span class="p">,</span> 
-                            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
-                            <span class="n">headers</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">())</span> 
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v4/custom_foundation_models&quot;</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+        <span class="n">headers</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">model_id</span><span class="p">:</span>
-            <span class="n">resources</span> <span class="o">=</span> <span class="p">[</span><span class="n">res</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;resources&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;model_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">model_id</span><span class="p">]</span>
+            <span class="n">resources</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">res</span>
+                <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;model_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">model_id</span>
+            <span class="p">]</span>
             <span class="k">return</span> <span class="n">resources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">resources</span> <span class="k">else</span> <span class="p">{}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;custom_models_no_model_specs&quot;</span><span class="p">),</span> <span class="n">url</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;custom_models_no_model_specs&quot;</span><span class="p">),</span> <span class="n">url</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Getting failed. Reason: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -457,9 +526,11 @@
 
 <div class="viewcode-block" id="get_model_lifecycle">
 <a class="viewcode-back" href="../../../../fm_helpers.html#ibm_watsonx_ai.foundation_models.get_model_lifecycle">[docs]</a>
-<span class="k">def</span> <span class="nf">get_model_lifecycle</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">get_model_lifecycle</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Operation to retrieve the list of model lifecycle data.</span>
+
+<span class="sd">    *Decrecated:* `get_model_lifecycle()` function is deprecated, please use `client.foundation_models.get_model_lifecycle()` function instead.</span>
 
 <span class="sd">    :param url: environment url</span>
 <span class="sd">    :type url: str</span>
@@ -481,60 +552,119 @@
 <span class="sd">            model_id=&quot;ibm/granite-13b-instruct-v2&quot;</span>
 <span class="sd">            )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;`get_model_lifecycle()` function is deprecated, please use `client.foundation_models.get_model_lifecycle()` function instead.&quot;</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="n">model_specs</span> <span class="o">=</span> <span class="n">get_model_specs</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
-    <span class="n">model_spec</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">model_metadata</span> <span class="k">for</span> <span class="n">model_metadata</span> <span class="ow">in</span> <span class="n">model_specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resources&#39;</span><span class="p">,</span> <span class="p">[])</span>
-                       <span class="k">if</span> <span class="n">model_metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;model_id&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">model_id</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">model_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lifecycle&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">model_spec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span></div>
+    <span class="n">model_spec</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">model_metadata</span>
+            <span class="k">for</span> <span class="n">model_metadata</span> <span class="ow">in</span> <span class="n">model_specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="k">if</span> <span class="n">model_metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">model_id</span>
+        <span class="p">),</span>
+        <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">model_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lifecycle&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">model_spec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span></div>
 
 
 
-<span class="k">def</span> <span class="nf">_check_model_state</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">model_id</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_check_model_state</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">default_warning_template</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;Model &#39;</span><span class="si">{model_id}</span><span class="s2">&#39; is in </span><span class="si">{state}</span><span class="s2"> state from </span><span class="si">{start_date}</span><span class="s2"> until </span><span class="si">{withdrawn_start_date}</span><span class="s2">. &quot;</span>
         <span class="s2">&quot;IDs of alternative models: </span><span class="si">{alternative_model_ids}</span><span class="s2">. &quot;</span>
-        <span class="s2">&quot;Further details: https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-model-lifecycle.html?context=wx&amp;audience=wdp&quot;</span><span class="p">)</span>
+        <span class="s2">&quot;Further details: https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-model-lifecycle.html?context=wx&amp;audience=wdp&quot;</span>
+    <span class="p">)</span>
 
     <span class="n">lifecycle</span> <span class="o">=</span> <span class="n">get_model_lifecycle</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">model_id</span><span class="p">)</span>
 
     <span class="n">modes_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">ids</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">ids</span> <span class="ow">in</span> <span class="p">(</span><span class="n">lifecycle</span> <span class="ow">or</span> <span class="p">[])]</span>
     <span class="n">deprecated_or_constricted_warning_template_cpd</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;Model &#39;</span><span class="si">{model_id}</span><span class="s2">&#39; is in </span><span class="si">{state}</span><span class="s2"> state. &quot;</span>
-            <span class="s2">&quot;IDs of alternative models: </span><span class="si">{alternative_model_ids}</span><span class="s2">. &quot;</span>
-            <span class="s2">&quot;Further details: https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-model-lifecycle.html?context=wx&amp;audience=wdp&quot;</span><span class="p">)</span>
+        <span class="s2">&quot;Model &#39;</span><span class="si">{model_id}</span><span class="s2">&#39; is in </span><span class="si">{state}</span><span class="s2"> state. &quot;</span>
+        <span class="s2">&quot;IDs of alternative models: </span><span class="si">{alternative_model_ids}</span><span class="s2">. &quot;</span>
+        <span class="s2">&quot;Further details: https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-model-lifecycle.html?context=wx&amp;audience=wdp&quot;</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">lifecycle</span> <span class="ow">and</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">DEPRECATED</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">modes_list</span><span class="p">:</span>
-        <span class="n">model_lifecycle</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">el</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">lifecycle</span> <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">DEPRECATED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;since_version&#39;</span><span class="p">):</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">deprecated_or_constricted_warning_template_cpd</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
-                <span class="n">state</span><span class="o">=</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">DEPRECATED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
-                <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;alternative_model_ids&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">]))</span>
-            <span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="n">LifecycleWarning</span><span class="p">)</span>
+        <span class="n">model_lifecycle</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">el</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">lifecycle</span> <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">DEPRECATED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">model_lifecycle</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">model_lifecycle</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;since_version&quot;</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">deprecated_or_constricted_warning_template_cpd</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
+                    <span class="n">state</span><span class="o">=</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">DEPRECATED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                    <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alternative_model_ids&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">])</span>
+                    <span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">category</span><span class="o">=</span><span class="n">LifecycleWarning</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">default_warning_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
-                <span class="n">state</span><span class="o">=</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">DEPRECATED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
-                <span class="n">start_date</span><span class="o">=</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;start_date&#39;</span><span class="p">),</span>
-                <span class="n">withdrawn_start_date</span><span class="o">=</span><span class="nb">next</span><span class="p">((</span><span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;start_date&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">lifecycle</span> <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">WITHDRAWN</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="kc">None</span><span class="p">),</span>
-                <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;alternative_model_ids&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">]))</span>
-            <span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="n">LifecycleWarning</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">default_warning_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
+                    <span class="n">state</span><span class="o">=</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">DEPRECATED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                    <span class="n">start_date</span><span class="o">=</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_date&quot;</span><span class="p">),</span>
+                    <span class="n">withdrawn_start_date</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span>
+                        <span class="p">(</span>
+                            <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_date&quot;</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">lifecycle</span>
+                            <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">WITHDRAWN</span><span class="o">.</span><span class="n">value</span>
+                        <span class="p">),</span>
+                        <span class="kc">None</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alternative_model_ids&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">])</span>
+                    <span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">category</span><span class="o">=</span><span class="n">LifecycleWarning</span><span class="p">,</span>
+            <span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">lifecycle</span> <span class="ow">and</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">modes_list</span><span class="p">:</span>
-        <span class="n">model_lifecycle</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">el</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">lifecycle</span> <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;since_version&#39;</span><span class="p">):</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">deprecated_or_constricted_warning_template_cpd</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
-                <span class="n">state</span><span class="o">=</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
-                <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;alternative_model_ids&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">]))</span>
-            <span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="n">LifecycleWarning</span><span class="p">)</span>
+        <span class="n">model_lifecycle</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">el</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">lifecycle</span> <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">model_lifecycle</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">model_lifecycle</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;since_version&quot;</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">deprecated_or_constricted_warning_template_cpd</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
+                    <span class="n">state</span><span class="o">=</span><span class="p">(</span>
+                        <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span>
+                    <span class="p">),</span>
+                    <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alternative_model_ids&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">])</span>
+                    <span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">category</span><span class="o">=</span><span class="n">LifecycleWarning</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">default_warning_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
-                <span class="n">state</span><span class="o">=</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
-                <span class="n">start_date</span><span class="o">=</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;start_date&#39;</span><span class="p">),</span>
-                <span class="n">withdrawn_start_date</span><span class="o">=</span><span class="nb">next</span><span class="p">((</span><span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;start_date&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">lifecycle</span> <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">WITHDRAWN</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="kc">None</span><span class="p">),</span>
-                <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;alternative_model_ids&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">]))</span>
-            <span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="n">LifecycleWarning</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">default_warning_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
+                    <span class="n">state</span><span class="o">=</span><span class="p">(</span>
+                        <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span>
+                    <span class="p">),</span>
+                    <span class="n">start_date</span><span class="o">=</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_date&quot;</span><span class="p">),</span>
+                    <span class="n">withdrawn_start_date</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span>
+                        <span class="p">(</span>
+                            <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_date&quot;</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">lifecycle</span>
+                            <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">WITHDRAWN</span><span class="o">.</span><span class="n">value</span>
+                        <span class="p">),</span>
+                        <span class="kc">None</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alternative_model_ids&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">])</span>
+                    <span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">category</span><span class="o">=</span><span class="n">LifecycleWarning</span><span class="p">,</span>
+            <span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_model_specs_with_prompt_tuning_support">
@@ -542,6 +672,8 @@
 <span class="k">def</span> <span class="nf">get_model_specs_with_prompt_tuning_support</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Operations to query the details of the deployed foundation models with prompt tuning support.</span>
+
+<span class="sd">    *Decrecated:* `get_model_specs_with_prompt_tuning_support()` function is deprecated, please use `client.foundation_models.get_model_specs_with_prompt_tuning_support()` function instead.</span>
 
 <span class="sd">    :param url: environment url</span>
 <span class="sd">    :type url: str</span>
@@ -559,17 +691,29 @@
 <span class="sd">            url=&quot;https://us-south.ml.cloud.ibm.com&quot;</span>
 <span class="sd">            )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;`get_model_specs_with_prompt_tuning_support()` function is deprecated, please use `client.foundation_models.get_model_specs_with_prompt_tuning_support()` function instead.&quot;</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1/foundation_model_specs&quot;</span><span class="p">,</span>
-                                               <span class="n">operation_name</span><span class="o">=</span><span class="s2">&quot;Get available foundation models&quot;</span><span class="p">,</span>
-                                               <span class="n">additional_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="s2">&quot;function_prompt_tune_trainable&quot;</span><span class="p">})</span>
+            <span class="k">return</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1/foundation_model_specs&quot;</span><span class="p">,</span>
+                <span class="n">operation_name</span><span class="o">=</span><span class="s2">&quot;Get available foundation models&quot;</span><span class="p">,</span>
+                <span class="n">additional_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="s2">&quot;function_prompt_tune_trainable&quot;</span><span class="p">},</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="n">WMLClientError</span><span class="p">:</span>  <span class="c1"># Remove on CPD 5.0 release</span>
-            <span class="k">return</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1-beta/foundation_model_specs&quot;</span><span class="p">,</span>
-                                               <span class="n">operation_name</span><span class="o">=</span><span class="s2">&quot;Get available foundation models&quot;</span><span class="p">,</span>
-                                               <span class="n">additional_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="s2">&quot;function_prompt_tune_trainable&quot;</span><span class="p">})</span>
+            <span class="k">return</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1-beta/foundation_model_specs&quot;</span><span class="p">,</span>
+                <span class="n">operation_name</span><span class="o">=</span><span class="s2">&quot;Get available foundation models&quot;</span><span class="p">,</span>
+                <span class="n">additional_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="s2">&quot;function_prompt_tune_trainable&quot;</span><span class="p">},</span>
+            <span class="p">)</span>
     <span class="k">except</span> <span class="n">WMLClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_model_specs&quot;</span><span class="p">),</span> <span class="n">e</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_model_specs&quot;</span><span class="p">),</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">reason</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 
@@ -597,93 +741,172 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1/foundation_model_tasks&quot;</span><span class="p">,</span>
-                                               <span class="s2">&quot;Get tasks that are supported by the foundation models.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1/foundation_model_tasks&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Get tasks that are supported by the foundation models.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="n">WMLClientError</span><span class="p">:</span>  <span class="c1"># Remove on CPD 5.0 release</span>
-            <span class="k">return</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1-beta/foundation_model_tasks&quot;</span><span class="p">,</span>
-                                               <span class="s2">&quot;Get tasks that are supported by the foundation models.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1-beta/foundation_model_tasks&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Get tasks that are supported by the foundation models.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
     <span class="k">except</span> <span class="n">WMLClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_supported_tasks&quot;</span><span class="p">),</span> <span class="n">e</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_supported_tasks&quot;</span><span class="p">),</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">reason</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 
-<span class="k">def</span> <span class="nf">get_all_supported_tasks_dict</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">get_all_supported_tasks_dict</span><span class="p">(</span>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="n">tasks_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">task_spec</span> <span class="ow">in</span> <span class="n">get_supported_tasks</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resources&#39;</span><span class="p">,</span> <span class="p">[]):</span>
-        <span class="n">tasks_dict</span><span class="p">[</span><span class="n">task_spec</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span> <span class="o">=</span> <span class="n">task_spec</span><span class="p">[</span><span class="s1">&#39;task_id&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">task_spec</span> <span class="ow">in</span> <span class="n">get_supported_tasks</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="n">tasks_dict</span><span class="p">[</span><span class="n">task_spec</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">task_spec</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">tasks_dict</span>
 
 
-<span class="k">def</span> <span class="nf">load_request_json</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">wml_client</span><span class="p">,</span> <span class="n">run_params</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">run_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">run_params</span> <span class="o">=</span> <span class="n">wml_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">run_id</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">load_request_json</span><span class="p">(</span>
+    <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">,</span>
+    <span class="n">run_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="c1"># note: backward compatibility</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">wml_client</span> <span class="o">:=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;wml_client&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">api_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;No `api_client` provided&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">wml_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">api_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">api_client</span> <span class="o">=</span> <span class="n">wml_client</span>
 
-    <span class="n">model_request_path</span> <span class="o">=</span> <span class="n">run_params</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;results_reference&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;location&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;model_request_path&#39;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;`wml_client` parameter is deprecated and will be removed in future. &quot;</span>
+                <span class="s2">&quot;Instead, please use `api_client`.&quot;</span>
+            <span class="p">),</span>
+            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="c1"># --- end note</span>
+    <span class="k">if</span> <span class="n">run_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">run_params</span> <span class="o">=</span> <span class="n">api_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">run_id</span><span class="p">)</span>
+
+    <span class="n">model_request_path</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">run_params</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span>
+        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;results_reference&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_request_path&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">model_request_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Missing model_request_path in run_params. Verify if the training run has been completed.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+            <span class="s2">&quot;Missing model_request_path in run_params. Verify if the training run has been completed.&quot;</span>
+        <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">wml_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
-        <span class="n">results_reference</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="o">.</span><span class="n">_from_dict</span><span class="p">(</span><span class="n">run_params</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;results_reference&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">api_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
+        <span class="n">results_reference</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="o">.</span><span class="n">_from_dict</span><span class="p">(</span>
+            <span class="n">run_params</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;results_reference&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">run_params</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;results_reference&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">CA</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">run_params</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;results_reference&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">CA</span><span class="p">:</span>
             <span class="n">results_reference</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">model_request_path</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">results_reference</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">model_request_path</span>
 
-        <span class="n">results_reference</span><span class="o">.</span><span class="n">set_client</span><span class="p">(</span><span class="n">wml_client</span><span class="p">)</span>
+        <span class="n">results_reference</span><span class="o">.</span><span class="n">set_client</span><span class="p">(</span><span class="n">api_client</span><span class="p">)</span>
         <span class="n">request_json_bytes</span> <span class="o">=</span> <span class="n">results_reference</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># download from cos</span>
 
-    <span class="k">elif</span> <span class="n">wml_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&gt;=</span> <span class="mf">4.8</span><span class="p">:</span>
-        <span class="n">asset_parts</span> <span class="o">=</span> <span class="n">model_request_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-        <span class="n">model_request_asset_url</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">asset_parts</span><span class="p">[</span><span class="n">asset_parts</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;assets&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:])</span>
-        <span class="n">request_json_bytes</span> <span class="o">=</span> <span class="n">load_file_from_file_system_nonautoai</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="n">wml_client</span><span class="p">,</span>
-                                                                  <span class="n">file_path</span><span class="o">=</span><span class="n">model_request_asset_url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">api_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&gt;=</span> <span class="mf">4.8</span><span class="p">:</span>
+        <span class="n">asset_parts</span> <span class="o">=</span> <span class="n">model_request_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">model_request_asset_url</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">asset_parts</span><span class="p">[</span><span class="n">asset_parts</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;assets&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+        <span class="p">)</span>
+        <span class="n">request_json_bytes</span> <span class="o">=</span> <span class="n">load_file_from_file_system_nonautoai</span><span class="p">(</span>
+            <span class="n">api_client</span><span class="o">=</span><span class="n">api_client</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">model_request_asset_url</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Unsupported environment for this action&quot;</span><span class="p">)</span>
 
+    <span class="n">request_json_bytes</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">request_json_bytes</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">json_loads</span><span class="p">(</span><span class="n">request_json_bytes</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
 
 
-<span class="k">def</span> <span class="nf">is_training_prompt_tuning</span><span class="p">(</span><span class="n">training_id</span><span class="p">,</span> <span class="n">wml_client</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">is_training_prompt_tuning</span><span class="p">(</span>
+    <span class="n">training_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns True if training_id is connected to prompt tuning&quot;&quot;&quot;</span>
+    <span class="c1"># note: backward compatibility</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">wml_client</span> <span class="o">:=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;wml_client&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">api_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;No `api_client` provided&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">wml_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">api_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">api_client</span> <span class="o">=</span> <span class="n">wml_client</span>
+
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;`wml_client` parameter is deprecated and will be removed in future. &quot;</span>
+                <span class="s2">&quot;Instead, please use `api_client`.&quot;</span>
+            <span class="p">),</span>
+            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="c1"># --- end note</span>
     <span class="k">if</span> <span class="n">training_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
-    <span class="n">run_params</span> <span class="o">=</span> <span class="n">wml_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">training_uid</span><span class="o">=</span><span class="n">training_id</span><span class="p">)</span>
-    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">run_params</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;prompt_tuning&#39;</span><span class="p">))</span>
+    <span class="n">run_params</span> <span class="o">=</span> <span class="n">api_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">training_id</span><span class="o">=</span><span class="n">training_id</span><span class="p">)</span>  <span class="c1"># type: ignore[union-attr]</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">run_params</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prompt_tuning&quot;</span><span class="p">))</span>
 
 
 <span class="k">class</span> <span class="nc">TemplateFormatter</span><span class="p">(</span><span class="n">Formatter</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">check_unused_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
-                          <span class="n">used_args</span><span class="p">:</span> <span class="n">List</span><span class="p">[(</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)],</span> 
-                          <span class="n">args</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> 
-                          <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">check_unused_args</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">used_args</span><span class="p">:</span> <span class="nb">set</span><span class="p">[(</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)],</span> <span class="n">args</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check for unused args.&quot;&quot;&quot;</span>
         <span class="n">extra_args</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">used_args</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">extra_args</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">extra_args</span><span class="p">)</span>
 
+
 <span class="k">class</span> <span class="nc">HAPDetectionWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span> <span class="o">...</span>
+
+
 <span class="k">class</span> <span class="nc">PIIDetectionWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span> <span class="o">...</span>
+
+
 <span class="k">class</span> <span class="nc">LifecycleWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span> <span class="o">...</span>
+
+
 <span class="k">class</span> <span class="nc">WatsonxLLMDeprecationWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span> <span class="o">...</span>
 
 
 <span class="k">def</span> <span class="nf">_raise_watsonxllm_deprecation_warning</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;ibm_watsonx_ai.foundation_models.extensions.langchain.WatsonxLLM&quot;</span>
-                  <span class="s2">&quot; is deprecated and will not be supported in the future. &quot;</span>
-                  <span class="s2">&quot;Please import from langchain-ibm instead.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                  <span class="s2">&quot;To install langchain-ibm run `pip install -U langchain-ibm`.&quot;</span><span class="p">,</span>
-                  <span class="n">category</span><span class="o">=</span><span class="n">WatsonxLLMDeprecationWarning</span><span class="p">,</span>
-                  <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span>
-                  <span class="p">)</span>
-    
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;ibm_watsonx_ai.foundation_models.extensions.langchain.WatsonxLLM&quot;</span>
+        <span class="s2">&quot; is deprecated and will not be supported in the future. &quot;</span>
+        <span class="s2">&quot;Please import from langchain-ibm instead.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;To install langchain-ibm run `pip install -U langchain-ibm`.&quot;</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="n">WatsonxLLMDeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
 <span class="k">def</span> <span class="nf">get_embedding_model_specs</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">/ml/v1/foundation_model_specs&#39;</span><span class="p">,</span>
-                                       <span class="n">operation_name</span><span class="o">=</span><span class="s1">&#39;Get available embedding models&#39;</span><span class="p">,</span>
-                                       <span class="n">additional_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;filters&#39;</span><span class="p">:</span> <span class="s1">&#39;function_embedding&#39;</span><span class="p">})</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    *Decrecated:* `get_embedding_model_specs()` function is deprecated, please use `client.foundation_models.get_embeddings_model_specs()` function instead.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;`get_embedding_model_specs()` function is deprecated, please use `client.foundation_models.get_embeddings_model_specs()` function instead.&quot;</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1/foundation_model_specs&quot;</span><span class="p">,</span>
+        <span class="n">operation_name</span><span class="o">=</span><span class="s2">&quot;Get available embedding models&quot;</span><span class="p">,</span>
+        <span class="n">additional_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="s2">&quot;function_embedding&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
 </pre></div>
         </article>
       </div>
@@ -717,7 +940,7 @@
     </aside>
   </div>
 </div><script src="../../../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

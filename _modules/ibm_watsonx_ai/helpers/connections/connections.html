@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>ibm_watsonx_ai.helpers.connections.connections - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
@@ -164,6 +164,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -197,12 +198,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -269,17 +272,16 @@
 <span class="kn">from</span> <span class="nn">ibm_botocore.client</span> <span class="kn">import</span> <span class="n">ClientError</span>
 <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
 <span class="kn">import</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="k">as</span> <span class="nn">requests</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.enums</span> <span class="kn">import</span> <span class="n">PredictionType</span><span class="p">,</span> <span class="n">DataConnectionTypes</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.enums</span> <span class="kn">import</span> <span class="n">DataConnectionTypes</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.errors</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">MissingAutoPipelinesParameters</span><span class="p">,</span> <span class="n">UseWMLClient</span><span class="p">,</span> <span class="n">MissingCOSStudioConnection</span><span class="p">,</span> <span class="n">MissingProjectLib</span><span class="p">,</span>
-    <span class="n">HoldoutSplitNotSupported</span><span class="p">,</span> <span class="n">InvalidCOSCredentials</span><span class="p">,</span> <span class="n">MissingLocalAsset</span><span class="p">,</span> <span class="n">InvalidIdType</span><span class="p">,</span>
-    <span class="n">NotExistingCOSResource</span><span class="p">,</span> <span class="n">InvalidDataAsset</span><span class="p">,</span> <span class="n">CannotReadSavedRemoteDataBeforeFit</span><span class="p">,</span> <span class="n">NoAutomatedHoldoutSplit</span>
+    <span class="n">MissingAutoPipelinesParameters</span><span class="p">,</span> <span class="n">MissingCOSStudioConnection</span><span class="p">,</span> <span class="n">MissingProjectLib</span><span class="p">,</span> 
+    <span class="n">InvalidCOSCredentials</span><span class="p">,</span> <span class="n">InvalidIdType</span><span class="p">,</span>
+    <span class="n">NotExistingCOSResource</span><span class="p">,</span> <span class="n">CannotReadSavedRemoteDataBeforeFit</span><span class="p">,</span> <span class="n">NoAutomatedHoldoutSplit</span>
 <span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.utils</span> <span class="kn">import</span> <span class="n">all_logging_disabled</span><span class="p">,</span> <span class="n">try_import_autoai_libs</span><span class="p">,</span> \
     <span class="n">try_import_autoai_ts_libs</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.watson_studio</span> <span class="kn">import</span> <span class="n">get_project</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.data_loaders.datasets.experiment</span> <span class="kn">import</span> <span class="n">DEFAULT_SAMPLING_TYPE</span><span class="p">,</span> <span class="n">DEFAULT_SAMPLE_SIZE_LIMIT</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">MissingValue</span><span class="p">,</span> <span class="n">ApiRequestFailure</span><span class="p">,</span> <span class="n">WMLClientError</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.errors</span> <span class="kn">import</span> <span class="n">ContainerTypeNotSupported</span>
@@ -1065,7 +1067,7 @@
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="c1"># do not try Flight if we are on the cloud</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">ICP</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="n">e</span>
 
                     <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;USER_ACCESS_TOKEN&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;RUNTIME_ENV_ACCESS_TOKEN_FILE&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1089,7 +1091,7 @@
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_training_data_from_file_system</span><span class="p">()</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">CA</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">CN</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="p">,</span> <span class="s1">&#39;ICP&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">CN</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="p">,</span> <span class="s1">&#39;ICP_PLATFORM_SPACES&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">CN</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">ContainerTypeNotSupported</span><span class="p">()</span>  <span class="c1"># block Container type on CPD</span>
 
             <span class="k">if</span> <span class="n">use_flight</span><span class="p">:</span>
@@ -1132,7 +1134,7 @@
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="c1"># do not try Flight is we are on the cloud</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">ICP</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="n">e</span>
 
                     <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;USER_ACCESS_TOKEN&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;RUNTIME_ENV_ACCESS_TOKEN_FILE&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1254,12 +1256,12 @@
             <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="s2">&quot;S3 DataConnection is not supported. Please use data_asset_id instead.&quot;</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">CA</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">CN</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="p">,</span> <span class="s1">&#39;ICP&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">CN</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="p">,</span> <span class="s1">&#39;ICP_PLATFORM_SPACES&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">CN</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">ContainerTypeNotSupported</span><span class="p">()</span>  <span class="c1"># block Container type on CPD</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_if_connection_asset_is_s3</span><span class="p">():</span>
                 <span class="c1"># do not try Flight if we are on the cloud</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">ICP</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">use_flight</span><span class="p">:</span>  <span class="c1"># CLOUD</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">use_flight</span><span class="p">:</span>  <span class="c1"># CLOUD</span>
                     <span class="k">if</span> <span class="n">remote_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_dict</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;location&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">):</span>
                         <span class="n">updated_remote_name</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                     <span class="k">else</span><span class="p">:</span>
@@ -1310,7 +1312,7 @@
                         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;data should be either of type </span><span class="se">\&quot;</span><span class="s2">str</span><span class="se">\&quot;</span><span class="s2"> or </span><span class="se">\&quot;</span><span class="s2">pandas.DataFrame</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">ICP</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">use_flight</span><span class="p">:</span>  <span class="c1"># CLOUD</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">use_flight</span><span class="p">:</span>  <span class="c1"># CLOUD</span>
                     <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="s2">&quot;Connections other than COS are not supported on a cloud yet.&quot;</span><span class="p">)</span>
                 <span class="c1"># CP4D</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -1341,7 +1343,7 @@
                     <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="n">attr</span><span class="p">)]</span>
                 <span class="c1"># end note</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">DS</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">ICP</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">use_flight</span><span class="p">:</span>  <span class="c1"># CLOUD</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">use_flight</span><span class="p">:</span>  <span class="c1"># CLOUD</span>
                 <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="s2">&quot;Write of data for Data Asset is not supported on Cloud.&quot;</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1593,7 +1595,7 @@
         <span class="n">asset_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
             <span class="n">data_asset_details</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">data_assets</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">asset_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">data_assets</span><span class="o">.</span><span class="n">get_uid</span><span class="p">(</span><span class="n">data_asset_details</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">data_assets</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">data_asset_details</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MissingValue</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Incorrect initialization of class FSLocation&quot;</span><span class="p">)</span>
 
@@ -1662,7 +1664,7 @@
         <span class="n">attachment_url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_data_asset_href</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="n">attachment_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attachment_url</span><span class="si">}</span><span class="s2">/attachments/</span><span class="si">{</span><span class="n">attachment_id</span><span class="si">}</span><span class="s2">&quot;</span>
 
-        <span class="k">if</span> <span class="n">client</span><span class="o">.</span><span class="n">ICP</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
             <span class="n">attachment</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attachment_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
                                       <span class="n">params</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">_params</span><span class="p">())</span>
 
@@ -1932,7 +1934,7 @@
     </aside>
   </div>
 </div><script src="../../../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

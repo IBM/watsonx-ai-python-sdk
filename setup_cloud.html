@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="IBM watsonx.ai software" href="setup_cpd.html" /><link rel="prev" title="Setup" href="setup.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>IBM watsonx.ai for IBM Cloud - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
@@ -165,6 +165,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -198,12 +199,14 @@
 <li class="toctree-l3"><a class="reference internal" href="prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -237,18 +240,18 @@
         </div>
         <article role="main">
           <section id="ibm-watsonx-ai-for-ibm-cloud">
-<h1>IBM watsonx.ai for IBM Cloud<a class="headerlink" href="#ibm-watsonx-ai-for-ibm-cloud" title="Link to this heading">#</a></h1>
+<h1>IBM watsonx.ai for IBM Cloud<a class="headerlink" href="#ibm-watsonx-ai-for-ibm-cloud" title="Link to this heading">¶</a></h1>
 <section id="requirements">
-<h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">#</a></h2>
+<h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h2>
 <p>Starting work with IBM watsonx.ai for IBM Cloud refer to <a class="reference external" href="https://dataplatform.cloud.ibm.com/docs/content/wsj/getting-started/get-started-wdp.html?audience=wdp&amp;context=wx">Getting started</a> section in main product documentation.</p>
 </section>
 <section id="supported-machine-learning-frameworks">
-<h2>Supported machine learning frameworks<a class="headerlink" href="#supported-machine-learning-frameworks" title="Link to this heading">#</a></h2>
+<h2>Supported machine learning frameworks<a class="headerlink" href="#supported-machine-learning-frameworks" title="Link to this heading">¶</a></h2>
 <p>For the list of supported machine learning frameworks (models) on IBM watsonx.ai for IBM Cloud, refer to
 <a class="reference external" href="https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/pm_service_supported_frameworks.html?context=wx&amp;audience=wdp&amp;locale=en">watsonx.ai Documentation</a>.</p>
 </section>
 <section id="authentication">
-<h2>Authentication<a class="headerlink" href="#authentication" title="Link to this heading">#</a></h2>
+<h2>Authentication<a class="headerlink" href="#authentication" title="Link to this heading">¶</a></h2>
 <p>To use watsonx.ai APIs, create an instance of APIClient with authentication details.</p>
 <p><strong>Note:</strong> Depending on the region of your provisioned service instance, use one of the following as your url:</p>
 <blockquote>
@@ -262,24 +265,26 @@
 <p><strong>Note:</strong> To determine <cite>apikey</cite> go to <a class="reference external" href="https://cloud.ibm.com/iam/apikeys">https://cloud.ibm.com/iam/apikeys</a> and generate your apikey.</p>
 <p>Example of creating the client using apikey:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">Credentials</span>
 
-<span class="n">wml_credentials</span> <span class="o">=</span> <span class="p">{</span>
-                   <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">,</span>
-                   <span class="s2">&quot;apikey&quot;</span><span class="p">:</span><span class="s2">&quot;***********&quot;</span>
-                  <span class="p">}</span>
+<span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span>
+                   <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">,</span>
+                   <span class="n">api_key</span> <span class="o">=</span> <span class="s2">&quot;***********&quot;</span>
+                  <span class="p">)</span>
 
-<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">wml_credentials</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Example of creating the client using token:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">Credentials</span>
 
-<span class="n">wml_credentials</span> <span class="o">=</span> <span class="p">{</span>
-                   <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">,</span>
-                   <span class="s2">&quot;token&quot;</span><span class="p">:</span><span class="s2">&quot;***********&quot;</span><span class="p">,</span>
-                  <span class="p">}</span>
+<span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span>
+                   <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">,</span>
+                   <span class="n">token</span> <span class="o">=</span> <span class="s2">&quot;***********&quot;</span><span class="p">,</span>
+                  <span class="p">)</span>
 
-<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">wml_credentials</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Note:</strong> Setting default space/project id is mandatory. For details, refer to <code class="docutils literal notranslate"><span class="pre">client.set.default_space()</span></code> API in this document.</p>
@@ -361,7 +366,7 @@
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="DataConnection" href="dataconnection.html" /><link rel="prev" title="Core" href="core_api.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>Federated Learning - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
@@ -165,6 +165,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="api.html">API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core_api.html">Core</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -198,12 +199,14 @@
 <li class="toctree-l3"><a class="reference internal" href="prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -237,19 +240,19 @@
         </div>
         <article role="main">
           <section id="federated-learning">
-<h1>Federated Learning<a class="headerlink" href="#federated-learning" title="Link to this heading">#</a></h1>
+<h1>Federated Learning<a class="headerlink" href="#federated-learning" title="Link to this heading">¶</a></h1>
 <p>Federated Learning provides the tools for training a model collaboratively, by coordinating local training runs
 and fusing the results. Even though data sources are never moved, combined, or shared among parties or the aggregator,
 all of them contribute to training and improving the quality of the global model.</p>
 <p><a class="reference external" href="https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fl-demo.html?context=wx&amp;audience=wdp">Tutorial and Samples for IBM watsonx.ai for IBM Cloud</a></p>
 <p><a class="reference external" href="https://www.ibm.com/docs/en/cloud-paks/cp-data/4.0?topic=learning-federated-tutorial-samples">Tutorial and Samples for IBM watsonx.ai software, IBM watsonx.ai Server</a></p>
 <section id="aggregation">
-<h2>Aggregation<a class="headerlink" href="#aggregation" title="Link to this heading">#</a></h2>
+<h2>Aggregation<a class="headerlink" href="#aggregation" title="Link to this heading">¶</a></h2>
 <p>The aggregator process, which fuses the parties’ training results, runs as a watsonx.ai training job.
 For more information on creating and querying a training job, see the API documentation for the <code class="docutils literal notranslate"><span class="pre">client.training</span></code> class.
 The parameters available to configure a Federated Learning training are described in the <a class="reference external" href="https://cloud.ibm.com/apidocs/machine-learning-cp#trainings-create">IBM Cloud API Docs</a>.</p>
 <section id="configure-and-start-aggregation">
-<h3>Configure and start aggregation<a class="headerlink" href="#configure-and-start-aggregation" title="Link to this heading">#</a></h3>
+<h3>Configure and start aggregation<a class="headerlink" href="#configure-and-start-aggregation" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span> <span class="n">credentials</span> <span class="p">)</span>
@@ -304,11 +307,11 @@ The parameters available to configure a Federated Learning training are describe
 </section>
 </section>
 <section id="local-training">
-<h2>Local training<a class="headerlink" href="#local-training" title="Link to this heading">#</a></h2>
+<h2>Local training<a class="headerlink" href="#local-training" title="Link to this heading">¶</a></h2>
 <p>Training is performed locally by parties which connect to the aggregator.  The parties must be members of the project
 or space in which the aggregator is running and are identified to the Federated Learning aggregator as Remote Training Systems.</p>
 <section id="configure-and-start-local-training">
-<h3>Configure and start local training<a class="headerlink" href="#configure-and-start-local-training" title="Link to this heading">#</a></h3>
+<h3>Configure and start local training<a class="headerlink" href="#configure-and-start-local-training" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span> <span class="n">party_1_credentials</span> <span class="p">)</span>
@@ -337,12 +340,12 @@ or space in which the aggregator is running and are identified to the Federated 
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="remote_training_system.RemoteTrainingSystem">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">remote_training_system.</span></span><span class="sig-name descname"><span class="pre">RemoteTrainingSystem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/remote_training_system.html#RemoteTrainingSystem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">remote_training_system.</span></span><span class="sig-name descname"><span class="pre">RemoteTrainingSystem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/remote_training_system.html#RemoteTrainingSystem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem" title="Link to this definition">¶</a></dt>
 <dd><p>The RemoteTrainingSystem class represents a Federated Learning party and provides a list of identities
 that are permitted to join training as the RemoteTrainingSystem.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="remote_training_system.RemoteTrainingSystem.create_party">
-<span class="sig-name descname"><span class="pre">create_party</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_system_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">party_metadata</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.create_party" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">create_party</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_system_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">party_metadata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/remote_training_system.html#RemoteTrainingSystem.create_party"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.create_party" title="Link to this definition">¶</a></dt>
 <dd><p>Create a party object using the specified remote training system id and the party metadata.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -360,18 +363,18 @@ that are permitted to join training as the RemoteTrainingSystem.</p>
 </dl>
 <p><strong>Examples</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">party_metadata</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">wml_client</span><span class="o">.</span><span class="n">remote_training_systems</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DATA_HANDLER</span><span class="p">:</span> <span class="p">{</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">remote_training_systems</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DATA_HANDLER</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;info&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;npz_file&quot;</span><span class="p">:</span> <span class="s2">&quot;./data_party0.npz&quot;</span>
         <span class="p">},</span>
         <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;MnistTFDataHandler&quot;</span><span class="p">,</span>
         <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;./mnist_keras_data_handler.py&quot;</span>
     <span class="p">},</span>
-    <span class="n">wml_client</span><span class="o">.</span><span class="n">remote_training_systems</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">LOCAL_TRAINING</span><span class="p">:</span> <span class="p">{</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">remote_training_systems</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">LOCAL_TRAINING</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;LocalTrainingHandler&quot;</span><span class="p">,</span>
         <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;ibmfl.party.training.local_training_handler&quot;</span>
     <span class="p">},</span>
-    <span class="n">wml_client</span><span class="o">.</span><span class="n">remote_training_systems</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">HYPERPARAMS</span><span class="p">:</span> <span class="p">{</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">remote_training_systems</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">HYPERPARAMS</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;epochs&quot;</span><span class="p">:</span> <span class="mi">3</span>
     <span class="p">},</span>
 <span class="p">}</span>
@@ -379,7 +382,7 @@ that are permitted to join training as the RemoteTrainingSystem.</p>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">party_metadata</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">wml_client</span><span class="o">.</span><span class="n">remote_training_systems</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DATA_HANDLER</span><span class="p">:</span> <span class="p">{</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">remote_training_systems</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DATA_HANDLER</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;info&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;npz_file&quot;</span><span class="p">:</span> <span class="s2">&quot;./data_party0.npz&quot;</span>
         <span class="p">},</span>
@@ -393,7 +396,7 @@ that are permitted to join training as the RemoteTrainingSystem.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="remote_training_system.RemoteTrainingSystem.create_revision">
-<span class="sig-name descname"><span class="pre">create_revision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_system_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.create_revision" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">create_revision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_system_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/remote_training_system.html#RemoteTrainingSystem.create_revision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.create_revision" title="Link to this definition">¶</a></dt>
 <dd><p>Create a new remote training system revision.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -414,7 +417,7 @@ that are permitted to join training as the RemoteTrainingSystem.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="remote_training_system.RemoteTrainingSystem.delete">
-<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_systems_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.delete" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_systems_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/remote_training_system.html#RemoteTrainingSystem.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.delete" title="Link to this definition">¶</a></dt>
 <dd><p>Deletes the given <cite>remote_training_systems_id</cite> definition. <cite>space_id</cite> or <cite>project_id</cite> has to be provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -435,7 +438,7 @@ that are permitted to join training as the RemoteTrainingSystem.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="remote_training_system.RemoteTrainingSystem.get_details">
-<span class="sig-name descname"><span class="pre">get_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_system_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.get_details" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_system_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/remote_training_system.html#RemoteTrainingSystem.get_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.get_details" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Get metadata of the given remote training system. If <cite>remote_training_system_id</cite> is not specified,</dt><dd><p>metadata is returned for all remote training systems.</p>
 </dd>
@@ -470,7 +473,7 @@ that are permitted to join training as the RemoteTrainingSystem.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="remote_training_system.RemoteTrainingSystem.get_id">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_system_details</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.get_id" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_system_details</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/remote_training_system.html#RemoteTrainingSystem.get_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.get_id" title="Link to this definition">¶</a></dt>
 <dd><p>Get ID of remote training system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -492,13 +495,13 @@ that are permitted to join training as the RemoteTrainingSystem.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="remote_training_system.RemoteTrainingSystem.get_revision_details">
-<span class="sig-name descname"><span class="pre">get_revision_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_system_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rev_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.get_revision_details" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_revision_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_system_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rev_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/remote_training_system.html#RemoteTrainingSystem.get_revision_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.get_revision_details" title="Link to this definition">¶</a></dt>
 <dd><p>Get metadata from the specific revision of a stored remote system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>remote_training_system_id</strong> (<em>str</em>) – UID of remote training system</p></li>
-<li><p><strong>rev_id</strong> (<em>int</em>) – Unique id of the remote system revision</p></li>
+<li><p><strong>remote_training_system_id</strong> (<em>str</em>) – ID of remote training system</p></li>
+<li><p><strong>rev_id</strong> (<em>str</em>) – Unique id of the remote system revision</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -516,12 +519,18 @@ that are permitted to join training as the RemoteTrainingSystem.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="remote_training_system.RemoteTrainingSystem.list">
-<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.list" title="Link to this definition">#</a></dt>
-<dd><p>Print stored remote training systems in a table format.
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/remote_training_system.html#RemoteTrainingSystem.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.list" title="Link to this definition">¶</a></dt>
+<dd><p>Lists stored remote training systems in a table format.
 If limit is set to None, only the first 50 records are shown.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>limit</strong> (<em>int</em>) – limit number of fetched records</p>
+<dd class="field-odd"><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – limit number of fetched records</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.DataFrame with listed remote training systems</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
 </dd>
 </dl>
 <p><strong>Example</strong></p>
@@ -532,7 +541,7 @@ If limit is set to None, only the first 50 records are shown.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="remote_training_system.RemoteTrainingSystem.list_revisions">
-<span class="sig-name descname"><span class="pre">list_revisions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_system_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.list_revisions" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">list_revisions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_system_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/remote_training_system.html#RemoteTrainingSystem.list_revisions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.list_revisions" title="Link to this definition">¶</a></dt>
 <dd><p>Print all revisions for the given remote_training_system_id in a table format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -540,6 +549,12 @@ If limit is set to None, only the first 50 records are shown.</p>
 <li><p><strong>remote_training_system_id</strong> (<em>str</em>) – Unique id of stored remote system</p></li>
 <li><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – limit number of fetched records</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.DataFrame with listed remote training system revisions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
 </dd>
 </dl>
 <p><strong>Example</strong></p>
@@ -550,7 +565,7 @@ If limit is set to None, only the first 50 records are shown.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="remote_training_system.RemoteTrainingSystem.store">
-<span class="sig-name descname"><span class="pre">store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meta_props</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.store" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meta_props</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/remote_training_system.html#RemoteTrainingSystem.store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.store" title="Link to this definition">¶</a></dt>
 <dd><p>Create a remote training system. Either <cite>space_id</cite> or <cite>project_id</cite> has to be provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -580,7 +595,7 @@ If limit is set to None, only the first 50 records are shown.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="remote_training_system.RemoteTrainingSystem.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_system_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">changes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.update" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_training_system_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">changes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/remote_training_system.html#RemoteTrainingSystem.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#remote_training_system.RemoteTrainingSystem.update" title="Link to this definition">¶</a></dt>
 <dd><p>Updates existing remote training system metadata.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -609,13 +624,13 @@ If limit is set to None, only the first 50 records are shown.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="party_wrapper.Party">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">party_wrapper.</span></span><span class="sig-name descname"><span class="pre">Party</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/party_wrapper.html#Party"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#party_wrapper.Party" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">party_wrapper.</span></span><span class="sig-name descname"><span class="pre">Party</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/party_wrapper.html#Party"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#party_wrapper.Party" title="Link to this definition">¶</a></dt>
 <dd><p>The Party class embodies a Federated Learning party, with methods to run, cancel, and query local training.
 Refer to the <code class="docutils literal notranslate"><span class="pre">client.remote_training_system.create_party()</span></code> API for more information about creating an
 instance of the Party class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="party_wrapper.Party.cancel">
-<span class="sig-name descname"><span class="pre">cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#party_wrapper.Party.cancel" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/party_wrapper.html#Party.cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#party_wrapper.Party.cancel" title="Link to this definition">¶</a></dt>
 <dd><p>Stop the local connection to the training on the party side.</p>
 <p><strong>Example</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">party</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
@@ -625,7 +640,7 @@ instance of the Party class.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="party_wrapper.Party.get_round">
-<span class="sig-name descname"><span class="pre">get_round</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#party_wrapper.Party.get_round" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_round</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/party_wrapper.html#Party.get_round"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#party_wrapper.Party.get_round" title="Link to this definition">¶</a></dt>
 <dd><p>Get the current round number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -643,7 +658,7 @@ instance of the Party class.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="party_wrapper.Party.is_running">
-<span class="sig-name descname"><span class="pre">is_running</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#party_wrapper.Party.is_running" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_running</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/party_wrapper.html#Party.is_running"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#party_wrapper.Party.is_running" title="Link to this definition">¶</a></dt>
 <dd><p>Check if the training job is running.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -661,7 +676,7 @@ instance of the Party class.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="party_wrapper.Party.monitor_logs">
-<span class="sig-name descname"><span class="pre">monitor_logs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'INFO'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#party_wrapper.Party.monitor_logs" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">monitor_logs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'INFO'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/party_wrapper.html#Party.monitor_logs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#party_wrapper.Party.monitor_logs" title="Link to this definition">¶</a></dt>
 <dd><p>Enable logging of the training job to standard output.
 This method should be called before calling the <code class="docutils literal notranslate"><span class="pre">run()</span></code> method.</p>
 <dl class="field-list simple">
@@ -677,7 +692,7 @@ This method should be called before calling the <code class="docutils literal no
 
 <dl class="py method">
 <dt class="sig sig-object py" id="party_wrapper.Party.monitor_metrics">
-<span class="sig-name descname"><span class="pre">monitor_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metrics_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#party_wrapper.Party.monitor_metrics" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">monitor_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metrics_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/party_wrapper.html#Party.monitor_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#party_wrapper.Party.monitor_metrics" title="Link to this definition">¶</a></dt>
 <dd><p>Enable output of training metrics.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -696,7 +711,7 @@ This method should be called before calling the <code class="docutils literal no
 
 <dl class="py method">
 <dt class="sig sig-object py" id="party_wrapper.Party.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aggregator_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#party_wrapper.Party.run" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aggregator_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/party_wrapper.html#Party.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#party_wrapper.Party.run" title="Link to this definition">¶</a></dt>
 <dd><p>Connect to a Federated Learning aggregator and run local training.
 Exactly one of <cite>aggregator_id</cite> and <cite>experiment_id</cite> must be supplied.</p>
 <dl class="field-list simple">
@@ -843,7 +858,7 @@ Exactly one of <cite>aggregator_id</cite> and <cite>experiment_id</cite> must be
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

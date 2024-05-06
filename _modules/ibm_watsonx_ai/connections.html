@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>ibm_watsonx_ai.connections - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
@@ -164,6 +164,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -197,12 +198,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -240,18 +243,867 @@
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watson_machine_learning.connections</span> <span class="kn">import</span> <span class="n">Connections</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">ConnectionMetaNames</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">unquote</span><span class="p">,</span> <span class="n">quote</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.change_methods_docstring</span> <span class="kn">import</span> <span class="n">change_docstrings</span>
+<span class="kn">import</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="k">as</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.messages.messages</span> <span class="kn">import</span> <span class="n">Messages</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">ConnectionMetaNames</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span><span class="p">,</span> <span class="n">UnsupportedOperation</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+    <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+
 
 <div class="viewcode-block" id="Connections">
 <a class="viewcode-back" href="../../core_api.html#client.Connections">[docs]</a>
-<span class="nd">@change_docstrings</span>
-<span class="k">class</span> <span class="nc">Connections</span><span class="p">(</span><span class="n">Connections</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Connections</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Store and manage Connections.&quot;&quot;&quot;</span>
+
     <span class="n">ConfigurationMetaNames</span> <span class="o">=</span> <span class="n">ConnectionMetaNames</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;MetaNames for Connection creation.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;MetaNames for Connection creation.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">):</span>
+        <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_required_element_from_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+
+        <span class="n">WMLResource</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">response_data</span><span class="p">,</span> <span class="s2">&quot;connection_response&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+
+        <span class="n">new_el</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;asset_type&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_type&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;create_time&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;create_time&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="s2">&quot;create_time&quot;</span> <span class="ow">in</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span>
+                    <span class="k">else</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;created_at&quot;</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="s2">&quot;last_access_time&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;usage&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s2">&quot;last_access_time&quot;</span>
+                <span class="p">),</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;entity&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;datasource_type&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;datasource_type&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="s2">&quot;datasource_type&quot;</span> <span class="ow">in</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span>
+                    <span class="k">else</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;connection&quot;</span><span class="p">][</span><span class="s2">&quot;datasource_type&quot;</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span>
+                    <span class="k">else</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                <span class="p">),</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;origin_country&quot;</span><span class="p">,</span> <span class="s2">&quot;owner_id&quot;</span><span class="p">,</span> <span class="s2">&quot;properties&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]:</span>
+                <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="n">el</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;space_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;space_id&quot;</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;project_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;project_id&quot;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="s2">&quot;href&quot;</span> <span class="ow">in</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]:</span>
+                <span class="n">href_without_host</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.com&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;href&quot;</span><span class="p">:</span> <span class="n">href_without_host</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">new_el</span>
+
+<div class="viewcode-block" id="Connections.get_details">
+<a class="viewcode-back" href="../../core_api.html#client.Connections.get_details">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get connection details for the given unique Connection id.</span>
+<span class="sd">        If no connection_id is passed, details for all connections will be returned.</span>
+
+<span class="sd">        :param connection_id: Unique id of Connection</span>
+<span class="sd">        :type connection_id: str</span>
+
+<span class="sd">        :return: metadata of the stored Connection</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            connection_details = client.connections.get_details(connection_id)</span>
+<span class="sd">            connection_details = client.connections.get_details()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
+        <span class="n">Connections</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">connection_id</span><span class="p">,</span> <span class="s2">&quot;connection_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">header_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_iam_id</span><span class="p">:</span>
+            <span class="n">header_param</span><span class="p">[</span><span class="s2">&quot;IBM-WDP-Impersonate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;iam_id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_iam_id</span><span class="p">)}</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">connection_id</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests_retry_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_by_id_href</span><span class="p">(</span>
+                        <span class="n">connection_id</span>
+                    <span class="p">),</span>
+                    <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+                    <span class="n">headers</span><span class="o">=</span><span class="n">header_param</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_required_element_from_response</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;get connection details&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests_retry_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_asset_search_href</span><span class="p">(</span>
+                        <span class="s2">&quot;connection&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;*:*&quot;</span><span class="p">,</span> <span class="s2">&quot;include&quot;</span><span class="p">:</span> <span class="s2">&quot;entity&quot;</span><span class="p">},</span>
+                    <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+                    <span class="n">headers</span><span class="o">=</span><span class="n">header_param</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="k">return</span> <span class="p">{</span>
+                    <span class="s2">&quot;resources&quot;</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_get_required_element_from_response</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                            <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;get connection details&quot;</span><span class="p">,</span> <span class="n">response</span>
+                        <span class="p">)[</span><span class="s2">&quot;results&quot;</span><span class="p">]</span>
+                    <span class="p">]</span>
+                <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="Connections.create">
+<a class="viewcode-back" href="../../core_api.html#client.Connections.create">[docs]</a>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a connection. Input to PROPERTIES field examples:</span>
+
+<span class="sd">        1. MySQL</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                client.connections.ConfigurationMetaNames.PROPERTIES: {</span>
+<span class="sd">                    &quot;database&quot;: &quot;database&quot;,</span>
+<span class="sd">                    &quot;password&quot;: &quot;password&quot;,</span>
+<span class="sd">                    &quot;port&quot;: &quot;3306&quot;,</span>
+<span class="sd">                    &quot;host&quot;: &quot;host url&quot;,</span>
+<span class="sd">                    &quot;ssl&quot;: &quot;false&quot;,</span>
+<span class="sd">                    &quot;username&quot;: &quot;username&quot;</span>
+<span class="sd">                }</span>
+
+<span class="sd">        2. Google Big query</span>
+
+<span class="sd">            a. Method1: Use service account json. The service account json generated can be provided as</span>
+<span class="sd">                input as-is. Provide actual values in json. Example is only indicative to show</span>
+<span class="sd">                the fields. Refer to Google big query documents how to generate the service account json.</span>
+
+<span class="sd">                .. code-block:: python</span>
+
+<span class="sd">                    client.connections.ConfigurationMetaNames.PROPERTIES: {</span>
+<span class="sd">                        &quot;type&quot;: &quot;service_account&quot;,</span>
+<span class="sd">                        &quot;project_id&quot;: &quot;project_id&quot;,</span>
+<span class="sd">                        &quot;private_key_id&quot;: &quot;private_key_id&quot;,</span>
+<span class="sd">                        &quot;private_key&quot;: &quot;private key contents&quot;,</span>
+<span class="sd">                        &quot;client_email&quot;: &quot;client_email&quot;,</span>
+<span class="sd">                        &quot;client_id&quot;: &quot;client_id&quot;,</span>
+<span class="sd">                        &quot;auth_uri&quot;: &quot;https://accounts.google.com/o/oauth2/auth&quot;,</span>
+<span class="sd">                        &quot;token_uri&quot;: &quot;https://oauth2.googleapis.com/token&quot;,</span>
+<span class="sd">                        &quot;auth_provider_x509_cert_url&quot;: &quot;https://www.googleapis.com/oauth2/v1/certs&quot;,</span>
+<span class="sd">                        &quot;client_x509_cert_url&quot;: &quot;client_x509_cert_url&quot;</span>
+<span class="sd">                    }</span>
+
+<span class="sd">            b. Method2: Using OAuth Method. Refer to Google big query documents how to generate OAuth token.</span>
+
+<span class="sd">                .. code-block:: python</span>
+
+<span class="sd">                    client.connections.ConfigurationMetaNames.PROPERTIES: {</span>
+<span class="sd">                        &quot;access_token&quot;: &quot;access token generated for big query&quot;,</span>
+<span class="sd">                        &quot;refresh_token&quot;: &quot;refresh token&quot;,</span>
+<span class="sd">                        &quot;project_id&quot;: &quot;project_id&quot;,</span>
+<span class="sd">                        &quot;client_secret&quot;: &quot;This is your gmail account password&quot;,</span>
+<span class="sd">                        &quot;client_id&quot;: &quot;client_id&quot;</span>
+<span class="sd">                    }</span>
+
+<span class="sd">        3. MS SQL</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                client.connections.ConfigurationMetaNames.PROPERTIES: {</span>
+<span class="sd">                    &quot;database&quot;: &quot;database&quot;,</span>
+<span class="sd">                    &quot;password&quot;: &quot;password&quot;,</span>
+<span class="sd">                    &quot;port&quot;: &quot;1433&quot;,</span>
+<span class="sd">                    &quot;host&quot;: &quot;host&quot;,</span>
+<span class="sd">                    &quot;username&quot;: &quot;username&quot;</span>
+<span class="sd">                }</span>
+
+<span class="sd">        4. Tera data</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                client.connections.ConfigurationMetaNames.PROPERTIES: {</span>
+<span class="sd">                    &quot;database&quot;: &quot;database&quot;,</span>
+<span class="sd">                    &quot;password&quot;: &quot;password&quot;,</span>
+<span class="sd">                    &quot;port&quot;: &quot;1433&quot;,</span>
+<span class="sd">                    &quot;host&quot;: &quot;host&quot;,</span>
+<span class="sd">                    &quot;username&quot;: &quot;username&quot;</span>
+<span class="sd">                }</span>
+
+<span class="sd">        :param meta_props:  metadata of the connection configuration. To see available meta names use:</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                client.connections.ConfigurationMetaNames.get()</span>
+
+<span class="sd">        :type meta_props: dict</span>
+
+<span class="sd">        :return: metadata of the stored connection</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            sqlserver_data_source_type_id = client.connections.get_datasource_type_id_by_name(&#39;sqlserver&#39;)</span>
+<span class="sd">            connections_details = client.connections.create({</span>
+<span class="sd">                client.connections.ConfigurationMetaNames.NAME: &quot;sqlserver connection&quot;,</span>
+<span class="sd">                client.connections.ConfigurationMetaNames.DESCRIPTION: &quot;connection description&quot;,</span>
+<span class="sd">                client.connections.ConfigurationMetaNames.DATASOURCE_TYPE: sqlserver_data_source_type_id,</span>
+<span class="sd">                client.connections.ConfigurationMetaNames.PROPERTIES: { &quot;database&quot;: &quot;database&quot;,</span>
+<span class="sd">                                                                        &quot;password&quot;: &quot;password&quot;,</span>
+<span class="sd">                                                                        &quot;port&quot;: &quot;1433&quot;,</span>
+<span class="sd">                                                                        &quot;host&quot;: &quot;host&quot;,</span>
+<span class="sd">                                                                        &quot;username&quot;: &quot;username&quot;}</span>
+<span class="sd">            })</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">connection_meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">_generate_resource_metadata</span><span class="p">(</span>
+            <span class="n">meta_props</span><span class="p">,</span> <span class="n">with_validation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span>
+        <span class="p">)</span>
+
+        <span class="n">big_query_data_source_type_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_datasource_type_id_by_name</span><span class="p">(</span><span class="s2">&quot;bigquery&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Either service acct json credentials can be given or oauth json can be given</span>
+        <span class="c1"># If service acct json, then we need to create a newline json with &quot;credentials&quot; key</span>
+        <span class="k">if</span> <span class="n">connection_meta</span><span class="p">[</span><span class="s2">&quot;datasource_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">big_query_data_source_type_id</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;private_key&quot;</span> <span class="ow">in</span> <span class="n">connection_meta</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                    <span class="n">connection_meta</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">],</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;,</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">newmap</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;credentials&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
+                <span class="n">connection_meta</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">newmap</span>
+
+        <span class="n">connection_meta</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;origin_country&quot;</span><span class="p">:</span> <span class="s2">&quot;US&quot;</span><span class="p">})</span>
+        <span class="c1"># Step1  : Create an asset</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;creating_connections&quot;</span><span class="p">))</span>
+
+        <span class="n">creation_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connections_href</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">connection_meta</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">connection_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+            <span class="mi">201</span><span class="p">,</span> <span class="s2">&quot;creating new connection&quot;</span><span class="p">,</span> <span class="n">creation_response</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">creation_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;success&quot;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_required_element_from_response</span><span class="p">(</span><span class="n">connection_details</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;failed_while_creating_connections&quot;</span><span class="p">)</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Connections.delete">
+<a class="viewcode-back" href="../../core_api.html#client.Connections.delete">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a stored Connection.</span>
+
+<span class="sd">        :param connection_id: Unique id of the connection to be deleted.</span>
+<span class="sd">        :type connection_id: str</span>
+
+<span class="sd">        :return: status (&quot;SUCCESS&quot; or &quot;FAILED&quot;)</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.connections.delete(connection_id)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">##For CP4D, check if either spce or project ID is set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
+
+        <span class="n">Connections</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">connection_id</span><span class="p">,</span> <span class="s2">&quot;connection_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">connection_endpoint</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_by_id_href</span><span class="p">(</span>
+                <span class="n">connection_id</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">response_delete</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="n">connection_endpoint</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="s2">&quot;connection deletion&quot;</span><span class="p">,</span> <span class="n">response_delete</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Connections.get_uid">
+<a class="viewcode-back" href="../../core_api.html#client.Connections.get_uid">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_uid</span><span class="p">(</span><span class="n">connection_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Unique Id of stored connection.</span>
+
+<span class="sd">        *Deprecated:* Use ``Connections.get_id(details)`` instead.</span>
+
+<span class="sd">        :param connection_details: metadata of the stored connection</span>
+<span class="sd">        :type connection_details: dict</span>
+
+<span class="sd">        :return: Unique Id of stored connection</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            connection_uid = client.connection.get_uid(connection_details)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;The method `Connections.get_uid` is deprecated, please use Connections.get_id() instead&quot;</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Connections</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">connection_details</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Connections.get_id">
+<a class="viewcode-back" href="../../core_api.html#client.Connections.get_id">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="n">connection_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get ID of stored connection.</span>
+
+<span class="sd">        :param connection_details: metadata of the stored connection</span>
+<span class="sd">        :type connection_details: dict</span>
+
+<span class="sd">        :return: Unique Id of stored connection</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            connection_id = client.connection.get_id(connection_details)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Connections</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+            <span class="n">connection_details</span><span class="p">,</span> <span class="s2">&quot;connection_details&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">WMLResource</span><span class="o">.</span><span class="n">_get_required_element_from_dict</span><span class="p">(</span>
+            <span class="n">connection_details</span><span class="p">,</span> <span class="s2">&quot;connection_details&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">]</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Connections.list_datasource_types">
+<a class="viewcode-back" href="../../core_api.html#client.Connections.list_datasource_types">[docs]</a>
+    <span class="k">def</span> <span class="nf">list_datasource_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print stored datasource types assets in a table format.</span>
+
+<span class="sd">        :return: pandas.DataFrame with listed datasource types</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+
+<span class="sd">        **Example**</span>
+<span class="sd">        https://test.cloud.ibm.com/apidocs/watsonx-ai#trainings-list</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.connections.list_datasource_types()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_data_types_href</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">datasource_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+            <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;list datasource types&quot;</span><span class="p">,</span> <span class="n">response</span>
+        <span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+        <span class="n">space_values</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">datasource_details</span>
+        <span class="p">]</span>
+
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span>
+            <span class="n">space_values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;DATASOURCE_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;TYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">table</span></div>
+
+
+<div class="viewcode-block" id="Connections.list">
+<a class="viewcode-back" href="../../core_api.html#client.Connections.list">[docs]</a>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns pd.DataFrame table with all stored connections in a table format.</span>
+
+<span class="sd">        :return: pandas.DataFrame with listed connections</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.connections.list()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">datasource_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">()</span>
+        <span class="n">space_values</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;create_time&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;datasource_type&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">datasource_details</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
+
+        <span class="n">list_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span>
+            <span class="n">space_values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CREATED&quot;</span><span class="p">,</span> <span class="s2">&quot;DATASOURCE_TYPE_ID&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">list_table</span></div>
+
+
+<div class="viewcode-block" id="Connections.list_uploaded_db_drivers">
+<a class="viewcode-back" href="../../core_api.html#client.Connections.list_uploaded_db_drivers">[docs]</a>
+    <span class="k">def</span> <span class="nf">list_uploaded_db_drivers</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns pd.DataFrame table with uploaded db driver jars in table a format. Supported for IBM Cloud Pak for Data only.</span>
+
+<span class="sd">        :return: pandas.DataFrame with listed uploaded db drivers</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.connections.list_uploaded_db_drivers()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Not supported on this environment.&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_uploaded_db_drivers</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;List empty for new api&quot;</span><span class="p">)</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_uploaded_db_drivers_new_api</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
+                <span class="o">+</span> <span class="s2">&quot;dbdrivers&quot;</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(</span><span class="n">no_content_type</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="p">)</span>
+            <span class="n">jars</span> <span class="o">=</span> <span class="p">[[</span><span class="n">el</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;resources&quot;</span><span class="p">]]</span>
+
+            <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span><span class="n">jars</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">table</span></div>
+
+
+<div class="viewcode-block" id="Connections.get_uploaded_db_drivers">
+<a class="viewcode-back" href="../../core_api.html#client.Connections.get_uploaded_db_drivers">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_uploaded_db_drivers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get uploaded db driver jar names and paths.</span>
+<span class="sd">        Supported for IBM Cloud Pak for Data, version 4.6.1 and above.</span>
+
+<span class="sd">        **Output**</span>
+
+<span class="sd">        .. important::</span>
+<span class="sd">             Returns dictionary containing name and path for connection files.\n</span>
+<span class="sd">             **return type**: Dict[Str, Str]\n</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">         &gt;&gt;&gt; result = client.connections.get_uploaded_db_drivers()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;</span> <span class="mf">4.6</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnsupportedOperation</span><span class="p">(</span>
+                <span class="s2">&quot;Get uploaded db driver is supported only for IBM Cloud Pak for Data, version 4.6.1 and above.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connections_files_href</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(</span><span class="n">no_content_type</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;get uploaded db drivers&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)[</span>
+            <span class="s2">&quot;resources&quot;</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">el</span><span class="p">[</span><span class="s2">&quot;fileName&quot;</span><span class="p">],</span> <span class="n">el</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">result</span><span class="p">])</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_list_uploaded_db_drivers_new_api</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List uploaded db driver jars. Supported for IBM Cloud Pak for Data only.</span>
+
+<span class="sd">        .. important::</span>
+<span class="sd">            This method prints the uploaded db driver jar names and returns as pd.DataFrame.</span>
+
+<span class="sd">        :return: pandas.DataFrame with listed uploaded db drivers</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-clock:: python</span>
+
+<span class="sd">            client.connections._list_uploaded_db_drivers_new_api()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">jars</span> <span class="o">=</span> <span class="p">[[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_uploaded_db_drivers</span><span class="p">()]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span><span class="n">jars</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Connections.get_datasource_type_details_by_id">
+<a class="viewcode-back" href="../../core_api.html#client.Connections.get_datasource_type_details_by_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_datasource_type_details_by_id</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">datasource_type_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">connection_properties</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets datasource type details for the given datasource type id.</span>
+
+<span class="sd">        :param datasource_type_id:  ID of datasource type</span>
+<span class="sd">        :type datasource_type_id: str</span>
+<span class="sd">        :param connection_properties:  If True the connections properties will be included in returned details, defaults to False</span>
+<span class="sd">        :type connection_properties: bool</span>
+
+<span class="sd">        :return: Datasource type details</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.connections.get_datasource_type_details_by_id(datasource_type_id)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">Connections</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">datasource_type_id</span><span class="p">,</span> <span class="s2">&quot;datasource_type&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">header_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;connection_properties&quot;</span><span class="p">:</span> <span class="n">connection_properties</span><span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_data_type_by_id_href</span><span class="p">(</span>
+                <span class="n">datasource_type_id</span>
+            <span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">header_param</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;get datasource details&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Connections.get_datasource_type_uid_by_name">
+<a class="viewcode-back" href="../../core_api.html#client.Connections.get_datasource_type_uid_by_name">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_datasource_type_uid_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get stored datasource types id for the given datasource type name.</span>
+
+<span class="sd">        *Deprecated:* Use ``Connections.get_datasource_type_id_by_name(name)`` instead.</span>
+
+<span class="sd">        :param name:  name of datasource type</span>
+<span class="sd">        :type name: str</span>
+
+<span class="sd">        :return: ID of datasource type</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.connections.get_datasource_type_uid_by_name(&#39;cloudobjectstorage&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;This method is deprecated, please use get_datasource_type_id_by_name(name)&quot;</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_datasource_type_id_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Connections.get_datasource_type_id_by_name">
+<a class="viewcode-back" href="../../core_api.html#client.Connections.get_datasource_type_id_by_name">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_datasource_type_id_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get stored datasource types id for the given datasource type name.</span>
+
+<span class="sd">        :param name:  name of datasource type</span>
+<span class="sd">        :type name: str</span>
+
+<span class="sd">        :return: ID of datasource type</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.connections.get_datasource_type_id_by_name(&#39;cloudobjectstorage&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Connections</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests_retry_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_data_types_href</span><span class="p">(),</span>
+                <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+            <span class="p">)</span>
+
+            <span class="n">datasource_id</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
+            <span class="n">datasource_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;list datasource types&quot;</span><span class="p">,</span> <span class="n">response</span>
+            <span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ds_resource</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datasource_details</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ds_resource</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="n">datasource_id</span> <span class="o">=</span> <span class="n">ds_resource</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">datasource_id</span></div>
+
+
+    <span class="k">def</span> <span class="nf">get_write_mode_by_datasource_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasource_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">Connections</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">datasource_type</span><span class="p">,</span> <span class="s2">&quot;datasource_type&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">write_mode</span> <span class="o">=</span> <span class="s2">&quot;write_raw&quot;</span>  <span class="c1"># default</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">datasource_type</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">write_mode</span>
+
+        <span class="n">header_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;interaction_properties&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">}</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests_retry_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_data_type_by_id_href</span><span class="p">(</span>
+                    <span class="n">datasource_type</span>
+                <span class="p">),</span>
+                <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="n">header_param</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">datasource_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;get datasource details&quot;</span><span class="p">,</span> <span class="n">response</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">datasource_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="s2">&quot;target&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;values&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">val</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;write_raw&quot;</span> <span class="ow">or</span> <span class="n">val</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;insert&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">val</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">write_mode</span>
+
+<div class="viewcode-block" id="Connections.upload_db_driver">
+<a class="viewcode-back" href="../../core_api.html#client.Connections.upload_db_driver">[docs]</a>
+    <span class="k">def</span> <span class="nf">upload_db_driver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload db driver jar. Supported for IBM Cloud Pak for Data only, version 4.0.4 and above.</span>
+
+<span class="sd">        :param path:  path to db driver jar file</span>
+<span class="sd">        :type path: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.connections.upload_db_driver(&#39;example/path/db2jcc4.jar&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnsupportedOperation</span><span class="p">(</span>
+                <span class="s2">&quot;Upload db driver is supported only for IBM Cloud Pak for Data, version 4.0.4 and above.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_upload_db_driver_new_api</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">driver_file_name</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fdata</span><span class="p">:</span>
+                <span class="n">content_upload_url</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
+                    <span class="o">+</span> <span class="s2">&quot;dbdrivers/&quot;</span>
+                    <span class="o">+</span> <span class="n">quote</span><span class="p">(</span><span class="n">driver_file_name</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+                    <span class="n">content_upload_url</span><span class="p">,</span>
+                    <span class="n">files</span><span class="o">=</span><span class="p">{</span>
+                        <span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="p">(</span>
+                            <span class="s2">&quot;native&quot;</span><span class="p">,</span>
+                            <span class="n">fdata</span><span class="p">,</span>
+                            <span class="s2">&quot;application/octet-stream&quot;</span><span class="p">,</span>
+                            <span class="p">{</span><span class="s2">&quot;Expires&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">},</span>
+                        <span class="p">)</span>
+                    <span class="p">},</span>
+                    <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(</span><span class="n">no_content_type</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                    <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+                <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                    <span class="mi">201</span><span class="p">,</span> <span class="s2">&quot;uploading db driver jar&quot;</span><span class="p">,</span> <span class="n">response</span>
+                <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_upload_db_driver_new_api</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload db driver jar. Supported for IBM Cloud Pak for Data only, version 4.6.1 and above.</span>
+
+<span class="sd">        :param path:  path to db driver jar</span>
+<span class="sd">        :type path: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.connections._upload_db_driver_new_api(&#39;example/path/db2jcc4.jar&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnsupportedOperation</span><span class="p">(</span>
+                <span class="s2">&quot;Upload db driver jar is supported only for IBM Cloud Pak for Data only, version 4.6.1 and above.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">driver_file_name</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fdata</span><span class="p">:</span>
+            <span class="n">content_upload_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connections_file_href</span><span class="p">(</span>
+                <span class="n">quote</span><span class="p">(</span><span class="n">driver_file_name</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                <span class="n">content_upload_url</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">fdata</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(</span>
+                    <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/octet-stream&quot;</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">403</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                    <span class="s2">&quot;User is missing [configure_platform] permission to upload new jar file.&quot;</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;uploading db driver jar&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">json_response</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_db_driver_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># &quot;&quot;&quot;</span>
+        <span class="c1"># Get signed db driver jar url to be used during creating of JDBC generic connection. The jar name passed as argument needs to be uploaded into system first.</span>
+        <span class="c1"># Supported for IBM Cloud Pak for Data only, version 4.6.1 and above.</span>
+        <span class="c1">#</span>
+        <span class="c1"># :param name:  db driver jar name</span>
+        <span class="c1"># :type name: str</span>
+        <span class="c1">#</span>
+        <span class="c1"># **Example**</span>
+        <span class="c1">#</span>
+        <span class="c1"># .. code-block:: python</span>
+        <span class="c1">#</span>
+        <span class="c1">#     client.connections.get_db_driver_url(&#39;db2jcc4.jar&#39;)</span>
+        <span class="c1">#</span>
+        <span class="c1"># &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnsupportedOperation</span><span class="p">(</span>
+                <span class="s2">&quot;Get db driver jar is supported only for IBM Cloud Pak for Data only, version 4.6.1 and above.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_uploaded_db_drivers</span><span class="p">()[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">except</span> <span class="n">WMLClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">e</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Driver jar with name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> not found.&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Connections.sign_db_driver_url">
+<a class="viewcode-back" href="../../core_api.html#client.Connections.sign_db_driver_url">[docs]</a>
+    <span class="k">def</span> <span class="nf">sign_db_driver_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jar_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get signed db driver jar url to be used during creating of JDBC generic connection.</span>
+<span class="sd">        The jar name passed as argument needs to be uploaded into system first.</span>
+<span class="sd">        Supported for IBM Cloud Pak for Data only, version 4.0.4 and above.</span>
+
+<span class="sd">        :param jar_name:  db driver jar name</span>
+<span class="sd">        :type jar_name: str</span>
+
+<span class="sd">        :return: signed db driver url</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            jar_uri = client.connections.sign_db_driver_url(&#39;db2jcc4.jar&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># if self._client.ICP_46:</span>
+            <span class="c1">#    print(&quot;Warning: This function is deprecated. Use `get_db_driver_url(name)` instead.&quot;)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db_driver_url</span><span class="p">(</span><span class="n">jar_name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">res</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">UnsupportedOperation</span><span class="p">(</span>
+                    <span class="s2">&quot;Get signed db driver jar url db driver is supported only  IBM Cloud Pak for Data only, version 4.0.4 and above.&quot;</span>
+                <span class="p">)</span>
+
+            <span class="n">signed_url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
+                <span class="o">+</span> <span class="n">quote</span><span class="p">(</span><span class="s2">&quot;dbdrivers/&quot;</span> <span class="o">+</span> <span class="n">jar_name</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">&quot;/signed&quot;</span>
+            <span class="p">)</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
+
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;expires_in&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5000</span>
+
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                <span class="n">signed_url</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(</span><span class="n">no_content_type</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                <span class="mi">201</span><span class="p">,</span> <span class="s2">&quot;signing db driver url&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">json_response</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">unquote</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Location&quot;</span><span class="p">])</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">requests_retry_session</span><span class="p">(</span>
+        <span class="n">retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">backoff_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">status_forcelist</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">502</span><span class="p">,</span> <span class="mi">503</span><span class="p">,</span> <span class="mi">504</span><span class="p">,</span> <span class="mi">521</span><span class="p">,</span> <span class="mi">524</span><span class="p">),</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">requests.adapters</span> <span class="kn">import</span> <span class="n">HTTPAdapter</span>
+        <span class="kn">from</span> <span class="nn">requests.packages.urllib3.util.retry</span> <span class="kn">import</span> <span class="n">Retry</span>
+
+        <span class="n">session</span> <span class="o">=</span> <span class="n">session</span> <span class="ow">or</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+        <span class="n">retry</span> <span class="o">=</span> <span class="n">Retry</span><span class="p">(</span>
+            <span class="n">total</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
+            <span class="n">read</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
+            <span class="n">connect</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
+            <span class="n">backoff_factor</span><span class="o">=</span><span class="n">backoff_factor</span><span class="p">,</span>
+            <span class="n">status_forcelist</span><span class="o">=</span><span class="n">status_forcelist</span><span class="p">,</span>
+            <span class="n">raise_on_status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">adapter</span> <span class="o">=</span> <span class="n">HTTPAdapter</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="n">retry</span><span class="p">)</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="n">adapter</span><span class="p">)</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">&quot;https://&quot;</span><span class="p">,</span> <span class="n">adapter</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">session</span></div>
 
 </pre></div>
         </article>
@@ -286,7 +1138,7 @@
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

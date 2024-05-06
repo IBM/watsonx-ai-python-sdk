@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Prompt Tuning" href="prompt_tuner.html" /><link rel="prev" title="ModelInference" href="fm_model_inference.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>ModelInference for Deployments - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
@@ -165,6 +165,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="api.html">API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -198,12 +199,14 @@
 <li class="toctree-l3"><a class="reference internal" href="prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -237,11 +240,11 @@
         </div>
         <article role="main">
           <section id="modelinference-for-deployments">
-<h1><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments<a class="headerlink" href="#modelinference-for-deployments" title="Link to this heading">#</a></h1>
+<h1><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments<a class="headerlink" href="#modelinference-for-deployments" title="Link to this heading">¶</a></h1>
 <p>This section shows how to use ModelInference module with created deployment.</p>
 <p>There are two ways to infer text using the <a class="reference internal" href="pt_model_inference.html#generate-text-deployments"><span class="std std-ref">deployments</span></a> module or using <a class="reference internal" href="pt_model_inference.html#generate-text-modelinference"><span class="std std-ref">ModelInference</span></a> module .</p>
 <section id="infer-text-with-deployments">
-<h2>Infer text with deployments<a class="headerlink" href="#infer-text-with-deployments" title="Link to this heading">#</a></h2>
+<h2>Infer text with deployments<a class="headerlink" href="#infer-text-with-deployments" title="Link to this heading">¶</a></h2>
 <p>You can directly query <code class="docutils literal notranslate"><span class="pre">generate_text</span></code> using the deployments module.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">generate_text</span><span class="p">(</span>
     <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Example prompt&quot;</span><span class="p">,</span>
@@ -250,7 +253,7 @@
 </div>
 </section>
 <section id="creating-modelinference-instance">
-<h2>Creating <code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> instance<a class="headerlink" href="#creating-modelinference-instance" title="Link to this heading">#</a></h2>
+<h2>Creating <code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> instance<a class="headerlink" href="#creating-modelinference-instance" title="Link to this heading">¶</a></h2>
 <p>At the beginning, it is recommended to define parameters (later used by module).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">GenTextParamsMetaNames</span> <span class="k">as</span> <span class="n">GenParams</span>
 
@@ -285,7 +288,7 @@
 </div>
 </section>
 <section id="generate-methods">
-<h2>Generate methods<a class="headerlink" href="#generate-methods" title="Link to this heading">#</a></h2>
+<h2>Generate methods<a class="headerlink" href="#generate-methods" title="Link to this heading">¶</a></h2>
 <p>The detailed explanation of available generate methods with exact parameters can be found in the <a class="reference internal" href="fm_model_inference.html#model-inference-class"><span class="std std-ref">ModelInferece class</span></a>.</p>
 <p>With previously created <code class="docutils literal notranslate"><span class="pre">deployed_model</span></code> object, it is possible to generate a text stream (generator) using defined inference and <code class="docutils literal notranslate"><span class="pre">generate_text_stream()</span></code> method.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">deployed_model</span><span class="o">.</span><span class="n">generate_text_stream</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">input_prompt</span><span class="p">):</span>
@@ -385,7 +388,7 @@
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Tuned Model Inference" href="pt_model_inference.html" /><link rel="prev" title="Working with TuneExperiment and PromptTuner" href="pt_working_with_class_and_prompt_tuner.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>Tune Experiment run - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
@@ -165,6 +165,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="api.html">API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -198,12 +199,14 @@
 <li class="toctree-l3"><a class="reference internal" href="prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -237,13 +240,13 @@
         </div>
         <article role="main">
           <section id="tune-experiment-run">
-<h1>Tune Experiment run<a class="headerlink" href="#tune-experiment-run" title="Link to this heading">#</a></h1>
+<h1>Tune Experiment run<a class="headerlink" href="#tune-experiment-run" title="Link to this heading">¶</a></h1>
 <p>The <a class="reference internal" href="tune_experiment.html#tune-experiment-class"><span class="std std-ref">TuneExperiment class</span></a> is responsible for creating experiments and scheduling tunings.
 All experiment results are stored automatically in the user-specified Cloud Object Storage (COS) for SaaS or
 in cluster’s file system in case of Cloud Pak for Data. Then, the TuneExperiment feature can fetch the results and
 provide them directly to the user for further usage.</p>
 <section id="configure-prompttuner">
-<h2>Configure PromptTuner<a class="headerlink" href="#configure-prompttuner" title="Link to this heading">#</a></h2>
+<h2>Configure PromptTuner<a class="headerlink" href="#configure-prompttuner" title="Link to this heading">¶</a></h2>
 <p>For an TuneExperiment object initialization authentication credentials (examples available in section: <a class="reference internal" href="setup.html"><span class="doc">Setup</span></a>) and one of <code class="docutils literal notranslate"><span class="pre">project_id</span></code> or <code class="docutils literal notranslate"><span class="pre">space_id</span></code> are used.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
@@ -274,7 +277,7 @@ provide them directly to the user for further usage.</p>
 </div>
 </section>
 <section id="get-configuration-parameters">
-<h2>Get configuration parameters<a class="headerlink" href="#get-configuration-parameters" title="Link to this heading">#</a></h2>
+<h2>Get configuration parameters<a class="headerlink" href="#get-configuration-parameters" title="Link to this heading">¶</a></h2>
 <p>To see current configuration parameters, call the <code class="docutils literal notranslate"><span class="pre">get_params()</span></code> method.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config_parameters</span> <span class="o">=</span> <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">get_params</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">config_parameters</span><span class="p">)</span>
@@ -297,7 +300,7 @@ provide them directly to the user for further usage.</p>
 </div>
 </section>
 <section id="run-prompt-tuning">
-<h2>Run prompt tuning<a class="headerlink" href="#run-prompt-tuning" title="Link to this heading">#</a></h2>
+<h2>Run prompt tuning<a class="headerlink" href="#run-prompt-tuning" title="Link to this heading">¶</a></h2>
 <p>To schedule an tuning experiment, call the <code class="docutils literal notranslate"><span class="pre">run()</span></code> method (this will trigger a training process). The <code class="docutils literal notranslate"><span class="pre">run()</span></code> method can be synchronous (<code class="docutils literal notranslate"><span class="pre">background_mode=False</span></code>), or asynchronous (<code class="docutils literal notranslate"><span class="pre">background_mode=True</span></code>).
 If you don’t want to wait for training to end, invoke the async version. It immediately returns only run details.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers</span> <span class="kn">import</span> <span class="n">DataConnection</span><span class="p">,</span> <span class="n">ContainerLocation</span><span class="p">,</span> <span class="n">S3Location</span>
@@ -331,7 +334,7 @@ If you don’t want to wait for training to end, invoke the async version. It im
 </div>
 </section>
 <section id="get-run-status-get-run-details">
-<h2>Get run status, get run details<a class="headerlink" href="#get-run-status-get-run-details" title="Link to this heading">#</a></h2>
+<h2>Get run status, get run details<a class="headerlink" href="#get-run-status-get-run-details" title="Link to this heading">¶</a></h2>
 <p>If you use the <code class="docutils literal notranslate"><span class="pre">run()</span></code> method asynchronously, you can monitor the run details and status, using the following two methods:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">status</span> <span class="o">=</span> <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">get_run_status</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
@@ -387,7 +390,7 @@ If you don’t want to wait for training to end, invoke the async version. It im
 </div>
 </section>
 <section id="get-data-connections">
-<h2>Get data connections<a class="headerlink" href="#get-data-connections" title="Link to this heading">#</a></h2>
+<h2>Get data connections<a class="headerlink" href="#get-data-connections" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">data_connections</span></code> list contains all training connections that you referenced while calling the <code class="docutils literal notranslate"><span class="pre">run()</span></code> method.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data_connections</span> <span class="o">=</span> <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">get_data_connections</span><span class="p">()</span>
 
@@ -397,7 +400,7 @@ If you don’t want to wait for training to end, invoke the async version. It im
 </div>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
 <p>It is possible to see details of models in a form of summary table. The output type is a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> with model names, enhancements, base model, auto update option, the number of epochs used and last loss function value.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
@@ -409,7 +412,7 @@ If you don’t want to wait for training to end, invoke the async version. It im
 </div>
 </section>
 <section id="plot-learning-curves">
-<h2>Plot learning curves<a class="headerlink" href="#plot-learning-curves" title="Link to this heading">#</a></h2>
+<h2>Plot learning curves<a class="headerlink" href="#plot-learning-curves" title="Link to this heading">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Available only for Jupyter notebooks.</p>
@@ -418,10 +421,11 @@ If you don’t want to wait for training to end, invoke the async version. It im
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prompt_tuner</span><span class="o">.</span><span class="n">plot_learning_curve</span><span class="p">()</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/learning_curves.png"><img alt="_images/learning_curves.png" class="align-center" src="_images/learning_curves.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="_images/learning_curves.png"><img alt="_images/learning_curves.png" class="align-center" src="_images/learning_curves.png" style="width: 600px;" />
+</a>
 </section>
 <section id="get-model-identifier">
-<h2>Get model identifier<a class="headerlink" href="#get-model-identifier" title="Link to this heading">#</a></h2>
+<h2>Get model identifier<a class="headerlink" href="#get-model-identifier" title="Link to this heading">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>It will be only available if the tuning was scheduled first and parameter <code class="docutils literal notranslate"><span class="pre">auto_update_model</span></code> was set as <code class="docutils literal notranslate"><span class="pre">True</span></code> (default value).</p>
@@ -513,7 +517,7 @@ For more information, see the next section: <a class="reference internal" href="
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

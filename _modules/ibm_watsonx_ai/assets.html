@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>ibm_watsonx_ai.assets - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
@@ -164,6 +164,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -197,12 +198,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -239,20 +242,660 @@
 <span class="c1">#  (C) Copyright IBM Corp. 2023-2024.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watson_machine_learning.assets</span> <span class="kn">import</span> <span class="n">Assets</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai._wrappers</span> <span class="kn">import</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.messages.messages</span> <span class="kn">import</span> <span class="n">Messages</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">AssetsMetaNames</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="n">DATA_ASSETS_DETAILS_TYPE</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.utils</span> <span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span><span class="p">,</span> <span class="n">ApiRequestFailure</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.change_methods_docstring</span> <span class="kn">import</span> <span class="n">change_docstrings</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+
+<span class="n">_DEFAULT_LIST_LENGTH</span> <span class="o">=</span> <span class="mi">50</span>
 
 
 <div class="viewcode-block" id="Assets">
 <a class="viewcode-back" href="../../core_api.html#client.Assets">[docs]</a>
-<span class="nd">@change_docstrings</span>
-<span class="k">class</span> <span class="nc">Assets</span><span class="p">(</span><span class="n">Assets</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Assets</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Store and manage data assets.&quot;&quot;&quot;</span>
+
     <span class="n">ConfigurationMetaNames</span> <span class="o">=</span> <span class="n">AssetsMetaNames</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;MetaNames for Data Assets creation.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;MetaNames for Data Assets creation.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Assets.get_details">
+<a class="viewcode-back" href="../../core_api.html#client.Assets.get_details">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get data asset details. If no asset_id is passed, details for all assets will be returned.</span>
+
+<span class="sd">        :param asset_id: Unique id of asset</span>
+<span class="sd">        :type asset_id: str</span>
+
+<span class="sd">        :return: metadata of the stored data asset</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            asset_details = client.data_assets.get_details(asset_id)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">asset_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span>
+            <span class="n">kwargs</span><span class="p">,</span> <span class="n">asset_id</span><span class="p">,</span> <span class="s2">&quot;asset&quot;</span><span class="p">,</span> <span class="n">can_be_none</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_asset_based_resource</span><span class="p">(</span>
+            <span class="n">asset_id</span><span class="p">,</span> <span class="s2">&quot;data_asset&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_required_element_from_response</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Assets.create">
+<a class="viewcode-back" href="../../core_api.html#client.Assets.create">[docs]</a>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a data asset and upload content to it.</span>
+
+<span class="sd">        :param name:  name to be given to the data asset</span>
+<span class="sd">        :type name: str</span>
+
+<span class="sd">        :param file_path: path to the content file to be uploaded</span>
+<span class="sd">        :type file_path: str</span>
+
+<span class="sd">        :return: metadata of the stored data asset</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            asset_details = client.data_assets.create(name=&quot;sample_asset&quot;, file_path=&quot;/path/to/file&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># quick support for COS credentials instead of local path</span>
+        <span class="c1"># TODO add error handling and cleaning (remove the file)</span>
+        <span class="n">Assets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">Assets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;file_path&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_asset</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Assets.store">
+<a class="viewcode-back" href="../../core_api.html#client.Assets.store">[docs]</a>
+    <span class="k">def</span> <span class="nf">store</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a data asset and upload content to it.</span>
+
+<span class="sd">        :param meta_props:  meta data of the space configuration. To see available meta names use:</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                client.data_assets.ConfigurationMetaNames.get()</span>
+
+<span class="sd">        :type meta_props: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        Example for data asset creation for files :</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            metadata = {</span>
+<span class="sd">                client.data_assets.ConfigurationMetaNames.NAME: &#39;my data assets&#39;,</span>
+<span class="sd">                client.data_assets.ConfigurationMetaNames.DESCRIPTION: &#39;sample description&#39;,</span>
+<span class="sd">                client.data_assets.ConfigurationMetaNames.DATA_CONTENT_NAME: &#39;sample.csv&#39;</span>
+<span class="sd">            }</span>
+<span class="sd">            asset_details = client.data_assets.store(meta_props=metadata)</span>
+
+<span class="sd">        Example of data asset creation using connection:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            metadata = {</span>
+<span class="sd">                client.data_assets.ConfigurationMetaNames.NAME: &#39;my data assets&#39;,</span>
+<span class="sd">                client.data_assets.ConfigurationMetaNames.DESCRIPTION: &#39;sample description&#39;,</span>
+<span class="sd">                client.data_assets.ConfigurationMetaNames.CONNECTION_ID: &#39;39eaa1ee-9aa4-4651-b8fe-95d3ddae&#39;,</span>
+<span class="sd">                client.data_assets.ConfigurationMetaNames.DATA_CONTENT_NAME: &#39;t1/sample.csv&#39;</span>
+<span class="sd">            }</span>
+<span class="sd">            asset_details = client.data_assets.store(meta_props=metadata)</span>
+
+<span class="sd">        Example for data asset creation with database sources type connection:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            metadata = {</span>
+<span class="sd">                client.data_assets.ConfigurationMetaNames.NAME: &#39;my data assets&#39;,</span>
+<span class="sd">                client.data_assets.ConfigurationMetaNames.DESCRIPTION: &#39;sample description&#39;,</span>
+<span class="sd">                client.data_assets.ConfigurationMetaNames.CONNECTION_ID: &#39;23eaf1ee-96a4-4651-b8fe-95d3dadfe&#39;,</span>
+<span class="sd">                client.data_assets.ConfigurationMetaNames.DATA_CONTENT_NAME: &#39;t1&#39;</span>
+<span class="sd">            }</span>
+<span class="sd">            asset_details = client.data_assets.store(meta_props=metadata)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">##For CP4D, check if either spce or project ID is set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
+
+        <span class="c1"># quick support for COS credentials instead of local path</span>
+        <span class="c1"># TODO add error handling and cleaning (remove the file)</span>
+        <span class="n">Assets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">meta_props</span><span class="p">,</span> <span class="s2">&quot;meta_props&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="n">meta_props</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">]</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">meta_props</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DATA_CONTENT_NAME</span><span class="p">]</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">connection_id</span> <span class="o">=</span> <span class="n">meta_props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">CONNECTION_ID</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">connection_id</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No connection_id specified and file: </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DESCRIPTION</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="n">meta_props</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DESCRIPTION</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_asset</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">connection_id</span><span class="o">=</span><span class="n">connection_id</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_create_asset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">connection_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="c1">##Step1: Create a data asset</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">mimetypes</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;module_mimetypes_not_found&quot;</span><span class="p">),</span> <span class="n">e</span>
+            <span class="p">)</span>
+        <span class="n">mime_type</span> <span class="o">=</span> <span class="n">mimetypes</span><span class="o">.</span><span class="n">MimeTypes</span><span class="p">()</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span><span class="n">file_path</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">mime_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mime_type</span> <span class="o">=</span> <span class="s2">&quot;application/octet-stream&quot;</span>
+
+        <span class="n">asset_meta</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">desc</span><span class="p">,</span>
+                <span class="s2">&quot;asset_type&quot;</span><span class="p">:</span> <span class="s2">&quot;data_asset&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;origin_country&quot;</span><span class="p">:</span> <span class="s2">&quot;us&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;asset_category&quot;</span><span class="p">:</span> <span class="s2">&quot;USER&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;entity&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;data_asset&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;mime_type&quot;</span><span class="p">:</span> <span class="n">mime_type</span><span class="p">}},</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">connection_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">asset_meta</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;connected-data&quot;</span><span class="p">]})</span>
+
+        <span class="c1"># Step1  : Create an asset</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;creating_data_asset&quot;</span><span class="p">))</span>
+
+        <span class="n">creation_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_data_assets_href</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">asset_meta</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">asset_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+            <span class="mi">201</span><span class="p">,</span> <span class="s2">&quot;creating new asset&quot;</span><span class="p">,</span> <span class="n">creation_response</span>
+        <span class="p">)</span>
+        <span class="c1"># Step2: Create attachment</span>
+        <span class="k">if</span> <span class="n">creation_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span><span class="p">:</span>
+            <span class="n">asset_id</span> <span class="o">=</span> <span class="n">asset_details</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">]</span>
+            <span class="n">attachment_name</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">attachment_meta</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;asset_type&quot;</span><span class="p">:</span> <span class="s2">&quot;data_asset&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">attachment_name</span><span class="p">,</span>
+                <span class="s2">&quot;mime&quot;</span><span class="p">:</span> <span class="n">mime_type</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="n">connection_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">attachment_meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;connection_id&quot;</span><span class="p">:</span> <span class="n">connection_id</span><span class="p">,</span>
+                        <span class="s2">&quot;connection_path&quot;</span><span class="p">:</span> <span class="n">file_path</span><span class="p">,</span>
+                        <span class="s2">&quot;is_remote&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+
+            <span class="n">attachment_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_attachments_href</span><span class="p">(</span>
+                    <span class="n">asset_id</span>
+                <span class="p">),</span>
+                <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+                <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+                <span class="n">json</span><span class="o">=</span><span class="n">attachment_meta</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">attachment_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                <span class="mi">201</span><span class="p">,</span> <span class="s2">&quot;creating new attachment&quot;</span><span class="p">,</span> <span class="n">attachment_response</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">attachment_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">connection_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">attachment_id</span> <span class="o">=</span> <span class="n">attachment_details</span><span class="p">[</span><span class="s2">&quot;attachment_id&quot;</span><span class="p">]</span>
+                    <span class="n">attachment_url</span> <span class="o">=</span> <span class="n">attachment_details</span><span class="p">[</span><span class="s2">&quot;url1&quot;</span><span class="p">]</span>
+                    <span class="c1"># Step3: Put content to attachment</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">_file</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
+                                <span class="n">put_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">attachment_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">_file</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">put_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">url</span> <span class="o">+</span> <span class="n">attachment_url</span><span class="p">,</span>
+                                    <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_file</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">)},</span>
+                                <span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">deletion_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_data_asset_href</span><span class="p">(</span>
+                                <span class="n">asset_id</span>
+                            <span class="p">),</span>
+                            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+                            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+                        <span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">deletion_response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                                <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;failed_while_creating_a_data_asset&quot;</span>
+                            <span class="p">),</span>
+                            <span class="n">e</span><span class="p">,</span>
+                        <span class="p">)</span>
+
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">put_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+                        <span class="ow">or</span> <span class="n">put_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+                    <span class="p">):</span>
+                        <span class="c1"># Step4: Complete attachment</span>
+
+                        <span class="n">complete_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_attachment_complete_href</span><span class="p">(</span>
+                                <span class="n">asset_id</span><span class="p">,</span> <span class="n">attachment_id</span>
+                            <span class="p">),</span>
+                            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+                            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+                        <span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">complete_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;success&quot;</span><span class="p">))</span>
+                            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_required_element_from_response</span><span class="p">(</span>
+                                <span class="n">asset_details</span>
+                            <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">asset_id</span><span class="p">)</span>
+                            <span class="k">except</span><span class="p">:</span>
+                                <span class="k">pass</span>
+                            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                                    <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;failed_while_creating_a_data_asset&quot;</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">asset_id</span><span class="p">)</span>
+                        <span class="k">except</span><span class="p">:</span>
+                            <span class="k">pass</span>
+                        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                                <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;failed_while_creating_a_data_asset&quot;</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;success&quot;</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_required_element_from_response</span><span class="p">(</span><span class="n">asset_details</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">asset_id</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                    <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                        <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;failed_while_creating_a_data_asset&quot;</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;failed_while_creating_a_data_asset&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="Assets.list">
+<a class="viewcode-back" href="../../core_api.html#client.Assets.list">[docs]</a>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lists stored data assets in a table format.</span>
+<span class="sd">        If limit is set to None there will be only first 50 records shown.</span>
+
+<span class="sd">        :param limit:  limit number of fetched records</span>
+<span class="sd">        :type limit: int</span>
+
+<span class="sd">        :rtype: DataFrame</span>
+<span class="sd">        :return: listed elements</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.data_assets.list()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">Assets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_search_asset_href</span><span class="p">()</span>
+
+        <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;*:*&quot;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="n">limit</span><span class="p">})</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">href</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;list assets&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+        <span class="n">asset_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;list assets&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)[</span><span class="s2">&quot;results&quot;</span><span class="p">]</span>
+        <span class="n">space_values</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_type&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;size&quot;</span><span class="p">],</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">asset_details</span>
+        <span class="p">]</span>
+
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span>
+            <span class="n">space_values</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;ASSET_TYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;SIZE&quot;</span><span class="p">,</span> <span class="s2">&quot;ASSET_ID&quot;</span><span class="p">],</span>
+            <span class="n">limit</span><span class="p">,</span>
+            <span class="n">_DEFAULT_LIST_LENGTH</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">table</span></div>
+
+
+<div class="viewcode-block" id="Assets.download">
+<a class="viewcode-back" href="../../core_api.html#client.Assets.download">[docs]</a>
+    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># asset_id is optional for backward compatibility,</span>
+        <span class="c1"># filename should be not optional, however, as asset_id is, filename also must be</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download and store the content of a data asset.</span>
+
+<span class="sd">        :param asset_id: the Unique Id of the data asset to be downloaded</span>
+<span class="sd">        :type asset_id: str</span>
+
+<span class="sd">        :param filename:  filename to be used for the downloaded file</span>
+<span class="sd">        :type filename: str</span>
+
+<span class="sd">        :return: normalized path to the downloaded asset content</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.data_assets.download(asset_id,&quot;sample_asset.csv&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">asset_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">asset_id</span><span class="p">,</span> <span class="s2">&quot;asset&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Missing required positional argument &#39;filename&#39;&quot;</span><span class="p">)</span>
+
+        <span class="n">content</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_content</span><span class="p">(</span><span class="n">asset_id</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">filename</span><span class="p">,</span> <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;successfully_saved_data_asset_content_to_file&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">filename</span><span class="p">,</span> <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;saving_data_asset_to_local_file_failed&quot;</span>
+                <span class="p">),</span>
+                <span class="n">e</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Assets.get_content">
+<a class="viewcode-back" href="../../core_api.html#client.Assets.get_content">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_content</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>  <span class="c1"># asset_id is optional for backward compatibility</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download the content of a data asset.</span>
+
+<span class="sd">        :param asset_id: the Unique Id of the data asset to be downloaded</span>
+<span class="sd">        :type asset_id: str</span>
+
+<span class="sd">        :return: the asset content</span>
+<span class="sd">        :rtype: bytes</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            content = client.data_assets.get_content(asset_id).decode(&#39;ascii&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">asset_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">asset_id</span><span class="p">,</span> <span class="s2">&quot;asset&quot;</span><span class="p">)</span>
+
+        <span class="n">Assets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">asset_id</span><span class="p">,</span> <span class="s2">&quot;asset_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="kn">import</span> <span class="nn">urllib</span>
+
+        <span class="n">asset_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_data_asset_href</span><span class="p">(</span>
+                <span class="n">asset_id</span>
+            <span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">asset_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;get assets&quot;</span><span class="p">,</span> <span class="n">asset_response</span><span class="p">)</span>
+
+        <span class="n">attachment_id</span> <span class="o">=</span> <span class="n">asset_details</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_attachment_href</span><span class="p">(</span>
+                <span class="n">asset_id</span><span class="p">,</span> <span class="n">attachment_id</span>
+            <span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="s2">&quot;connection_id&quot;</span> <span class="ow">in</span> <span class="n">asset_details</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="ow">and</span> <span class="n">asset_details</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;connection_id&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">):</span>
+
+                <span class="n">conn_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+                    <span class="n">asset_details</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;connection_id&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">attachment_data_source_type</span> <span class="o">=</span> <span class="n">conn_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s2">&quot;datasource_type&quot;</span>
+                <span class="p">)</span>
+                <span class="n">cos_conn_data_source_id</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">get_datasource_type_id_by_name</span><span class="p">(</span>
+                        <span class="s2">&quot;cloudobjectstorage&quot;</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">attachment_data_source_type</span> <span class="o">==</span> <span class="n">cos_conn_data_source_id</span><span class="p">:</span>
+                    <span class="n">attachment_signed_url</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span>
+                    <span class="n">att_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attachment_signed_url</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                        <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                            <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;download_api_not_supported_for_this_connection_type&quot;</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">attachment_signed_url</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
+                    <span class="n">att_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attachment_signed_url</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">att_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">url</span> <span class="o">+</span> <span class="n">attachment_signed_url</span>
+                    <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">att_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ApiRequestFailure</span><span class="p">(</span>
+                    <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                        <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;failure_during_downloading_data_asset&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">att_response</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">att_response</span><span class="o">.</span><span class="n">content</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;failure_during_downloading_data_asset&quot;</span><span class="p">)</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Assets.get_id">
+<a class="viewcode-back" href="../../core_api.html#client.Assets.get_id">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="n">asset_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Unique Id of stored data asset.</span>
+
+<span class="sd">        :param asset_details: details of the stored data asset</span>
+<span class="sd">        :type asset_details: dict</span>
+
+<span class="sd">        :return: Unique Id of stored data asset</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            asset_id = client.data_assets.get_id(asset_details)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Assets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">asset_details</span><span class="p">,</span> <span class="s2">&quot;asset_details&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">Assets</span><span class="o">.</span><span class="n">_validate_type_of_details</span><span class="p">(</span><span class="n">asset_details</span><span class="p">,</span> <span class="n">DATA_ASSETS_DETAILS_TYPE</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">WMLResource</span><span class="o">.</span><span class="n">_get_required_element_from_dict</span><span class="p">(</span>
+            <span class="n">asset_details</span><span class="p">,</span> <span class="s2">&quot;data_assets_details&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="s2">&quot;guid&quot;</span><span class="p">]</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Assets.get_href">
+<a class="viewcode-back" href="../../core_api.html#client.Assets.get_href">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_href</span><span class="p">(</span><span class="n">asset_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get url of stored data asset.</span>
+
+<span class="sd">        :param asset_details:  stored data asset details</span>
+<span class="sd">        :type asset_details: dict</span>
+
+<span class="sd">        :return: href of stored data asset</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            asset_details = client.data_assets.get_details(asset_id)</span>
+<span class="sd">            asset_href = client.data_assets.get_href(asset_details)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Assets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">asset_details</span><span class="p">,</span> <span class="s2">&quot;asset_details&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">Assets</span><span class="o">.</span><span class="n">_validate_type_of_details</span><span class="p">(</span><span class="n">asset_details</span><span class="p">,</span> <span class="n">DATA_ASSETS_DETAILS_TYPE</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">WMLResource</span><span class="o">.</span><span class="n">_get_required_element_from_dict</span><span class="p">(</span>
+            <span class="n">asset_details</span><span class="p">,</span> <span class="s2">&quot;asset_details&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="s2">&quot;href&quot;</span><span class="p">]</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Assets.delete">
+<a class="viewcode-back" href="../../core_api.html#client.Assets.delete">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># asset_id is optional for backward compatibility</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a stored data asset.</span>
+
+<span class="sd">        :param asset_id:  Unique Id of data asset</span>
+<span class="sd">        :type asset_id: str</span>
+
+<span class="sd">        :return: status (&quot;SUCCESS&quot; or &quot;FAILED&quot;) or dictionary, if deleted asynchronously</span>
+<span class="sd">        :rtype: str or dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.data_assets.delete(asset_id)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">asset_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">asset_id</span><span class="p">,</span> <span class="s2">&quot;asset&quot;</span><span class="p">)</span>
+
+        <span class="n">Assets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">asset_id</span><span class="p">,</span> <span class="s2">&quot;asset_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_asset_href</span><span class="p">(</span><span class="n">asset_id</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_required_element_from_response</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="s2">&quot;delete assets&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_get_required_element_from_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+
+        <span class="n">WMLResource</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">response_data</span><span class="p">,</span> <span class="s2">&quot;data assets response&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+
+        <span class="kn">import</span> <span class="nn">copy</span>
+
+        <span class="n">new_el</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">])}</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;guid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">]</span>
+            <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;href&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span>
+
+            <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_type&quot;</span><span class="p">]</span>
+            <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;created_at&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;created_at&quot;</span><span class="p">]</span>
+            <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;last_updated_at&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span>
+                <span class="s2">&quot;usage&quot;</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;last_updated_at&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;space_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;space_id&quot;</span><span class="p">]</span>
+
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;project_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span>
+                    <span class="s2">&quot;project_id&quot;</span>
+                <span class="p">]</span>
+
+            <span class="k">if</span> <span class="s2">&quot;entity&quot;</span> <span class="ow">in</span> <span class="n">response_data</span><span class="p">:</span>
+                <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="s2">&quot;attachments&quot;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">]:</span>
+                <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">&quot;attachment_id&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]}</span>
+                <span class="p">)</span>
+
+            <span class="n">href_without_host</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.com&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;href&quot;</span><span class="p">:</span> <span class="n">href_without_host</span><span class="p">})</span>
+
+            <span class="k">return</span> <span class="n">new_el</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">response_data</span><span class="p">,</span>
+                    <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;failed_to_read_response_from_down_stream_service&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
 
 </pre></div>
         </article>
@@ -287,7 +930,7 @@
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

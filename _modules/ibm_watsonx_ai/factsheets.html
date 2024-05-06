@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>ibm_watsonx_ai.factsheets - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
@@ -164,6 +164,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -197,12 +198,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -240,16 +243,254 @@
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watson_machine_learning.factsheets</span> <span class="kn">import</span> <span class="n">Factsheets</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.change_methods_docstring</span> <span class="kn">import</span> <span class="n">change_docstrings</span>
+<span class="kn">import</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="k">as</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="n">print_text_header_h2</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span><span class="p">,</span> <span class="n">WrongMetaProps</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
+<span class="kn">from</span> <span class="nn">.metanames</span> <span class="kn">import</span> <span class="n">FactsheetsMetaNames</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
 
 <div class="viewcode-block" id="Factsheets">
 <a class="viewcode-back" href="../../core_api.html#client.Factsheets">[docs]</a>
-<span class="nd">@change_docstrings</span>
-<span class="k">class</span> <span class="nc">Factsheets</span><span class="p">(</span><span class="n">Factsheets</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Link Model to Model Entry.&quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
+<span class="k">class</span> <span class="nc">Factsheets</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Link WML Model to Model Entry.&quot;&quot;&quot;</span>
+
+    <span class="n">cloud_platform_spaces</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">icp_platform_spaces</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span> <span class="o">=</span> <span class="n">FactsheetsMetaNames</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
+            <span class="n">Factsheets</span><span class="o">.</span><span class="n">cloud_platform_spaces</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
+            <span class="n">Factsheets</span><span class="o">.</span><span class="n">icp_platform_spaces</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="Factsheets.register_model_entry">
+<a class="viewcode-back" href="../../core_api.html#client.Factsheets.register_model_entry">[docs]</a>
+    <span class="k">def</span> <span class="nf">register_model_entry</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">catalog_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Link WML Model to Model Entry</span>
+
+<span class="sd">        :param model_id: published model/asset ID</span>
+<span class="sd">        :type model_id: str</span>
+
+<span class="sd">        :param meta_props: metaprops, to see the available list of metanames use:</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                client.factsheets.ConfigurationMetaNames.get()</span>
+
+<span class="sd">        :type meta_props: dict[str, str]</span>
+
+<span class="sd">        :param catalog_id: catalog ID where you want to register model</span>
+<span class="sd">        :type catalog_id: str, optional</span>
+
+<span class="sd">        :return: metadata of the registration</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            meta_props = {</span>
+<span class="sd">                client.factsheets.ConfigurationMetaNames.ASSET_ID: &#39;83a53931-a8c0-4c2f-8319-c793155e7517&#39;}</span>
+
+<span class="sd">            registration_details = client.factsheets.register_model_entry(model_id, catalog_id, meta_props)</span>
+
+<span class="sd">        or</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            meta_props = {</span>
+<span class="sd">                client.factsheets.ConfigurationMetaNames.NAME: &quot;New model entry&quot;,</span>
+<span class="sd">                client.factsheets.ConfigurationMetaNames.DESCRIPTION: &quot;New model entry&quot;}</span>
+
+<span class="sd">            registration_details = client.factsheets.register_model_entry(model_id, meta_props)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Factsheets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="s2">&quot;model_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">Factsheets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">catalog_id</span><span class="p">,</span> <span class="s2">&quot;catalog_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">metaProps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">_generate_resource_metadata</span><span class="p">(</span><span class="n">meta_props</span><span class="p">)</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">catalog_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;catalog_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">catalog_id</span>
+            <span class="k">if</span> <span class="s2">&quot;project_id&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;project_id&quot;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="s2">&quot;space_id&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;space_id&quot;</span><span class="p">]</span>
+
+        <span class="n">name_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">NAME</span> <span class="ow">in</span> <span class="n">metaProps</span>
+        <span class="n">description_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DESCRIPTION</span> <span class="ow">in</span> <span class="n">metaProps</span>
+        <span class="n">asset_id_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">ASSET_ID</span> <span class="ow">in</span> <span class="n">metaProps</span>
+
+        <span class="c1"># check for metaprops correctness</span>
+        <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot;Please provide either NAME and DESCRIPTION or ASSET_ID&quot;</span>
+        <span class="k">if</span> <span class="n">name_in</span> <span class="ow">and</span> <span class="n">description_in</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">asset_id_in</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">WrongMetaProps</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">asset_id_in</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name_in</span> <span class="ow">or</span> <span class="n">description_in</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">WrongMetaProps</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WrongMetaProps</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">)</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wkc_model_register_href</span><span class="p">(</span>
+                <span class="n">model_id</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">metaProps</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>  <span class="c1"># version is mandatory</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="n">print_text_header_h2</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Successfully finished linking WML Model &#39;</span><span class="si">{</span><span class="n">model_id</span><span class="si">}</span><span class="s2">&#39; to Model Entry.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;WML Model registration failed&quot;</span>
+            <span class="n">reason</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
+            <span class="n">print_text_header_h2</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">error_msg</span> <span class="o">+</span> <span class="s2">&quot;. Error: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;. &quot;</span> <span class="o">+</span> <span class="n">reason</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Factsheets.list_model_entries">
+<a class="viewcode-back" href="../../core_api.html#client.Factsheets.list_model_entries">[docs]</a>
+    <span class="k">def</span> <span class="nf">list_model_entries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">catalog_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns all WKC Model Entry assets for a catalog.</span>
+
+<span class="sd">        :param catalog_id: catalog ID where you want to register model, if None list from all catalogs</span>
+<span class="sd">        :type catalog_id: str, optional</span>
+
+<span class="sd">        :return: all WKC Model Entry assets for a catalog</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            model_entries = client.factsheets.list_model_entries(catalog_id)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">catalog_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">Factsheets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">catalog_id</span><span class="p">,</span> <span class="s2">&quot;catalog_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wkc_model_list_from_catalog_href</span><span class="p">(</span>
+                <span class="n">catalog_id</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wkc_model_list_all_href</span><span class="p">()</span>
+            <span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>  <span class="c1"># version is mandatory</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;WKC Models listing failed&quot;</span>
+            <span class="n">reason</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
+            <span class="n">print_text_header_h2</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">error_msg</span> <span class="o">+</span> <span class="s2">&quot;. Error: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;. &quot;</span> <span class="o">+</span> <span class="n">reason</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Factsheets.unregister_model_entry">
+<a class="viewcode-back" href="../../core_api.html#client.Factsheets.unregister_model_entry">[docs]</a>
+    <span class="k">def</span> <span class="nf">unregister_model_entry</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">catalog_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unregister WKC Model Entry</span>
+
+<span class="sd">        :param asset_id:  WKC model entry id</span>
+<span class="sd">        :type asset_id: str</span>
+
+<span class="sd">        :param catalog_id: catalog ID where asset is stored, when not provided,</span>
+<span class="sd">            default client space or project will be taken</span>
+<span class="sd">        :type catalog_id: str, optional</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            model_entries = client.factsheets.unregister_model_entry(asset_id=&#39;83a53931-a8c0-4c2f-8319-c793155e7517&#39;,</span>
+<span class="sd">                                                                     catalog_id=&#39;34553931-a8c0-4c2f-8319-c793155e7517&#39;)</span>
+
+<span class="sd">        or</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.set.default_space(&#39;98f53931-a8c0-4c2f-8319-c793155e7517&#39;)</span>
+<span class="sd">            model_entries = client.factsheets.unregister_model_entry(asset_id=&#39;83a53931-a8c0-4c2f-8319-c793155e7517&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Factsheets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">asset_id</span><span class="p">,</span> <span class="s2">&quot;asset_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">Factsheets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">catalog_id</span><span class="p">,</span> <span class="s2">&quot;catalog_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wkc_model_delete_href</span><span class="p">(</span>
+            <span class="n">asset_id</span>
+        <span class="p">)</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">catalog_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;catalog_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">catalog_id</span>
+
+            <span class="k">if</span> <span class="s2">&quot;space_id&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+                <span class="k">del</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;space_id&quot;</span><span class="p">]</span>
+
+            <span class="k">elif</span> <span class="s2">&quot;project_id&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+                <span class="k">del</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;project_id&quot;</span><span class="p">]</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>  <span class="c1"># version is mandatory</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">204</span><span class="p">:</span>
+            <span class="n">print_text_header_h2</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Successfully finished unregistering WKC Model &#39;</span><span class="si">{</span><span class="n">asset_id</span><span class="si">}</span><span class="s2">&#39; Entry.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;WKC Model Entry unregistering failed&quot;</span>
+            <span class="n">reason</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
+            <span class="n">print_text_header_h2</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">error_msg</span> <span class="o">+</span> <span class="s2">&quot;. Error: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;. &quot;</span> <span class="o">+</span> <span class="n">reason</span>
+            <span class="p">)</span></div>
+</div>
 
 </pre></div>
         </article>
@@ -284,7 +525,7 @@
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

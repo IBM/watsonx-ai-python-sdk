@@ -1,0 +1,170 @@
+V1 Migration Guide
+==================
+
+.. raw:: html
+
+    <div style="text-align: justify;">
+
+New ``ibm_watsonx_ai`` Python SDK 1.0 is backward compatible in most common scenarios,
+but few minor adjustments in code may be needed.
+
+.. raw:: html
+
+   </div>
+
+
+What's new?
+------------
+
+Refactor and Cleanup
+""""""""""""""""""""""
+
+This major release marks a thorough refactoring and cleanup of the codebase.
+We've diligently worked to improve code readability, and enhance overall performance.
+As a result, users can expect a more efficient and maintainable package.
+
+New authorization
+"""""""""""""""""
+In ``ibm_watsonx_ai`` 1.0 new class ``Credentials`` was introduced which replaces the dictionary with credentials.
+See examples and more in docs: :doc:`Authentication Cloud <setup_cloud>` and :doc:`Authentication <setup_cpd>`
+
+✅ New approach
+
+.. code:: python
+
+    from ibm_watsonx_ai import APIClient
+    from ibm_watsonx_ai import Credentials
+
+    credentials = Credentials(
+                       url = "https://us-south.ml.cloud.ibm.com",
+                       token = "***********",
+                      )
+
+    client = APIClient(credentials)
+
+❌ Old approach
+
+.. code:: python
+
+    from ibm_watsonx_ai import APIClient
+
+    credentials = {
+                       "url": "https://us-south.ml.cloud.ibm.com",
+                       "token":"***********",
+                      }
+
+    client = APIClient(credentials)
+
+Easier project and space setup
+""""""""""""""""""""""""""""""
+
+Starting from ``ibm_watsonx_ai`` 1.0 release users can set the default space
+or project while initializing APIClient object.
+
+✅ New approach
+
+.. code:: python
+
+    client_project = APIClient(credentials, project_id = project_id)
+    client_space = APIClient(credentials, space_id = space_id)
+
+❌ Old approach
+
+.. code:: python
+
+    client_project = APIClient(credentials)
+    client_project.set.default_project(project_id)
+
+    client_space = APIClient(credentials)
+    client_space.set.default_space(space_id)
+
+Breaking changes
+""""""""""""""""
+
+* ``client.<resource>.list()`` methods don't print the table with listed assets. They return the table as ``pandas.DataFrame``. The optional parameter for the methods ``return_as_df`` was removed.
+
+✅ New approach - Access to credentials fields as class attributes.
+
+.. code:: python
+
+    conn_list = client.connections.list()  ## table not printed
+
+❌ Old approach - Table with listed resources printed.
+
+.. code:: python
+
+    conn_list = client.connections.list()
+    ### Table returned as pandas.DataFrame `conn_list` object and printed output:
+    ---------------------------  ------------------------------------  --------------------  ------------------------------------
+    NAME                         ID                                    CREATED               DATASOURCE_TYPE_ID
+    Connection to COS            71738a79-6585-4f33-bf4a-18907abcf06a  2024-04-25T10:42:23Z  193a97c1-4475-4a19-b90c-295c4fdc6517
+    ---------------------------  ------------------------------------  --------------------  ------------------------------------
+
+
+
+
+* Methods and parameters that were marked as deprecated in ``ibm_watsonx_ai v0`` were removed. For example:
+
+✅ New approach - Use method that replaced deprecated one, for ``get_uid`` it's ``get_id``
+
+.. code:: python
+
+    asset_id = client.data_assets.get_id(asset_details)
+
+❌ Old approach - Deprecated ``get_uid`` method  called
+
+.. code:: python
+
+    client.data_assets.get_uid(asset_details)
+
+*  ``client.credentials`` and ``client.wml_credentials`` returns ``Credentials`` object instead of dictionary.
+
+✅ New approach - Access to credentials fields as class attributes.
+
+.. code:: python
+
+    from ibm_watsonx_ai import APIClient
+    from ibm_watsonx_ai import Credentials
+
+    credentials = Credentials(
+                       url = "https://us-south.ml.cloud.ibm.com",
+                       token = "***********",
+                      )
+
+    client = APIClient(credentials)
+
+    url = client.credentials.url
+    # OR
+    url = credentials.url
+
+❌ Old approach - Access to credentials fields as keys in dictionary.
+
+.. code:: python
+
+    from ibm_watsonx_ai import APIClient
+
+    credentials = {
+                       "url": "https://us-south.ml.cloud.ibm.com",
+                       "token":"***********",
+                      }
+    client = APIClient(credentials)
+    url = client.wml_credentials.get('url')
+
+
+Deprecations
+""""""""""""
+
+* Initializing ``APIClient`` with ``credentials`` as dictionary is deprecated.
+
+* All parameters with ``wml`` in name are deprecated. They were renamed to:
+    - ``wml_credentials`` -> ``credentials``
+    - ``wml_client`` -> ``api_client``.
+
+* ``id`` naming was aligned in parameters and methods, now all ``uid`` should be replaced by ``id``. Methods that were using ``uid`` were either removed or mark as deprecated.
+
+
+
+
+
+
+

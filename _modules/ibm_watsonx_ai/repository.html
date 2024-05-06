@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>ibm_watsonx_ai.repository - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
@@ -164,6 +164,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -197,12 +198,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -240,18 +243,63 @@
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watson_machine_learning.repository</span> <span class="kn">import</span> <span class="n">Repository</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.change_methods_docstring</span> <span class="kn">import</span> <span class="n">change_docstrings</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Response</span>
+
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai._wrappers</span> <span class="kn">import</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.experiments</span> <span class="kn">import</span> <span class="n">Experiments</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.functions</span> <span class="kn">import</span> <span class="n">Functions</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.libs.repo.mlrepositoryclient</span> <span class="kn">import</span> <span class="n">MLRepositoryClient</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.lifecycle</span> <span class="kn">import</span> <span class="n">SpecStates</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.messages.messages</span> <span class="kn">import</span> <span class="n">Messages</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ExperimentMetaNames</span><span class="p">,</span>
+    <span class="n">FunctionMetaNames</span><span class="p">,</span>
+    <span class="n">PipelineMetanames</span><span class="p">,</span>
+    <span class="n">SpacesMetaNames</span><span class="p">,</span>
+    <span class="n">ModelMetaNames</span><span class="p">,</span>
+    <span class="n">MemberMetaNames</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.models</span> <span class="kn">import</span> <span class="n">Models</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.pipelines</span> <span class="kn">import</span> <span class="n">Pipelines</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="n">inherited_docstring</span><span class="p">,</span> <span class="n">get_url</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.utils</span> <span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+    <span class="kn">import</span> <span class="nn">numpy</span>
+    <span class="kn">import</span> <span class="nn">pandas</span>
+    <span class="kn">import</span> <span class="nn">pyspark</span>
+
+    <span class="n">LabelColumnNamesType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">str_</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">TrainingDataType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">pyspark</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">Dataframe</span> <span class="o">|</span> <span class="nb">list</span>
+    <span class="p">)</span>
+    <span class="n">TrainingTargetType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span> <span class="o">|</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span>
+    <span class="p">)</span>
+    <span class="n">FeatureNamesArrayType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span>
+
+<span class="n">_DEFAULT_LIST_LENGTH</span> <span class="o">=</span> <span class="mi">50</span>
 
 
 <div class="viewcode-block" id="Repository">
 <a class="viewcode-back" href="../../core_api.html#client.Repository">[docs]</a>
-<span class="nd">@change_docstrings</span>
-<span class="k">class</span> <span class="nc">Repository</span><span class="p">(</span><span class="n">Repository</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Repository</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Store and manage models, functions, spaces, pipelines and experiments</span>
-<span class="sd">    using watsonx.ai Repository.</span>
-<span class="sd">    </span>
+<span class="sd">    using Watson Machine Learning Repository.</span>
+
 <span class="sd">    To view ModelMetaNames, use:</span>
 
 <span class="sd">    .. code-block:: python</span>
@@ -277,7 +325,1001 @@
 <span class="sd">        client.repository.PipelineMetaNames.show()</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Repository.ModelAssetTypes">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.ModelAssetTypes">[docs]</a>
+    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">ModelAssetTypes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Data class with supported model asset types.&quot;&quot;&quot;</span>
+
+        <span class="n">DO_DOCPLEX_20_1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;do-docplex_20.1&quot;</span>
+        <span class="n">DO_OPL_20_1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;do-opl_20.1&quot;</span>
+        <span class="n">DO_CPLEX_20_1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;do-cplex_20.1&quot;</span>
+        <span class="n">DO_CPO_20_1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;do-cpo_20.1&quot;</span>
+        <span class="n">DO_DOCPLEX_22_1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;do-docplex_22.1&quot;</span>
+        <span class="n">DO_OPL_22_1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;do-opl_22.1&quot;</span>
+        <span class="n">DO_CPLEX_22_1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;do-cplex_22.1&quot;</span>
+        <span class="n">DO_CPO_22_1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;do-cpo_22.1&quot;</span>
+        <span class="n">WML_HYBRID_0_1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wml-hybrid_0.1&quot;</span>
+        <span class="n">PMML_4_2_1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pmml_4.2.1&quot;</span>
+        <span class="n">PYTORCH_ONNX_1_12</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pytorch-onnx_1.12&quot;</span>
+        <span class="n">PYTORCH_ONNX_RT22_2</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pytorch-onnx_rt22.2&quot;</span>
+        <span class="n">PYTORCH_ONNX_2_0</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pytorch-onnx_2.0&quot;</span>
+        <span class="n">PYTORCH_ONNX_RT23_1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pytorch-onnx_rt23.1&quot;</span>
+        <span class="n">SCIKIT_LEARN_1_1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;scikit-learn_1.1&quot;</span>
+        <span class="n">MLLIB_3_3</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mllib_3.3&quot;</span>
+        <span class="n">SPSS_MODELER_17_1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;spss-modeler_17.1&quot;</span>
+        <span class="n">SPSS_MODELER_18_1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;spss-modeler_18.1&quot;</span>
+        <span class="n">SPSS_MODELER_18_2</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;spss-modeler_18.2&quot;</span>
+        <span class="n">TENSORFLOW_2_9</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tensorflow_2.9&quot;</span>
+        <span class="n">TENSORFLOW_RT22_2</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tensorflow_rt22.2&quot;</span>
+        <span class="n">TENSORFLOW_2_12</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tensorflow_2.12&quot;</span>
+        <span class="n">TENSORFLOW_RT23_1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tensorflow_rt23.1&quot;</span>
+        <span class="n">XGBOOST_1_6</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;xgboost_1.6&quot;</span>
+        <span class="n">PROMPT_TUNE_1_0</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;prompt_tune_1.0&quot;</span>
+        <span class="n">CUSTOM_FOUNDATION_MODEL_1_0</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;custom_foundation_model_1.0&quot;</span></div>
+
+
+    <span class="n">cloud_platform_spaces</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">icp_platform_spaces</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="p">:</span> <span class="n">MLRepositoryClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ExperimentMetaNames</span> <span class="o">=</span> <span class="n">ExperimentMetaNames</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FunctionMetaNames</span> <span class="o">=</span> <span class="n">FunctionMetaNames</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PipelineMetaNames</span> <span class="o">=</span> <span class="n">PipelineMetanames</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SpacesMetaNames</span> <span class="o">=</span> <span class="n">SpacesMetaNames</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ModelMetaNames</span> <span class="o">=</span> <span class="n">ModelMetaNames</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MemberMetaNames</span> <span class="o">=</span> <span class="n">MemberMetaNames</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_repo_client</span><span class="p">()</span>  <span class="c1"># regular token is initialized in service_instance</span>
+
+    <span class="k">def</span> <span class="nf">_refresh_repo_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># If apiKey is passed in credentials then refresh repoclient with IAM token else MLToken</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span> <span class="o">=</span> <span class="n">MLRepositoryClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">proceed</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_is_iam</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">authorize_with_token</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">_add_header</span><span class="p">(</span>
+                    <span class="s2">&quot;X-WML-User-Client&quot;</span><span class="p">,</span> <span class="s2">&quot;PythonClient&quot;</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">_add_header</span><span class="p">(</span>
+                        <span class="s2">&quot;X-Watson-Project-ID&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">authorize_with_iamtoken</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">instance_id</span><span class="p">,</span>
+                    <span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">_add_header</span><span class="p">(</span>
+                    <span class="s2">&quot;X-WML-User-Client&quot;</span><span class="p">,</span> <span class="s2">&quot;PythonClient&quot;</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">_add_header</span><span class="p">(</span>
+                        <span class="s2">&quot;X-Watson-Project-ID&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span>
+                    <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_is_IAM</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">authorize_with_iamtoken</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">instance_id</span><span class="p">,</span>
+                    <span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">_add_header</span><span class="p">(</span>
+                    <span class="s2">&quot;X-WML-User-Client&quot;</span><span class="p">,</span> <span class="s2">&quot;PythonClient&quot;</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">_add_header</span><span class="p">(</span>
+                        <span class="s2">&quot;X-Watson-Project-ID&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_repotoken</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_get_token</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repotoken</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Bearer&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">authorize_with_token</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_token</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">password</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">_add_header</span><span class="p">(</span>
+                        <span class="s2">&quot;X-WML-User-Client&quot;</span><span class="p">,</span> <span class="s2">&quot;PythonClient&quot;</span>
+                    <span class="p">)</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">_add_header</span><span class="p">(</span>
+                            <span class="s2">&quot;X-Watson-Project-ID&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span>
+                        <span class="p">)</span>
+
+<div class="viewcode-block" id="Repository.store_experiment">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.store_experiment">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span>
+        <span class="n">Experiments</span><span class="o">.</span><span class="n">store</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;experiments.get_href&quot;</span><span class="p">:</span> <span class="s2">&quot;repository.get_experiment_href&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">store_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">meta_props</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.store_pipeline">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.store_pipeline">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Pipelines</span><span class="o">.</span><span class="n">store</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">store_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">meta_props</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.store_model">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.store_model">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Models</span><span class="o">.</span><span class="n">store</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;store()&quot;</span><span class="p">:</span> <span class="s2">&quot;store_model()&quot;</span><span class="p">})</span>
+    <span class="k">def</span> <span class="nf">store_model</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">training_data</span><span class="p">:</span> <span class="n">TrainingDataType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">training_target</span><span class="p">:</span> <span class="n">TrainingTargetType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">pipeline</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">feature_names</span><span class="p">:</span> <span class="n">FeatureNamesArrayType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">label_column_names</span><span class="p">:</span> <span class="n">LabelColumnNamesType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">subtrainingId</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">round_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">experiment_metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">training_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">store</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">meta_props</span><span class="o">=</span><span class="n">meta_props</span><span class="p">,</span>
+            <span class="n">training_data</span><span class="o">=</span><span class="n">training_data</span><span class="p">,</span>
+            <span class="n">training_target</span><span class="o">=</span><span class="n">training_target</span><span class="p">,</span>
+            <span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span>
+            <span class="n">feature_names</span><span class="o">=</span><span class="n">feature_names</span><span class="p">,</span>
+            <span class="n">label_column_names</span><span class="o">=</span><span class="n">label_column_names</span><span class="p">,</span>
+            <span class="n">subtrainingId</span><span class="o">=</span><span class="n">subtrainingId</span><span class="p">,</span>
+            <span class="n">round_number</span><span class="o">=</span><span class="n">round_number</span><span class="p">,</span>
+            <span class="n">experiment_metadata</span><span class="o">=</span><span class="n">experiment_metadata</span><span class="p">,</span>
+            <span class="n">training_id</span><span class="o">=</span><span class="n">training_id</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">clone</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">action</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;copy&quot;</span><span class="p">,</span>
+        <span class="n">rev_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;cloning_not_supported&quot;</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Repository.store_function">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.store_function">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Functions</span><span class="o">.</span><span class="n">store</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">store_function</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_functions</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.create_model_revision">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.create_model_revision">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Models</span><span class="o">.</span><span class="n">create_revision</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">create_model_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">model_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">create_revision</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.create_pipeline_revision">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.create_pipeline_revision">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Pipelines</span><span class="o">.</span><span class="n">create_revision</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">create_pipeline_revision</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">pipeline_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">pipeline_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">pipeline_id</span><span class="p">,</span> <span class="s2">&quot;pipeline&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">create_revision</span><span class="p">(</span><span class="n">pipeline_id</span><span class="o">=</span><span class="n">pipeline_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.create_function_revision">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.create_function_revision">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Functions</span><span class="o">.</span><span class="n">create_revision</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">create_function_revision</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">function_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_functions</span><span class="o">.</span><span class="n">create_revision</span><span class="p">(</span>
+            <span class="n">function_id</span><span class="o">=</span><span class="n">function_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.create_experiment_revision">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.create_experiment_revision">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Experiments</span><span class="o">.</span><span class="n">create_revision</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">create_experiment_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">create_revision</span><span class="p">(</span><span class="n">experiment_id</span><span class="o">=</span><span class="n">experiment_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.update_model">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.update_model">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Models</span><span class="o">.</span><span class="n">update</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;meta_props&quot;</span><span class="p">:</span> <span class="s2">&quot;updated_meta_props&quot;</span><span class="p">})</span>
+    <span class="k">def</span> <span class="nf">update_model</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">updated_meta_props</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">update_model</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">model_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">updated_meta_props</span><span class="p">,</span> <span class="n">update_model</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.update_experiment">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.update_experiment">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Experiments</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">update_experiment</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">experiment_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">changes</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">experiment_id</span><span class="p">,</span> <span class="n">changes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.update_function">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.update_function">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Functions</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">update_function</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">function_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">changes</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">update_function</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_functions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="n">function_id</span><span class="p">,</span> <span class="n">changes</span><span class="p">,</span> <span class="n">update_function</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.update_pipeline">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.update_pipeline">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Pipelines</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">update_pipeline</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pipeline_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">changes</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rev_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">pipeline_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">pipeline_id</span><span class="p">,</span> <span class="s2">&quot;pipeline&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pipeline_id</span><span class="p">,</span> <span class="n">changes</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.load">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.load">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Models</span><span class="o">.</span><span class="n">load</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+        <span class="n">artifact_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.download">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.download">[docs]</a>
+    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;downloaded_artifact.tar.gz&quot;</span><span class="p">,</span>
+        <span class="n">rev_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Downloads configuration file for artifact with specified id.</span>
+
+<span class="sd">        :param artifact_id: Unique Id of model or function</span>
+<span class="sd">        :type artifact_id: str</span>
+<span class="sd">        :param filename: name of the file to which the artifact content has to be downloaded</span>
+<span class="sd">        :type filename: str, optional</span>
+<span class="sd">        :param rev_id: revision id</span>
+<span class="sd">        :type rev_id: str, optional</span>
+<span class="sd">        :param format: format of the content, applicable for models</span>
+<span class="sd">        :type format: str, optional</span>
+
+<span class="sd">        :return: path to the downloaded artifact content</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Examples**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.repository.download(model_id, &#39;my_model.tar.gz&#39;)</span>
+<span class="sd">            client.repository.download(model_id, &#39;my_model.json&#39;) # if original model was saved as json, works only for xgboost 1.3</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">artifact_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact&quot;</span><span class="p">)</span>
+        <span class="n">rev_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">,</span> <span class="s2">&quot;rev&quot;</span><span class="p">,</span> <span class="n">can_be_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_artifact_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">,</span> <span class="nb">format</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_functions</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Unexpected type of artifact to download or Artifact with artifact_id: &#39;</span><span class="si">{}</span><span class="s2">&#39; does not exist.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">artifact_id</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.delete">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.delete">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete model, experiment, pipeline or function from repository.</span>
+
+<span class="sd">        :param artifact_id: Unique id of stored model, experiment, function or pipeline</span>
+<span class="sd">        :type artifact_id: str</span>
+
+<span class="sd">        :return: status &quot;SUCCESS&quot; if deletion is successful</span>
+<span class="sd">        :rtype: Literal[&quot;SUCCESS&quot;]</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.repository.delete(artifact_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">artifact_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact&quot;</span><span class="p">)</span>
+
+        <span class="n">Repository</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_if_deployment_exist_for_asset</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Cannot delete artifact that has existing deployments. Please delete all associated deployments and try again&quot;</span>
+            <span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;purge_on_delete&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">})</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_asset_href</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span> <span class="ow">or</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">204</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;delete assets&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">response</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="s2">&quot;delete assets&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">response</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                    <span class="s2">&quot;Artifact with artifact_id: &#39;</span><span class="si">{}</span><span class="s2">&#39; does not exist.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">artifact_id</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                    <span class="s2">&quot;Deletion error for the given id : &quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span>
+                <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_details">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_details">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">spec_state</span><span class="p">:</span> <span class="n">SpecStates</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of stored artifacts. If `artifact_id` is not specified returns all models, experiments,</span>
+<span class="sd">        functions and pipelines metadata.</span>
+
+<span class="sd">        :param artifact_id: Unique Id of stored model, experiment, function or pipeline</span>
+<span class="sd">        :type artifact_id: str, optional</span>
+
+<span class="sd">        :param spec_state: software specification state, can be used only when `artifact_id` is None</span>
+<span class="sd">        :type spec_state: SpecStates, optional</span>
+
+<span class="sd">        :return: stored artifact(s) metadata</span>
+<span class="sd">        :rtype: dict (if artifact_id is not None) or {&quot;resources&quot;: [dict]} (if artifact_id is None)</span>
+
+<span class="sd">        **Examples**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            details = client.repository.get_details(artifact_id)</span>
+<span class="sd">            details = client.repository.get_details()</span>
+
+<span class="sd">        Example of getting all repository assets with deprecated software specifications:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from ibm_watsonx_ai.lifecycle import SpecStates</span>
+
+<span class="sd">            details = client.repository.get_details(spec_state=SpecStates.DEPRECATED)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">artifact_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span>
+            <span class="n">kwargs</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact&quot;</span><span class="p">,</span> <span class="n">can_be_none</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">Repository</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">artifact_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">model_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">spec_state</span><span class="o">=</span><span class="n">spec_state</span><span class="p">)</span>
+            <span class="n">experiment_details</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_experiment_details</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">spec_state</span> <span class="k">else</span> <span class="p">{</span><span class="s2">&quot;resources&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+            <span class="p">)</span>
+            <span class="n">pipeline_details</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_pipeline_details</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">spec_state</span> <span class="k">else</span> <span class="p">{</span><span class="s2">&quot;resources&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+            <span class="p">)</span>
+            <span class="n">function_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_functions</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+                <span class="n">spec_state</span><span class="o">=</span><span class="n">spec_state</span>
+            <span class="p">)</span>
+
+            <span class="n">details</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="n">model_details</span><span class="p">,</span>
+                <span class="s2">&quot;experiments&quot;</span><span class="p">:</span> <span class="n">experiment_details</span><span class="p">,</span>
+                <span class="s2">&quot;pipeline&quot;</span><span class="p">:</span> <span class="n">pipeline_details</span><span class="p">,</span>
+                <span class="s2">&quot;functions&quot;</span><span class="p">:</span> <span class="n">function_details</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">artifact_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_artifact_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model_details</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;experiment&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_experiment_details</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;pipeline&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pipeline_details</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_function_details</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                    <span class="s2">&quot;Getting artifact details failed. Artifact id: &#39;</span><span class="si">{}</span><span class="s2">&#39; not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">artifact_id</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">details</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_model_details">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_model_details">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Models</span><span class="o">.</span><span class="n">get_details</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_model_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">spec_state</span><span class="p">:</span> <span class="n">SpecStates</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">model_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span>
+            <span class="n">kwargs</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="n">can_be_none</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+            <span class="n">model_id</span><span class="p">,</span>
+            <span class="n">limit</span><span class="p">,</span>
+            <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
+            <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+            <span class="n">spec_state</span><span class="o">=</span><span class="n">spec_state</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_model_revision_details">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_model_revision_details">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Models</span><span class="o">.</span><span class="n">get_revision_details</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_model_revision_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">model_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">)</span>
+        <span class="n">rev_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">,</span> <span class="s2">&quot;rev&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">get_revision_details</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_experiment_details">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_experiment_details">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Experiments</span><span class="o">.</span><span class="n">get_details</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_experiment_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">experiment_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+            <span class="n">experiment_id</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">,</span> <span class="n">get_all</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_experiment_revision_details">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_experiment_revision_details">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Experiments</span><span class="o">.</span><span class="n">get_revision_details</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_experiment_revision_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">experiment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">get_revision_details</span><span class="p">(</span>
+            <span class="n">experiment_id</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_function_details">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_function_details">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Functions</span><span class="o">.</span><span class="n">get_details</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_function_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">function_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">spec_state</span><span class="p">:</span> <span class="n">SpecStates</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_functions</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+            <span class="n">function_id</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">,</span> <span class="n">get_all</span><span class="p">,</span> <span class="n">spec_state</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_function_revision_details">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_function_revision_details">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Functions</span><span class="o">.</span><span class="n">get_revision_details</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_function_revision_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">function_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_functions</span><span class="o">.</span><span class="n">get_revision_details</span><span class="p">(</span>
+            <span class="n">function_id</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_pipeline_details">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_pipeline_details">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Pipelines</span><span class="o">.</span><span class="n">get_details</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_pipeline_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pipeline_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">pipeline_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span>
+            <span class="n">kwargs</span><span class="p">,</span> <span class="n">pipeline_id</span><span class="p">,</span> <span class="s2">&quot;pipeline&quot;</span><span class="p">,</span> <span class="n">can_be_none</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">Repository</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">pipeline_id</span><span class="p">,</span> <span class="s2">&quot;pipeline_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">Repository</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">Repository</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">asynchronous</span><span class="p">,</span> <span class="s2">&quot;asynchronous&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">Repository</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">get_all</span><span class="p">,</span> <span class="s2">&quot;get_all&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+            <span class="n">pipeline_id</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">,</span> <span class="n">get_all</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_pipeline_revision_details">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_pipeline_revision_details">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Pipelines</span><span class="o">.</span><span class="n">get_revision_details</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_pipeline_revision_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">pipeline_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">pipeline_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">pipeline_id</span><span class="p">,</span> <span class="s2">&quot;pipeline&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">get_revision_details</span><span class="p">(</span>
+            <span class="n">pipeline_id</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_model_href">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_model_href">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Models</span><span class="o">.</span><span class="n">get_href</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_model_href</span><span class="p">(</span><span class="n">model_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Models</span><span class="o">.</span><span class="n">get_href</span><span class="p">(</span><span class="n">model_details</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_model_id">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_model_id">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Models</span><span class="o">.</span><span class="n">get_id</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_model_id</span><span class="p">(</span><span class="n">model_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Models</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">model_details</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_experiment_id">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_experiment_id">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span>
+        <span class="n">Experiments</span><span class="o">.</span><span class="n">get_id</span><span class="p">,</span>
+        <span class="p">{</span><span class="s2">&quot;experiments.get_details&quot;</span><span class="p">:</span> <span class="s2">&quot;repository.get_experiment_details&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_experiment_id</span><span class="p">(</span><span class="n">experiment_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Experiments</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">experiment_details</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_experiment_href">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_experiment_href">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span>
+        <span class="n">Experiments</span><span class="o">.</span><span class="n">get_href</span><span class="p">,</span>
+        <span class="p">{</span><span class="s2">&quot;experiments.get_details&quot;</span><span class="p">:</span> <span class="s2">&quot;repository.get_experiment_details&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_experiment_href</span><span class="p">(</span><span class="n">experiment_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Experiments</span><span class="o">.</span><span class="n">get_href</span><span class="p">(</span><span class="n">experiment_details</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_function_id">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_function_id">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Functions</span><span class="o">.</span><span class="n">get_id</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_function_id</span><span class="p">(</span><span class="n">function_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Functions</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">function_details</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_function_href">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_function_href">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Functions</span><span class="o">.</span><span class="n">get_href</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_function_href</span><span class="p">(</span><span class="n">function_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Functions</span><span class="o">.</span><span class="n">get_href</span><span class="p">(</span><span class="n">function_details</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_pipeline_href">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_pipeline_href">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span>
+        <span class="n">Pipelines</span><span class="o">.</span><span class="n">get_href</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;pipelines.get_details&quot;</span><span class="p">:</span> <span class="s2">&quot;repository.get_pipeline_details&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_pipeline_href</span><span class="p">(</span><span class="n">pipeline_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Pipelines</span><span class="o">.</span><span class="n">get_href</span><span class="p">(</span><span class="n">pipeline_details</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_pipeline_id">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_pipeline_id">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Pipelines</span><span class="o">.</span><span class="n">get_id</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_pipeline_id</span><span class="p">(</span><span class="n">pipeline_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Pipelines</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">pipeline_details</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.list">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.list">[docs]</a>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">framework_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lists/gets stored models, pipelines, runtimes, libraries, functions, spaces and experiments in a table/DataFrame format.</span>
+<span class="sd">        If limit is set to None there will be only first 50 records shown.</span>
+
+<span class="sd">        :param framework_filter: Get only frameworks with desired names</span>
+<span class="sd">        :type framework_filter: str, optional</span>
+
+<span class="sd">        :return: DataFrame with listed names and ids of stored models</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.repository.list()</span>
+<span class="sd">            client.repository.list(framework_filter=&#39;prompt_tune&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">})</span>
+        <span class="c1"># params = {u&#39;limit&#39;: 1000} # TODO - should be unlimited, if results not sorted</span>
+
+        <span class="n">isIcp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span>
+
+        <span class="n">endpoints</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_published_models_href</span><span class="p">(),</span>
+            <span class="s2">&quot;experiment&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_experiments_href</span><span class="p">(),</span>
+            <span class="s2">&quot;pipeline&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_pipelines_href</span><span class="p">(),</span>
+            <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_functions_href</span><span class="p">(),</span>
+        <span class="p">}</span>
+
+        <span class="n">artifact_get</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">artifact</span> <span class="ow">in</span> <span class="n">endpoints</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
+            <span class="n">artifact_get</span><span class="p">[</span><span class="n">artifact</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span>
+                <span class="n">endpoints</span><span class="p">[</span><span class="n">artifact</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span> <span class="n">params</span><span class="p">,</span> <span class="n">isIcp</span>
+            <span class="p">)</span>
+
+        <span class="n">resources</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">artifact</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">artifact</span> <span class="ow">in</span> <span class="n">endpoints</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">artifact</span> <span class="ow">in</span> <span class="n">endpoints</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">artifact_get</span><span class="p">[</span><span class="n">artifact</span><span class="p">]</span>
+                <span class="n">response_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                    <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;getting all </span><span class="si">{}</span><span class="s2">s&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">artifact</span><span class="p">),</span> <span class="n">response</span>
+                <span class="p">)</span>
+                <span class="n">resources</span><span class="p">[</span><span class="n">artifact</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_text</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="n">sw_spec_info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">s</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]:</span> <span class="n">s</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">software_specifications</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">state_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span>
+                <span class="s2">&quot;resources&quot;</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="k">def</span> <span class="nf">get_spec_info</span><span class="p">(</span><span class="n">spec_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prop</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">spec_id</span> <span class="ow">and</span> <span class="n">spec_id</span> <span class="ow">in</span> <span class="n">sw_spec_info</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">sw_spec_info</span><span class="p">[</span><span class="n">spec_id</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">endpoints</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">values</span> <span class="o">+=</span> <span class="p">[</span>
+                <span class="p">(</span>
+                    <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+                    <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                    <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;created_at&quot;</span><span class="p">],</span>
+                    <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s2">&quot;model&quot;</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                    <span class="n">t</span> <span class="k">if</span> <span class="n">t</span> <span class="o">!=</span> <span class="s2">&quot;function&quot;</span> <span class="k">else</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; function&quot;</span><span class="p">,</span>
+                    <span class="n">get_spec_info</span><span class="p">(</span>
+                        <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;software_spec&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span> <span class="s2">&quot;state&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">get_spec_info</span><span class="p">(</span>
+                        <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;software_spec&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span>
+                        <span class="s2">&quot;replacement&quot;</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+            <span class="p">]</span>
+
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;ID&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;NAME&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;CREATED&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;FRAMEWORK&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TYPE&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;SPEC_STATE&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;SPEC_REPLACEMENT&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+
+        <span class="n">table</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CREATED&quot;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span>
+            <span class="n">drop</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">framework_filter</span><span class="p">:</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="n">table</span><span class="p">[</span><span class="s2">&quot;FRAMEWORK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">framework_filter</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">_DEFAULT_LIST_LENGTH</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Note: Only first </span><span class="si">{}</span><span class="s2"> records were displayed. To display more use more specific list functions.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">_DEFAULT_LIST_LENGTH</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">table</span><span class="p">[:</span><span class="n">_DEFAULT_LIST_LENGTH</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Repository.list_models">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.list_models">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Models</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">list_models</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">list</span><span class="p">(</span>
+            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span> <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.list_experiments">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.list_experiments">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Experiments</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">list_experiments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.list_functions">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.list_functions">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Functions</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">list_functions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_functions</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.list_pipelines">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.list_pipelines">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Pipelines</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">list_pipelines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_check_artifact_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+        <span class="n">Repository</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_artifact_exists</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Response</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">response</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;status_code&quot;</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+                <span class="ow">and</span> <span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">isIcp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span>
+
+        <span class="n">endpoints</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_model_last_version_href</span><span class="p">(</span>
+                <span class="n">artifact_id</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;pipeline&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_pipeline_href</span><span class="p">(</span>
+                <span class="n">artifact_id</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;experiment&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_experiment_href</span><span class="p">(</span>
+                <span class="n">artifact_id</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_function_href</span><span class="p">(</span>
+                <span class="n">artifact_id</span>
+            <span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="n">artifact_get</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">artifact</span> <span class="ow">in</span> <span class="n">endpoints</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
+            <span class="n">artifact_get</span><span class="p">[</span><span class="n">artifact</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span>
+                <span class="n">endpoints</span><span class="p">[</span><span class="n">artifact</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span> <span class="n">params</span><span class="p">,</span> <span class="n">isIcp</span>
+            <span class="p">)</span>
+
+        <span class="n">response_get</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Response</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">artifact</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">artifact</span> <span class="ow">in</span> <span class="n">endpoints</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">artifact</span> <span class="ow">in</span> <span class="n">endpoints</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response_get</span><span class="p">[</span><span class="n">artifact</span><span class="p">]</span> <span class="o">=</span> <span class="n">artifact_get</span><span class="p">[</span><span class="n">artifact</span><span class="p">]</span>
+                <span class="n">artifact_res</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Response</span><span class="p">,</span> <span class="n">response_get</span><span class="p">[</span><span class="n">artifact</span><span class="p">])</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;Response(</span><span class="si">{}</span><span class="s2">)[</span><span class="si">{}</span><span class="s2">]: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">endpoints</span><span class="p">[</span><span class="n">artifact</span><span class="p">],</span>
+                        <span class="n">artifact_res</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+                        <span class="n">artifact_res</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Error during checking artifact type: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+        <span class="n">artifact_type</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">artifact</span><span class="p">:</span> <span class="n">_artifact_exists</span><span class="p">(</span><span class="n">response_get</span><span class="p">[</span><span class="n">artifact</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">artifact</span> <span class="ow">in</span> <span class="n">response_get</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">artifact_type</span>
+
+<div class="viewcode-block" id="Repository.create_revision">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.create_revision">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create revision for passed `artifact_id`.</span>
+
+<span class="sd">        :param artifact_id: Unique id of stored model, experiment, function or pipelines</span>
+<span class="sd">        :type artifact_id: str</span>
+
+<span class="sd">        :return: artifact new revision metadata</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            details = client.repository.create_revision(artifact_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">artifact_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact&quot;</span><span class="p">)</span>
+
+        <span class="n">Repository</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">artifact_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_artifact_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;experiment&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">create_revision</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;pipeline&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">create_revision</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Getting artifact details failed. Artifact id: &#39;</span><span class="si">{}</span><span class="s2">&#39; not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">artifact_id</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_get_revision_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of stored artifacts revisions.</span>
+
+<span class="sd">        :param artifact_id:  unique id of stored model or experiment or function or pipelines</span>
+<span class="sd">        :type artifact_id: str</span>
+
+<span class="sd">        :return: stored artifacts metadata</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            details = client.repository.get_revision_details(artifact_id)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">artifact_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact&quot;</span><span class="p">)</span>
+
+        <span class="n">Repository</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">artifact_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_artifact_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;experiment&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">get_revision_details</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;pipeline&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">get_revisions</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Getting artifact details failed. Artifact id: &#39;</span><span class="si">{}</span><span class="s2">&#39; not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">artifact_id</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">details</span>
+
+<div class="viewcode-block" id="Repository.list_models_revisions">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.list_models_revisions">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Models</span><span class="o">.</span><span class="n">list_revisions</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">list_models_revisions</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+        <span class="n">model_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">list_revisions</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.list_pipelines_revisions">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.list_pipelines_revisions">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Pipelines</span><span class="o">.</span><span class="n">list_revisions</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">list_pipelines_revisions</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">pipeline_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+        <span class="n">pipeline_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">pipeline_id</span><span class="p">,</span> <span class="s2">&quot;pipeline&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">list_revisions</span><span class="p">(</span><span class="n">pipeline_id</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.list_functions_revisions">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.list_functions_revisions">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Functions</span><span class="o">.</span><span class="n">list_revisions</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">list_functions_revisions</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">function_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_functions</span><span class="o">.</span><span class="n">list_revisions</span><span class="p">(</span>
+            <span class="n">function_id</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.list_experiments_revisions">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.list_experiments_revisions">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Experiments</span><span class="o">.</span><span class="n">list_revisions</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">list_experiments_revisions</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">experiment_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">list_revisions</span><span class="p">(</span>
+            <span class="n">experiment_id</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.promote_model">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.promote_model">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Models</span><span class="o">.</span><span class="n">promote</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">promote_model</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">source_project_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">target_space_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># deprecated</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">promote</span><span class="p">(</span>
+            <span class="n">model_id</span><span class="p">,</span> <span class="n">source_project_id</span><span class="p">,</span> <span class="n">target_space_id</span>
+        <span class="p">)</span></div>
+</div>
 
 </pre></div>
         </article>
@@ -312,7 +1354,7 @@
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

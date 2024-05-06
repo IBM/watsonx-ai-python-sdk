@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>ibm_watsonx_ai.foundation_models.prompt_tuner - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
@@ -164,6 +164,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -197,12 +198,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../fm_extensions.html">Extensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../migration_v1.html">V1 Migration Guide</a></li>
 </ul>
 
 </div></div>
@@ -240,15 +243,21 @@
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">cast</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.messages.messages</span> <span class="kn">import</span> <span class="n">Messages</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.errors</span> <span class="kn">import</span> <span class="n">ContainerTypeNotSupported</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers.connections</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DataConnection</span><span class="p">,</span> <span class="n">ContainerLocation</span><span class="p">,</span> <span class="n">S3Connection</span><span class="p">,</span>
-                                                             <span class="n">S3Location</span><span class="p">,</span> <span class="n">FSLocation</span><span class="p">,</span> <span class="n">AssetLocation</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers.connections</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DataConnection</span><span class="p">,</span>
+    <span class="n">ContainerLocation</span><span class="p">,</span>
+    <span class="n">S3Connection</span><span class="p">,</span>
+    <span class="n">S3Location</span><span class="p">,</span>
+    <span class="n">FSLocation</span><span class="p">,</span>
+    <span class="n">AssetLocation</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.utils</span> <span class="kn">import</span> <span class="n">is_ipython</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils</span> <span class="kn">import</span> <span class="n">PromptTuningParams</span>
 
@@ -256,74 +265,91 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+    <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+
+
 <div class="viewcode-block" id="PromptTuner">
 <a class="viewcode-back" href="../../../tune_experiment.html#ibm_watsonx_ai.foundation_models.PromptTuner">[docs]</a>
 <span class="k">class</span> <span class="nc">PromptTuner</span><span class="p">:</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">_training_metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_training_metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                 <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                 <span class="o">*</span><span class="p">,</span>
-                 <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">base_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">accumulate_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">init_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">init_text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">max_input_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">max_output_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">num_epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">verbalizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">tuning_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">auto_update_model</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                 <span class="n">group_by_name</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">base_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">accumulate_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">init_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">init_text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_input_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_output_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">num_epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbalizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tuning_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">auto_update_model</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">group_by_name</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="s2">&quot;Prompt tuning with SDK&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">auto_update_model</span> <span class="o">=</span> <span class="n">auto_update_model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">group_by_name</span> <span class="o">=</span> <span class="n">group_by_name</span>
 
-        <span class="n">base_model</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;model_id&#39;</span><span class="p">:</span> <span class="n">base_model</span><span class="p">}</span>
+        <span class="n">base_model_red</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="n">base_model</span><span class="p">}</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">prompt_tuning_params</span> <span class="o">=</span> <span class="n">PromptTuningParams</span><span class="p">(</span><span class="n">base_model</span><span class="o">=</span><span class="n">base_model</span><span class="p">,</span>
-                                                       <span class="n">accumulate_steps</span><span class="o">=</span><span class="n">accumulate_steps</span><span class="p">,</span>
-                                                       <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
-                                                       <span class="n">init_method</span><span class="o">=</span><span class="n">init_method</span><span class="p">,</span>
-                                                       <span class="n">init_text</span><span class="o">=</span><span class="n">init_text</span><span class="p">,</span>
-                                                       <span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">,</span>
-                                                       <span class="n">max_input_tokens</span><span class="o">=</span><span class="n">max_input_tokens</span><span class="p">,</span>
-                                                       <span class="n">max_output_tokens</span><span class="o">=</span><span class="n">max_output_tokens</span><span class="p">,</span>
-                                                       <span class="n">num_epochs</span><span class="o">=</span><span class="n">num_epochs</span><span class="p">,</span>
-                                                       <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
-                                                       <span class="n">tuning_type</span><span class="o">=</span><span class="n">tuning_type</span><span class="p">,</span>
-                                                       <span class="n">verbalizer</span><span class="o">=</span><span class="n">verbalizer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt_tuning_params</span> <span class="o">=</span> <span class="n">PromptTuningParams</span><span class="p">(</span>
+            <span class="n">base_model</span><span class="o">=</span><span class="n">base_model_red</span><span class="p">,</span>
+            <span class="n">accumulate_steps</span><span class="o">=</span><span class="n">accumulate_steps</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="n">init_method</span><span class="o">=</span><span class="n">init_method</span><span class="p">,</span>
+            <span class="n">init_text</span><span class="o">=</span><span class="n">init_text</span><span class="p">,</span>
+            <span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">,</span>
+            <span class="n">max_input_tokens</span><span class="o">=</span><span class="n">max_input_tokens</span><span class="p">,</span>
+            <span class="n">max_output_tokens</span><span class="o">=</span><span class="n">max_output_tokens</span><span class="p">,</span>
+            <span class="n">num_epochs</span><span class="o">=</span><span class="n">num_epochs</span><span class="p">,</span>
+            <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
+            <span class="n">tuning_type</span><span class="o">=</span><span class="n">tuning_type</span><span class="p">,</span>
+            <span class="n">verbalizer</span><span class="o">=</span><span class="n">verbalizer</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;name&#39; param expected string, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;name&#39; param expected string, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;description&#39; param expected string, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span><span class="si">}</span><span class="s2">: &quot;</span>
-                                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;description&#39; param expected string, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span><span class="si">}</span><span class="s2">: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_update_model</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auto_update_model</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;auto_update_model&#39; param expected bool, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auto_update_model</span><span class="p">)</span><span class="si">}</span><span class="s2">: &quot;</span>
-                                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">auto_update_model</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;auto_update_model&#39; param expected bool, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auto_update_model</span><span class="p">)</span><span class="si">}</span><span class="s2">: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">auto_update_model</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_by_name</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group_by_name</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;group_by_name&#39; param expected bool, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group_by_name</span><span class="p">)</span><span class="si">}</span><span class="s2">: &quot;</span>
-                                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">group_by_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;group_by_name&#39; param expected bool, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group_by_name</span><span class="p">)</span><span class="si">}</span><span class="s2">: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">group_by_name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
 <div class="viewcode-block" id="PromptTuner.run">
 <a class="viewcode-back" href="../../../tune_experiment.html#ibm_watsonx_ai.foundation_models.PromptTuner.run">[docs]</a>
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-            <span class="n">training_data_references</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataConnection&#39;</span><span class="p">],</span>
-            <span class="n">training_results_reference</span><span class="p">:</span> <span class="n">DataConnection</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">background_mode</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">training_data_references</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DataConnection</span><span class="p">],</span>
+        <span class="n">training_results_reference</span><span class="p">:</span> <span class="n">DataConnection</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">background_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run a prompt tuning process of foundation model on top of the training data referenced by DataConnection.</span>
 
 <span class="sd">        :param training_data_references: data storage connection details to inform where training data is stored</span>
@@ -357,216 +383,283 @@
 <span class="sd">                    )</span>
 <span class="sd">                )]</span>
 <span class="sd">                background_mode=False)</span>
-<span class="sd">            &quot;&quot;&quot;</span>
-        <span class="n">WMLResource</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">training_data_references</span><span class="p">,</span> <span class="s2">&quot;training_data_references&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">mandatory</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">WMLResource</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">training_results_reference</span><span class="p">,</span> <span class="s2">&quot;training_results_reference&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">mandatory</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">WMLResource</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+            <span class="n">training_data_references</span><span class="p">,</span> <span class="s2">&quot;training_data_references&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">mandatory</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">WMLResource</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+            <span class="n">training_results_reference</span><span class="p">,</span>
+            <span class="s2">&quot;training_results_reference&quot;</span><span class="p">,</span>
+            <span class="nb">object</span><span class="p">,</span>
+            <span class="n">mandatory</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">source_data_connection</span> <span class="ow">in</span> <span class="p">[</span><span class="n">training_data_references</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">source_data_connection</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_validate_source_data_connections</span><span class="p">(</span><span class="n">source_data_connection</span><span class="p">)</span>
+        <span class="n">training_results_reference</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">DataConnection</span><span class="p">,</span> <span class="n">training_results_reference</span><span class="p">)</span>
+        <span class="n">training_results_reference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_result_reference</span><span class="p">(</span>
+            <span class="n">results_reference</span><span class="o">=</span><span class="n">training_results_reference</span><span class="p">,</span>
+            <span class="n">data_references</span><span class="o">=</span><span class="n">training_data_references</span><span class="p">,</span>
+        <span class="p">)</span>
 
-        <span class="n">training_results_reference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_result_reference</span><span class="p">(</span><span class="n">results_reference</span><span class="o">=</span><span class="n">training_results_reference</span><span class="p">,</span>
-                                                                      <span class="n">data_references</span><span class="o">=</span><span class="n">training_data_references</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_training_metadata</span><span class="p">(</span>
+            <span class="n">training_data_references</span><span class="p">,</span>
+            <span class="n">test_data_references</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">training_results_reference</span><span class="o">=</span><span class="n">training_results_reference</span><span class="p">,</span>
+        <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_training_metadata</span><span class="p">(</span><span class="n">training_data_references</span><span class="p">,</span> <span class="n">test_data_references</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                               <span class="n">training_results_reference</span><span class="o">=</span><span class="n">training_results_reference</span><span class="p">)</span>
-
-        <span class="n">tuning_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">meta_props</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_training_metadata</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">background_mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_training_metadata</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_training_metadata</span><span class="p">)</span>
+        <span class="n">tuning_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="n">meta_props</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_training_metadata</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">background_mode</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>  <span class="c1"># TODO improve the background_mode = False option</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+        <span class="p">)</span>  <span class="c1"># TODO improve the background_mode = False option</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_initialize_training_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                                          <span class="n">training_data_references</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataConnection&#39;</span><span class="p">],</span>
-                                          <span class="n">test_data_references</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataConnection&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                                          <span class="n">training_results_reference</span><span class="p">:</span> <span class="n">DataConnection</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                                          <span class="p">):</span>
-
+    <span class="k">def</span> <span class="nf">_initialize_training_metadata</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">training_data_references</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DataConnection</span><span class="p">],</span>
+        <span class="n">test_data_references</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DataConnection</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">training_results_reference</span><span class="p">:</span> <span class="n">DataConnection</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_training_metadata</span> <span class="o">=</span> <span class="p">{</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">TAGS</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tags</span><span class="p">(),</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">TRAINING_DATA_REFERENCES</span><span class="p">:</span>
-                <span class="p">[</span><span class="n">connection</span><span class="o">.</span><span class="n">_to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">training_data_references</span><span class="p">],</span>
-
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">TRAINING_DATA_REFERENCES</span><span class="p">:</span> <span class="p">[</span>
+                <span class="n">connection</span><span class="o">.</span><span class="n">_to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">training_data_references</span>
+            <span class="p">],</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="mi">100</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">PROMPT_TUNING</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_tuning_params</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">PROMPT_TUNING</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_tuning_params</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="n">test_data_references</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_training_metadata</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">TEST_DATA_REFERENCES</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">connection</span><span class="o">.</span><span class="n">_to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">test_data_references</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_training_metadata</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">TEST_DATA_REFERENCES</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">connection</span><span class="o">.</span><span class="n">_to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">test_data_references</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">training_results_reference</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_training_metadata</span><span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">TRAINING_RESULTS_REFERENCE</span><span class="p">]</span> <span class="o">=</span> \
-                <span class="n">training_results_reference</span><span class="o">.</span><span class="n">_to_dict</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">TRAINING_RESULTS_REFERENCE</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">training_results_reference</span><span class="o">.</span><span class="n">_to_dict</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_training_metadata</span><span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DESCRIPTION</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DESCRIPTION</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_update_model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_training_metadata</span><span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">AUTO_UPDATE_MODEL</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_update_model</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">AUTO_UPDATE_MODEL</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_update_model</span>
 
-    <span class="k">def</span> <span class="nf">_validate_source_data_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_data_connections</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_validate_source_data_connections</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">source_data_connections</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DataConnection</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">DataConnection</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">data_connection</span> <span class="ow">in</span> <span class="n">source_data_connections</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_connection</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">ContainerLocation</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">ContainerTypeNotSupported</span><span class="p">()</span>  <span class="c1"># block Container type on CPD</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_connection</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="n">S3Connection</span><span class="p">):</span>
                     <span class="c1"># note: remove S3 inline credential from data asset before training</span>
                     <span class="n">data_connection</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="kc">None</span>
-                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data_connection</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="s1">&#39;bucket&#39;</span><span class="p">):</span>
-                        <span class="nb">delattr</span><span class="p">(</span><span class="n">data_connection</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="s1">&#39;bucket&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data_connection</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="s2">&quot;bucket&quot;</span><span class="p">):</span>
+                        <span class="nb">delattr</span><span class="p">(</span><span class="n">data_connection</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="s2">&quot;bucket&quot;</span><span class="p">)</span>
                     <span class="c1"># --- end note</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_connection</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="n">S3Connection</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_connection</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
-                                                                                   <span class="n">AssetLocation</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_connection</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="n">S3Connection</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">data_connection</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">AssetLocation</span>
+            <span class="p">):</span>
                 <span class="c1"># note: remove S3 inline credential from data asset before training</span>
                 <span class="n">data_connection</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="kc">None</span>
 
-                <span class="k">for</span> <span class="n">s3_attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;bucket&#39;</span><span class="p">,</span> <span class="s1">&#39;path&#39;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">s3_attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;bucket&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">]:</span>
                     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data_connection</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">s3_attr</span><span class="p">):</span>
                         <span class="nb">delattr</span><span class="p">(</span><span class="n">data_connection</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">s3_attr</span><span class="p">)</span>
                 <span class="c1"># --- end note</span>
 
         <span class="k">return</span> <span class="n">source_data_connections</span>
 
-    <span class="k">def</span> <span class="nf">_determine_result_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results_reference</span><span class="p">,</span> <span class="n">data_references</span><span class="p">,</span> <span class="n">result_path</span><span class="o">=</span><span class="s2">&quot;default_tuning_output&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_determine_result_reference</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">results_reference</span><span class="p">:</span> <span class="n">DataConnection</span><span class="p">,</span>
+        <span class="n">data_references</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DataConnection</span><span class="p">],</span>
+        <span class="n">result_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default_tuning_output&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataConnection</span><span class="p">:</span>
         <span class="c1"># note: if user did not provide results storage information, use default ones</span>
         <span class="k">if</span> <span class="n">results_reference</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
                 <span class="n">location</span> <span class="o">=</span> <span class="n">FSLocation</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/</span><span class="si">{option}</span><span class="s2">/</span><span class="si">{id}</span><span class="s2">/assets/wx_prompt_tune&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">location</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">option</span><span class="o">=</span><span class="s1">&#39;spaces&#39;</span><span class="p">,</span>
-                                                         <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span><span class="p">)</span>
+                    <span class="n">location</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">option</span><span class="o">=</span><span class="s2">&quot;spaces&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span>
+                    <span class="p">)</span>
 
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">location</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">option</span><span class="o">=</span><span class="s1">&#39;projects&#39;</span><span class="p">,</span>
-                                                         <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span><span class="p">)</span>
-                <span class="n">results_reference</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="p">(</span>
-                    <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                    <span class="n">location</span><span class="o">=</span><span class="n">location</span>
-                <span class="p">)</span>
+                    <span class="n">location</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">option</span><span class="o">=</span><span class="s2">&quot;projects&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span>
+                    <span class="p">)</span>
+                <span class="n">results_reference</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_references</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">S3Location</span><span class="p">):</span>
                     <span class="n">results_reference</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="p">(</span>
                         <span class="n">connection</span><span class="o">=</span><span class="n">data_references</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span>
-                        <span class="n">location</span><span class="o">=</span><span class="n">S3Location</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="n">data_references</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
-                                            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+                        <span class="n">location</span><span class="o">=</span><span class="n">S3Location</span><span class="p">(</span>
+                            <span class="n">bucket</span><span class="o">=</span><span class="n">data_references</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;.&quot;</span>
+                        <span class="p">),</span>
                     <span class="p">)</span>
 
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_references</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">AssetLocation</span><span class="p">):</span>
-                    <span class="n">connection_id</span> <span class="o">=</span> <span class="n">data_references</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">_get_connection_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
+                    <span class="n">connection_id</span> <span class="o">=</span> <span class="n">data_references</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">_get_connection_id</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span>
+                    <span class="p">)</span>
 
                     <span class="k">if</span> <span class="n">connection_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">results_reference</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="p">(</span>
                             <span class="n">connection_asset_id</span><span class="o">=</span><span class="n">connection_id</span><span class="p">,</span>
                             <span class="n">location</span><span class="o">=</span><span class="n">S3Location</span><span class="p">(</span>
-                                <span class="n">bucket</span><span class="o">=</span><span class="n">data_references</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">_get_bucket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">),</span>
-                                <span class="n">path</span><span class="o">=</span><span class="n">result_path</span><span class="p">)</span>
+                                <span class="n">bucket</span><span class="o">=</span><span class="n">data_references</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">_get_bucket</span><span class="p">(</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span>
+                                <span class="p">),</span>
+                                <span class="n">path</span><span class="o">=</span><span class="n">result_path</span><span class="p">,</span>
+                            <span class="p">),</span>
                         <span class="p">)</span>
 
                     <span class="k">else</span><span class="p">:</span>  <span class="c1"># set container output location when default DAta Asset is as a train ref</span>
                         <span class="n">results_reference</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="p">(</span>
-                            <span class="n">location</span><span class="o">=</span><span class="n">ContainerLocation</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">result_path</span><span class="p">))</span>
+                            <span class="n">location</span><span class="o">=</span><span class="n">ContainerLocation</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">result_path</span><span class="p">)</span>
+                        <span class="p">)</span>
 
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">results_reference</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="n">ContainerLocation</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">result_path</span><span class="p">))</span>
+                    <span class="n">results_reference</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="p">(</span>
+                        <span class="n">location</span><span class="o">=</span><span class="n">ContainerLocation</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">result_path</span><span class="p">)</span>
+                    <span class="p">)</span>
         <span class="c1"># -- end note</span>
 
         <span class="c1"># note: validate location types:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">results_reference</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
-                              <span class="n">FSLocation</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Unsupported results location type. Results reference can be stored on FSLocation.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">results_reference</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">FSLocation</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Unsupported results location type. Results reference can be stored on FSLocation.&quot;</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">results_reference</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
-                              <span class="p">(</span><span class="n">S3Location</span><span class="p">,</span> <span class="n">ContainerLocation</span><span class="p">)):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Unsupported results location type. Results reference can be stored&#39;</span>
-                                <span class="s1">&#39; only on S3Location or ContainerLocation.&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">results_reference</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="p">(</span><span class="n">S3Location</span><span class="p">,</span> <span class="n">ContainerLocation</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Unsupported results location type. Results reference can be stored&quot;</span>
+                    <span class="s2">&quot; only on S3Location or ContainerLocation.&quot;</span>
+                <span class="p">)</span>
         <span class="c1"># -- end note</span>
         <span class="k">return</span> <span class="n">results_reference</span>
 
-    <span class="k">def</span> <span class="nf">_get_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;prompt_tuning&#39;</span><span class="p">]</span>
+    <span class="k">def</span> <span class="nf">_get_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;prompt_tuning&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_by_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_by_name</span><span class="p">:</span>
-
-            <span class="k">for</span> <span class="n">training</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">tag_value</span><span class="o">=</span><span class="s1">&#39;prompt_tuning&#39;</span><span class="p">)[</span><span class="s1">&#39;resources&#39;</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="n">training</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">training</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+                <span class="n">tag_value</span><span class="o">=</span><span class="s2">&quot;prompt_tuning&quot;</span>
+            <span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">training</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
                     <span class="c1"># Find recent tags related to &#39;name&#39;</span>
-                    <span class="n">tags</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">training</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">)))</span>
+                    <span class="n">tags</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">training</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">)))</span>
                     <span class="k">break</span>
 
-            <span class="k">if</span> <span class="n">tags</span> <span class="o">!=</span> <span class="p">[</span><span class="s1">&#39;prompt_tuning&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">tags</span> <span class="o">!=</span> <span class="p">[</span><span class="s2">&quot;prompt_tuning&quot;</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">generate_ux_tag</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="n">tags</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_last_iteration_metrics_for_each_epoch</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">):</span>
-
+    <span class="k">def</span> <span class="nf">_get_last_iteration_metrics_for_each_epoch</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="n">last_iteration_metrics_for_each_epoch</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">])):</span>
+        <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">])):</span>
             <span class="k">if</span> <span class="n">ind</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">tuning_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">tuning_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">][</span><span class="s1">&#39;ml_metrics&#39;</span><span class="p">][</span><span class="s1">&#39;epoch&#39;</span><span class="p">]</span> <span class="o">==</span> \
-                        <span class="n">tuning_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="n">ind</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="s1">&#39;ml_metrics&#39;</span><span class="p">][</span><span class="s1">&#39;epoch&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">tuning_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">][</span><span class="n">ind</span><span class="p">][</span><span class="s2">&quot;ml_metrics&quot;</span><span class="p">][</span>
+                        <span class="s2">&quot;epoch&quot;</span>
+                    <span class="p">]</span>
+                    <span class="o">==</span> <span class="n">tuning_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">][</span><span class="n">ind</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span>
+                        <span class="s2">&quot;ml_metrics&quot;</span>
+                    <span class="p">][</span><span class="s2">&quot;epoch&quot;</span><span class="p">]</span>
+                <span class="p">):</span>
                     <span class="n">last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-                    <span class="n">last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">])</span>
+                    <span class="n">last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">tuning_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span>
+                    <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">])</span>
+                    <span class="n">last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">tuning_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span>
+                    <span class="p">)</span>
         <span class="k">return</span> <span class="n">last_iteration_metrics_for_each_epoch</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_average_loss_score_for_each_epoch</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">):</span>
-
+    <span class="k">def</span> <span class="nf">_get_average_loss_score_for_each_epoch</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="n">scores</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">temp_score</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">epoch</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">if</span> <span class="s2">&quot;data&quot;</span> <span class="ow">in</span> <span class="n">tuning_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
-            <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">metric</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">]):</span>
-                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">metric</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;epoch&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">epoch</span><span class="p">:</span>
-                    <span class="n">temp_score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metric</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;data&quot;</span> <span class="ow">in</span> <span class="n">tuning_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">metric</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">metric</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s2">&quot;epoch&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="n">epoch</span><span class="p">:</span>
+                    <span class="n">temp_score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metric</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">epoch</span> <span class="o">+=</span> <span class="mi">1</span>
                     <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">temp_score</span><span class="p">))</span>
-                    <span class="n">temp_score</span> <span class="o">=</span> <span class="p">[</span><span class="n">metric</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]]</span>
+                    <span class="n">temp_score</span> <span class="o">=</span> <span class="p">[</span><span class="n">metric</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]]</span>
             <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">temp_score</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">metric</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">]):</span>
-                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">metric</span><span class="p">[</span><span class="s1">&#39;ml_metrics&#39;</span><span class="p">][</span><span class="s1">&#39;epoch&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">epoch</span><span class="p">:</span>
-                    <span class="n">temp_score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metric</span><span class="p">[</span><span class="s1">&#39;ml_metrics&#39;</span><span class="p">][</span><span class="s1">&#39;loss&#39;</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">metric</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">metric</span><span class="p">[</span><span class="s2">&quot;ml_metrics&quot;</span><span class="p">][</span><span class="s2">&quot;epoch&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="n">epoch</span><span class="p">:</span>
+                    <span class="n">temp_score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metric</span><span class="p">[</span><span class="s2">&quot;ml_metrics&quot;</span><span class="p">][</span><span class="s2">&quot;loss&quot;</span><span class="p">])</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">epoch</span> <span class="o">+=</span> <span class="mi">1</span>
                     <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">temp_score</span><span class="p">))</span>
-                    <span class="n">temp_score</span> <span class="o">=</span> <span class="p">[</span><span class="n">metric</span><span class="p">[</span><span class="s1">&#39;ml_metrics&#39;</span><span class="p">][</span><span class="s1">&#39;loss&#39;</span><span class="p">]]</span>
+                    <span class="n">temp_score</span> <span class="o">=</span> <span class="p">[</span><span class="n">metric</span><span class="p">[</span><span class="s2">&quot;ml_metrics&quot;</span><span class="p">][</span><span class="s2">&quot;loss&quot;</span><span class="p">]]</span>
             <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">temp_score</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">scores</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_first_and_last_iteration_metrics_for_each_epoch</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">):</span>
-
+    <span class="k">def</span> <span class="nf">_get_first_and_last_iteration_metrics_for_each_epoch</span><span class="p">(</span>
+        <span class="n">tuning_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="n">first_and_last_iteration_metrics_for_each_epoch</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">first_iteration</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="n">tuning_metrics</span> <span class="o">=</span> <span class="n">tuning_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">]</span>
+        <span class="n">tuning_metrics</span> <span class="o">=</span> <span class="n">tuning_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tuning_metrics</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">ind</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">first_and_last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span><span class="p">])</span>
-                <span class="n">first_and_last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span><span class="p">])</span>
+                <span class="n">first_and_last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">first_and_last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+                <span class="p">)</span>
                 <span class="n">first_iteration</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">elif</span> <span class="n">first_iteration</span><span class="p">:</span>
-                <span class="n">first_and_last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span><span class="p">])</span>
+                <span class="n">first_and_last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+                <span class="p">)</span>
                 <span class="n">first_iteration</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ml_metrics&quot;</span><span class="p">))[</span><span class="s1">&#39;epoch&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ml_metrics&quot;</span><span class="p">))[</span><span class="s1">&#39;epoch&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ml_metrics&quot;</span><span class="p">)</span>
+                    <span class="p">)[</span><span class="s2">&quot;epoch&quot;</span><span class="p">]</span>
+                    <span class="o">==</span> <span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ml_metrics&quot;</span><span class="p">)</span>
+                    <span class="p">)[</span><span class="s2">&quot;epoch&quot;</span><span class="p">]</span>
+                <span class="p">):</span>
                     <span class="n">first_and_last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-                    <span class="n">first_and_last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span><span class="p">])</span>
+                    <span class="n">first_and_last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+                    <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">first_and_last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span><span class="p">])</span>
+                    <span class="n">first_and_last_iteration_metrics_for_each_epoch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">tuning_metrics</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+                    <span class="p">)</span>
                     <span class="n">first_iteration</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="n">first_and_last_iteration_metrics_for_each_epoch</span>
 
@@ -599,10 +692,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_tuning_params</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
-        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span>
-        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;auto_update_model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_update_model</span>
-        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;group_by_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_by_name</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;auto_update_model&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_update_model</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;group_by_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_by_name</span>
         <span class="k">return</span> <span class="n">params</span></div>
 
 
@@ -612,7 +705,7 @@
 
 <div class="viewcode-block" id="PromptTuner.get_run_status">
 <a class="viewcode-back" href="../../../tune_experiment.html#ibm_watsonx_ai.foundation_models.PromptTuner.get_run_status">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_run_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_run_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check status/state of initialized Prompt Tuning run if ran in background mode.</span>
 
 <span class="sd">        :return: Prompt tuning run status</span>
@@ -634,9 +727,11 @@
 <span class="sd">            # &#39;completed&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_not_scheduled&quot;</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_not_scheduled&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">training_uid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;state&#39;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">training_uid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore[return-value]</span></div>
 
 
 <div class="viewcode-block" id="PromptTuner.get_run_details">
@@ -663,27 +758,33 @@
 <span class="sd">            prompt_tuner.get_run_details()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_not_scheduled&quot;</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_not_scheduled&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
 
-        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">training_uid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">training_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">include_metrics</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_metrics_data_from_property_or_file</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
+                <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_metrics_data_from_property_or_file</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">finally</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">details</span>
 
-        <span class="k">if</span> <span class="n">details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metrics&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-            <span class="k">del</span> <span class="n">details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;metrics&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">del</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">details</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_get_metrics_data_from_property_or_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">details</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;context&quot;</span><span class="p">][</span><span class="s2">&quot;prompt_tuning&quot;</span><span class="p">][</span><span class="s2">&quot;metrics_location&quot;</span><span class="p">]</span>
-        <span class="n">results_reference</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s1">&#39;results_reference&#39;</span><span class="p">]</span>
+    <span class="k">def</span> <span class="nf">_get_metrics_data_from_property_or_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;context&quot;</span><span class="p">][</span><span class="s2">&quot;prompt_tuning&quot;</span><span class="p">][</span>
+            <span class="s2">&quot;metrics_location&quot;</span>
+        <span class="p">]</span>
+        <span class="n">results_reference</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;results_reference&quot;</span><span class="p">]</span>
         <span class="n">conn</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="o">.</span><span class="n">_from_dict</span><span class="p">(</span><span class="n">results_reference</span><span class="p">)</span>
         <span class="n">conn</span><span class="o">.</span><span class="n">_wml_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span>
         <span class="n">metrics_data</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">_download_json_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
@@ -692,7 +793,7 @@
 
 <div class="viewcode-block" id="PromptTuner.plot_learning_curve">
 <a class="viewcode-back" href="../../../tune_experiment.html#ibm_watsonx_ai.foundation_models.PromptTuner.plot_learning_curve">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_learning_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">plot_learning_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot learning curves.</span>
 
 <span class="sd">        .. note ::</span>
@@ -711,25 +812,39 @@
 <span class="sd">            prompt_tuner.plot_learning_curve()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_ipython</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Function `plot_learning_curve` is available only for Jupyter notebooks.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;Function `plot_learning_curve` is available only for Jupyter notebooks.&quot;</span>
+            <span class="p">)</span>
         <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.incremental</span> <span class="kn">import</span> <span class="n">plot_learning_curve</span>
         <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-        
+
         <span class="n">tuning_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_run_details</span><span class="p">(</span><span class="n">include_metrics</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;metrics&#39;</span> <span class="ow">in</span> <span class="n">tuning_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]:</span>
-
+        <span class="k">if</span> <span class="s2">&quot;metrics&quot;</span> <span class="ow">in</span> <span class="n">tuning_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]:</span>
             <span class="c1"># average loss score for each epoch</span>
-            <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_average_loss_score_for_each_epoch</span><span class="p">(</span><span class="n">tuning_details</span><span class="o">=</span><span class="n">tuning_details</span><span class="p">)</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_average_loss_score_for_each_epoch</span><span class="p">(</span>
+                <span class="n">tuning_details</span><span class="o">=</span><span class="n">tuning_details</span>
+            <span class="p">)</span>
 
             <span class="c1"># date_time from the first and last iteration on each epoch</span>
-            <span class="k">if</span> <span class="s2">&quot;data&quot;</span> <span class="ow">in</span> <span class="n">tuning_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
-                <span class="n">date_times</span> <span class="o">=</span> <span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">m_obj</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s1">&#39;timestamp&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">&#39;</span><span class="p">)</span>
-                              <span class="k">for</span> <span class="n">m_obj</span> <span class="ow">in</span>
-                              <span class="bp">self</span><span class="o">.</span><span class="n">_get_first_and_last_iteration_metrics_for_each_epoch</span><span class="p">(</span><span class="n">tuning_details</span><span class="o">=</span><span class="n">tuning_details</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="s2">&quot;data&quot;</span> <span class="ow">in</span> <span class="n">tuning_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">date_times</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span>
+                        <span class="n">m_obj</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s2">&quot;timestamp&quot;</span><span class="p">],</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S.</span><span class="si">%f</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">m_obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_first_and_last_iteration_metrics_for_each_epoch</span><span class="p">(</span>
+                        <span class="n">tuning_details</span><span class="o">=</span><span class="n">tuning_details</span>
+                    <span class="p">)</span>
+                <span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">date_times</span> <span class="o">=</span> <span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">m_obj</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">%z&#39;</span><span class="p">)</span>
-                              <span class="k">for</span> <span class="n">m_obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_first_and_last_iteration_metrics_for_each_epoch</span><span class="p">(</span><span class="n">tuning_details</span><span class="o">=</span><span class="n">tuning_details</span><span class="p">)]</span>
+                <span class="n">date_times</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span>
+                        <span class="n">m_obj</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">],</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S.</span><span class="si">%f</span><span class="s2">%z&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">m_obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_first_and_last_iteration_metrics_for_each_epoch</span><span class="p">(</span>
+                        <span class="n">tuning_details</span><span class="o">=</span><span class="n">tuning_details</span>
+                    <span class="p">)</span>
+                <span class="p">]</span>
 
             <span class="n">elapsed_time</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">date_times</span><span class="p">),</span> <span class="mi">2</span><span class="p">):</span>
@@ -737,16 +852,23 @@
 
             <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">scores</span><span class="p">:</span>
-                <span class="n">plot_learning_curve</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">scores</span><span class="o">=</span><span class="n">scores</span><span class="p">,</span> <span class="n">fit_times</span><span class="o">=</span><span class="n">elapsed_time</span><span class="p">,</span>
-                                    <span class="n">xlabels</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;first_xlabel&#39;</span><span class="p">:</span> <span class="s1">&#39;Epochs&#39;</span><span class="p">,</span> <span class="s1">&#39;second_xlabel&#39;</span><span class="p">:</span> <span class="s1">&#39;Epochs&#39;</span><span class="p">},</span>
-                                    <span class="n">titles</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;first_plot&#39;</span><span class="p">:</span> <span class="s1">&#39;Loss function&#39;</span><span class="p">})</span>
+                <span class="n">plot_learning_curve</span><span class="p">(</span>
+                    <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span>
+                    <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span>
+                    <span class="n">scores</span><span class="o">=</span><span class="n">scores</span><span class="p">,</span>
+                    <span class="n">fit_times</span><span class="o">=</span><span class="n">elapsed_time</span><span class="p">,</span>
+                    <span class="n">xlabels</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;first_xlabel&quot;</span><span class="p">:</span> <span class="s2">&quot;Epochs&quot;</span><span class="p">,</span> <span class="s2">&quot;second_xlabel&quot;</span><span class="p">:</span> <span class="s2">&quot;Epochs&quot;</span><span class="p">},</span>
+                    <span class="n">titles</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;first_plot&quot;</span><span class="p">:</span> <span class="s2">&quot;Loss function&quot;</span><span class="p">},</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_metrics&quot;</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_metrics&quot;</span><span class="p">)</span>
+            <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PromptTuner.summary">
 <a class="viewcode-back" href="../../../tune_experiment.html#ibm_watsonx_ai.foundation_models.PromptTuner.summary">[docs]</a>
-    <span class="k">def</span> <span class="nf">summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scoring</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;loss&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DataFrame&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scoring</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;loss&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print PromptTuner models details (prompt-tuned models).</span>
 
 <span class="sd">        :param scoring: scoring metric which user wants to use to sort pipelines by,</span>
@@ -775,55 +897,80 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_not_scheduled&quot;</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_not_scheduled&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
 
         <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
 
         <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_run_details</span><span class="p">(</span><span class="n">include_metrics</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">metrics</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metrics&#39;</span><span class="p">,</span> <span class="p">[{}])[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">is_ml_metrics</span> <span class="o">=</span> <span class="s1">&#39;data&#39;</span> <span class="ow">in</span> <span class="n">metrics</span> <span class="ow">or</span> <span class="s1">&#39;ml_metrics&#39;</span> <span class="ow">in</span> <span class="n">metrics</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;metrics&quot;</span><span class="p">,</span> <span class="p">[{}])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">is_ml_metrics</span> <span class="o">=</span> <span class="s2">&quot;data&quot;</span> <span class="ow">in</span> <span class="n">metrics</span> <span class="ow">or</span> <span class="s2">&quot;ml_metrics&quot;</span> <span class="ow">in</span> <span class="n">metrics</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_ml_metrics</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_metrics&quot;</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_metrics&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
 
-        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Model Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Enhancements&#39;</span><span class="p">,</span> <span class="s1">&#39;Base model&#39;</span><span class="p">,</span> <span class="s1">&#39;Auto store&#39;</span><span class="p">,</span> <span class="s1">&#39;Epochs&#39;</span><span class="p">,</span> <span class="n">scoring</span><span class="p">]</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;Model Name&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Enhancements&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Base model&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Auto store&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Epochs&quot;</span><span class="p">,</span>
+            <span class="n">scoring</span><span class="p">,</span>
+        <span class="p">]</span>
         <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;model_&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;model_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
         <span class="n">base_model_name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">epochs</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">enhancements</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">scoring</span> <span class="o">==</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span>
-            <span class="n">model_metrics</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_average_loss_score_for_each_epoch</span><span class="p">(</span><span class="n">tuning_details</span><span class="o">=</span><span class="n">details</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">scoring</span> <span class="o">==</span> <span class="s2">&quot;loss&quot;</span><span class="p">:</span>
+            <span class="n">model_metrics</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_get_average_loss_score_for_each_epoch</span><span class="p">(</span><span class="n">tuning_details</span><span class="o">=</span><span class="n">details</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;data&quot;</span> <span class="ow">in</span> <span class="n">details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
-                <span class="n">model_metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metrics&#39;</span><span class="p">,</span> <span class="p">[{}])[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="p">{})[</span><span class="n">scoring</span><span class="p">]]</span>
+            <span class="k">if</span> <span class="s2">&quot;data&quot;</span> <span class="ow">in</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;metrics&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">model_metrics</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span>
+                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;metrics&quot;</span><span class="p">,</span> <span class="p">[{}])[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="p">{})[</span><span class="n">scoring</span><span class="p">]</span>
+                <span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">model_metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metrics&#39;</span><span class="p">,</span> <span class="p">[{}])[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ml_metrics&#39;</span><span class="p">,</span> <span class="p">{})[</span><span class="n">scoring</span><span class="p">]]</span>
+                <span class="n">model_metrics</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span>
+                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;metrics&quot;</span><span class="p">,</span> <span class="p">[{}])[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ml_metrics&quot;</span><span class="p">,</span> <span class="p">{})[</span><span class="n">scoring</span><span class="p">]</span>
+                <span class="p">]</span>
 
-        <span class="k">if</span> <span class="s1">&#39;prompt_tuning&#39;</span> <span class="ow">in</span> <span class="n">details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">]:</span>
-            <span class="n">enhancements</span> <span class="o">=</span> <span class="p">[</span><span class="n">details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;prompt_tuning&#39;</span><span class="p">][</span><span class="s1">&#39;tuning_type&#39;</span><span class="p">]]</span>
-            <span class="n">base_model_name</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;prompt_tuning&#39;</span><span class="p">][</span><span class="s1">&#39;base_model&#39;</span><span class="p">][</span><span class="s1">&#39;model_id&#39;</span><span class="p">]</span>
-            <span class="n">epochs</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;prompt_tuning&#39;</span><span class="p">][</span><span class="s1">&#39;num_epochs&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;prompt_tuning&quot;</span> <span class="ow">in</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]:</span>
+            <span class="n">enhancements</span> <span class="o">=</span> <span class="p">[</span><span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;prompt_tuning&quot;</span><span class="p">][</span><span class="s2">&quot;tuning_type&quot;</span><span class="p">]]</span>
+            <span class="n">base_model_name</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;prompt_tuning&quot;</span><span class="p">][</span><span class="s2">&quot;base_model&quot;</span><span class="p">][</span>
+                <span class="s2">&quot;model_id&quot;</span>
+            <span class="p">]</span>
+            <span class="n">epochs</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;prompt_tuning&quot;</span><span class="p">][</span><span class="s2">&quot;num_epochs&quot;</span><span class="p">]</span>
 
-        <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">((</span>
-                <span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">+</span>
-                <span class="p">[</span><span class="n">enhancements</span><span class="p">]</span> <span class="o">+</span>
-                <span class="p">[</span><span class="n">base_model_name</span><span class="p">]</span> <span class="o">+</span>
-                <span class="p">[</span><span class="n">details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;auto_update_model&#39;</span><span class="p">]]</span> <span class="o">+</span>
-                <span class="p">[</span><span class="n">epochs</span><span class="p">]</span> <span class="o">+</span>
-                <span class="n">model_metrics</span>
-             <span class="p">))</span>
+        <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="p">[</span><span class="n">model_name</span><span class="p">]</span>
+                <span class="o">+</span> <span class="p">[</span><span class="n">enhancements</span><span class="p">]</span>
+                <span class="o">+</span> <span class="p">[</span><span class="n">base_model_name</span><span class="p">]</span>
+                <span class="o">+</span> <span class="p">[</span><span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;auto_update_model&quot;</span><span class="p">]]</span>
+                <span class="o">+</span> <span class="p">[</span><span class="n">epochs</span><span class="p">]</span>
+                <span class="o">+</span> <span class="n">model_metrics</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
 
         <span class="n">summary</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
-        <span class="n">summary</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;Model Name&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">summary</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Model Name&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">summary</span></div>
 
 
 <div class="viewcode-block" id="PromptTuner.get_model_id">
 <a class="viewcode-back" href="../../../tune_experiment.html#ibm_watsonx_ai.foundation_models.PromptTuner.get_model_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_model_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_model_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get model id.</span>
 
 <span class="sd">        **Example**</span>
@@ -840,15 +987,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">run_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_run_details</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">run_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;auto_update_model&#39;</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="n">run_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;model_id&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">run_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;auto_update_model&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">run_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;model_id&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_model_id&quot;</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_model_id&quot;</span><span class="p">)</span>
+            <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PromptTuner.cancel_run">
 <a class="viewcode-back" href="../../../tune_experiment.html#ibm_watsonx_ai.foundation_models.PromptTuner.cancel_run">[docs]</a>
-    <span class="k">def</span> <span class="nf">cancel_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hard_delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">cancel_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancels or deletes a Prompt Tuning run.</span>
 
 <span class="sd">        :param hard_delete: When True then the completed or cancelled prompt tuning run is deleted,</span>
@@ -856,14 +1005,16 @@
 <span class="sd">        :type hard_delete: bool, optional</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_not_scheduled&quot;</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_not_scheduled&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">cancel</span><span class="p">(</span><span class="n">training_uid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">hard_delete</span><span class="o">=</span><span class="n">hard_delete</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">cancel</span><span class="p">(</span><span class="n">training_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">hard_delete</span><span class="o">=</span><span class="n">hard_delete</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PromptTuner.get_data_connections">
 <a class="viewcode-back" href="../../../tune_experiment.html#ibm_watsonx_ai.foundation_models.PromptTuner.get_data_connections">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_data_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataConnection&#39;</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">get_data_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">DataConnection</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create DataConnection objects for further user usage</span>
 <span class="sd">            (eg. to handle data storage connection).</span>
 
@@ -882,10 +1033,14 @@
 <span class="sd">            data_connections = prompt_tuner.get_data_connections()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">training_data_references</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_run_details</span><span class="p">()[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;training_data_references&#39;</span><span class="p">]</span>
+        <span class="n">training_data_references</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_run_details</span><span class="p">()[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span>
+            <span class="s2">&quot;training_data_references&quot;</span>
+        <span class="p">]</span>
 
         <span class="n">data_connections</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">DataConnection</span><span class="o">.</span><span class="n">_from_dict</span><span class="p">(</span><span class="n">_dict</span><span class="o">=</span><span class="n">data_connection</span><span class="p">)</span> <span class="k">for</span> <span class="n">data_connection</span> <span class="ow">in</span> <span class="n">training_data_references</span><span class="p">]</span>
+            <span class="n">DataConnection</span><span class="o">.</span><span class="n">_from_dict</span><span class="p">(</span><span class="n">_dict</span><span class="o">=</span><span class="n">data_connection</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">data_connection</span> <span class="ow">in</span> <span class="n">training_data_references</span>
+        <span class="p">]</span>
 
         <span class="k">for</span> <span class="n">data_connection</span> <span class="ow">in</span> <span class="n">data_connections</span><span class="p">:</span>
             <span class="n">data_connection</span><span class="o">.</span><span class="n">set_client</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
@@ -927,7 +1082,7 @@
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
