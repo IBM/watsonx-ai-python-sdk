@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.04.27 -->
         <title>ibm_watsonx_ai.experiment.fm_tune.tune_experiment - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystyle2.css?v=c40128c6" />
     
@@ -114,6 +114,8 @@
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
 
 
 <div class="page">
@@ -206,6 +208,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../migration_v1.html">V1 Migration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
 </div></div>
@@ -236,23 +239,28 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <h1>Source code for ibm_watsonx_ai.experiment.fm_tune.tune_experiment</h1><div class="highlight"><pre>
 <span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="c1">#  (C) Copyright IBM Corp. 2023-2024.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
-
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.prompt_tuner</span> <span class="kn">import</span> <span class="n">PromptTuner</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.enums</span> <span class="kn">import</span> <span class="n">PromptTuningTypes</span><span class="p">,</span> <span class="n">PromptTuningInitMethods</span><span class="p">,</span> <span class="n">TuneExperimentTasks</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.utils</span> <span class="kn">import</span> <span class="n">get_model_specs_with_prompt_tuning_support</span><span class="p">,</span> <span class="n">_check_model_state</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.utils</span> <span class="kn">import</span> <span class="n">_check_model_state</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.experiment.base_experiment</span> <span class="kn">import</span> <span class="n">BaseExperiment</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
 
 <span class="kn">from</span> <span class="nn">.tune_runs</span> <span class="kn">import</span> <span class="n">TuneRuns</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">Credentials</span>
 
 
 <div class="viewcode-block" id="TuneExperiment">
@@ -261,7 +269,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;TuneExperiment class for tuning models with prompts.</span>
 
 <span class="sd">    :param credentials: credentials to Watson Machine Learning instance</span>
-<span class="sd">    :type credentials: dict</span>
+<span class="sd">    :type credentials: ibm_watsonx_ai.Credentials or dict</span>
 
 <span class="sd">    :param project_id: ID of the Watson Studio project</span>
 <span class="sd">    :type project_id: str, optional</span>
@@ -281,26 +289,19 @@
 
 <span class="sd">    .. code-block:: python</span>
 
+<span class="sd">        from ibm_watsonx_ai import Credentials</span>
 <span class="sd">        from ibm_watsonx_ai.experiment import TuneExperiment</span>
 
 <span class="sd">        experiment = TuneExperiment(</span>
-<span class="sd">            credentials={</span>
-<span class="sd">                &quot;apikey&quot;: &quot;...&quot;,</span>
-<span class="sd">                &quot;iam_apikey_description&quot;: &quot;...&quot;,</span>
-<span class="sd">                &quot;iam_apikey_name&quot;: &quot;...&quot;,</span>
-<span class="sd">                &quot;iam_role_crn&quot;: &quot;...&quot;,</span>
-<span class="sd">                &quot;iam_serviceid_crn&quot;: &quot;...&quot;,</span>
-<span class="sd">                &quot;instance_id&quot;: &quot;...&quot;,</span>
-<span class="sd">                &quot;url&quot;: &quot;https://us-south.ml.cloud.ibm.com&quot;</span>
-<span class="sd">            },</span>
+<span class="sd">            credentials=Credentials(...),</span>
 <span class="sd">            project_id=&quot;...&quot;,</span>
 <span class="sd">            space_id=&quot;...&quot;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">credentials</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-                 <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">verify</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                 <span class="n">credentials</span><span class="p">:</span> <span class="n">Credentials</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+                 <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">verify</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;</span> <span class="mf">4.8</span><span class="p">:</span>
@@ -465,7 +466,7 @@
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Base model &#39;</span><span class="si">{</span><span class="n">base_model</span><span class="si">}</span><span class="s2">&#39; is not supported. Supported models: </span><span class="si">{</span><span class="n">prompt_tuning_supported_models</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># check if model is in constricted mode</span>
-        <span class="n">_check_model_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">base_model</span><span class="p">)</span>
+        <span class="n">_check_model_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="n">base_model</span><span class="p">)</span>
 
         <span class="n">prompt_tuner</span> <span class="o">=</span> <span class="n">PromptTuner</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
                                    <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
@@ -532,6 +533,6 @@
 </div><script src="../../../../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../../../_static/scripts/furo.js?v=4e2eecee"></script>
     </body>
 </html>

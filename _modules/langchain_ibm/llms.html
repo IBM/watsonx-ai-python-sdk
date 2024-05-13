@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.04.27 -->
         <title>langchain_ibm.llms - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystyle2.css?v=c40128c6" />
     
@@ -114,6 +114,8 @@
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
 
 
 <div class="page">
@@ -206,6 +208,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../migration_v1.html">V1 Migration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
 </ul>
 
 </div></div>
@@ -236,12 +239,13 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <h1>Source code for langchain_ibm.llms</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">Credentials</span>  <span class="c1"># type: ignore</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">ModelInference</span>  <span class="c1"># type: ignore</span>
 <span class="kn">from</span> <span class="nn">langchain_core.callbacks</span> <span class="kn">import</span> <span class="n">CallbackManagerForLLMRun</span>
 <span class="kn">from</span> <span class="nn">langchain_core.language_models.llms</span> <span class="kn">import</span> <span class="n">BaseLLM</span>
@@ -431,40 +435,34 @@
                             <span class="n">values</span><span class="p">,</span> <span class="s2">&quot;instance_id&quot;</span><span class="p">,</span> <span class="s2">&quot;WATSONX_INSTANCE_ID&quot;</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
-
-            <span class="n">credentials</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span> <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;apikey&quot;</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;apikey&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span>
+            <span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span> <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">api_key</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;apikey&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;apikey&quot;</span><span class="p">]</span>
                 <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">]</span>
-                <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span>
+                <span class="n">token</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span> <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">password</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span>
                 <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span>
+                <span class="n">username</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span>
                 <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;instance_id&quot;</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;instance_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span>
+                <span class="n">instance_id</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;instance_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;instance_id&quot;</span><span class="p">]</span>
                 <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span>
+                <span class="n">version</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span>
                 <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="p">}</span>
-            <span class="n">credentials_without_none_value</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">credentials</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="p">}</span>
+                <span class="n">verify</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;verify&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
 
             <span class="n">watsonx_model</span> <span class="o">=</span> <span class="n">ModelInference</span><span class="p">(</span>
                 <span class="n">model_id</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;model_id&quot;</span><span class="p">],</span>
                 <span class="n">deployment_id</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;deployment_id&quot;</span><span class="p">],</span>
-                <span class="n">credentials</span><span class="o">=</span><span class="n">credentials_without_none_value</span><span class="p">,</span>
+                <span class="n">credentials</span><span class="o">=</span><span class="n">credentials</span><span class="p">,</span>
                 <span class="n">params</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">],</span>
                 <span class="n">project_id</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;project_id&quot;</span><span class="p">],</span>
                 <span class="n">space_id</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;space_id&quot;</span><span class="p">],</span>
-                <span class="n">verify</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;verify&quot;</span><span class="p">],</span>
             <span class="p">)</span>
             <span class="n">values</span><span class="p">[</span><span class="s2">&quot;watsonx_model&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">watsonx_model</span>
 
@@ -575,7 +573,7 @@
 <span class="sd">        Example:</span>
 <span class="sd">            .. code-block:: python</span>
 
-<span class="sd">                response = watsonx_llm(&quot;What is a molecule&quot;)</span>
+<span class="sd">                response = watsonx_llm.invoke(&quot;What is a molecule&quot;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate</span><span class="p">(</span>
             <span class="n">prompts</span><span class="o">=</span><span class="p">[</span><span class="n">prompt</span><span class="p">],</span> <span class="n">stop</span><span class="o">=</span><span class="n">stop</span><span class="p">,</span> <span class="n">run_manager</span><span class="o">=</span><span class="n">run_manager</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
@@ -710,6 +708,6 @@
 </div><script src="../../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../_static/scripts/furo.js?v=4e2eecee"></script>
     </body>
 </html>

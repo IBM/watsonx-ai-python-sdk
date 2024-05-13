@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.04.27 -->
         <title>ibm_watsonx_ai.foundation_models.embeddings.embeddings - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystyle2.css?v=c40128c6" />
     
@@ -114,6 +114,8 @@
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
 
 
 <div class="page">
@@ -206,6 +208,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../migration_v1.html">V1 Migration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
 </div></div>
@@ -236,7 +239,7 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <h1>Source code for ibm_watsonx_ai.foundation_models.embeddings.embeddings</h1><div class="highlight"><pre>
 <span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="c1">#  (C) Copyright IBM Corp. 2024.</span>
@@ -313,6 +316,7 @@
 
 <span class="sd">    .. code-block:: python</span>
 
+<span class="sd">        from ibm_watsonx_ai import Credentials</span>
 <span class="sd">        from ibm_watsonx_ai.foundation_models import Embeddings</span>
 <span class="sd">        from ibm_watsonx_ai.metanames import EmbedTextParamsMetaNames as EmbedParams</span>
 <span class="sd">        from ibm_watsonx_ai.foundation_models.utils.enums import EmbeddingTypes</span>
@@ -327,10 +331,9 @@
 <span class="sd">        embedding = Embeddings(</span>
 <span class="sd">            model_id=EmbeddingTypes.IBM_SLATE_30M_ENG,</span>
 <span class="sd">            params=embed_params,</span>
-<span class="sd">            credentials={</span>
-<span class="sd">                &quot;apikey&quot;: &quot;***&quot;,</span>
-<span class="sd">                &quot;url&quot;: &quot;https://us-south.ml.cloud.ibm.com&quot;</span>
-<span class="sd">            },</span>
+<span class="sd">            credentials=Credentials(</span>
+<span class="sd">                api_key = &quot;***&quot;,</span>
+<span class="sd">                url = &quot;https://us-south.ml.cloud.ibm.com&quot;),</span>
 <span class="sd">            project_id=&quot;*****&quot;</span>
 <span class="sd">            )</span>
 
@@ -547,7 +550,7 @@
             <span class="n">response_scoring</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
                 <span class="n">url</span><span class="o">=</span><span class="n">generate_url</span><span class="p">,</span>
                 <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
-                <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(</span><span class="n">skip_for_create</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(</span><span class="n">skip_for_create</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_userfs</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
                 <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">response_scoring</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">429</span><span class="p">,</span> <span class="mi">503</span><span class="p">,</span> <span class="mi">504</span><span class="p">,</span> <span class="mi">520</span><span class="p">]:</span>
@@ -612,6 +615,6 @@
 </div><script src="../../../../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../../../_static/scripts/furo.js?v=4e2eecee"></script>
     </body>
 </html>

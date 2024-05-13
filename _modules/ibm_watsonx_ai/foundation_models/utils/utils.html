@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.04.27 -->
         <title>ibm_watsonx_ai.foundation_models.utils.utils - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystyle2.css?v=c40128c6" />
     
@@ -114,6 +114,8 @@
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
 
 
 <div class="page">
@@ -206,6 +208,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../migration_v1.html">V1 Migration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
 </div></div>
@@ -236,7 +239,7 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <h1>Source code for ibm_watsonx_ai.foundation_models.utils.utils</h1><div class="highlight"><pre>
 <span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="c1">#  (C) Copyright IBM Corp. 2023-2024.</span>
@@ -259,7 +262,7 @@
     <span class="n">InvalidMultipleArguments</span><span class="p">,</span>
     <span class="n">InvalidValue</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="n">NextResourceGenerator</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="n">next_resource_generator</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.utils</span> <span class="kn">import</span> <span class="n">load_file_from_file_system_nonautoai</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.enums</span> <span class="kn">import</span> <span class="n">ModelTypes</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.enums</span> <span class="kn">import</span> <span class="n">DataConnectionTypes</span>
@@ -316,7 +319,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Operations to retrieve the list of deployed foundation models specifications.</span>
 
-<span class="sd">    *Decrecated:* `get_model_specs()` function is deprecated, please use `client.foundation_models.get_model_specs()` function instead.</span>
+<span class="sd">    *Decrecated:* `get_model_specs()` function is deprecated from 1.0, please use `client.foundation_models.get_model_specs()` function instead.</span>
 
 <span class="sd">    :param url: environment url</span>
 <span class="sd">    :type url: str</span>
@@ -346,7 +349,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;`get_model_specs()` function is deprecated, please use `client.foundation_models.get_model_specs()` function instead.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;`get_model_specs()` function is deprecated from 1.0, please use `client.foundation_models.get_model_specs()` function instead.&quot;</span><span class="p">,</span>
         <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -399,11 +402,11 @@
     <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">verify</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">NextResourceGenerator</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Generator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get details on available custom model(s) as dict or as generator (``asynchronous``).</span>
 <span class="sd">    If ``asynchronous`` or ``get_all`` is set, then ``model_id`` is ignored.</span>
 
-<span class="sd">    *Decrecated:* `get_custom_model_specs()` function is deprecated, please use `client.foundation_models.get_custom_model_specs()` function instead.</span>
+<span class="sd">    *Decrecated:* `get_custom_model_specs()` function is deprecated from 1.0, please use `client.foundation_models.get_custom_model_specs()` function instead.</span>
 
 <span class="sd">    :param credentials: credentials to watsonx.ai instance</span>
 <span class="sd">    :type credentials: dict, optional</span>
@@ -450,7 +453,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;`get_custom_model_specs()` function is deprecated, please use `client.foundation_models.get_custom_model_specs()` function instead.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;`get_custom_model_specs()` function is deprecated from 1.0, please use `client.foundation_models.get_custom_model_specs()` function instead.&quot;</span><span class="p">,</span>
         <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -473,7 +476,7 @@
 
     <span class="n">url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span>
 
-    <span class="n">params</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">_params</span><span class="p">(</span><span class="n">skip_for_create</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">_params</span><span class="p">(</span><span class="n">skip_for_create</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_userfs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">limit</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">limit</span> <span class="o">&gt;</span> <span class="mi">200</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">InvalidValue</span><span class="p">(</span>
             <span class="n">value_name</span><span class="o">=</span><span class="s2">&quot;limit&quot;</span><span class="p">,</span>
@@ -484,7 +487,7 @@
 
     <span class="n">url</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">asynchronous</span> <span class="ow">or</span> <span class="n">get_all</span><span class="p">:</span>
-        <span class="n">resource_generator</span> <span class="o">=</span> <span class="n">NextResourceGenerator</span><span class="p">(</span>
+        <span class="n">resource_generator</span> <span class="o">=</span> <span class="n">next_resource_generator</span><span class="p">(</span>
             <span class="n">client</span><span class="p">,</span>
             <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
             <span class="n">href</span><span class="o">=</span><span class="s2">&quot;ml/v4/custom_foundation_models&quot;</span><span class="p">,</span>
@@ -530,7 +533,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Operation to retrieve the list of model lifecycle data.</span>
 
-<span class="sd">    *Decrecated:* `get_model_lifecycle()` function is deprecated, please use `client.foundation_models.get_model_lifecycle()` function instead.</span>
+<span class="sd">    *Decrecated:* `get_model_lifecycle()` function is deprecated from 1.0, please use `client.foundation_models.get_model_lifecycle()` function instead.</span>
 
 <span class="sd">    :param url: environment url</span>
 <span class="sd">    :type url: str</span>
@@ -553,7 +556,7 @@
 <span class="sd">            )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;`get_model_lifecycle()` function is deprecated, please use `client.foundation_models.get_model_lifecycle()` function instead.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;`get_model_lifecycle()` function is deprecated from 1.0, please use `client.foundation_models.get_model_lifecycle()` function instead.&quot;</span><span class="p">,</span>
         <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -570,14 +573,14 @@
 
 
 
-<span class="k">def</span> <span class="nf">_check_model_state</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_check_model_state</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">default_warning_template</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;Model &#39;</span><span class="si">{model_id}</span><span class="s2">&#39; is in </span><span class="si">{state}</span><span class="s2"> state from </span><span class="si">{start_date}</span><span class="s2"> until </span><span class="si">{withdrawn_start_date}</span><span class="s2">. &quot;</span>
         <span class="s2">&quot;IDs of alternative models: </span><span class="si">{alternative_model_ids}</span><span class="s2">. &quot;</span>
         <span class="s2">&quot;Further details: https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-model-lifecycle.html?context=wx&amp;audience=wdp&quot;</span>
     <span class="p">)</span>
 
-    <span class="n">lifecycle</span> <span class="o">=</span> <span class="n">get_model_lifecycle</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">model_id</span><span class="p">)</span>
+    <span class="n">lifecycle</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_model_lifecycle</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
 
     <span class="n">modes_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">ids</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">ids</span> <span class="ow">in</span> <span class="p">(</span><span class="n">lifecycle</span> <span class="ow">or</span> <span class="p">[])]</span>
     <span class="n">deprecated_or_constricted_warning_template_cpd</span> <span class="o">=</span> <span class="p">(</span>
@@ -673,7 +676,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Operations to query the details of the deployed foundation models with prompt tuning support.</span>
 
-<span class="sd">    *Decrecated:* `get_model_specs_with_prompt_tuning_support()` function is deprecated, please use `client.foundation_models.get_model_specs_with_prompt_tuning_support()` function instead.</span>
+<span class="sd">    *Decrecated:* `get_model_specs_with_prompt_tuning_support()` function is deprecated from 1.0, please use `client.foundation_models.get_model_specs_with_prompt_tuning_support()` function instead.</span>
 
 <span class="sd">    :param url: environment url</span>
 <span class="sd">    :type url: str</span>
@@ -692,7 +695,7 @@
 <span class="sd">            )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;`get_model_specs_with_prompt_tuning_support()` function is deprecated, please use `client.foundation_models.get_model_specs_with_prompt_tuning_support()` function instead.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;`get_model_specs_with_prompt_tuning_support()` function is deprecated from 1.0, please use `client.foundation_models.get_model_specs_with_prompt_tuning_support()` function instead.&quot;</span><span class="p">,</span>
         <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -763,9 +766,9 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="n">tasks_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">task_spec</span> <span class="ow">in</span> <span class="n">get_supported_tasks</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="p">[]):</span>
-        <span class="n">tasks_dict</span><span class="p">[</span><span class="n">task_spec</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">task_spec</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span>
-        <span class="p">)</span>
+        <span class="n">tasks_dict</span><span class="p">[</span>
+            <span class="n">task_spec</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">task_spec</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">tasks_dict</span>
 
 
@@ -870,16 +873,20 @@
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">extra_args</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">HAPDetectionWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span> <span class="o">...</span>
+<span class="k">class</span> <span class="nc">HAPDetectionWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+    <span class="o">...</span>
 
 
-<span class="k">class</span> <span class="nc">PIIDetectionWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span> <span class="o">...</span>
+<span class="k">class</span> <span class="nc">PIIDetectionWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+    <span class="o">...</span>
 
 
-<span class="k">class</span> <span class="nc">LifecycleWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span> <span class="o">...</span>
+<span class="k">class</span> <span class="nc">LifecycleWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+    <span class="o">...</span>
 
 
-<span class="k">class</span> <span class="nc">WatsonxLLMDeprecationWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span> <span class="o">...</span>
+<span class="k">class</span> <span class="nc">WatsonxLLMDeprecationWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+    <span class="o">...</span>
 
 
 <span class="k">def</span> <span class="nf">_raise_watsonxllm_deprecation_warning</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -895,10 +902,10 @@
 
 <span class="k">def</span> <span class="nf">get_embedding_model_specs</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Decrecated:* `get_embedding_model_specs()` function is deprecated, please use `client.foundation_models.get_embeddings_model_specs()` function instead.</span>
+<span class="sd">    *Decrecated:* `get_embedding_model_specs()` function is deprecated from 1.0, please use `client.foundation_models.get_embeddings_model_specs()` function instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;`get_embedding_model_specs()` function is deprecated, please use `client.foundation_models.get_embeddings_model_specs()` function instead.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;`get_embedding_model_specs()` function is deprecated from 1.0, please use `client.foundation_models.get_embeddings_model_specs()` function instead.&quot;</span><span class="p">,</span>
         <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -942,6 +949,6 @@
 </div><script src="../../../../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../../../_static/scripts/furo.js?v=4e2eecee"></script>
     </body>
 </html>

@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.04.27 -->
         <title>ibm_watsonx_ai.deployment.web_service - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystyle2.css?v=c40128c6" />
     
@@ -114,6 +114,8 @@
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
 
 
 <div class="page">
@@ -206,6 +208,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../migration_v1.html">V1 Migration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
 </ul>
 
 </div></div>
@@ -236,7 +239,7 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <h1>Source code for ibm_watsonx_ai.deployment.web_service</h1><div class="highlight"><pre>
 <span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="c1">#  (C) Copyright IBM Corp. 2023-2024.</span>
@@ -371,19 +374,12 @@
 <span class="sd">        .. code-block:: python</span>
 
 <span class="sd">            from ibm_watsonx_ai.deployment import WebService</span>
+<span class="sd">            from ibm_watsonx_ai import Credentials</span>
 
 <span class="sd">            deployment = WebService(</span>
-<span class="sd">                   credentials={</span>
-<span class="sd">                         &quot;apikey&quot;: &quot;...&quot;,</span>
-<span class="sd">                         &quot;iam_apikey_description&quot;: &quot;...&quot;,</span>
-<span class="sd">                         &quot;iam_apikey_name&quot;: &quot;...&quot;,</span>
-<span class="sd">                         &quot;iam_role_crn&quot;: &quot;...&quot;,</span>
-<span class="sd">                         &quot;iam_serviceid_crn&quot;: &quot;...&quot;,</span>
-<span class="sd">                         &quot;instance_id&quot;: &quot;...&quot;,</span>
-<span class="sd">                         &quot;url&quot;: &quot;https://us-south.ml.cloud.ibm.com&quot;</span>
-<span class="sd">                       },</span>
-<span class="sd">                    project_id=&quot;...&quot;,</span>
-<span class="sd">                    space_id=&quot;...&quot;)</span>
+<span class="sd">                    source_instance_credentials=Credentials(...),</span>
+<span class="sd">                    source_project_id=&quot;...&quot;,</span>
+<span class="sd">                    target_space_id=&quot;...&quot;)</span>
 
 <span class="sd">            deployment.create(</span>
 <span class="sd">                   experiment_run_id=&quot;...&quot;,</span>
@@ -419,6 +415,8 @@
     <span class="k">def</span> <span class="nf">score</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">DataFrame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(),</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">forecast_window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">transaction_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Online scoring. Payload is passed to the Service scoring endpoint where model have been deployed.</span>
@@ -427,6 +425,9 @@
 <span class="sd">            and `supporting_features` and DataFrames with data for `observations` and `supporting_features`</span>
 <span class="sd">            to score forecasting models</span>
 <span class="sd">        :type payload: pandas.DataFrame or dict</span>
+
+<span class="sd">        :param forecast_window: size of forecast window, supported only for forcasting, supported from CPD 5.0</span>
+<span class="sd">        :type forecast_window: int, optional</span>
 
 <span class="sd">        :param transaction_id: can be used to indicate under which id the records will be saved into payload table</span>
 <span class="sd">            in IBM OpenScale</span>
@@ -451,9 +452,15 @@
 <span class="sd">            #     }]}</span>
 
 <span class="sd">            predictions = web_service.score(payload={&#39;observations&#39;: new_observations_df})</span>
-<span class="sd">            predictions = web_service.score(payload={&#39;observations&#39;: new_observations_df, &#39;supporting_features&#39;: supporting_features_df}) # supporting features time series forecasting sceanrio</span>
+<span class="sd">            predictions = web_service.score(payload={&#39;observations&#39;: new_observations_df, &#39;supporting_features&#39;: supporting_features_df}) # supporting features time series forecasting scenario</span>
+<span class="sd">            predictions = web_service.score(payload={&#39;observations&#39;: new_observations_df}</span>
+<span class="sd">                                            forecast_window=1000) # forecast_window time series forecasting scenario</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">transaction_id</span><span class="o">=</span><span class="n">transaction_id</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">score</span><span class="p">(</span>
+            <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+            <span class="n">forecast_window</span><span class="o">=</span><span class="n">forecast_window</span><span class="p">,</span>
+            <span class="n">transaction_id</span><span class="o">=</span><span class="n">transaction_id</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WebService.delete">
@@ -636,6 +643,6 @@
 </div><script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../../_static/scripts/furo.js?v=4e2eecee"></script>
     </body>
 </html>

@@ -3,12 +3,12 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Migration from ibm_watson_machine_learning" href="migration.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Changelog" href="changelog.html" /><link rel="prev" title="Migration from ibm_watson_machine_learning" href="migration.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.04.27 -->
         <title>V1 Migration Guide - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="_static/mystyle2.css?v=c40128c6" />
     
@@ -115,6 +115,8 @@
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
 
 
 <div class="page">
@@ -207,6 +209,7 @@
 <li class="toctree-l1"><a class="reference internal" href="samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">V1 Migration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 
 </div></div>
@@ -238,7 +241,7 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="v1-migration-guide">
 <h1>V1 Migration Guide<a class="headerlink" href="#v1-migration-guide" title="Link to this heading">¶</a></h1>
 <div style="text-align: justify;"><p>New <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai</span></code> Python SDK 1.0 is backward compatible in most common scenarios,
@@ -294,6 +297,64 @@ or project while initializing APIClient object.</p>
 
 <span class="n">client_space</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
 <span class="n">client_space</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_space</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="foundation-models-functions-moved-under-apiclient">
+<h3>Foundation models functions moved under APIClient<a class="headerlink" href="#foundation-models-functions-moved-under-apiclient" title="Link to this heading">¶</a></h3>
+<p>Starting from <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai</span></code> 1.0 foundation models functions (<code class="docutils literal notranslate"><span class="pre">get_model_specs</span></code>, <code class="docutils literal notranslate"><span class="pre">get_custom_model_specs</span></code>,
+<code class="docutils literal notranslate"><span class="pre">get_model_lifecycle</span></code>, <code class="docutils literal notranslate"><span class="pre">get_model_specs_with_prompt_tuning_support</span></code>, <code class="docutils literal notranslate"><span class="pre">get_embedding_model_specs</span></code>) are moved into <code class="docutils literal notranslate"><span class="pre">client.foundation_models</span></code> object.</p>
+<p>Old versions of the functions are not removed, however, as they lack authentication, they will no longer work.</p>
+<p>✅ New approach - Using functions from <cite>client.foundation_models</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">get_model_specs</span><span class="p">()</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">get_custom_model_specs</span><span class="p">()</span>
+<span class="n">client</span><span class="o">.</span><span class="n">get_custom_model_specs</span><span class="p">(</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;mistralai/Mistral-7B-Instruct-v0.2&#39;</span>
+<span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">get_custom_model_specs</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">get_custom_model_specs</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">get_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">get_model_lifecycle</span><span class="p">(</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;ibm/granite-13b-instruct-v2&quot;</span>
+<span class="p">)</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">get_model_specs_with_prompt_tuning_support</span><span class="p">()</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">get_embeddings_model_specs</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>❌ Old approach - Using functions from <cite>ibm_watsonx_ai.foundation_models</cite> module.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_model_specs</span><span class="p">,</span>
+    <span class="n">get_custom_models_spec</span><span class="p">,</span>
+    <span class="n">get_model_lifecycle</span><span class="p">,</span>
+    <span class="n">get_model_specs_with_prompt_tuning_support</span><span class="p">,</span>
+    <span class="n">get_embedding_model_specs</span>
+<span class="p">)</span>
+
+<span class="n">get_model_specs</span><span class="p">(</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span>
+<span class="p">)</span>
+
+<span class="n">get_custom_models_spec</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="n">client</span><span class="p">)</span>
+<span class="n">get_custom_models_spec</span><span class="p">(</span><span class="n">credentials</span><span class="o">=</span><span class="n">credentials</span><span class="p">)</span>
+<span class="n">get_custom_models_spec</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;mistralai/Mistral-7B-Instruct-v0.2&#39;</span><span class="p">)</span>
+<span class="n">get_custom_models_spec</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">get_custom_models_spec</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">get_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">get_model_lifecycle</span><span class="p">(</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;ibm/granite-13b-instruct-v2&quot;</span>
+<span class="p">)</span>
+
+<span class="n">get_model_specs_with_prompt_tuning_support</span><span class="p">(</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span>
+<span class="p">)</span>
+
+<span class="n">get_embedding_model_specs</span><span class="p">(</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -356,6 +417,30 @@ or project while initializing APIClient object.</p>
 <span class="n">url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">wml_credentials</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<ul class="simple">
+<li><p>Parameter changes in <code class="docutils literal notranslate"><span class="pre">service.score(...)</span></code> for online deployment</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">service.score(...)</span></code> has additional <code class="docutils literal notranslate"><span class="pre">forecast_window</span></code> parameter added before <code class="docutils literal notranslate"><span class="pre">transaction_id</span></code> parameter.
+Additionally, <code class="docutils literal notranslate"><span class="pre">service.score(...)</span></code> function will require from 1.0.0 to pass all named parameters except <code class="docutils literal notranslate"><span class="pre">payload</span></code> parameter.</p>
+<p>✅ New approach - named parameters and new parameter.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">score</span><span class="p">({</span>
+        <span class="s2">&quot;observations&quot;</span><span class="p">:</span> <span class="n">AbstractTestTSAsync</span><span class="o">.</span><span class="n">observations</span><span class="p">,</span>
+        <span class="s2">&quot;supporting_features&quot;</span><span class="p">:</span> <span class="n">AbstractTestTSAsync</span><span class="o">.</span><span class="n">supporting_features</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">forecast_window</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">transaction_id</span><span class="o">=</span><span class="n">transaction_id</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>❌ Old approach - all parameters not named, <code class="docutils literal notranslate"><span class="pre">forecast_window</span></code> parameter absent</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">score</span><span class="p">({</span>
+        <span class="s2">&quot;observations&quot;</span><span class="p">:</span> <span class="n">AbstractTestTSAsync</span><span class="o">.</span><span class="n">observations</span><span class="p">,</span>
+        <span class="s2">&quot;supporting_features&quot;</span><span class="p">:</span> <span class="n">AbstractTestTSAsync</span><span class="o">.</span><span class="n">supporting_features</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">transaction_id</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="deprecations">
 <h3>Deprecations<a class="headerlink" href="#deprecations" title="Link to this heading">¶</a></h3>
@@ -380,7 +465,15 @@ or project while initializing APIClient object.</p>
       <footer>
         
         <div class="related-pages">
-          
+          <a class="next-page" href="changelog.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Changelog</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
           <a class="prev-page" href="migration.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
@@ -427,6 +520,7 @@ or project while initializing APIClient object.</p>
 <li><a class="reference internal" href="#refactor-and-cleanup">Refactor and Cleanup</a></li>
 <li><a class="reference internal" href="#new-authorization">New authorization</a></li>
 <li><a class="reference internal" href="#easier-project-and-space-setup">Easier project and space setup</a></li>
+<li><a class="reference internal" href="#foundation-models-functions-moved-under-apiclient">Foundation models functions moved under APIClient</a></li>
 <li><a class="reference internal" href="#breaking-changes">Breaking changes</a></li>
 <li><a class="reference internal" href="#deprecations">Deprecations</a></li>
 </ul>
@@ -445,6 +539,6 @@ or project while initializing APIClient object.</p>
 </div><script src="_static/documentation_options.js?v=f2a433a1"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="_static/scripts/furo.js?v=4e2eecee"></script>
     </body>
 </html>
