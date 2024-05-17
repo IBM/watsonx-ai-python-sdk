@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Changelog" href="changelog.html" /><link rel="prev" title="Migration from ibm_watson_machine_learning" href="migration.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.04.27 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>V1 Migration Guide - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=437aa6ec" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="_static/mystyle2.css?v=c40128c6" />
     
@@ -114,8 +114,6 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
-
-<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -241,7 +239,7 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main" id="furo-main-content">
+        <article role="main">
           <section id="v1-migration-guide">
 <h1>V1 Migration Guide<a class="headerlink" href="#v1-migration-guide" title="Link to this heading">¶</a></h1>
 <div style="text-align: justify;"><p>New <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai</span></code> Python SDK 1.0 is backward compatible in most common scenarios,
@@ -306,22 +304,22 @@ or project while initializing APIClient object.</p>
 <code class="docutils literal notranslate"><span class="pre">get_model_lifecycle</span></code>, <code class="docutils literal notranslate"><span class="pre">get_model_specs_with_prompt_tuning_support</span></code>, <code class="docutils literal notranslate"><span class="pre">get_embedding_model_specs</span></code>) are moved into <code class="docutils literal notranslate"><span class="pre">client.foundation_models</span></code> object.</p>
 <p>Old versions of the functions are not removed, however, as they lack authentication, they will no longer work.</p>
 <p>✅ New approach - Using functions from <cite>client.foundation_models</cite>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">get_model_specs</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_model_specs</span><span class="p">()</span>
 
-<span class="n">client</span><span class="o">.</span><span class="n">get_custom_model_specs</span><span class="p">()</span>
-<span class="n">client</span><span class="o">.</span><span class="n">get_custom_model_specs</span><span class="p">(</span>
+<span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_custom_model_specs</span><span class="p">()</span>
+<span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_custom_model_specs</span><span class="p">(</span>
     <span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;mistralai/Mistral-7B-Instruct-v0.2&#39;</span>
 <span class="p">)</span>
-<span class="n">client</span><span class="o">.</span><span class="n">get_custom_model_specs</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-<span class="n">client</span><span class="o">.</span><span class="n">get_custom_model_specs</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">get_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_custom_model_specs</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_custom_model_specs</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">get_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">client</span><span class="o">.</span><span class="n">get_model_lifecycle</span><span class="p">(</span>
+<span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_model_lifecycle</span><span class="p">(</span>
     <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;ibm/granite-13b-instruct-v2&quot;</span>
 <span class="p">)</span>
 
-<span class="n">client</span><span class="o">.</span><span class="n">get_model_specs_with_prompt_tuning_support</span><span class="p">()</span>
+<span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_model_specs_with_prompt_tuning_support</span><span class="p">()</span>
 
-<span class="n">client</span><span class="o">.</span><span class="n">get_embeddings_model_specs</span><span class="p">()</span>
+<span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_embeddings_model_specs</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>❌ Old approach - Using functions from <cite>ibm_watsonx_ai.foundation_models</cite> module.</p>
@@ -539,6 +537,6 @@ Additionally, <code class="docutils literal notranslate"><span class="pre">servi
 </div><script src="_static/documentation_options.js?v=f2a433a1"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/scripts/furo.js?v=4e2eecee"></script>
+    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
 </html>
