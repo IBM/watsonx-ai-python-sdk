@@ -248,13 +248,14 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">WMLClientError</span><span class="p">,</span>
     <span class="n">ParamOutOfRange</span><span class="p">,</span>
     <span class="n">InvalidMultipleArguments</span><span class="p">,</span>
+    <span class="n">MissingExtension</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.enums</span> <span class="kn">import</span> <span class="n">ModelTypes</span>
 <span class="kn">from</span> <span class="nn">.base_model_inference</span> <span class="kn">import</span> <span class="n">BaseModelInference</span>
 <span class="kn">from</span> <span class="nn">.fm_model_inference</span> <span class="kn">import</span> <span class="n">FMModelInference</span>
 <span class="kn">from</span> <span class="nn">.deployment_model_inference</span> <span class="kn">import</span> <span class="n">DeploymentModelInference</span>
@@ -367,7 +368,7 @@
         <span class="n">validate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="o">=</span> <span class="n">model_id</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span> <span class="n">ModelTypes</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="o">.</span><span class="n">value</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span> <span class="o">=</span> <span class="n">deployment_id</span>
@@ -526,7 +527,7 @@
 <a class="viewcode-back" href="../../../../fm_model_inference.html#ibm_watsonx_ai.foundation_models.inference.ModelInference.generate_text">[docs]</a>
     <span class="k">def</span> <span class="nf">generate_text</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">raw_response</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -756,9 +757,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">langchain_ibm</span> <span class="kn">import</span> <span class="n">WatsonxLLM</span>
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-                <span class="s2">&quot;Could not import langchain_ibm: Please install `langchain_ibm` extension.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MissingExtension</span><span class="p">(</span><span class="s2">&quot;langchain_ibm&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">WatsonxLLM</span><span class="p">(</span><span class="n">watsonx_model</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
 
 

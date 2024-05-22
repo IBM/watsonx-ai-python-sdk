@@ -248,11 +248,13 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">Formatter</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Mapping</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Generator</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">KW_ONLY</span><span class="p">,</span> <span class="n">asdict</span>
 <span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">loads</span> <span class="k">as</span> <span class="n">json_loads</span>
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai._wrappers</span> <span class="kn">import</span> <span class="n">requests</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers</span> <span class="kn">import</span> <span class="n">DataConnection</span>
@@ -264,12 +266,34 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="n">next_resource_generator</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.utils</span> <span class="kn">import</span> <span class="n">load_file_from_file_system_nonautoai</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.enums</span> <span class="kn">import</span> <span class="n">ModelTypes</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.enums</span> <span class="kn">import</span> <span class="n">DataConnectionTypes</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.lifecycle</span> <span class="kn">import</span> <span class="n">SpecStates</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+
+
+<span class="k">class</span> <span class="nc">StrEnum</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    External class created for the needs of auto-generated enums</span>
+
+<span class="sd">    UseCase of StrEnum:</span>
+<span class="sd">    When we call print function on StrEnum attribute we are getting value ot them instead of Enum object</span>
+
+<span class="sd">    Example of StrEnum</span>
+<span class="sd">    TestEnum.Enum1 == &quot;enum1&quot; --&gt; True</span>
+
+<span class="sd">    Example of Enum</span>
+<span class="sd">    TestEnum.Enum1 == &quot;enum1 --&gt; False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">models_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">model</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">cls</span><span class="p">}</span>
+        <span class="n">pprint</span><span class="p">(</span><span class="n">models_dict</span><span class="p">)</span>
 
 
 <span class="nd">@dataclass</span>
@@ -355,7 +379,7 @@
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">model_id</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">ModelTypes</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
                 <span class="n">model_id</span> <span class="o">=</span> <span class="n">model_id</span><span class="o">.</span><span class="n">value</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="p">[</span>
@@ -766,9 +790,9 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="n">tasks_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">task_spec</span> <span class="ow">in</span> <span class="n">get_supported_tasks</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="p">[]):</span>
-        <span class="n">tasks_dict</span><span class="p">[</span>
-            <span class="n">task_spec</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="n">task_spec</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span>
+        <span class="n">tasks_dict</span><span class="p">[</span><span class="n">task_spec</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">task_spec</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">tasks_dict</span>
 
 
@@ -873,20 +897,16 @@
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">extra_args</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">HAPDetectionWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
-    <span class="o">...</span>
+<span class="k">class</span> <span class="nc">HAPDetectionWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span> <span class="o">...</span>
 
 
-<span class="k">class</span> <span class="nc">PIIDetectionWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
-    <span class="o">...</span>
+<span class="k">class</span> <span class="nc">PIIDetectionWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span> <span class="o">...</span>
 
 
-<span class="k">class</span> <span class="nc">LifecycleWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
-    <span class="o">...</span>
+<span class="k">class</span> <span class="nc">LifecycleWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span> <span class="o">...</span>
 
 
-<span class="k">class</span> <span class="nc">WatsonxLLMDeprecationWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
-    <span class="o">...</span>
+<span class="k">class</span> <span class="nc">WatsonxLLMDeprecationWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span> <span class="o">...</span>
 
 
 <span class="k">def</span> <span class="nf">_raise_watsonxllm_deprecation_warning</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

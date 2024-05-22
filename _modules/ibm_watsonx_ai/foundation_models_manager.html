@@ -247,14 +247,16 @@
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">cached_property</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Literal</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.enums</span> <span class="kn">import</span> <span class="n">ModelTypes</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.messages.messages</span> <span class="kn">import</span> <span class="n">Messages</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.utils</span> <span class="kn">import</span> <span class="n">StrEnum</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
@@ -267,6 +269,18 @@
         <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">client</span>
 
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">TextModels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">StrEnum</span><span class="p">(</span><span class="s2">&quot;TextModels&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_dict</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">))</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">EmbeddingModels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">StrEnum</span><span class="p">(</span><span class="s2">&quot;EmbeddingModels&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_dict</span><span class="p">(</span><span class="s2">&quot;embedding&quot;</span><span class="p">))</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">PromptTunableModels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">StrEnum</span><span class="p">(</span><span class="s2">&quot;PromptTunableModels&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_dict</span><span class="p">(</span><span class="s2">&quot;prompt_tuning&quot;</span><span class="p">))</span>
+
     <span class="k">def</span> <span class="nf">_get_spec</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -278,7 +292,7 @@
         <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(</span><span class="n">skip_userfs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(</span><span class="n">skip_userfs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_space_project_chk</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">filters</span><span class="p">:</span>
             <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters</span><span class="p">})</span>
 
@@ -291,9 +305,10 @@
                     <span class="n">query_params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
                     <span class="n">_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="n">_async</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">skip_space_project_chk</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
 
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">ModelTypes</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
                     <span class="n">model_id</span> <span class="o">=</span> <span class="n">model_id</span><span class="o">.</span><span class="n">value</span>
 
                 <span class="n">model_res</span> <span class="o">=</span> <span class="p">[</span>
@@ -312,6 +327,7 @@
                     <span class="n">query_params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
                     <span class="n">_async</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
                     <span class="n">_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+                    <span class="n">skip_space_project_chk</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="k">except</span> <span class="n">WMLClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
@@ -363,6 +379,7 @@
             <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_specifications_href</span><span class="p">(),</span>
             <span class="n">operation_name</span><span class="o">=</span><span class="s2">&quot;Get available foundation models&quot;</span><span class="p">,</span>
             <span class="n">error_msg_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_model_specs&quot;</span><span class="p">,</span>
+            <span class="n">filters</span><span class="o">=</span><span class="s2">&quot;function_text_generation&quot;</span><span class="p">,</span>
             <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
             <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
             <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
@@ -540,7 +557,32 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">model_spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model_specs</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">model_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lifecycle&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">model_spec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span></div>
-</div>
+
+
+    <span class="k">def</span> <span class="nf">_get_model_dict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;embedding&quot;</span><span class="p">,</span> <span class="s2">&quot;prompt_tuning&quot;</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Operation to retrieve the dictionary of models to Enum</span>
+
+<span class="sd">        :param model_type: Type of model function</span>
+<span class="sd">        :type model_type: Literal[&quot;base&quot;, &quot;embedding&quot;, &quot;prompt_tuning&quot;]</span>
+
+<span class="sd">        :return: dict of models to Enum</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">function_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;base&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model_specs</span><span class="p">,</span>
+            <span class="s2">&quot;embedding&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_embeddings_model_specs</span><span class="p">,</span>
+            <span class="s2">&quot;prompt_tuning&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model_specs_with_prompt_tuning_support</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">model_specs_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">model_spec</span> <span class="ow">in</span> <span class="n">function_dict</span><span class="p">[</span><span class="n">model_type</span><span class="p">]()[</span><span class="s2">&quot;resources&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="s2">&quot;model_id&quot;</span> <span class="ow">in</span> <span class="n">model_spec</span><span class="p">:</span>
+                <span class="n">model_specs_dict</span><span class="p">[</span>
+                    <span class="n">model_spec</span><span class="p">[</span><span class="s2">&quot;model_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="n">model_spec</span><span class="p">[</span><span class="s2">&quot;model_id&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">model_specs_dict</span></div>
 
 </pre></div>
         </article>

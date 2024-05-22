@@ -251,30 +251,60 @@
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.enums</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">TShirtSize</span><span class="p">,</span> <span class="n">ClassificationAlgorithms</span><span class="p">,</span> <span class="n">RegressionAlgorithms</span><span class="p">,</span> <span class="n">ForecastingAlgorithms</span><span class="p">,</span> <span class="n">PredictionType</span><span class="p">,</span> <span class="n">Metrics</span><span class="p">,</span> \
-    <span class="n">Transformers</span><span class="p">,</span> <span class="n">DataConnectionTypes</span><span class="p">,</span> <span class="n">PipelineTypes</span><span class="p">,</span> <span class="n">PositiveLabelClass</span><span class="p">,</span> <span class="n">ClassificationAlgorithmsCP4D</span><span class="p">,</span>
-    <span class="n">RegressionAlgorithmsCP4D</span><span class="p">,</span> <span class="n">ForecastingAlgorithmsCP4D</span><span class="p">,</span> <span class="n">SamplingTypes</span><span class="p">,</span> <span class="n">ImputationStrategy</span><span class="p">,</span> <span class="n">ForecastingPipelineTypes</span><span class="p">,</span>
-    <span class="n">TimeseriesAnomalyPredictionPipelineTypes</span><span class="p">,</span> <span class="n">TimeseriesAnomalyPredictionAlgorithms</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.errors</span> <span class="kn">import</span> <span class="n">LocalInstanceButRemoteParameter</span><span class="p">,</span> <span class="n">MissingPositiveLabel</span><span class="p">,</span> \
-    <span class="n">NonForecastPredictionColumnMissing</span><span class="p">,</span> <span class="n">ForecastPredictionColumnsMissing</span><span class="p">,</span> <span class="n">ForecastingCannotBeRunAsLocalScenario</span><span class="p">,</span> \
-    <span class="n">TSNotSupported</span><span class="p">,</span> <span class="n">TSADNotSupported</span><span class="p">,</span> <span class="n">ImputationListNotSupported</span><span class="p">,</span> \
-    <span class="n">MissingEstimatorForExistingBatchedEstimator</span><span class="p">,</span> <span class="n">TimeseriesAnomalyPredictionFeatureColumnsMissing</span><span class="p">,</span> \
-    <span class="n">TimeseriesAnomalyPredictionCannotBeRunAsLocalScenario</span><span class="p">,</span> <span class="n">TimeseriesAnomalyPredictionUnsupportedMetric</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.utils</span> <span class="kn">import</span> <span class="n">check_dependencies_versions</span><span class="p">,</span> \
-    <span class="n">validate_additional_params_for_optimizer</span><span class="p">,</span> <span class="n">validate_optimizer_enum_values</span><span class="p">,</span> \
-    <span class="n">translate_imputation_string_strategy_to_enum</span><span class="p">,</span> <span class="n">translate_estimator_string_to_enum</span><span class="p">,</span> \
-    <span class="n">translate_batched_estimator_string_to_enum</span>
+    <span class="n">TShirtSize</span><span class="p">,</span>
+    <span class="n">ClassificationAlgorithms</span><span class="p">,</span>
+    <span class="n">RegressionAlgorithms</span><span class="p">,</span>
+    <span class="n">ForecastingAlgorithms</span><span class="p">,</span>
+    <span class="n">PredictionType</span><span class="p">,</span>
+    <span class="n">Metrics</span><span class="p">,</span>
+    <span class="n">Transformers</span><span class="p">,</span>
+    <span class="n">DataConnectionTypes</span><span class="p">,</span>
+    <span class="n">PipelineTypes</span><span class="p">,</span>
+    <span class="n">PositiveLabelClass</span><span class="p">,</span>
+    <span class="n">ClassificationAlgorithmsCP4D</span><span class="p">,</span>
+    <span class="n">RegressionAlgorithmsCP4D</span><span class="p">,</span>
+    <span class="n">ForecastingAlgorithmsCP4D</span><span class="p">,</span>
+    <span class="n">SamplingTypes</span><span class="p">,</span>
+    <span class="n">ImputationStrategy</span><span class="p">,</span>
+    <span class="n">ForecastingPipelineTypes</span><span class="p">,</span>
+    <span class="n">TimeseriesAnomalyPredictionPipelineTypes</span><span class="p">,</span>
+    <span class="n">TimeseriesAnomalyPredictionAlgorithms</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.errors</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">LocalInstanceButRemoteParameter</span><span class="p">,</span>
+    <span class="n">MissingPositiveLabel</span><span class="p">,</span>
+    <span class="n">NonForecastPredictionColumnMissing</span><span class="p">,</span>
+    <span class="n">ForecastPredictionColumnsMissing</span><span class="p">,</span>
+    <span class="n">ForecastingCannotBeRunAsLocalScenario</span><span class="p">,</span>
+    <span class="n">TSNotSupported</span><span class="p">,</span>
+    <span class="n">TSADNotSupported</span><span class="p">,</span>
+    <span class="n">ImputationListNotSupported</span><span class="p">,</span>
+    <span class="n">MissingEstimatorForExistingBatchedEstimator</span><span class="p">,</span>
+    <span class="n">TimeseriesAnomalyPredictionFeatureColumnsMissing</span><span class="p">,</span>
+    <span class="n">TimeseriesAnomalyPredictionCannotBeRunAsLocalScenario</span><span class="p">,</span>
+    <span class="n">TimeseriesAnomalyPredictionUnsupportedMetric</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">check_dependencies_versions</span><span class="p">,</span>
+    <span class="n">validate_additional_params_for_optimizer</span><span class="p">,</span>
+    <span class="n">validate_optimizer_enum_values</span><span class="p">,</span>
+    <span class="n">translate_imputation_string_strategy_to_enum</span><span class="p">,</span>
+    <span class="n">translate_estimator_string_to_enum</span><span class="p">,</span>
+    <span class="n">translate_batched_estimator_string_to_enum</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.workspace</span> <span class="kn">import</span> <span class="n">WorkSpace</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">ForbiddenActionForGitBasedProject</span><span class="p">,</span> <span class="n">WMLClientError</span><span class="p">,</span> <span class="n">ParamOutOfRange</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ForbiddenActionForGitBasedProject</span><span class="p">,</span>
+    <span class="n">WMLClientError</span><span class="p">,</span>
+    <span class="n">ParamOutOfRange</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.messages.messages</span> <span class="kn">import</span> <span class="n">Messages</span>
 <span class="kn">from</span> <span class="nn">.engines</span> <span class="kn">import</span> <span class="n">ServiceEngine</span>
 <span class="kn">from</span> <span class="nn">.optimizers</span> <span class="kn">import</span> <span class="n">LocalAutoPipelines</span><span class="p">,</span> <span class="n">RemoteAutoPipelines</span>
 <span class="kn">from</span> <span class="nn">.runs</span> <span class="kn">import</span> <span class="n">AutoPipelinesRuns</span><span class="p">,</span> <span class="n">LocalAutoPipelinesRuns</span>
 <span class="kn">from</span> <span class="nn">..base_experiment.base_experiment</span> <span class="kn">import</span> <span class="n">BaseExperiment</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;AutoAI&quot;</span>
-<span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AutoAI&quot;</span><span class="p">]</span>
 
 <span class="kn">from</span> <span class="nn">...credentials</span> <span class="kn">import</span> <span class="n">Credentials</span>
 
@@ -320,8 +350,9 @@
 <span class="sd">            project_id=&quot;...&quot;,</span>
 <span class="sd">            space_id=&quot;...&quot;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># note: initialization of AutoAI enums as class properties</span>
-        
+
     <span class="c1"># note: Enums with estimators can be overwritten  in _init based on environment type (CPD or Cloud)</span>
     <span class="n">ClassificationAlgorithms</span> <span class="o">=</span> <span class="n">ClassificationAlgorithms</span>
     <span class="n">RegressionAlgorithms</span> <span class="o">=</span> <span class="n">RegressionAlgorithms</span>
@@ -335,21 +366,28 @@
     <span class="n">PipelineTypes</span> <span class="o">=</span> <span class="n">PipelineTypes</span>
     <span class="n">SamplingTypes</span> <span class="o">=</span> <span class="n">SamplingTypes</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">credentials</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Credentials</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="s1">&#39;WorkSpace&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">verify</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">credentials</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Credentials</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="s2">&quot;WorkSpace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verify</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># note: as workspace is not clear enough to understand, there is a possibility to use pure</span>
         <span class="c1"># credentials with project and space IDs, but in addition we</span>
         <span class="c1"># leave a possibility to use a previous WorkSpace implementation, it could be passed as a first argument</span>
-         <span class="c1"># note: backward compatibility</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">wml_credentials</span><span class="o">:=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;wml_credentials&#39;</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># note: backward compatibility</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">wml_credentials</span> <span class="o">:=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;wml_credentials&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">credentials</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">credentials</span> <span class="o">=</span> <span class="n">wml_credentials</span>
-            <span class="n">warn</span><span class="p">((</span><span class="s2">&quot;`wml_credentials` is deprecated and will be removed in future. &quot;</span>
-                    <span class="s2">&quot;Instead, please use `credentials`.&quot;</span><span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;`wml_credentials` is deprecated and will be removed in future. &quot;</span>
+                    <span class="s2">&quot;Instead, please use `credentials`.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">_verify</span><span class="o">=</span><span class="n">verify</span><span class="p">)</span>
@@ -366,17 +404,19 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">WorkSpace</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span> <span class="o">=</span> <span class="n">credentials</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span> <span class="o">=</span> <span class="n">WorkSpace</span><span class="p">(</span><span class="n">credentials</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">credentials</span><span class="p">),</span>
-                                            <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
-                                            <span class="n">space_id</span><span class="o">=</span><span class="n">space_id</span><span class="p">,</span>
-                                            <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span> <span class="o">=</span> <span class="n">WorkSpace</span><span class="p">(</span>
+                    <span class="n">credentials</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">credentials</span><span class="p">),</span>
+                    <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+                    <span class="n">space_id</span><span class="o">=</span><span class="n">space_id</span><span class="p">,</span>
+                    <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">,</span>
+                <span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">project_id</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">space_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">space_id</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">runs</span> <span class="o">=</span> <span class="n">AutoPipelinesRuns</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="n">ServiceEngine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="o">.</span><span class="n">_workspace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span>
 
-        <span class="c1">#self._block_autoai_on_git_based_project()</span>
+        <span class="c1"># self._block_autoai_on_git_based_project()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_estimator_enums</span><span class="p">()</span>
 
@@ -385,7 +425,9 @@
 
 <div class="viewcode-block" id="AutoAI.runs">
 <a class="viewcode-back" href="../../../../autoai_experiment.html#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.runs">[docs]</a>
-    <span class="k">def</span> <span class="nf">runs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">filter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;AutoPipelinesRuns&#39;</span><span class="p">,</span> <span class="s1">&#39;LocalAutoPipelinesRuns&#39;</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">runs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">filter</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;AutoPipelinesRuns&quot;</span><span class="p">,</span> <span class="s2">&quot;LocalAutoPipelinesRuns&quot;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the historical runs but with Pipeline name filter (for remote scenario).</span>
 <span class="sd">        Get the historical runs but with experiment name filter (for local scenario).</span>
 
@@ -410,70 +452,87 @@
             <span class="k">return</span> <span class="n">LocalAutoPipelinesRuns</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="nb">filter</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">AutoPipelinesRuns</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="n">ServiceEngine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="p">),</span> <span class="nb">filter</span><span class="o">=</span><span class="nb">filter</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">AutoPipelinesRuns</span><span class="p">(</span>
+                <span class="n">engine</span><span class="o">=</span><span class="n">ServiceEngine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="p">),</span> <span class="nb">filter</span><span class="o">=</span><span class="nb">filter</span>
+            <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AutoAI.optimizer">
 <a class="viewcode-back" href="../../../../autoai_experiment.html#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.optimizer">[docs]</a>
-    <span class="k">def</span> <span class="nf">optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                  <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                  <span class="o">*</span><span class="p">,</span>
-                  <span class="n">prediction_type</span><span class="p">:</span> <span class="s1">&#39;PredictionType&#39;</span><span class="p">,</span>
-                  <span class="n">prediction_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">prediction_columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">timestamp_column_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">scoring</span><span class="p">:</span> <span class="s1">&#39;Metrics&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">test_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># deprecated</span>
-                  <span class="n">holdout_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">max_number_of_estimators</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">train_sample_rows_test_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">include_only_estimators</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;ClassificationAlgorithms&#39;</span><span class="p">,</span> <span class="s1">&#39;RegressionAlgorithms&#39;</span><span class="p">,</span>
-                                                      <span class="s1">&#39;ForecastingAlgorithms&#39;</span><span class="p">,</span> <span class="s1">&#39;TimeseriesAnomalyPredictionAlgorithms&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">daub_include_only_estimators</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;ClassificationAlgorithms&#39;</span><span class="p">,</span> <span class="s1">&#39;RegressionAlgorithms&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># deprecated</span>
-                  <span class="n">include_batched_ensemble_estimators</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;BatchedClassificationAlgorithms&#39;</span><span class="p">,</span>
-                                                                  <span class="s1">&#39;BatchedRegressionAlgorithms&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">backtest_num</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">lookback_window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">forecast_window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">backtest_gap_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">feature_columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">pipeline_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;ForecastingPipelineTypes&#39;</span><span class="p">,</span> <span class="s1">&#39;TimeseriesAnomalyPredictionPipelineTypes&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">supporting_features_at_forecast</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">cognito_transform_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;Transformers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">csv_separator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span>
-                  <span class="n">excel_sheet</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">,</span>
-                  <span class="n">positive_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">drop_duplicates</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                  <span class="n">outliers_columns</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">text_processing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">word2vec_feature_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">daub_give_priority_to_runtime</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">fairness_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">sampling_type</span><span class="p">:</span> <span class="s1">&#39;SamplingTypes&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">sample_size_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">sample_rows_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">sample_percentage_limit</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">n_parallel_data_connections</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">number_of_batch_rows</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">categorical_imputation_strategy</span><span class="p">:</span> <span class="n">ImputationStrategy</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">numerical_imputation_strategy</span><span class="p">:</span> <span class="n">ImputationStrategy</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">numerical_imputation_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">imputation_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">retrain_on_holdout</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">categorical_columns</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">numerical_columns</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">test_data_csv_separator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span>
-                  <span class="n">test_data_excel_sheet</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">test_data_encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">,</span>
-                  <span class="n">confidence_level</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">incremental_learning</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">early_stop_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">early_stop_window_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">time_ordered_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="n">feature_selector_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                  <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;RemoteAutoPipelines&#39;</span><span class="p">,</span> <span class="s1">&#39;LocalAutoPipelines&#39;</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">optimizer</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">prediction_type</span><span class="p">:</span> <span class="s2">&quot;PredictionType&quot;</span><span class="p">,</span>
+        <span class="n">prediction_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prediction_columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">timestamp_column_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scoring</span><span class="p">:</span> <span class="s2">&quot;Metrics&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">test_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># deprecated</span>
+        <span class="n">holdout_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_number_of_estimators</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">train_sample_rows_test_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include_only_estimators</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span>
+                <span class="s2">&quot;ClassificationAlgorithms&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;RegressionAlgorithms&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ForecastingAlgorithms&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;TimeseriesAnomalyPredictionAlgorithms&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">daub_include_only_estimators</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;ClassificationAlgorithms&quot;</span><span class="p">,</span> <span class="s2">&quot;RegressionAlgorithms&quot;</span><span class="p">]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># deprecated</span>
+        <span class="n">include_batched_ensemble_estimators</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;BatchedClassificationAlgorithms&quot;</span><span class="p">,</span> <span class="s2">&quot;BatchedRegressionAlgorithms&quot;</span><span class="p">]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">backtest_num</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">lookback_window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">forecast_window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">backtest_gap_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">feature_columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">pipeline_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span>
+                <span class="s2">&quot;ForecastingPipelineTypes&quot;</span><span class="p">,</span> <span class="s2">&quot;TimeseriesAnomalyPredictionPipelineTypes&quot;</span>
+            <span class="p">]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">supporting_features_at_forecast</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cognito_transform_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Transformers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">csv_separator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span>
+        <span class="n">excel_sheet</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+        <span class="n">positive_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">drop_duplicates</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">outliers_columns</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">text_processing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">word2vec_feature_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">daub_give_priority_to_runtime</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fairness_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sampling_type</span><span class="p">:</span> <span class="s2">&quot;SamplingTypes&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sample_size_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sample_rows_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sample_percentage_limit</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_parallel_data_connections</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">number_of_batch_rows</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">categorical_imputation_strategy</span><span class="p">:</span> <span class="n">ImputationStrategy</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">numerical_imputation_strategy</span><span class="p">:</span> <span class="n">ImputationStrategy</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">numerical_imputation_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">imputation_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">retrain_on_holdout</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">categorical_columns</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">numerical_columns</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">test_data_csv_separator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span>
+        <span class="n">test_data_excel_sheet</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">test_data_encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+        <span class="n">confidence_level</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">incremental_learning</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">early_stop_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">early_stop_window_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">time_ordered_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">feature_selector_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;RemoteAutoPipelines&quot;</span><span class="p">,</span> <span class="s2">&quot;LocalAutoPipelines&quot;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize an AutoAi optimizer.</span>
 
@@ -515,10 +574,10 @@
 <span class="sd">        :type train_sample_rows_test_size: float, optional</span>
 
 <span class="sd">        :param daub_include_only_estimators: deprecated, use `include_only_estimators` instead</span>
-<span class="sd">        </span>
-<span class="sd">        :param include_batched_ensemble_estimators: list of batched ensemble estimators to include </span>
+
+<span class="sd">        :param include_batched_ensemble_estimators: list of batched ensemble estimators to include</span>
 <span class="sd">            in computation process, see: AutoAI.BatchedClassificationAlgorithms, AutoAI.BatchedRegressionAlgorithms</span>
-<span class="sd">        :type include_batched_ensemble_estimators: </span>
+<span class="sd">        :type include_batched_ensemble_estimators:</span>
 <span class="sd">            list[BatchedClassificationAlgorithms or BatchedRegressionAlgorithms], optional</span>
 
 <span class="sd">        :param include_only_estimators: list of estimators to include in computation process, see:</span>
@@ -680,15 +739,15 @@
 <span class="sd">            default is &#39;,&#39;</span>
 <span class="sd">        :type test_data_csv_separator: list[str] or str, optional</span>
 
-<span class="sd">        :param test_data_excel_sheet: name of the excel sheet to use for user-defined holdout/test data, </span>
+<span class="sd">        :param test_data_excel_sheet: name of the excel sheet to use for user-defined holdout/test data,</span>
 <span class="sd">            only use when xlsx file is an test, dataset file, by default first sheet is used</span>
 <span class="sd">        :type test_data_excel_sheet: str or int, optional</span>
 
 <span class="sd">        :param test_data_encoding: encoding type for CSV user-defined holdout/test file</span>
 <span class="sd">        :type test_data_encoding: str, optional</span>
 
-<span class="sd">        :param confidence_level: when the pipeline &quot;PointwiseBoundedHoltWinters&quot; or &quot;PointwiseBoundedBATS&quot; is used, </span>
-<span class="sd">            the prediction interval is calculated at a given confidence_level to decide if a data record </span>
+<span class="sd">        :param confidence_level: when the pipeline &quot;PointwiseBoundedHoltWinters&quot; or &quot;PointwiseBoundedBATS&quot; is used,</span>
+<span class="sd">            the prediction interval is calculated at a given confidence_level to decide if a data record</span>
 <span class="sd">            is an anomaly or not, optional for timeseries anomaly prediction</span>
 <span class="sd">        :type confidence_level: float, optional</span>
 
@@ -757,9 +816,8 @@
 <span class="sd">               )</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># note: convert `timeseries` type to PredictionType.FORECASTING:</span>
-        <span class="k">if</span> <span class="n">prediction_type</span> <span class="o">==</span> <span class="s1">&#39;timeseries&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">prediction_type</span> <span class="o">==</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">:</span>
             <span class="n">prediction_type</span> <span class="o">=</span> <span class="n">PredictionType</span><span class="o">.</span><span class="n">FORECASTING</span>
-
 
         <span class="k">if</span> <span class="n">prediction_type</span> <span class="o">!=</span> <span class="n">PredictionType</span><span class="o">.</span><span class="n">FORECASTING</span> <span class="ow">and</span> <span class="n">retrain_on_holdout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">retrain_on_holdout</span> <span class="o">=</span> <span class="kc">True</span>
@@ -767,58 +825,97 @@
         <span class="c1"># Deprecation of excel_sheet as number:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">excel_sheet</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">warn</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Support for excel sheet as number of the sheet (int) is deprecated! Please set excel sheet with name of the sheet.&quot;</span><span class="p">)</span>
+                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Support for excel sheet as number of the sheet (int) is deprecated! Please set excel sheet with name of the sheet.&quot;</span>
+            <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">prediction_type</span> <span class="o">==</span> <span class="n">PredictionType</span><span class="o">.</span><span class="n">TIMESERIES_ANOMALY_PREDICTION</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="ow">and</span> \
-                <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s1">&#39;2.5&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">,</span> <span class="s1">&#39;3.5&#39;</span><span class="p">,</span> <span class="s1">&#39;4.0&#39;</span><span class="p">,</span> <span class="s1">&#39;4.5&#39;</span><span class="p">,</span> <span class="s1">&#39;4.6&#39;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">prediction_type</span> <span class="o">==</span> <span class="n">PredictionType</span><span class="o">.</span><span class="n">TIMESERIES_ANOMALY_PREDICTION</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;2.5&quot;</span><span class="p">,</span> <span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="s2">&quot;3.5&quot;</span><span class="p">,</span> <span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="s2">&quot;4.5&quot;</span><span class="p">,</span> <span class="s2">&quot;4.6&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
             <span class="k">raise</span> <span class="n">TSADNotSupported</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="n">prediction_type</span> <span class="ow">in</span> <span class="p">(</span><span class="n">PredictionType</span><span class="o">.</span><span class="n">FORECASTING</span><span class="p">,</span> <span class="s1">&#39;timeseries&#39;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">numerical_imputation_strategy</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">numerical_imputation_strategy</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
-                <span class="n">numerical_imputation_strategy</span> <span class="o">=</span> <span class="n">ImputationStrategy</span><span class="o">.</span><span class="n">BEST_OF_DEFAULT_IMPUTERS</span>
-            <span class="k">elif</span> <span class="ow">not</span> <span class="n">numerical_imputation_strategy</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">numerical_imputation_strategy</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">prediction_type</span> <span class="ow">in</span> <span class="p">(</span><span class="n">PredictionType</span><span class="o">.</span><span class="n">FORECASTING</span><span class="p">,</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="n">numerical_imputation_strategy</span>
+                <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">numerical_imputation_strategy</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span>
+            <span class="p">):</span>
+                <span class="n">numerical_imputation_strategy</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">ImputationStrategy</span><span class="o">.</span><span class="n">BEST_OF_DEFAULT_IMPUTERS</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="n">numerical_imputation_strategy</span>
+                <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">numerical_imputation_strategy</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span>
+            <span class="p">):</span>
                 <span class="n">numerical_imputation_strategy</span> <span class="o">=</span> <span class="n">ImputationStrategy</span><span class="o">.</span><span class="n">NO_IMPUTATION</span>
 
             <span class="k">if</span> <span class="n">prediction_column</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">prediction_columns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">ForecastPredictionColumnsMissing</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">prediction_type</span> <span class="o">==</span> <span class="n">PredictionType</span><span class="o">.</span><span class="n">TIMESERIES_ANOMALY_PREDICTION</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">feature_columns</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">prediction_column</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">prediction_columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">feature_columns</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="ow">or</span> <span class="n">prediction_column</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="ow">or</span> <span class="n">prediction_columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">):</span>
                 <span class="k">raise</span> <span class="n">TimeseriesAnomalyPredictionFeatureColumnsMissing</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">scoring</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">scoring</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span>
-                    <span class="n">Metrics</span><span class="o">.</span><span class="n">F1_SCORE</span><span class="p">,</span> <span class="n">Metrics</span><span class="o">.</span><span class="n">ROC_AUC_SCORE</span><span class="p">,</span> <span class="n">Metrics</span><span class="o">.</span><span class="n">AVERAGE_PRECISION_SCORE</span><span class="p">,</span> <span class="n">Metrics</span><span class="o">.</span><span class="n">PRECISION_SCORE</span><span class="p">,</span>
-                    <span class="n">Metrics</span><span class="o">.</span><span class="n">RECALL_SCORE</span><span class="p">):</span>
+                <span class="n">Metrics</span><span class="o">.</span><span class="n">F1_SCORE</span><span class="p">,</span>
+                <span class="n">Metrics</span><span class="o">.</span><span class="n">ROC_AUC_SCORE</span><span class="p">,</span>
+                <span class="n">Metrics</span><span class="o">.</span><span class="n">AVERAGE_PRECISION_SCORE</span><span class="p">,</span>
+                <span class="n">Metrics</span><span class="o">.</span><span class="n">PRECISION_SCORE</span><span class="p">,</span>
+                <span class="n">Metrics</span><span class="o">.</span><span class="n">RECALL_SCORE</span><span class="p">,</span>
+            <span class="p">):</span>
                 <span class="k">raise</span> <span class="n">TimeseriesAnomalyPredictionUnsupportedMetric</span><span class="p">(</span><span class="n">scoring</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">prediction_column</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">prediction_columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">NonForecastPredictionColumnMissing</span><span class="p">(</span><span class="n">prediction_type</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">test_size</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Note: Using `test_size` is deprecated. Use `holdout_size` instead.&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Note: Using `test_size` is deprecated. Use `holdout_size` instead.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">holdout_size</span><span class="p">:</span>
                 <span class="n">holdout_size</span> <span class="o">=</span> <span class="n">test_size</span>
             <span class="n">test_size</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">daub_include_only_estimators</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Note: Using `daub_include_only_estimators` is deprecated. Use `include_only_estimators` instead.&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Note: Using `daub_include_only_estimators` is deprecated. Use `include_only_estimators` instead.&quot;</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">include_only_estimators</span><span class="p">:</span>
                 <span class="n">include_only_estimators</span> <span class="o">=</span> <span class="n">daub_include_only_estimators</span>
             <span class="n">daub_include_only_estimators</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">if</span> <span class="n">train_sample_rows_test_size</span> <span class="ow">and</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&gt;=</span> <span class="mf">4.6</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Note: Using `train_sample_rows_test_size` is deprecated.&#39;</span>
-                  <span class="s1">&#39;Use either `sample_rows_limit` or `sample_percentage_limit` instead.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">train_sample_rows_test_size</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&gt;=</span> <span class="mf">4.6</span>
+        <span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Note: Using `train_sample_rows_test_size` is deprecated.&quot;</span>
+                <span class="s2">&quot;Use either `sample_rows_limit` or `sample_percentage_limit` instead.&quot;</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">sample_rows_limit</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">sample_percentage_limit</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">train_sample_rows_test_size</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">float</span> <span class="ow">and</span> <span class="n">train_sample_rows_test_size</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Value of `train_sample_rows_test_size` parameter&#39;</span>
-                          <span class="s1">&#39;will be passed as `sample_percentage_limit`.&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="nb">type</span><span class="p">(</span><span class="n">train_sample_rows_test_size</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">float</span>
+                    <span class="ow">and</span> <span class="n">train_sample_rows_test_size</span> <span class="o">&lt;=</span> <span class="mi">1</span>
+                <span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="s2">&quot;Value of `train_sample_rows_test_size` parameter&quot;</span>
+                        <span class="s2">&quot;will be passed as `sample_percentage_limit`.&quot;</span>
+                    <span class="p">)</span>
                     <span class="n">sample_percentage_limit</span> <span class="o">=</span> <span class="n">train_sample_rows_test_size</span>
-                <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">train_sample_rows_test_size</span><span class="p">)</span> <span class="o">==</span> <span class="n">train_sample_rows_test_size</span> <span class="ow">and</span> <span class="n">train_sample_rows_test_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Value of `train_sample_rows_test_size` parameter&#39;</span>
-                          <span class="s1">&#39;will be passed as `sample_rows_limit`.&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="p">(</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="n">train_sample_rows_test_size</span><span class="p">)</span> <span class="o">==</span> <span class="n">train_sample_rows_test_size</span>
+                    <span class="ow">and</span> <span class="n">train_sample_rows_test_size</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                <span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="s2">&quot;Value of `train_sample_rows_test_size` parameter&quot;</span>
+                        <span class="s2">&quot;will be passed as `sample_rows_limit`.&quot;</span>
+                    <span class="p">)</span>
                     <span class="n">sample_rows_limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">train_sample_rows_test_size</span><span class="p">)</span>
                 <span class="n">train_sample_rows_test_size</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">elif</span> <span class="n">sample_rows_limit</span> <span class="ow">or</span> <span class="n">sample_percentage_limit</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Parameter `train_sample_rows_test_size` will be ignored.&#39;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parameter `train_sample_rows_test_size` will be ignored.&quot;</span><span class="p">)</span>
                 <span class="n">train_sample_rows_test_size</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">def</span> <span class="nf">translate_str_imputation_param</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -834,26 +931,56 @@
             <span class="k">return</span> <span class="p">[</span><span class="n">translate_estimator_string_to_enum</span><span class="p">(</span><span class="n">estimator</span><span class="p">)</span> <span class="k">for</span> <span class="n">estimator</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
 
         <span class="k">def</span> <span class="nf">translate_str_include_batched_ensemble_estimators_param</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">translate_batched_estimator_string_to_enum</span><span class="p">(</span><span class="n">estimator</span><span class="p">)</span> <span class="k">for</span> <span class="n">estimator</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">translate_batched_estimator_string_to_enum</span><span class="p">(</span><span class="n">estimator</span><span class="p">)</span> <span class="k">for</span> <span class="n">estimator</span> <span class="ow">in</span> <span class="n">x</span>
+            <span class="p">]</span>
 
         <span class="k">def</span> <span class="nf">translate_str_pipeline_types_param</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">prediction_type</span> <span class="o">==</span> <span class="n">PredictionType</span><span class="o">.</span><span class="n">TIMESERIES_ANOMALY_PREDICTION</span><span class="p">:</span>
-                <span class="k">return</span> <span class="p">[</span><span class="n">TimeseriesAnomalyPredictionPipelineTypes</span><span class="p">(</span><span class="n">pipeline_type</span><span class="p">)</span> <span class="k">for</span> <span class="n">pipeline_type</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+                <span class="k">return</span> <span class="p">[</span>
+                    <span class="n">TimeseriesAnomalyPredictionPipelineTypes</span><span class="p">(</span><span class="n">pipeline_type</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">pipeline_type</span> <span class="ow">in</span> <span class="n">x</span>
+                <span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="p">[</span><span class="n">ForecastingPipelineTypes</span><span class="p">(</span><span class="n">pipeline_type</span><span class="p">)</span> <span class="k">for</span> <span class="n">pipeline_type</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
 
-        <span class="n">categorical_imputation_strategy</span> <span class="o">=</span> <span class="n">translate_str_imputation_param</span><span class="p">(</span><span class="n">categorical_imputation_strategy</span><span class="p">)</span>
-        <span class="n">numerical_imputation_strategy</span> <span class="o">=</span> <span class="n">translate_str_imputation_param</span><span class="p">(</span><span class="n">numerical_imputation_strategy</span><span class="p">)</span>
-        <span class="n">include_only_estimators</span> <span class="o">=</span> <span class="n">translate_str_include_only_estimators_param</span><span class="p">(</span><span class="n">include_only_estimators</span><span class="p">)</span> <span class="k">if</span> <span class="n">include_only_estimators</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">include_batched_ensemble_estimators</span> <span class="o">=</span> <span class="n">translate_str_include_batched_ensemble_estimators_param</span><span class="p">(</span><span class="n">include_batched_ensemble_estimators</span><span class="p">)</span> <span class="k">if</span> <span class="n">include_batched_ensemble_estimators</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">pipeline_types</span> <span class="o">=</span> <span class="n">translate_str_pipeline_types_param</span><span class="p">(</span><span class="n">pipeline_types</span><span class="p">)</span> <span class="k">if</span> <span class="n">pipeline_types</span> <span class="o">!=</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">categorical_imputation_strategy</span> <span class="o">=</span> <span class="n">translate_str_imputation_param</span><span class="p">(</span>
+            <span class="n">categorical_imputation_strategy</span>
+        <span class="p">)</span>
+        <span class="n">numerical_imputation_strategy</span> <span class="o">=</span> <span class="n">translate_str_imputation_param</span><span class="p">(</span>
+            <span class="n">numerical_imputation_strategy</span>
+        <span class="p">)</span>
+        <span class="n">include_only_estimators</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">translate_str_include_only_estimators_param</span><span class="p">(</span><span class="n">include_only_estimators</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">include_only_estimators</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="n">include_batched_ensemble_estimators</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">translate_str_include_batched_ensemble_estimators_param</span><span class="p">(</span>
+                <span class="n">include_batched_ensemble_estimators</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">include_batched_ensemble_estimators</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="n">pipeline_types</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">translate_str_pipeline_types_param</span><span class="p">(</span><span class="n">pipeline_types</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pipeline_types</span> <span class="o">!=</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">include_batched_ensemble_estimators</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">batched_estimator</span> <span class="ow">in</span> <span class="n">include_batched_ensemble_estimators</span><span class="p">:</span>
                 <span class="n">basic_estimator_str</span> <span class="o">=</span> <span class="n">batched_estimator</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                <span class="n">basic_estimator</span> <span class="o">=</span> <span class="n">translate_estimator_string_to_enum</span><span class="p">(</span><span class="n">basic_estimator_str</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">include_only_estimators</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">basic_estimator</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">include_only_estimators</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">MissingEstimatorForExistingBatchedEstimator</span><span class="p">(</span><span class="n">batched_estimator</span><span class="p">,</span> <span class="n">basic_estimator</span><span class="p">)</span>
+                <span class="n">basic_estimator</span> <span class="o">=</span> <span class="n">translate_estimator_string_to_enum</span><span class="p">(</span>
+                    <span class="n">basic_estimator_str</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">include_only_estimators</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="n">basic_estimator</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">include_only_estimators</span>
+                <span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">MissingEstimatorForExistingBatchedEstimator</span><span class="p">(</span>
+                        <span class="n">batched_estimator</span><span class="p">,</span> <span class="n">basic_estimator</span>
+                    <span class="p">)</span>
 
         <span class="n">validate_optimizer_enum_values</span><span class="p">(</span>
             <span class="n">prediction_type</span><span class="o">=</span><span class="n">prediction_type</span><span class="p">,</span>
@@ -861,26 +988,52 @@
             <span class="n">include_only_estimators</span><span class="o">=</span><span class="n">include_only_estimators</span><span class="p">,</span>
             <span class="n">include_batched_ensemble_estimators</span><span class="o">=</span><span class="n">include_batched_ensemble_estimators</span><span class="p">,</span>
             <span class="n">cognito_transform_names</span><span class="o">=</span><span class="n">cognito_transform_names</span><span class="p">,</span>
-            <span class="n">imputation_strategies</span><span class="o">=</span><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="n">categorical_imputation_strategy</span><span class="p">,</span> <span class="n">numerical_imputation_strategy</span><span class="p">]))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">y</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="k">else</span> <span class="p">[</span><span class="n">y</span><span class="p">])],</span>
+            <span class="n">imputation_strategies</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">x</span>
+                <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="nb">filter</span><span class="p">(</span>
+                        <span class="kc">None</span><span class="p">,</span>
+                        <span class="p">[</span>
+                            <span class="n">categorical_imputation_strategy</span><span class="p">,</span>
+                            <span class="n">numerical_imputation_strategy</span><span class="p">,</span>
+                        <span class="p">],</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">y</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="k">else</span> <span class="p">[</span><span class="n">y</span><span class="p">])</span>
+            <span class="p">],</span>
             <span class="n">scoring</span><span class="o">=</span><span class="n">scoring</span><span class="p">,</span>
             <span class="n">t_shirt_size</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;t_shirt_size&quot;</span><span class="p">,</span> <span class="n">TShirtSize</span><span class="o">.</span><span class="n">M</span><span class="p">),</span>
-            <span class="n">is_cpd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span>
+            <span class="n">is_cpd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">daub_give_priority_to_runtime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">daub_give_priority_to_runtime</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">daub_give_priority_to_runtime</span> <span class="o">&gt;</span> <span class="mf">5.0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">ParamOutOfRange</span><span class="p">(</span><span class="s1">&#39;daub_give_priority_to_runtime&#39;</span><span class="p">,</span> <span class="n">daub_give_priority_to_runtime</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">daub_give_priority_to_runtime</span> <span class="o">&lt;</span> <span class="mf">0.0</span>
+                <span class="ow">or</span> <span class="n">daub_give_priority_to_runtime</span> <span class="o">&gt;</span> <span class="mf">5.0</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ParamOutOfRange</span><span class="p">(</span>
+                    <span class="s2">&quot;daub_give_priority_to_runtime&quot;</span><span class="p">,</span>
+                    <span class="n">daub_give_priority_to_runtime</span><span class="p">,</span>
+                    <span class="mf">0.0</span><span class="p">,</span>
+                    <span class="mf">5.0</span><span class="p">,</span>
+                <span class="p">)</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">prediction_type</span> <span class="o">==</span> <span class="n">PredictionType</span><span class="o">.</span><span class="n">BINARY</span> <span class="ow">and</span> <span class="n">scoring</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">PositiveLabelClass</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-                <span class="ow">and</span> <span class="n">positive_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">MissingPositiveLabel</span><span class="p">(</span><span class="n">scoring</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="si">{</span><span class="n">scoring</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2"> needs a </span><span class="se">\&quot;</span><span class="s2">positive_label</span><span class="se">\&quot;</span><span class="s2"> &quot;</span>
-                                                       <span class="sa">f</span><span class="s2">&quot;parameter to be defined when used with binary classification.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">prediction_type</span> <span class="o">==</span> <span class="n">PredictionType</span><span class="o">.</span><span class="n">BINARY</span>
+            <span class="ow">and</span> <span class="n">scoring</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">PositiveLabelClass</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="n">positive_label</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">MissingPositiveLabel</span><span class="p">(</span>
+                <span class="n">scoring</span><span class="p">,</span>
+                <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">scoring</span><span class="si">}</span><span class="s1">&quot; needs a &quot;positive_label&quot; &#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;parameter to be defined when used with binary classification.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;t_shirt_size&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;t_shirt_size&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">LocalInstanceButRemoteParameter</span><span class="p">(</span>
                 <span class="s2">&quot;t_shirt_size&quot;</span><span class="p">,</span>
-                <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;During LocalOptimizer initialization, </span><span class="se">\&quot;</span><span class="s2">t_shirt_size</span><span class="se">\&quot;</span><span class="s2"> parameter was provided. &quot;</span>
-                       <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">t_shirt_size</span><span class="se">\&quot;</span><span class="s2"> parameter is only applicable to the RemoteOptimizer instance.&quot;</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s1">&#39;During LocalOptimizer initialization, &quot;t_shirt_size&quot; parameter was provided. &#39;</span>
+                <span class="s1">&#39;&quot;t_shirt_size&quot; parameter is only applicable to the RemoteOptimizer instance.&#39;</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">prediction_type</span> <span class="o">==</span> <span class="n">PredictionType</span><span class="o">.</span><span class="n">FORECASTING</span><span class="p">:</span>
@@ -890,7 +1043,7 @@
 
             <span class="n">reduced_kwargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
-            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;_force_local_scenario&#39;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;_force_local_scenario&quot;</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">reduced_kwargs</span><span class="p">:</span>
                     <span class="k">del</span> <span class="n">reduced_kwargs</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
 
@@ -898,7 +1051,11 @@
 
             <span class="k">return</span> <span class="n">LocalAutoPipelines</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-                <span class="n">prediction_type</span><span class="o">=</span><span class="s1">&#39;classification&#39;</span> <span class="k">if</span> <span class="n">prediction_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;multiclass&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="n">prediction_type</span><span class="p">,</span>
+                <span class="n">prediction_type</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">&quot;classification&quot;</span>
+                    <span class="k">if</span> <span class="n">prediction_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="s2">&quot;multiclass&quot;</span><span class="p">]</span>
+                    <span class="k">else</span> <span class="n">prediction_type</span>
+                <span class="p">),</span>
                 <span class="n">prediction_column</span><span class="o">=</span><span class="n">prediction_column</span><span class="p">,</span>
                 <span class="n">scoring</span><span class="o">=</span><span class="n">scoring</span><span class="p">,</span>
                 <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span>
@@ -909,17 +1066,24 @@
                 <span class="n">include_batched_ensemble_estimators</span><span class="o">=</span><span class="n">include_batched_ensemble_estimators</span><span class="p">,</span>
                 <span class="n">cognito_transform_names</span><span class="o">=</span><span class="n">cognito_transform_names</span><span class="p">,</span>
                 <span class="n">positive_label</span><span class="o">=</span><span class="n">positive_label</span><span class="p">,</span>
-                <span class="n">_force_local_scenario</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_force_local_scenario&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
-                <span class="o">**</span><span class="n">reduced_kwargs</span>
+                <span class="n">_force_local_scenario</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_force_local_scenario&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                <span class="o">**</span><span class="n">reduced_kwargs</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">reduced_kwargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">max_number_of_estimators</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">max_number_of_estimators</span> <span class="o">=</span> <span class="n">reduced_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;max_num_daub_ensembles&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">max_number_of_estimators</span> <span class="o">=</span> <span class="n">reduced_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s2">&quot;max_num_daub_ensembles&quot;</span><span class="p">,</span> <span class="kc">None</span>
+                <span class="p">)</span>
 
-            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;t_shirt_size&#39;</span><span class="p">,</span> <span class="s1">&#39;notebooks&#39;</span><span class="p">,</span> <span class="s1">&#39;autoai_pod_version&#39;</span><span class="p">,</span> <span class="s1">&#39;max_num_daub_ensembles&#39;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">&quot;t_shirt_size&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;notebooks&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;autoai_pod_version&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;max_num_daub_ensembles&quot;</span><span class="p">,</span>
+            <span class="p">]:</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">reduced_kwargs</span><span class="p">:</span>
                     <span class="k">del</span> <span class="n">reduced_kwargs</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
 
@@ -940,8 +1104,15 @@
                 <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span>
                 <span class="n">holdout_size</span><span class="o">=</span><span class="n">holdout_size</span><span class="p">,</span>
                 <span class="n">max_num_daub_ensembles</span><span class="o">=</span><span class="n">max_number_of_estimators</span><span class="p">,</span>
-                <span class="n">t_shirt_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">restrict_pod_size</span><span class="p">(</span><span class="n">t_shirt_size</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                    <span class="s1">&#39;t_shirt_size&#39;</span><span class="p">,</span> <span class="n">TShirtSize</span><span class="o">.</span><span class="n">M</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="k">else</span> <span class="n">TShirtSize</span><span class="o">.</span><span class="n">L</span><span class="p">)</span>
+                <span class="n">t_shirt_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">restrict_pod_size</span><span class="p">(</span>
+                    <span class="n">t_shirt_size</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="s2">&quot;t_shirt_size&quot;</span><span class="p">,</span>
+                        <span class="p">(</span>
+                            <span class="n">TShirtSize</span><span class="o">.</span><span class="n">M</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span>
+                            <span class="k">else</span> <span class="n">TShirtSize</span><span class="o">.</span><span class="n">L</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
                 <span class="p">),</span>
                 <span class="n">train_sample_rows_test_size</span><span class="o">=</span><span class="n">train_sample_rows_test_size</span><span class="p">,</span>
                 <span class="n">include_only_estimators</span><span class="o">=</span><span class="n">include_only_estimators</span><span class="p">,</span>
@@ -961,8 +1132,8 @@
                 <span class="n">positive_label</span><span class="o">=</span><span class="n">positive_label</span><span class="p">,</span>
                 <span class="n">engine</span><span class="o">=</span><span class="n">engine</span><span class="p">,</span>
                 <span class="n">daub_give_priority_to_runtime</span><span class="o">=</span><span class="n">daub_give_priority_to_runtime</span><span class="p">,</span>
-                <span class="n">notebooks</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;notebooks&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
-                <span class="n">autoai_pod_version</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;autoai_pod_version&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="n">notebooks</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;notebooks&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+                <span class="n">autoai_pod_version</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;autoai_pod_version&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                 <span class="n">fairness_info</span><span class="o">=</span><span class="n">fairness_info</span><span class="p">,</span>
                 <span class="n">sampling_type</span><span class="o">=</span><span class="n">sampling_type</span><span class="p">,</span>
                 <span class="n">sample_size_limit</span><span class="o">=</span><span class="n">sample_size_limit</span><span class="p">,</span>
@@ -989,7 +1160,7 @@
                 <span class="n">early_stop_window_size</span><span class="o">=</span><span class="n">early_stop_window_size</span><span class="p">,</span>
                 <span class="n">time_ordered_data</span><span class="o">=</span><span class="n">time_ordered_data</span><span class="p">,</span>
                 <span class="n">feature_selector_mode</span><span class="o">=</span><span class="n">feature_selector_mode</span><span class="p">,</span>
-                <span class="o">**</span><span class="n">reduced_kwargs</span>
+                <span class="o">**</span><span class="n">reduced_kwargs</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">optimizer</span><span class="o">.</span><span class="n">_workspace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span>
             <span class="k">return</span> <span class="n">optimizer</span></div>
@@ -1012,11 +1183,14 @@
         <span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="p">,</span> <span class="s1">&#39;project_type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;local_git_storage&#39;</span> \
-                    <span class="ow">and</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ENABLE_AUTOAI&#39;</span><span class="p">,</span> <span class="s1">&#39;false&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;false&#39;</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">ForbiddenActionForGitBasedProject</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Creating AutoAI experiment is not supported for git based project.&quot;</span><span class="p">)</span></div>
-
-
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="p">,</span> <span class="s2">&quot;project_type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="o">==</span> <span class="s2">&quot;local_git_storage&quot;</span>
+                <span class="ow">and</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ENABLE_AUTOAI&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;false&quot;</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ForbiddenActionForGitBasedProject</span><span class="p">(</span>
+                    <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Creating AutoAI experiment is not supported for git based project.&quot;</span>
+                <span class="p">)</span></div>
 
 </pre></div>
         </article>

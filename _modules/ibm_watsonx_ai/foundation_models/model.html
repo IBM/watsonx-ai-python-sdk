@@ -250,6 +250,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Generator</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.inference</span> <span class="kn">import</span> <span class="n">ModelInference</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">MissingExtension</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">langchain_ibm</span> <span class="kn">import</span> <span class="n">WatsonxLLM</span>
@@ -394,9 +395,8 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">langchain_ibm</span> <span class="kn">import</span> <span class="n">WatsonxLLM</span>
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-                <span class="s2">&quot;Could not import langchain_ibm: Please install `langchain_ibm` extension.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MissingExtension</span><span class="p">(</span><span class="s2">&quot;langchain_ibm&quot;</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">WatsonxLLM</span><span class="p">(</span><span class="n">watsonx_model</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
 
 

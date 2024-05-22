@@ -294,6 +294,30 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">stored_prompt_template</span><span class="o">.</span><span class="n">prompt_id</span><span class="p">)</span>   <span class="c1"># id of prompt template asset</span>
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Here’s an example of how you can pass variables to your deployed prompt template.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">GenTextParamsMetaNames</span>
+
+<span class="n">meta_props</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="s2">&quot;SAMPLE DEPLOYMENT PROMPT TEMPLATE&quot;</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">ONLINE</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">BASE_MODEL_ID</span><span class="p">:</span> <span class="n">ModelTypes</span><span class="o">.</span><span class="n">GRANITE_13B_CHAT_V2</span>
+    <span class="p">}</span>
+
+<span class="n">deployment_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">stored_prompt_template</span><span class="o">.</span><span class="n">prompt_id</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">)</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">generate_text</span><span class="p">(</span>
+    <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_details</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+    <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+        <span class="n">GenTextParamsMetaNames</span><span class="o">.</span><span class="n">PROMPT_VARIABLES</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="s2">&quot;brain&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.prompts.PromptTemplateManager.delete_prompt">
 <span class="sig-name descname"><span class="pre">delete_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/prompts/prompt_template.html#PromptTemplateManager.delete_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.prompts.PromptTemplateManager.delete_prompt" title="Link to this definition">¶</a></dt>

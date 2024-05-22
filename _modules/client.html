@@ -656,7 +656,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span> <span class="o">=</span> <span class="n">ServiceInstance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">volumes</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">foundation_models</span> <span class="o">=</span> <span class="n">FoundationModelsManager</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_fm_ga_api</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">foundation_models</span> <span class="o">=</span> <span class="n">FoundationModelsManager</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">get_details</span><span class="p">()</span>
@@ -753,7 +754,10 @@
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_params</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">skip_space_project_chk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">skip_for_create</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">skip_userfs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">skip_space_project_chk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">skip_for_create</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">skip_userfs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_param</span><span class="p">})</span>
@@ -771,13 +775,19 @@
                         <span class="p">)</span>
                     <span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_type</span> <span class="o">==</span> <span class="s2">&quot;local_git_storage&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">skip_userfs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_project_id</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_type</span> <span class="o">==</span> <span class="s2">&quot;local_git_storage&quot;</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">skip_userfs</span>
+        <span class="p">):</span>
             <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;userfs&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">})</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iam_id</span><span class="p">:</span>
                 <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;iam_id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iam_id</span><span class="p">)})</span>
 
         <span class="k">if</span> <span class="p">(</span>
-            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_type</span> <span class="o">!=</span> <span class="s2">&quot;local_git_storage&quot;</span> <span class="ow">or</span> <span class="n">skip_userfs</span>
+            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_project_id</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_type</span> <span class="o">!=</span> <span class="s2">&quot;local_git_storage&quot;</span>
+            <span class="ow">or</span> <span class="n">skip_userfs</span>
         <span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;userfs&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
             <span class="k">del</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;userfs&quot;</span><span class="p">]</span>
 

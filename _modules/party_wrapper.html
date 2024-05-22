@@ -282,56 +282,9 @@
     <span class="k">return</span> <span class="n">pyhelayers_spec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
 
-<span class="k">def</span> <span class="nf">process_heartbeat</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">config_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;config_dict&quot;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="n">agg_info</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aggregator&quot;</span><span class="p">)</span>
-        <span class="n">wml_services_url</span> <span class="o">=</span> <span class="n">agg_info</span><span class="p">[</span><span class="s2">&quot;ip&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">def</span> <span class="nf">import_diff</span><span class="p">(</span><span class="n">module_file_path</span><span class="p">):</span>
 
-        <span class="n">hearbeat_resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="s2">&quot;https://&quot;</span> <span class="o">+</span> <span class="n">wml_services_url</span> <span class="o">+</span> <span class="s2">&quot;/wml_services/training/heartbeat&quot;</span>
-        <span class="p">)</span>
-        <span class="n">hearbeat_resp_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">hearbeat_resp</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
-        <span class="n">service_version</span> <span class="o">=</span> <span class="n">hearbeat_resp_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;service_implementation&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">service_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;4.8&quot;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="s2">&quot;cpd480&quot;</span>
-        <span class="k">if</span> <span class="n">service_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;4.7&quot;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="s2">&quot;cpd470&quot;</span>
-        <span class="k">if</span> <span class="n">service_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;4.6&quot;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="s2">&quot;cpd460&quot;</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">service_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;4.5&quot;</span><span class="p">)</span>
-            <span class="ow">or</span> <span class="n">service_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;45&quot;</span><span class="p">)</span>
-            <span class="ow">or</span> <span class="n">service_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;0.1.10000&quot;</span><span class="p">)</span>
-        <span class="p">):</span>
-            <span class="k">return</span> <span class="s2">&quot;cpd450&quot;</span>
-        <span class="k">if</span> <span class="n">service_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;4.0&quot;</span><span class="p">):</span>
-            <span class="n">version_details</span> <span class="o">=</span> <span class="n">service_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">version_details</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="s2">&quot;202203&quot;</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s2">&quot;cpd408&quot;</span>
-            <span class="k">if</span> <span class="n">version_details</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="s2">&quot;202202&quot;</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s2">&quot;cpd407&quot;</span>
-            <span class="k">if</span> <span class="n">version_details</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="s2">&quot;202112&quot;</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s2">&quot;cpd406&quot;</span>
-            <span class="k">elif</span> <span class="n">version_details</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="s2">&quot;202110&quot;</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s2">&quot;cpd403&quot;</span>
-            <span class="k">elif</span> <span class="n">version_details</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="s2">&quot;202108&quot;</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s2">&quot;cpd402&quot;</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s2">&quot;cpd401&quot;</span>
-
-        <span class="k">return</span> <span class="s2">&quot;cloud&quot;</span>
-
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;unable to process heartbeat&quot;</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;cloud&quot;</span>
-
-
-<span class="k">def</span> <span class="nf">import_diff</span><span class="p">(</span><span class="n">module_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-
-    <span class="k">if</span> <span class="s2">&quot;py38-tf24-pt17-sk23&quot;</span> <span class="ow">in</span> <span class="n">module_file_path</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;runtime-23-1&quot;</span> <span class="ow">in</span> <span class="n">module_file_path</span><span class="p">:</span>
         <span class="k">return</span>
     <span class="n">pathlist</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">module_file_path</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.py&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">pathlist</span><span class="p">:</span>
@@ -438,32 +391,6 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Aggregator Software Spec: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">software_spec</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="p">(</span>
-        <span class="n">software_spec</span> <span class="o">==</span> <span class="s2">&quot;runtime-22.1-py3.9&quot;</span>
-        <span class="ow">or</span> <span class="n">software_spec</span> <span class="o">==</span> <span class="s2">&quot;12b83a17-24d8-5082-900f-0ab31fbfd3cb&quot;</span>
-    <span class="p">):</span>
-        <span class="n">client_reqs</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;py_version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.9&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;tensorflow_version&quot;</span><span class="p">:</span> <span class="s2">&quot;2.7&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;torch_version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.10&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;scikitlearn_version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;fl_extras&quot;</span><span class="p">:</span> <span class="s2">&quot;fl-rt22.1&quot;</span><span class="p">,</span>
-        <span class="p">}</span>
-        <span class="n">check_python_framework_version</span><span class="p">(</span><span class="n">client_reqs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;py39-tf27-pt110-sk10&quot;</span>
-    <span class="k">elif</span> <span class="p">(</span>
-        <span class="n">software_spec</span> <span class="o">==</span> <span class="s2">&quot;runtime-22.2-py3.10&quot;</span>
-        <span class="ow">or</span> <span class="n">software_spec</span> <span class="o">==</span> <span class="s2">&quot;b56101f1-309d-549b-a849-eaa63f77b2fb&quot;</span>
-    <span class="p">):</span>
-        <span class="n">client_reqs</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;py_version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.10&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;tensorflow_version&quot;</span><span class="p">:</span> <span class="s2">&quot;2.9&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;torch_version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.12&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;scikitlearn_version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.1&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;fl_extras&quot;</span><span class="p">:</span> <span class="s2">&quot;fl-rt22.2-py3.10&quot;</span><span class="p">,</span>
-        <span class="p">}</span>
-        <span class="n">check_python_framework_version</span><span class="p">(</span><span class="n">client_reqs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;py310-tf29-pt112-sk11&quot;</span>
-    <span class="k">elif</span> <span class="p">(</span>
         <span class="n">software_spec</span> <span class="o">==</span> <span class="s2">&quot;runtime-23.1-py3.10&quot;</span>
         <span class="ow">or</span> <span class="n">software_spec</span> <span class="o">==</span> <span class="s2">&quot;336b29df-e0e1-5e7d-b6a5-f6ab722625b2&quot;</span>
     <span class="p">):</span>
@@ -475,17 +402,17 @@
             <span class="s2">&quot;fl_extras&quot;</span><span class="p">:</span> <span class="s2">&quot;fl-rt23.1-py3.10&quot;</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">check_python_framework_version</span><span class="p">(</span><span class="n">client_reqs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;py310-tf212-pt20-sk11&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;runtime-23-1&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">client_reqs</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;py_version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.8&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;tensorflow_version&quot;</span><span class="p">:</span> <span class="s2">&quot;2.4&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;torch_version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.7&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;scikitlearn_version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.23&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;fl_extras&quot;</span><span class="p">:</span> <span class="s2">&quot;fl&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;py_version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.10&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tensorflow_version&quot;</span><span class="p">:</span> <span class="s2">&quot;2.12&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;torch_version&quot;</span><span class="p">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;scikitlearn_version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fl_extras&quot;</span><span class="p">:</span> <span class="s2">&quot;fl-rt23.1-py3.10&quot;</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">check_python_framework_version</span><span class="p">(</span><span class="n">client_reqs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;py38-tf24-pt17-sk23&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;runtime-23-1&quot;</span>
 
 
 <span class="n">fl_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
@@ -501,22 +428,10 @@
 <span class="sd">    instance of the Party class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">base_platform</span> <span class="o">=</span> <span class="s2">&quot;runtime-23-1&quot;</span>
+    <span class="n">default_software_spec</span> <span class="o">=</span> <span class="s2">&quot;runtime-23.1-py3.10&quot;</span>
     <span class="n">SUPPORTED_PLATFORMS_MAP</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;cloud&quot;</span><span class="p">:</span> <span class="s2">&quot;/cloud/ibmfl&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cpd401&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.122&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cpd402&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.165&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cpd403&quot;</span><span class="p">:</span> <span class="s2">&quot;/cpd403/ibmfl&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cpd406&quot;</span><span class="p">:</span> <span class="s2">&quot;/cpd406/ibmfl&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cpd407&quot;</span><span class="p">:</span> <span class="s2">&quot;/cpd406/ibmfl&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cpd408&quot;</span><span class="p">:</span> <span class="s2">&quot;/cpd406/ibmfl&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cpd450&quot;</span><span class="p">:</span> <span class="s2">&quot;/cpd406/ibmfl&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cpd460&quot;</span><span class="p">:</span> <span class="s2">&quot;/cpd406/ibmfl&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cpd470&quot;</span><span class="p">:</span> <span class="s2">&quot;/cpd406/ibmfl&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cpd480&quot;</span><span class="p">:</span> <span class="s2">&quot;/cpd406/ibmfl&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;py38-tf24-pt17-sk23&quot;</span><span class="p">:</span> <span class="s2">&quot;/py38-tf24-pt17-sk23/ibmfl&quot;</span><span class="p">,</span>  <span class="c1"># default</span>
-        <span class="s2">&quot;py39-tf27-pt110-sk10&quot;</span><span class="p">:</span> <span class="s2">&quot;/py39-tf27-pt110-sk10/ibmfl&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;py310-tf29-pt112-sk11&quot;</span><span class="p">:</span> <span class="s2">&quot;/py310-tf29-pt112-sk11/ibmfl&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;py310-tf212-pt20-sk11&quot;</span><span class="p">:</span> <span class="s2">&quot;/py310-tf212-pt20-sk11/ibmfl&quot;</span><span class="p">,</span>
+        <span class="n">base_platform</span><span class="p">:</span> <span class="s2">&quot;/runtime-23-1/ibmfl&quot;</span><span class="p">,</span>  <span class="c1"># default</span>
     <span class="p">}</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -527,20 +442,11 @@
         <span class="c1"># base location string, default to cloud location</span>
         <span class="n">ibmfl_base_module_location</span> <span class="o">=</span> <span class="n">libs_location_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/ibmfl&quot;</span>
 
-        <span class="c1"># get arg for platform</span>
-        <span class="n">calculated_platform_env</span> <span class="o">=</span> <span class="n">process_heartbeat</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">platform_env</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;env&quot;</span><span class="p">,</span> <span class="n">calculated_platform_env</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Detected platform environment: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">platform_env</span><span class="p">))</span>
-
         <span class="c1"># process location</span>
-        <span class="n">ibmfl_module_location</span> <span class="o">=</span> <span class="n">ibmfl_base_module_location</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">SUPPORTED_PLATFORMS_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">platform_env</span><span class="p">)</span>
+        <span class="n">ibmfl_module_location</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">ibmfl_base_module_location</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">SUPPORTED_PLATFORMS_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_platform</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">ibmfl_module_location</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;ibmfl&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-                <span class="s2">&quot;Please use ibm-watsonx-ai &quot;</span>
-                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SUPPORTED_PLATFORMS_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">platform_env</span><span class="p">))</span>
-            <span class="p">)</span>
 
         <span class="c1"># check if using old connector script which is removed</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">client</span><span class="p">:</span>
@@ -564,11 +470,14 @@
         <span class="k">if</span> <span class="s2">&quot;ibmfl.party.party&quot;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
             <span class="k">del</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s2">&quot;ibmfl.party.party&quot;</span><span class="p">]</span>
 
-        <span class="c1"># install the general lib (which is the cloud version)</span>
+        <span class="c1"># install the general lib</span>
         <span class="n">module_name</span> <span class="o">=</span> <span class="s2">&quot;ibmfl&quot;</span>
         <span class="n">module_spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span>
             <span class="n">module_name</span><span class="p">,</span>
-            <span class="n">ibmfl_base_module_location</span> <span class="o">+</span> <span class="s2">&quot;/py38-tf24-pt17-sk23/ibmfl/__init__.py&quot;</span><span class="p">,</span>
+            <span class="n">ibmfl_base_module_location</span>
+            <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_platform</span>
+            <span class="o">+</span> <span class="s2">&quot;/ibmfl/__init__.py&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">module_spec</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">module_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">module</span>
@@ -779,27 +688,28 @@
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">ready</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s2">&quot;cpd406&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_location</span> <span class="ow">or</span> <span class="s2">&quot;cloud&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_location</span><span class="p">:</span>
-                    <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
-                        <span class="n">aggregator_id</span><span class="p">,</span> <span class="n">_internal</span><span class="o">=</span><span class="kc">True</span>
+
+                <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+                    <span class="n">aggregator_id</span><span class="p">,</span> <span class="n">_internal</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="n">fl_entity</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;federated_learning&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s2">&quot;software_spec&quot;</span> <span class="ow">in</span> <span class="n">fl_entity</span><span class="p">:</span>
+                    <span class="n">software_spec</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">fl_entity</span><span class="p">[</span><span class="s2">&quot;software_spec&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="n">fl_entity</span><span class="p">[</span><span class="s2">&quot;software_spec&quot;</span><span class="p">]</span>
+                        <span class="k">else</span> <span class="n">fl_entity</span><span class="p">[</span><span class="s2">&quot;software_spec&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
                     <span class="p">)</span>
-                    <span class="n">fl_entity</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;federated_learning&quot;</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="s2">&quot;software_spec&quot;</span> <span class="ow">in</span> <span class="n">fl_entity</span><span class="p">:</span>
-                        <span class="n">software_spec</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="n">fl_entity</span><span class="p">[</span><span class="s2">&quot;software_spec&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
-                            <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="n">fl_entity</span><span class="p">[</span><span class="s2">&quot;software_spec&quot;</span><span class="p">]</span>
-                            <span class="k">else</span> <span class="n">fl_entity</span><span class="p">[</span><span class="s2">&quot;software_spec&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
-                        <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">software_spec</span> <span class="o">=</span> <span class="s2">&quot;runtime-22.1-py3.9&quot;</span>
-                    <span class="n">platform_env</span> <span class="o">=</span> <span class="n">choose_software_version</span><span class="p">(</span><span class="n">software_spec</span><span class="p">)</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading </span><span class="si">{}</span><span class="s2"> environment..&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">platform_env</span><span class="p">))</span>
-                    <span class="k">if</span> <span class="s2">&quot;system&quot;</span> <span class="ow">in</span> <span class="n">details</span> <span class="ow">and</span> <span class="s2">&quot;warnings&quot;</span> <span class="ow">in</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]:</span>
-                        <span class="k">for</span> <span class="n">warning</span> <span class="ow">in</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;warnings&quot;</span><span class="p">]:</span>
-                            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Warning: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">warning</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]))</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">module_location</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">module_location</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-                    <span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SUPPORTED_PLATFORMS_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">platform_env</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">software_spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_software_spec</span>
+                <span class="n">platform_env</span> <span class="o">=</span> <span class="n">choose_software_version</span><span class="p">(</span><span class="n">software_spec</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading </span><span class="si">{}</span><span class="s2"> environment..&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">platform_env</span><span class="p">))</span>
+                <span class="k">if</span> <span class="s2">&quot;system&quot;</span> <span class="ow">in</span> <span class="n">details</span> <span class="ow">and</span> <span class="s2">&quot;warnings&quot;</span> <span class="ow">in</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]:</span>
+                    <span class="k">for</span> <span class="n">warning</span> <span class="ow">in</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;warnings&quot;</span><span class="p">]:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Warning: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">warning</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">module_location</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">module_location</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+                <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">SUPPORTED_PLATFORMS_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">platform_env</span><span class="p">)</span>
+
                 <span class="n">import_diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module_location</span><span class="p">)</span>
                 <span class="kn">from</span> <span class="nn">ibmfl.party.party</span> <span class="kn">import</span> <span class="n">Party</span>
 
