@@ -262,6 +262,7 @@
     <span class="n">ApiRequestFailure</span><span class="p">,</span>
     <span class="n">NoWMLCredentialsProvided</span><span class="p">,</span>
     <span class="n">CannotAutogenerateBedrockUrl</span><span class="p">,</span>
+    <span class="n">InvalidCredentialsError</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -639,7 +640,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_expiration_datetime</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;token&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Error refreshing the token.&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InvalidCredentialsError</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_cpd_token_from_request_new_auth_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">bedrock_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_cpd_bedrock_token_endpoint_href</span><span class="p">()</span>
@@ -650,9 +651,7 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                <span class="s2">&quot;Error refreshing the token.&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">logg_messages</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InvalidCredentialsError</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">logg_messages</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">iam_token</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;access_token&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_expiration_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span>
@@ -668,7 +667,7 @@
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;accessToken&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Error refreshing the token.&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InvalidCredentialsError</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_cpd_token_from_request</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a request for token on CPD.</span>

@@ -429,7 +429,11 @@
         <span class="n">requests</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">()</span>  <span class="c1"># type: ignore[attr-defined]</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">proceed</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">api_key</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">password</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">proceed</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># _is_env_token is used for initialising client on cluster with USER_ACCESS_TOKEN environment variable.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">proceed</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">_is_env_token</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">proceed</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -566,7 +570,7 @@
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="o">=</span> <span class="kc">False</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span> <span class="o">=</span> <span class="n">ServiceInstance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="p">:</span> <span class="n">ServiceInstance</span> <span class="o">=</span> <span class="n">ServiceInstance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
                 <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
 
@@ -654,7 +658,7 @@
         <span class="c1"># For cloud, service_instance.details will be set during space creation( if instance is associated ) or</span>
         <span class="c1"># while patching a space with an instance</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span> <span class="o">=</span> <span class="n">ServiceInstance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="p">:</span> <span class="n">ServiceInstance</span> <span class="o">=</span> <span class="n">ServiceInstance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">volumes</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_fm_ga_api</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">foundation_models</span> <span class="o">=</span> <span class="n">FoundationModelsManager</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -681,7 +685,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">hardware_specifications</span> <span class="o">=</span> <span class="n">HwSpec</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="n">Connections</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span> <span class="o">=</span> <span class="n">Training</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span> <span class="n">Training</span> <span class="o">=</span> <span class="n">Training</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data_assets</span> <span class="o">=</span> <span class="n">Assets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
