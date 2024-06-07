@@ -357,6 +357,7 @@
         <span class="n">training_data</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">|</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">training_target</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">|</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">experiment_run_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">hardware_spec</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create deployment from a model.</span>
 
@@ -378,6 +379,9 @@
 <span class="sd">        :param experiment_run_id: ID of a training/experiment (only applicable for AutoAI deployments)</span>
 <span class="sd">        :type experiment_run_id: str, optional</span>
 
+<span class="sd">        :param hardware_spec: hardware specification name of the deployment</span>
+<span class="sd">        :type hardware_spec: str, optional</span>
+
 <span class="sd">        **Example**</span>
 
 <span class="sd">        .. code-block:: python</span>
@@ -393,6 +397,7 @@
 <span class="sd">                   experiment_run_id=&quot;...&quot;,</span>
 <span class="sd">                   model=model,</span>
 <span class="sd">                   deployment_name=&#39;My new deployment&#39;</span>
+<span class="sd">                   hardware_spec=&#39;L&#39;</span>
 <span class="sd">               )</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
@@ -403,6 +408,7 @@
             <span class="n">training_target</span><span class="o">=</span><span class="n">training_target</span><span class="p">,</span>
             <span class="n">experiment_run_id</span><span class="o">=</span><span class="n">experiment_run_id</span><span class="p">,</span>
             <span class="n">deployment_type</span><span class="o">=</span><span class="s2">&quot;batch&quot;</span><span class="p">,</span>
+            <span class="n">hardware_spec</span><span class="o">=</span><span class="n">hardware_spec</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -428,6 +434,7 @@
         <span class="n">output_data_reference</span><span class="p">:</span> <span class="n">DataConnection</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">transaction_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">background_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">hardware_spec</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">DataConnection</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Batch scoring job. Payload or Payload data reference is required.</span>
 <span class="sd">        It is passed to the Service where model have been deployed.</span>
@@ -446,6 +453,9 @@
 
 <span class="sd">        :param background_mode: indicator if score() method will run in background (async) or (sync)</span>
 <span class="sd">        :type background_mode: bool, optional</span>
+
+<span class="sd">        :param hardware_spec: hardware specification name for scoring job</span>
+<span class="sd">        :type hardware_spec: str, optional</span>
 
 <span class="sd">        :return: scoring job details</span>
 <span class="sd">        :rtype: dict</span>
@@ -474,6 +484,8 @@
 <span class="sd">            score_details = batch_service.run_job(payload={&#39;observations&#39;: payload_reference})</span>
 <span class="sd">            score_details = batch_service.run_job(payload=[payload_reference])</span>
 <span class="sd">            score_details = batch_service.run_job(payload={&#39;observations&#39;: payload_reference, &#39;supporting_features&#39;: supporting_features_reference})  # supporting features time series forecasting sceanrio</span>
+<span class="sd">            score_details = batch_service.run_job(payload=test_df, hardware_spec=&#39;S&#39;)</span>
+<span class="sd">            score_details = batch_service.run_job(payload=test_df, hardware_spec=TShirtSize.L)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_target_workspace</span><span class="p">:</span> <span class="n">WorkSpace</span>
         <span class="n">input_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DataConnection</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span>
@@ -635,9 +647,18 @@
                 <span class="sa">f</span><span class="s2">&quot;Incorrect payload type. Required: DataFrame or List[DataConnection], Passed: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
-        <span class="n">scoring_payload</span><span class="p">[</span><span class="s2">&quot;hybrid_pipeline_hardware_specs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">{</span><span class="s2">&quot;node_runtime_id&quot;</span><span class="p">:</span> <span class="s2">&quot;auto_ai.kb&quot;</span><span class="p">,</span> <span class="s2">&quot;hardware_spec&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;M&quot;</span><span class="p">}}</span>
-        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">hardware_spec</span><span class="p">:</span>
+            <span class="n">hw_spec</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;node_runtime_id&quot;</span><span class="p">:</span> <span class="s2">&quot;auto_ai.kb&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;hardware_spec&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">hardware_spec</span><span class="o">.</span><span class="n">upper</span><span class="p">()},</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># default</span>
+            <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">hw_spec</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entity&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hybrid_pipeline_hardware_specs&quot;</span><span class="p">)</span>
+
+        <span class="n">scoring_payload</span><span class="p">[</span><span class="s2">&quot;hybrid_pipeline_hardware_specs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hw_spec</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="n">job_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">create_job</span><span class="p">(</span>
@@ -939,6 +960,9 @@
 
 <span class="sd">        :param result_client: tuple with Result DataConnection object and initialized COS client</span>
 <span class="sd">        :type result_client: tuple[DataConnection, resource]</span>
+
+<span class="sd">        :param hardware_spec: hardware specification for deployment</span>
+<span class="sd">        :type hardware_spec: str, optional</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">deployment_details</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">deployment_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
@@ -959,7 +983,14 @@
 
         <span class="n">deployment_props</span><span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_target_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">HYBRID_PIPELINE_HARDWARE_SPECS</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;node_runtime_id&quot;</span><span class="p">:</span> <span class="s2">&quot;auto_ai.kb&quot;</span><span class="p">,</span> <span class="s2">&quot;hardware_spec&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;M&quot;</span><span class="p">}}]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;node_runtime_id&quot;</span><span class="p">:</span> <span class="s2">&quot;auto_ai.kb&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;hardware_spec&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">hardware_spec</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">if</span> <span class="n">hardware_spec</span> <span class="k">else</span> <span class="s2">&quot;M&quot;</span>
+                <span class="p">},</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Deploying model </span><span class="si">{}</span><span class="s2"> using V4 client.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">asset_uid</span><span class="p">))</span>
         <span class="k">try</span><span class="p">:</span>

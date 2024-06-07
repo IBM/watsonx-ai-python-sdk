@@ -556,86 +556,13 @@
                     <span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">instance_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
-                                <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;instance_id_in_cloud_scenario&quot;</span>
-                            <span class="p">)</span>
-                        <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_instance_id&quot;</span><span class="p">)</span>
-                        <span class="p">)</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="o">=</span> <span class="kc">False</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="p">:</span> <span class="n">ServiceInstance</span> <span class="o">=</span> <span class="n">ServiceInstance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
-                <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
-
-                <span class="k">del</span> <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-WML-User-Client&quot;</span><span class="p">]</span>
-
-                <span class="n">response_get_instance</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                    <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/ml/v4/instances/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">instance_id</span>
-                    <span class="p">),</span>
-                    <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_param</span><span class="p">},</span>
-                    <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
-                <span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">response_get_instance</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="s2">&quot;plan&quot;</span> <span class="ow">in</span> <span class="n">response_get_instance</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;entity&quot;</span><span class="p">]:</span>
-                        <span class="k">if</span> <span class="p">(</span>
-                            <span class="n">response_get_instance</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;plan&quot;</span><span class="p">][</span><span class="s2">&quot;version&quot;</span><span class="p">]</span>
-                            <span class="o">==</span> <span class="mi">2</span>
-                            <span class="ow">and</span> <span class="n">response_get_instance</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;plan&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
-                            <span class="o">!=</span> <span class="s2">&quot;lite&quot;</span>
-                        <span class="p">):</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="o">=</span> <span class="kc">True</span>
-
-                            <span class="c1"># If v1 lite converted to v2 plan, tags : [&quot;created_in_v1_plan&quot;]</span>
-
-                            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_IAM</span><span class="p">():</span>
-                                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                                    <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
-                                        <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;apikey_not_provided&quot;</span>
-                                    <span class="p">)</span>
-                                <span class="p">)</span>
-
-                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_internal</span><span class="p">:</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span>
-                            <span class="k">else</span><span class="p">:</span>
-                                <span class="k">if</span> <span class="p">(</span>
-                                    <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span>
-                                    <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-                                <span class="p">):</span>
-                                    <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="p">[</span>
-                                        <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span>
-                                    <span class="p">]</span>
-                                <span class="k">else</span><span class="p">:</span>
-                                    <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                                        <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
-                                            <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;url_not_provided&quot;</span>
-                                        <span class="p">)</span>
-                                    <span class="p">)</span>
-
-                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
-                                <span class="nb">print</span><span class="p">(</span>
-                                    <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
-                                        <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;instance_id_is_not_required_for_v2_plans&quot;</span>
-                                    <span class="p">)</span>
-                                <span class="p">)</span>
-
-                <span class="k">elif</span> <span class="n">response_get_instance</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                        <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;instance_id_not_found&quot;</span><span class="p">)</span>
+                        <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;instance_id_in_cloud_scenario&quot;</span><span class="p">)</span>
                     <span class="p">)</span>
-                <span class="k">elif</span> <span class="n">response_get_instance</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span><span class="p">:</span>
+                <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                        <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
-                            <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;not_authorized_to_access_the_instance_id&quot;</span>
-                        <span class="p">)</span>
+                        <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_instance_id&quot;</span><span class="p">)</span>
                     <span class="p">)</span>
 
         <span class="k">if</span> <span class="p">(</span>

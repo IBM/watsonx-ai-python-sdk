@@ -2086,6 +2086,7 @@
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
         <span class="n">async_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">validate_prompt_variables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a raw response with `prompt` for given `deployment_id`.</span>
 
@@ -2114,6 +2115,10 @@
 <span class="sd">                           to False</span>
 <span class="sd">        :type async_mode: bool, optional</span>
 
+<span class="sd">        :param validate_prompt_variables: If True, prompt variables provided in `params` are validated with the ones in Prompt Template Asset.</span>
+<span class="sd">                                          This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</span>
+<span class="sd">        :type validate_prompt_variables: bool</span>
+
 <span class="sd">        :return: scoring result containing generated content.</span>
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2126,6 +2131,7 @@
             <span class="n">concurrency_limit</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">,</span>
             <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
             <span class="n">async_mode</span><span class="o">=</span><span class="n">async_mode</span><span class="p">,</span>
+            <span class="n">validate_prompt_variables</span><span class="o">=</span><span class="n">validate_prompt_variables</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -2141,6 +2147,7 @@
         <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">validate_prompt_variables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Given the selected deployment (deployment_id), a text prompt as input, parameters and concurrency_limit,</span>
 <span class="sd">        the selected inference will generate a completion text as generated_text response.</span>
@@ -2168,6 +2175,10 @@
 <span class="sd">        :param concurrency_limit: number of requests that will be sent in parallel, max is 10</span>
 <span class="sd">        :type concurrency_limit: int, optional</span>
 
+<span class="sd">        :param validate_prompt_variables: If True, prompt variables provided in `params` are validated with the ones in Prompt Template Asset.</span>
+<span class="sd">                                          This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</span>
+<span class="sd">        :type validate_prompt_variables: bool</span>
+
 <span class="sd">        :return: generated content</span>
 <span class="sd">        :rtype: str</span>
 
@@ -2191,6 +2202,7 @@
             <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">,</span>
             <span class="n">concurrency_limit</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">,</span>
             <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">validate_prompt_variables</span><span class="o">=</span><span class="n">validate_prompt_variables</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -2205,6 +2217,7 @@
         <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">validate_prompt_variables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Given the selected deployment (deployment_id), a text prompt as input and parameters,</span>
 <span class="sd">        the selected inference will generate a streamed text as generate_text_stream.</span>
@@ -2228,6 +2241,10 @@
 <span class="sd">        :param guardrails_hap_params: meta props for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
 <span class="sd">                                      to view the list of MetaNames</span>
 <span class="sd">        :type guardrails_hap_params: dict, optional</span>
+
+<span class="sd">        :param validate_prompt_variables: If True, prompt variables provided in `params` are validated with the ones in Prompt Template Asset.</span>
+<span class="sd">                                          This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</span>
+<span class="sd">        :type validate_prompt_variables: bool</span>
 
 <span class="sd">        :return: generated content</span>
 <span class="sd">        :rtype: str</span>
@@ -2253,6 +2270,7 @@
             <span class="n">guardrails</span><span class="o">=</span><span class="n">guardrails</span><span class="p">,</span>
             <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="n">guardrails_hap_params</span><span class="p">,</span>
             <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">,</span>
+            <span class="n">validate_prompt_variables</span><span class="o">=</span><span class="n">validate_prompt_variables</span><span class="p">,</span>
         <span class="p">)</span></div>
 </div>
 
