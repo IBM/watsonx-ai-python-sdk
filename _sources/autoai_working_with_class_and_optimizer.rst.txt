@@ -3,15 +3,15 @@ Working with AutoAI class and optimizer
 
 The :ref:`AutoAI experiment class<autoai-class>` is responsible for creating experiments and scheduling training.
 All experiment results are stored automatically in the user-specified Cloud Object Storage (COS).
-Then, the AutoAI feature can fetch the results and provide them directly to the user for further usage.
+Then the AutoAI feature can fetch the results and provide them directly to the user for further usage.
 
 Configure optimizer with one data source
 ----------------------------------------
 
-For an AutoAI object initialization watsonx.ai credentials (with api key and url) and one of ``project_id`` or ``space_id``.
+For an AutoAI object initialization, you need watsonx.ai credentials (with your API key and URL) and either the ``project_id`` or ``space_id``.
 
 .. hint::
-        You can copy the project_id from Project's Manage tab (Project -> Manage -> General -> Details).
+        You can copy the project_id from the Project's Manage tab (Project -> Manage -> General -> Details).
 
 .. code-block:: python
 
@@ -43,10 +43,10 @@ For an AutoAI object initialization watsonx.ai credentials (with api key and url
 Configure optimizer for time series forecasting
 ----------------------------------------------------------------
 
-**Note:** Supported for IBM Cloud Pak for Data 4.0 and higher.
+**Note:** Supported for IBM Cloud Pak for Data 4.0 and up.
 
-Time series forecasting is a special AutoAI prediction scenario, with specific parameters used to configure forecasting:
-``prediction_columns``, ``timestamp_column_name``, ``backtest_num``, ``lookback_window``, ``forecast_window``, ``backtest_gap_length``
+Time series forecasting is a special AutoAI prediction scenario with specific parameters used to configure forecasting. These parameters include:
+``prediction_columns``, ``timestamp_column_name``, ``backtest_num``, ``lookback_window``, ``forecast_window``, and ``backtest_gap_length``.
 
 .. code-block:: python
 
@@ -71,17 +71,17 @@ Time series forecasting is a special AutoAI prediction scenario, with specific p
         t_shirt_size=TShirtSize.L
     )
 
-Optimizer and deployment fitting procedures are the same as in the basic scenario.
+Optimizer and deployment fitting procedures are the same as in the example scenario above.
 
 Configure optimizer for time series forecasting with supporting features
 -----------------------------------------------------------------------------------------
 
-**Note** Supported for IBM Cloud and IBM Cloud Pak for Data version 4.5 and higher.
+**Note** Supported for IBM Cloud and IBM Cloud Pak for Data version 4.5 and up.
 
 Additional parameters can be passed to run time series forecasting scenarios with supporting features:
 ``feature_columns``, ``pipeline_types``, ``supporting_features_at_forecast``
 
-For more information about supporting features refer to `time series documentation <https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/autoai-timeseries.html?context=cpdaas&audience=wdp>`_ .
+For more information about supporting features, refer to `time series documentation <https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/autoai-timeseries.html?context=cpdaas&audience=wdp>`_.
 
 .. code-block:: python
 
@@ -142,7 +142,7 @@ Batch scoring for time series forecasting scenario with supporting features:
 Get configuration parameters
 ----------------------------
 
-To see current configuration parameters, call the ``get_params()`` method.
+To see the current configuration parameters, call the ``get_params()`` method.
 
 .. code-block:: python
 
@@ -161,8 +161,8 @@ To see current configuration parameters, call the ``get_params()`` method.
 Fit optimizer
 -------------
 
-To schedule an AutoAI experiment, call the ``fit()`` method. This will trigger a training and an optimization process on watsonx.ai. The ``fit()`` method can be synchronous (``background_mode=False``), or asynchronous (``background_mode=True``).
-If you don't want to wait for fit to end, invoke the async version. It immediately returns only fit/run details.
+To schedule an AutoAI experiment, call the ``fit()`` method. This will trigger a training and an optimization process on watsonx.ai. The ``fit()`` method can be synchronous (``background_mode=False``) or asynchronous (``background_mode=True``).
+If you don't want to wait for the fit to end, invoke the async version. It immediately returns only fit/run details.
 If you invoke the async version, you see a progress bar with information about the learning/optimization process.
 
 .. code-block:: python
@@ -179,7 +179,7 @@ If you invoke the async version, you see a progress bar with information about t
             training_results_reference=results_connection,
             background_mode=False)
 
-To run AutoAI experiment with separate holdout data you can use ``fit()`` method with ``test_data_references`` parameter. See the example below:
+To run an AutoAI experiment with separate holdout data you can use the ``fit()`` method with the ``test_data_references`` parameter. See the example below:
 
 .. code-block:: python
 
@@ -188,10 +188,10 @@ To run AutoAI experiment with separate holdout data you can use ``fit()`` method
             test_data_references=[test_data_connection],
             training_results_reference=results_connection)
 
-Get run status, get run details
--------------------------------
+Get the run status and run details
+----------------------------------
 
-If you use the ``fit()`` method asynchronously, you can monitor the run/fit details and status, using the following two methods:
+If you use the ``fit()`` method asynchronously, you can monitor the run/fit details and status using the following two methods:
 
 .. code-block:: python
 
@@ -235,14 +235,14 @@ If you use the ``fit()`` method asynchronously, you can monitor the run/fit deta
 Get data connections
 --------------------
 
-The ``data_connections`` list contains all training connections that you referenced while calling the ``fit()`` method.
+The ``data_connections`` list contains all the training connections that you referenced while calling the ``fit()`` method.
 
 .. code-block:: python
 
     data_connections = pipeline_optimizer.get_data_connections()
 
-Summary
--------
+Pipeline summary
+----------------
 
 It is possible to get a ranking of all the computed pipeline models, sorted based on a scoring metric supplied when configuring the optimizer (``scoring`` parameter). The output type is a ``pandas.DataFrame`` with pipeline names, computation timestamps, machine learning metrics, and the number of enhancements implemented in each of the pipelines.
 
@@ -260,7 +260,7 @@ It is possible to get a ranking of all the computed pipeline models, sorted base
 Get pipeline details
 --------------------
 
-To see pipeline composition steps and nodes, use the ``get_pipeline_details()`` method.
+To see the pipeline composition's steps and nodes, use the ``get_pipeline_details()`` method.
 If you leave ``pipeline_name`` empty, the method returns the details of the best computed pipeline.
 
 .. code-block:: python
@@ -280,7 +280,7 @@ If you leave ``pipeline_name`` empty, the method returns the details of the best
 Get pipeline
 ------------
 
-Use the ``get_pipeline()`` method to load a specific pipeline. By default, ``get_pipeline()`` returns a lale pipeline. For information on lale pipelines, refer to (https://github.com/ibm/lale).
+Use the ``get_pipeline()`` method to load a specific pipeline. By default, ``get_pipeline()`` returns a Lale pipeline. For information on Lale pipelines, refer to the `Lale library <https://github.com/ibm/lale>`_.
 
 .. code-block:: python
 
@@ -306,7 +306,7 @@ This section describes classes that enable you to work with watsonx.ai deploymen
 Web Service
 -----------
 
-Web Service is an online type of deployment. It allows you to upload and deploy your model, to score it through an online web service. You must pass the location where the training was performed (``source_space_id`` or ``source_project_id``). The model can be deployed to any space or project (``target_space_id`` or ``target_project_id``).
+Web Service is an online type of deployment. With Web Service, you can upload and deploy your model to score it through an online web service. You must pass the location where the training was performed using ``source_space_id`` or ``source_project_id``. You can deploy the model to any space or project by providing the ``target_space_id`` or ``target_project_id``.
 
 **Note:** WebService supports only the AutoAI deployment type.
 
@@ -330,14 +330,14 @@ Web Service is an online type of deployment. It allows you to upload and deploy 
 Batch
 -----
 
-Batch manages the batch type of deployment. It allows you to upload and deploy a model and
-run a batch deployment job. As in Web Service, you must pass the location where
-the training was performed (``source_space_id`` or ``source_project_id``).
-The model can be deployed to any space or project (``target_space_id`` or ``target_project_id``).
+Batch manages the batch type of deployment. With Batch, you can upload and deploy a model and
+run a batch deployment job. As with Web Service, you must pass the location where
+the training was performed using the ``source_space_id`` or ``source_project_id``.
+You can deploy the model to any space or project by providing the ``target_space_id`` or ``target_project_id``.
 
-The input data can be provided as a ``pandas.DataFrame``, a data-asset, or a Cloud Object Storage (COS) file.
+You can provide the input data as a ``pandas.DataFrame``, a data-asset, or a Cloud Object Storage (COS) file.
 
-**Note:** WebService supports only the AutoAI deployment type.
+**Note:** Batch supports only the AutoAI deployment type.
 
 Example of a batch deployment creation:
 

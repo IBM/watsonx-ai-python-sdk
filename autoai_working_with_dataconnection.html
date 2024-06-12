@@ -244,13 +244,13 @@
         <article role="main" id="furo-main-content">
           <section id="working-with-dataconnection">
 <h1>Working with DataConnection<a class="headerlink" href="#working-with-dataconnection" title="Link to this heading">¶</a></h1>
-<p>To start an AutoAI experiment, first specify where your training dataset is located.
-Currently, AutoAI supports Cloud Object Storage (COS) and data assets on Cloud.</p>
+<p>Before you start an AutoAI experiment, you need to specify where your training dataset is located.
+AutoAI currently supports Cloud Object Storage (COS) and data assets on Cloud.</p>
 <section id="ibm-cloud-dataconnection-initialization">
 <h2>IBM Cloud - DataConnection Initialization<a class="headerlink" href="#ibm-cloud-dataconnection-initialization" title="Link to this heading">¶</a></h2>
-<p>There are three types of connection: Connection Asset, Data Asset and Container. To upload your experiment dataset, you must initialize <code class="docutils literal notranslate"><span class="pre">DataConnection</span></code> with your COS credentials.</p>
-<section id="connection-aasset">
-<h3>Connection Aasset<a class="headerlink" href="#connection-aasset" title="Link to this heading">¶</a></h3>
+<p>There are three types of connections: Connection Asset, Data Asset, and Container. To upload your experiment dataset, you must initialize <code class="docutils literal notranslate"><span class="pre">DataConnection</span></code> with your COS credentials.</p>
+<section id="connection-asset">
+<h3>Connection Asset<a class="headerlink" href="#connection-asset" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.autoai.helpers.connections</span> <span class="kn">import</span> <span class="n">DataConnection</span><span class="p">,</span> <span class="n">S3Location</span>
 
 <span class="n">connection_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">create</span><span class="p">({</span>
@@ -314,9 +314,9 @@ Currently, AutoAI supports Cloud Object Storage (COS) and data assets on Cloud.<
 </section>
 <section id="ibm-watsonx-ai-software-dataconnection-initialization">
 <h2>IBM watsonx.ai software - DataConnection Initialization<a class="headerlink" href="#ibm-watsonx-ai-software-dataconnection-initialization" title="Link to this heading">¶</a></h2>
-<p>There are three types of connection: Connection Asset, Data Asset and
-FS (this one is only for saving result references). To upload your experiment dataset,
-you must initialize <code class="docutils literal notranslate"><span class="pre">DataConnection</span></code> with your Service credentials.</p>
+<p>There are three types of connections: Connection Asset, Data Asset, and
+FS. Note that FS is only for saving result references. To upload your experiment dataset,
+you must initialize <code class="docutils literal notranslate"><span class="pre">DataConnection</span></code> with your service credentials.</p>
 <section id="connection-asset-databaselocation">
 <h3>Connection Asset - DatabaseLocation<a class="headerlink" href="#connection-asset-databaselocation" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.autoai.helpers.connections</span> <span class="kn">import</span> <span class="n">DataConnection</span><span class="p">,</span> <span class="n">DatabaseLocation</span>
@@ -347,7 +347,7 @@ you must initialize <code class="docutils literal notranslate"><span class="pre"
 </section>
 <section id="connection-asset-s3location">
 <h3>Connection Asset - S3Location<a class="headerlink" href="#connection-asset-s3location" title="Link to this heading">¶</a></h3>
-<p>For Connection Asset with S3Location <code class="docutils literal notranslate"><span class="pre">connection_id</span></code> to the S3 storage is required.</p>
+<p>For a Connection Asset with S3Location, <code class="docutils literal notranslate"><span class="pre">connection_id</span></code> to the S3 storage is required.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers.connections</span> <span class="kn">import</span> <span class="n">DataConnection</span><span class="p">,</span> <span class="n">S3Location</span>
 
 <span class="n">training_data_references</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="p">(</span>
@@ -361,7 +361,7 @@ you must initialize <code class="docutils literal notranslate"><span class="pre"
 </section>
 <section id="connection-asset-nfslocation">
 <h3>Connection Asset - NFSLocation<a class="headerlink" href="#connection-asset-nfslocation" title="Link to this heading">¶</a></h3>
-<p>Before establishing connection, you need to create and start a <cite>volume</cite> where the dataset will be stored.</p>
+<p>Before establishing a connection, you need to create and start a <cite>volume</cite> where the dataset will be stored.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers.connections</span> <span class="kn">import</span> <span class="n">DataConnection</span><span class="p">,</span> <span class="n">NFSLocation</span>
 
 <span class="n">connection_details</span><span class="o">=</span><span class="p">{</span>
@@ -401,7 +401,7 @@ you must initialize <code class="docutils literal notranslate"><span class="pre"
 </section>
 <section id="fslocation">
 <h3>FSLocation<a class="headerlink" href="#fslocation" title="Link to this heading">¶</a></h3>
-<p>After <code class="docutils literal notranslate"><span class="pre">fit()</span></code> you can store your results in dedicated place using FSLocation.</p>
+<p>After running <code class="docutils literal notranslate"><span class="pre">fit()</span></code>, you can store your results in a dedicated place using FSLocation.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers.connections</span> <span class="kn">import</span> <span class="n">DataConnection</span><span class="p">,</span> <span class="n">FSLocation</span>
 
 <span class="c1"># after completed run</span>
@@ -418,8 +418,8 @@ you must initialize <code class="docutils literal notranslate"><span class="pre"
 </section>
 <section id="batch-dataconnection">
 <h2>Batch DataConnection<a class="headerlink" href="#batch-dataconnection" title="Link to this heading">¶</a></h2>
-<p>If you use batch type of deployment, you can store output of batch deployment with <code class="docutils literal notranslate"><span class="pre">DataConnection</span></code>.
-For more information and usage instruction see <a class="reference internal" href="autoai_working_with_class_and_optimizer.html#working-with-batch"><span class="std std-ref">Batch</span></a>.</p>
+<p>If you use a Batch type of deployment, you can store the output of the Batch deployment using <code class="docutils literal notranslate"><span class="pre">DataConnection</span></code>.
+For more information and usage instruction, see <a class="reference internal" href="autoai_working_with_class_and_optimizer.html#working-with-batch"><span class="std std-ref">Batch</span></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers.connections</span> <span class="kn">import</span> <span class="n">DataConnection</span><span class="p">,</span> <span class="n">DeploymentOutputAssetLocation</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.deployment</span> <span class="kn">import</span> <span class="n">Batch</span>
 
@@ -443,8 +443,8 @@ For more information and usage instruction see <a class="reference internal" hre
 <section id="upload-your-training-dataset">
 <h2>Upload your training dataset<a class="headerlink" href="#upload-your-training-dataset" title="Link to this heading">¶</a></h2>
 <p>An AutoAI experiment should be able to access your training data.
-If you do not have a training dataset stored already,
-you can do it by invoking the <code class="docutils literal notranslate"><span class="pre">write()</span></code> method of the <code class="docutils literal notranslate"><span class="pre">DataConnection</span></code> object.</p>
+If you don’t have a training dataset stored already,
+you can store it by invoking the <code class="docutils literal notranslate"><span class="pre">write()</span></code> method of the <code class="docutils literal notranslate"><span class="pre">DataConnection</span></code> object.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">training_data_references</span><span class="o">.</span><span class="n">set_client</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
 <span class="n">training_data_references</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;local_path_to_the_dataset&#39;</span><span class="p">,</span> <span class="n">remote_name</span><span class="o">=</span><span class="s1">&#39;training_dataset.csv&#39;</span><span class="p">)</span>
 </pre></div>
@@ -517,7 +517,7 @@ you can do it by invoking the <code class="docutils literal notranslate"><span c
             <ul>
 <li><a class="reference internal" href="#">Working with DataConnection</a><ul>
 <li><a class="reference internal" href="#ibm-cloud-dataconnection-initialization">IBM Cloud - DataConnection Initialization</a><ul>
-<li><a class="reference internal" href="#connection-aasset">Connection Aasset</a></li>
+<li><a class="reference internal" href="#connection-asset">Connection Asset</a></li>
 <li><a class="reference internal" href="#data-asset">Data Asset</a></li>
 <li><a class="reference internal" href="#container">Container</a></li>
 </ul>
