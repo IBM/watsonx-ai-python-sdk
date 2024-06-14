@@ -403,6 +403,19 @@
         <span class="p">}</span>
         <span class="n">check_python_framework_version</span><span class="p">(</span><span class="n">client_reqs</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;runtime-23-1&quot;</span>
+    <span class="k">elif</span> <span class="p">(</span>
+        <span class="n">software_spec</span> <span class="o">==</span> <span class="s2">&quot;runtime-24.1-py3.11&quot;</span>
+        <span class="ow">or</span> <span class="n">software_spec</span> <span class="o">==</span> <span class="s2">&quot;45f12dfe-aa78-5b8d-9f38-0ee223c47309&quot;</span>
+    <span class="p">):</span>
+        <span class="n">client_reqs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;py_version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.11&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tensorflow_version&quot;</span><span class="p">:</span> <span class="s2">&quot;2.14&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;torch_version&quot;</span><span class="p">:</span> <span class="s2">&quot;2.1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;scikitlearn_version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fl_extras&quot;</span><span class="p">:</span> <span class="s2">&quot;fl-rt24.1-py3.11&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">check_python_framework_version</span><span class="p">(</span><span class="n">client_reqs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;runtime-24-1&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">client_reqs</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;py_version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.10&quot;</span><span class="p">,</span>
@@ -432,6 +445,7 @@
     <span class="n">default_software_spec</span> <span class="o">=</span> <span class="s2">&quot;runtime-23.1-py3.10&quot;</span>
     <span class="n">SUPPORTED_PLATFORMS_MAP</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">base_platform</span><span class="p">:</span> <span class="s2">&quot;/runtime-23-1/ibmfl&quot;</span><span class="p">,</span>  <span class="c1"># default</span>
+        <span class="s2">&quot;runtime-24-1&quot;</span><span class="p">:</span> <span class="s2">&quot;/runtime-23-1/ibmfl&quot;</span><span class="p">,</span>  <span class="c1"># use runtime-23-1 until we need fork it</span>
     <span class="p">}</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
