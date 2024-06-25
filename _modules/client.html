@@ -394,8 +394,8 @@
         <span class="c1"># At this stage `credentials` has type Dict[str, str]</span>
         <span class="n">credentials</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Credentials</span><span class="p">,</span> <span class="n">credentials</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">default_space_id</span> <span class="o">=</span> <span class="n">space_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">default_project_id</span> <span class="o">=</span> <span class="n">project_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_space_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_project_id</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project_type</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URL</span> <span class="o">=</span> <span class="kc">None</span>
@@ -581,6 +581,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_use_fm_ga_api</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_check_if_fm_ga_api_available</span><span class="p">()</span>
         <span class="p">)</span>  <span class="c1"># Remove on CPD 5.0 release</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_use_pta_ga_api</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&gt;=</span> <span class="mf">5.0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># For cloud, service_instance.details will be set during space creation( if instance is associated ) or</span>
@@ -595,6 +596,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">get_details</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set</span> <span class="o">=</span> <span class="n">Set</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">project_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_project</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>  <span class="c1"># recognizes project type</span>
+        <span class="k">elif</span> <span class="n">space_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_space</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">spaces</span> <span class="o">=</span> <span class="n">Spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 

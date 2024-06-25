@@ -597,14 +597,18 @@
 
 
 
-<span class="k">def</span> <span class="nf">_check_model_state</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_check_model_state</span><span class="p">(</span>
+    <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tech_preview</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">default_warning_template</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;Model &#39;</span><span class="si">{model_id}</span><span class="s2">&#39; is in </span><span class="si">{state}</span><span class="s2"> state from </span><span class="si">{start_date}</span><span class="s2"> until </span><span class="si">{withdrawn_start_date}</span><span class="s2">. &quot;</span>
         <span class="s2">&quot;IDs of alternative models: </span><span class="si">{alternative_model_ids}</span><span class="s2">. &quot;</span>
         <span class="s2">&quot;Further details: https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-model-lifecycle.html?context=wx&amp;audience=wdp&quot;</span>
     <span class="p">)</span>
 
-    <span class="n">lifecycle</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_model_lifecycle</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
+    <span class="n">lifecycle</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_model_lifecycle</span><span class="p">(</span>
+        <span class="n">model_id</span><span class="p">,</span> <span class="n">tech_preview</span><span class="o">=</span><span class="n">tech_preview</span>
+    <span class="p">)</span>
 
     <span class="n">modes_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">ids</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">ids</span> <span class="ow">in</span> <span class="p">(</span><span class="n">lifecycle</span> <span class="ow">or</span> <span class="p">[])]</span>
     <span class="n">deprecated_or_constricted_warning_template_cpd</span> <span class="o">=</span> <span class="p">(</span>
