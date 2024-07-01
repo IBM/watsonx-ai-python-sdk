@@ -298,22 +298,22 @@
 <div class="viewcode-block" id="APIClient">
 <a class="viewcode-back" href="../base.html#client.APIClient">[docs]</a>
 <span class="k">class</span> <span class="nc">APIClient</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main class of ibm_watsonx_ai. The very heart of the module. APIClient contains objects managing service reasources.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The main class of ibm_watsonx_ai. The very heart of the module. APIClient contains objects that manage the service reasources.</span>
 
-<span class="sd">    To explore usage of APIClient refer to:</span>
-<span class="sd">     - :ref:`Setup&lt;setup&gt;` section - to check correct initialisation of APIClient for specific environment</span>
-<span class="sd">     - :ref:`Core&lt;core&gt;` section - to explore core properties of APIClient object</span>
+<span class="sd">    To explore how to use APIClient, refer to:</span>
+<span class="sd">     - :ref:`Setup&lt;setup&gt;` - to check correct initialization of APIClient for a specific environment.</span>
+<span class="sd">     - :ref:`Core&lt;core&gt;` - to explore core properties of an APIClient object.</span>
 
-<span class="sd">    :param url: service url</span>
+<span class="sd">    :param url: URL of the service</span>
 <span class="sd">    :type url: str</span>
 
 <span class="sd">    :param credentials: credentials used to connect with the service</span>
 <span class="sd">    :type credentials: Credentials</span>
 
-<span class="sd">    :param project_id: ID of used project</span>
+<span class="sd">    :param project_id: ID of the project that is used</span>
 <span class="sd">    :type project_id: str, optional</span>
 
-<span class="sd">    :param space_id: ID of used deployment space</span>
+<span class="sd">    :param space_id: ID of deployment space that is used</span>
 <span class="sd">    :type space_id: str, optional</span>
 
 <span class="sd">    :param verify: certificate verification flag, deprecated, use Credentials(verify=...) to set `verify`</span>
@@ -406,6 +406,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_spec_ids_per_state</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">generate_ux_tag</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">WCA</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_user_headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Used in set_headers() method</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;https://wml-dev.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
@@ -761,7 +762,10 @@
                     <span class="n">token</span> <span class="o">=</span> <span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">token_to_use</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">token</span> <span class="o">=</span> <span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_get_token</span><span class="p">()</span>
-            <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="n">token</span><span class="p">,</span> <span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="n">get_user_agent_header</span><span class="p">()}</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="n">token</span><span class="p">,</span>
+                <span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="n">get_user_agent_header</span><span class="p">(),</span>
+            <span class="p">}</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -777,7 +781,57 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">WCA</span><span class="p">:</span>
             <span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;IBM-WATSONXAI-CONSUMER&quot;</span><span class="p">:</span> <span class="s2">&quot;wca&quot;</span><span class="p">})</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user_headers</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user_headers</span>
+
         <span class="k">return</span> <span class="n">headers</span>
+
+<div class="viewcode-block" id="APIClient.set_token">
+<a class="viewcode-back" href="../base.html#client.APIClient.set_token">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method which allows refresh/set new User Authorization Token.</span>
+
+<span class="sd">        :param token: User Authorization Token</span>
+<span class="sd">        :type token: str</span>
+
+<span class="sd">        **Examples**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.set_token(&quot;&lt;USER AUTHORIZATION TOKEN&gt;&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proceed</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span></div>
+
+
+<div class="viewcode-block" id="APIClient.set_headers">
+<a class="viewcode-back" href="../base.html#client.APIClient.set_headers">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method which allows refresh/set new User Request Headers.</span>
+
+<span class="sd">        :param headers: User Request Headers</span>
+<span class="sd">        :type headers: dict</span>
+
+<span class="sd">        **Examples**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            headers = {</span>
+<span class="sd">                &#39;Authorization&#39;: &#39;Bearer &lt;USER AUTHORIZATION TOKEN&gt;&#39;,</span>
+<span class="sd">                &#39;User-Agent&#39;: &#39;ibm-watsonx-ai/1.0.1 (lang=python; arch=x86_64; os=darwin; python.version=3.10.13)&#39;,</span>
+<span class="sd">                &#39;X-Watson-Project-ID&#39;: &#39;&lt;PROJECT ID&gt;&#39;,</span>
+<span class="sd">                &#39;Content-Type&#39;: &#39;application/json&#39;</span>
+<span class="sd">            }</span>
+
+<span class="sd">            client.set_headers(headers)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_user_headers</span> <span class="o">=</span> <span class="n">headers</span></div>
+
 
     <span class="k">def</span> <span class="nf">_get_icptoken</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_create_token</span><span class="p">()</span>

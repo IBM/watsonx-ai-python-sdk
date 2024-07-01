@@ -249,21 +249,21 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="client.APIClient">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">client.</span></span><span class="sig-name descname"><span class="pre">APIClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/client.html#APIClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.APIClient" title="Link to this definition">¶</a></dt>
-<dd><p>Main class of ibm_watsonx_ai. The very heart of the module. APIClient contains objects managing service reasources.</p>
+<dd><p>The main class of ibm_watsonx_ai. The very heart of the module. APIClient contains objects that manage the service reasources.</p>
 <dl class="simple">
-<dt>To explore usage of APIClient refer to:</dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="setup.html#setup"><span class="std std-ref">Setup</span></a> section - to check correct initialisation of APIClient for specific environment</p></li>
-<li><p><a class="reference internal" href="core_api.html#core"><span class="std std-ref">Core</span></a> section - to explore core properties of APIClient object</p></li>
+<dt>To explore how to use APIClient, refer to:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="setup.html#setup"><span class="std std-ref">Setup</span></a> - to check correct initialization of APIClient for a specific environment.</p></li>
+<li><p><a class="reference internal" href="core_api.html#core"><span class="std std-ref">Core</span></a> - to explore core properties of an APIClient object.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>url</strong> (<em>str</em>) – service url</p></li>
+<li><p><strong>url</strong> (<em>str</em>) – URL of the service</p></li>
 <li><p><strong>credentials</strong> (<a class="reference internal" href="#credentials.Credentials" title="credentials.Credentials"><em>Credentials</em></a>) – credentials used to connect with the service</p></li>
-<li><p><strong>project_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of used project</p></li>
-<li><p><strong>space_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of used deployment space</p></li>
+<li><p><strong>project_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the project that is used</p></li>
+<li><p><strong>space_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of deployment space that is used</p></li>
 <li><p><strong>verify</strong> (<em>bool</em><em>, </em><em>optional</em>) – certificate verification flag, deprecated, use Credentials(verify=…) to set <cite>verify</cite></p></li>
 </ul>
 </dd>
@@ -286,6 +286,43 @@
 <span class="o">...</span>
 </pre></div>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="client.APIClient.set_headers">
+<span class="sig-name descname"><span class="pre">set_headers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/client.html#APIClient.set_headers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.APIClient.set_headers" title="Link to this definition">¶</a></dt>
+<dd><p>Method which allows refresh/set new User Request Headers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>headers</strong> (<em>dict</em>) – User Request Headers</p>
+</dd>
+</dl>
+<p><strong>Examples</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Bearer &lt;USER AUTHORIZATION TOKEN&gt;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;ibm-watsonx-ai/1.0.1 (lang=python; arch=x86_64; os=darwin; python.version=3.10.13)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;X-Watson-Project-ID&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;PROJECT ID&gt;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span>
+<span class="p">}</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">set_headers</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.APIClient.set_token">
+<span class="sig-name descname"><span class="pre">set_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/client.html#APIClient.set_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.APIClient.set_token" title="Link to this definition">¶</a></dt>
+<dd><p>Method which allows refresh/set new User Authorization Token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>token</strong> (<em>str</em>) – User Authorization Token</p>
+</dd>
+</dl>
+<p><strong>Examples</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">set_token</span><span class="p">(</span><span class="s2">&quot;&lt;USER AUTHORIZATION TOKEN&gt;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -298,18 +335,18 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>url</strong> (<em>str</em>) – service url</p></li>
-<li><p><strong>api_key</strong> (<em>str</em><em>, </em><em>optional</em>) – service API key, used in API key authentication</p></li>
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – service name, used during space creation for Cloud environment</p></li>
-<li><p><strong>iam_serviceid_crn</strong> (<em>str</em><em>, </em><em>optional</em>) – service CRN, used during space creation for Cloud environment</p></li>
+<li><p><strong>url</strong> (<em>str</em>) – URL of the service</p></li>
+<li><p><strong>api_key</strong> (<em>str</em><em>, </em><em>optional</em>) – service API key used in API key authentication</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – service name used during space creation for a Cloud environment</p></li>
+<li><p><strong>iam_serviceid_crn</strong> (<em>str</em><em>, </em><em>optional</em>) – service CRN used during space creation for a Cloud environment</p></li>
 <li><p><strong>token</strong> (<em>str</em><em>, </em><em>optional</em>) – service token, used in token authentication</p></li>
-<li><p><strong>projects_token</strong> (<em>str</em><em>, </em><em>optional</em>) – service projects token, used in token authentication</p></li>
+<li><p><strong>projects_token</strong> (<em>str</em><em>, </em><em>optional</em>) – service projects token used in token authentication</p></li>
 <li><p><strong>username</strong> (<em>str</em><em>, </em><em>optional</em>) – username, used in username/password or username/api_key authentication, applicable for ICP only</p></li>
 <li><p><strong>password</strong> (<em>str</em><em>, </em><em>optional</em>) – password, used in username/password authentication, applicable for ICP only</p></li>
 <li><p><strong>instance_id</strong> (<em>str</em><em>, </em><em>optional</em>) – instance ID, mandatory for ICP</p></li>
 <li><p><strong>version</strong> (<em>str</em><em>, </em><em>optional</em>) – ICP version, mandatory for ICP</p></li>
-<li><p><strong>bedrock_url</strong> (<em>str</em><em>, </em><em>optional</em>) – Bedrock url, applicable for ICP only</p></li>
-<li><p><strong>proxies</strong> (<em>dict</em><em>, </em><em>optional</em>) – dictionary of proxies, containing protocol and url mapping (example: <cite>{ “https”: “https://example.url.com” }</cite>)</p></li>
+<li><p><strong>bedrock_url</strong> (<em>str</em><em>, </em><em>optional</em>) – Bedrock URL, applicable for ICP only</p></li>
+<li><p><strong>proxies</strong> (<em>dict</em><em>, </em><em>optional</em>) – dictionary of proxies, containing protocol and URL mapping (example: <cite>{ “https”: “https://example.url.com” }</cite>)</p></li>
 <li><p><strong>verify</strong> (<em>bool</em><em>, </em><em>optional</em>) – certificate verification flag</p></li>
 </ul>
 </dd>
@@ -323,7 +360,7 @@
 <dd class="field-odd"><p><strong>credentials</strong> (<em>dict</em>) – credentials in the dictionary</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>initialised Credentials object</p>
+<dd class="field-even"><p>initialised credentials object</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#credentials.Credentials" title="credentials.Credentials">Credentials</a></p>
@@ -427,7 +464,11 @@
             <ul>
 <li><a class="reference internal" href="#">Base</a><ul>
 <li><a class="reference internal" href="#apiclient">APIClient</a><ul>
-<li><a class="reference internal" href="#client.APIClient"><code class="docutils literal notranslate"><span class="pre">APIClient</span></code></a></li>
+<li><a class="reference internal" href="#client.APIClient"><code class="docutils literal notranslate"><span class="pre">APIClient</span></code></a><ul>
+<li><a class="reference internal" href="#client.APIClient.set_headers"><code class="docutils literal notranslate"><span class="pre">APIClient.set_headers()</span></code></a></li>
+<li><a class="reference internal" href="#client.APIClient.set_token"><code class="docutils literal notranslate"><span class="pre">APIClient.set_token()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#credentials">Credentials</a><ul>

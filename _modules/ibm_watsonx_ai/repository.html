@@ -300,8 +300,8 @@
 <div class="viewcode-block" id="Repository">
 <a class="viewcode-back" href="../../core_api.html#client.Repository">[docs]</a>
 <span class="k">class</span> <span class="nc">Repository</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Store and manage models, functions, spaces, pipelines and experiments</span>
-<span class="sd">    using Watson Machine Learning Repository.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Store and manage models, functions, spaces, pipelines, and experiments</span>
+<span class="sd">    using the Watson Machine Learning Repository.</span>
 
 <span class="sd">    To view ModelMetaNames, use:</span>
 
@@ -620,13 +620,13 @@
         <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Downloads configuration file for artifact with specified id.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download the configuration file for an artifact with the specified ID.</span>
 
-<span class="sd">        :param artifact_id: Unique Id of model or function</span>
+<span class="sd">        :param artifact_id: unique ID of the model or function</span>
 <span class="sd">        :type artifact_id: str</span>
-<span class="sd">        :param filename: name of the file to which the artifact content has to be downloaded</span>
+<span class="sd">        :param filename: name of the file to which the artifact content will be downloaded</span>
 <span class="sd">        :type filename: str, optional</span>
-<span class="sd">        :param rev_id: revision id</span>
+<span class="sd">        :param rev_id: revision ID</span>
 <span class="sd">        :type rev_id: str, optional</span>
 <span class="sd">        :param format: format of the content, applicable for models</span>
 <span class="sd">        :type format: str, optional</span>
@@ -666,9 +666,9 @@
     <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete model, experiment, pipeline or function from repository.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a model, experiment, pipeline, or function from the repository.</span>
 
-<span class="sd">        :param artifact_id: Unique id of stored model, experiment, function or pipeline</span>
+<span class="sd">        :param artifact_id: unique ID of the stored model, experiment, function, or pipeline</span>
 <span class="sd">        :type artifact_id: str</span>
 
 <span class="sd">        :return: status &quot;SUCCESS&quot; if deletion is successful</span>
@@ -724,16 +724,16 @@
         <span class="n">spec_state</span><span class="p">:</span> <span class="n">SpecStates</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of stored artifacts. If `artifact_id` is not specified returns all models, experiments,</span>
-<span class="sd">        functions and pipelines metadata.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of stored artifacts. If `artifact_id` is not specified, the metadata of all models, experiments,</span>
+<span class="sd">        functions, and pipelines is returned.</span>
 
-<span class="sd">        :param artifact_id: Unique Id of stored model, experiment, function or pipeline</span>
+<span class="sd">        :param artifact_id: unique ID of the stored model, experiment, function, or pipeline</span>
 <span class="sd">        :type artifact_id: str, optional</span>
 
 <span class="sd">        :param spec_state: software specification state, can be used only when `artifact_id` is None</span>
 <span class="sd">        :type spec_state: SpecStates, optional</span>
 
-<span class="sd">        :return: stored artifact(s) metadata</span>
+<span class="sd">        :return: metadata of the stored artifact(s)</span>
 <span class="sd">        :rtype: dict (if artifact_id is not None) or {&quot;resources&quot;: [dict]} (if artifact_id is None)</span>
 
 <span class="sd">        **Examples**</span>
@@ -995,13 +995,13 @@
 <div class="viewcode-block" id="Repository.list">
 <a class="viewcode-back" href="../../core_api.html#client.Repository.list">[docs]</a>
     <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">framework_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lists/gets stored models, pipelines, runtimes, libraries, functions, spaces and experiments in a table/DataFrame format.</span>
-<span class="sd">        If limit is set to None there will be only first 50 records shown.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get and list stored models, pipelines, runtimes, libraries, functions, spaces, and experiments in a table/DataFrame format.</span>
+<span class="sd">        If limit is set to None, only the first 50 records are shown.</span>
 
-<span class="sd">        :param framework_filter: Get only frameworks with desired names</span>
+<span class="sd">        :param framework_filter: get only the frameworks with the desired names</span>
 <span class="sd">        :type framework_filter: str, optional</span>
 
-<span class="sd">        :return: DataFrame with listed names and ids of stored models</span>
+<span class="sd">        :return: DataFrame with listed names and IDs of stored models</span>
 <span class="sd">        :rtype: pandas.DataFrame</span>
 
 <span class="sd">        **Example**</span>
@@ -1204,9 +1204,9 @@
 <div class="viewcode-block" id="Repository.create_revision">
 <a class="viewcode-back" href="../../core_api.html#client.Repository.create_revision">[docs]</a>
     <span class="k">def</span> <span class="nf">create_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create revision for passed `artifact_id`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a revision for passed `artifact_id`.</span>
 
-<span class="sd">        :param artifact_id: Unique id of stored model, experiment, function or pipelines</span>
+<span class="sd">        :param artifact_id: unique ID of a stored model, experiment, function, or pipelines</span>
 <span class="sd">        :type artifact_id: str</span>
 
 <span class="sd">        :return: artifact new revision metadata</span>
@@ -1238,9 +1238,9 @@
     <span class="k">def</span> <span class="nf">_get_revision_details</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of stored artifacts revisions.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of the stored artifacts revisions.</span>
 
-<span class="sd">        :param artifact_id:  unique id of stored model or experiment or function or pipelines</span>
+<span class="sd">        :param artifact_id: unique ID of a stored model, experiment, function, pipelines</span>
 <span class="sd">        :type artifact_id: str</span>
 
 <span class="sd">        :return: stored artifacts metadata</span>

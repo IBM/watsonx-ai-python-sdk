@@ -279,21 +279,21 @@
         <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the export. Either space_id or project_id has to be provided and is mandatory.</span>
-<span class="sd">        ALL_ASSETS is by default False. No need to provide explicitly unless it has to be set to True.</span>
-<span class="sd">        Either ALL_ASSETS or ASSET_TYPES or ASSET_IDS has to be given in the meta_props. Only one of these can be</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the export. You must provide the space_id or the project_id.</span>
+<span class="sd">        ALL_ASSETS is by default False. You don&#39;t need to provide it unless it is set to True.</span>
+<span class="sd">        You must provide one of the following in the meta_props: ALL_ASSETS, ASSET_TYPES, or ASSET_IDS. Only one of these can be</span>
 <span class="sd">        provided.</span>
 
 <span class="sd">        In the `meta_props`:</span>
 
 <span class="sd">        ALL_ASSETS is a boolean. When set to True, it exports all assets in the given space.</span>
-<span class="sd">        ASSET_IDS is an array containing the list of assets ids to be exported.</span>
-<span class="sd">        ASSET_TYPES is for providing the asset types to be exported. All assets of that asset type will be exported.</span>
+<span class="sd">        ASSET_IDS is an array that contains the list of assets IDs to be exported.</span>
+<span class="sd">        ASSET_TYPES is used to provide the asset types to be exported. All assets of that asset type will be exported.</span>
 
 <span class="sd">                Eg: wml_model, wml_model_definition, wml_pipeline, wml_function, wml_experiment,</span>
 <span class="sd">                software_specification, hardware_specification, package_extension, script</span>
 
-<span class="sd">        :param meta_props: meta data,</span>
+<span class="sd">        :param meta_props: metadata,</span>
 <span class="sd">            to see available meta names use ``client.export_assets.ConfigurationMetaNames.get()``</span>
 <span class="sd">        :type meta_props: dict</span>
 <span class="sd">        :param space_id: space identifier</span>
@@ -441,7 +441,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancel an export job. `space_id` or `project_id` has to be provided.</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">            To delete a `export_id` job, use ``delete()`` api.</span>
+<span class="sd">            To delete an `export_id` job, use ``delete()`` API.</span>
 
 <span class="sd">        :param export_id: export job identifier</span>
 <span class="sd">        :type export_id: str</span>
@@ -504,7 +504,7 @@
         <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes the given `export_id` job. `space_id` or `project_id` has to be provided.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete the given `export_id` job. `space_id` or `project_id` has to be provided.</span>
 
 <span class="sd">        :param export_id: export job identifier</span>
 <span class="sd">        :type export_id: str</span>
@@ -570,7 +570,7 @@
         <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of the given export job. if no `export_id` is specified all exports metadata is returned.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of a given export job. If no `export_id` is specified, all export metadata is returned.</span>
 
 <span class="sd">        :param export_id: export job identifier</span>
 <span class="sd">        :type export_id: str, optional</span>
@@ -585,7 +585,7 @@
 <span class="sd">        :param get_all: if `True`, it will get all entries in &#39;limited&#39; chunks</span>
 <span class="sd">        :type get_all: bool, optional</span>
 
-<span class="sd">        :return: export(s) metadata</span>
+<span class="sd">        :return: export metadata</span>
 <span class="sd">        :rtype: dict (if export_id is not None) or {&quot;resources&quot;: [dict]} (if export_id is None)</span>
 
 <span class="sd">        **Example**</span>
@@ -646,7 +646,7 @@
         <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns export jobs in a table format. If limit is set to None there will be only first 50 records shown.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return export jobs in a table format. If limit is set to None, only the first 50 records are shown.</span>
 
 <span class="sd">        :param space_id: space identifier</span>
 <span class="sd">        :type space_id: str, optional</span>
@@ -699,7 +699,7 @@
 <a class="viewcode-back" href="../../core_api.html#client.Export.get_id">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="n">export_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get ID of export job from export details.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the ID of the export job from export details.</span>
 
 <span class="sd">        :param export_details: metadata of the export job</span>
 <span class="sd">        :type export_details: dict</span>

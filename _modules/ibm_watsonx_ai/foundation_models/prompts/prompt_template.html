@@ -1227,7 +1227,7 @@
         <span class="p">]</span> <span class="o">=</span> <span class="n">PromptTemplateFormats</span><span class="o">.</span><span class="n">PROMPTTEMPLATE</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">prompt_variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PromptTemplate</span><span class="p">:</span> <span class="o">...</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FreeformPromptTemplate</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="n">DetachedPromptTemplate</span><span class="p">:</span> <span class="o">...</span>
 
 <div class="viewcode-block" id="PromptTemplateManager.load_prompt">
 <a class="viewcode-back" href="../../../../prompt_template_manager.html#ibm_watsonx_ai.foundation_models.prompts.PromptTemplateManager.load_prompt">[docs]</a>
@@ -1238,7 +1238,9 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">prompt_variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span>
-        <span class="n">PromptTemplate</span>
+        <span class="n">FreeformPromptTemplate</span>
+        <span class="o">|</span> <span class="n">PromptTemplate</span>
+        <span class="o">|</span> <span class="n">DetachedPromptTemplate</span>
         <span class="o">|</span> <span class="nb">str</span>
         <span class="o">|</span> <span class="n">LcPromptTemplate</span>
     <span class="p">):</span>
@@ -1254,7 +1256,7 @@
 <span class="sd">        :type prompt_variables: dict[str, str]</span>
 
 <span class="sd">        :return: Prompt template asset.</span>
-<span class="sd">        :rtype: PromptTemplate | str | langchain.prompts.PromptTemplate</span>
+<span class="sd">        :rtype: FreeformPromptTemplate | PromptTemplate | DetachedPromptTemplate | str | langchain.prompts.PromptTemplate</span>
 
 <span class="sd">        **Example**</span>
 
@@ -1361,17 +1363,19 @@
     <span class="k">def</span> <span class="nf">store_prompt</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prompt_template</span><span class="p">:</span> <span class="p">(</span>
-            <span class="n">PromptTemplate</span>
+            <span class="n">FreeformPromptTemplate</span>
+            <span class="o">|</span> <span class="n">PromptTemplate</span>
+            <span class="o">|</span> <span class="n">DetachedPromptTemplate</span>
             <span class="o">|</span> <span class="n">langchain</span><span class="o">.</span><span class="n">prompts</span><span class="o">.</span><span class="n">PromptTemplate</span>
         <span class="p">),</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PromptTemplate</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FreeformPromptTemplate</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="n">DetachedPromptTemplate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Store a new prompt template.</span>
 
 <span class="sd">        :param prompt_template: PromptTemplate to be stored.</span>
-<span class="sd">        :type prompt_template: (PromptTemplate | langchain.prompts.PromptTemplate)</span>
+<span class="sd">        :type prompt_template: (FreeformPromptTemplate | PromptTemplate | DetachedPromptTemplate | langchain.prompts.PromptTemplate)</span>
 
 <span class="sd">        :return: PromptTemplate object initialized with values provided in the server response object.</span>
-<span class="sd">        :rtype: PromptTemplate</span>
+<span class="sd">        :rtype: FreeformPromptTemplate | PromptTemplate | DetachedPromptTemplate</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
             <span class="n">prompt_template</span><span class="p">,</span>
@@ -1607,7 +1611,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prompt_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">prompt_template</span><span class="p">:</span> <span class="p">(</span>
-            <span class="n">PromptTemplate</span>
+            <span class="n">FreeformPromptTemplate</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="n">DetachedPromptTemplate</span>
         <span class="p">),</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update prompt template data.</span>
@@ -1616,7 +1620,7 @@
 <span class="sd">        :type prompt_id: str</span>
 
 <span class="sd">        :param prompt: PromptTemplate with new data.</span>
-<span class="sd">        :type prompt: PromptTemplate</span>
+<span class="sd">        :type prompt: FreeformPromptTemplate | PromptTemplate | DetachedPromptTemplate</span>
 
 <span class="sd">        :return: metadata of updated deployment</span>
 <span class="sd">        :rtype: dict</span>
