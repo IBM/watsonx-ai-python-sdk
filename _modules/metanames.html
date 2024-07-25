@@ -169,9 +169,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../federated_learning.html">Federated Learning</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../dataconnection.html">DataConnection</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of DataConnection</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../dataconnection.html">Data Connections</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Data Connections</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../autoai_working_with_dataconnection.html">Working with DataConnection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dataconnection_modules.html">DataConnection Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../iterabledatasets_modules.html">IterableDatasets Modules</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -198,7 +199,11 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../prompt_template_manager.html">Prompt Template Manager</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fm_extensions.html">Extensions</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../fm_extensions.html">Extensions</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Extensions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../fm_extensions_langchain.html">LangChain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fm_extensions_rag.html">RAG</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../fm_helpers.html">Helpers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fm_working_with_custom_models.html">Custom models</a></li>
 </ul>
@@ -1320,6 +1325,9 @@
     <span class="n">TF_MODEL_PARAMS</span> <span class="o">=</span> <span class="s2">&quot;tf_model_params&quot;</span>
     <span class="n">FAIRNESS_INFO</span> <span class="o">=</span> <span class="s2">&quot;fairness_info&quot;</span>
     <span class="n">FOUNDATION_MODEL</span> <span class="o">=</span> <span class="s2">&quot;foundation_model&quot;</span>
+    <span class="n">MODEL_LOCATION</span> <span class="o">=</span> <span class="s2">&quot;model_location&quot;</span>
+    <span class="n">FRAMEWORK</span> <span class="o">=</span> <span class="s2">&quot;framework&quot;</span>
+    <span class="n">VERSION</span> <span class="o">=</span> <span class="s2">&quot;version&quot;</span>
 
     <span class="n">_meta_props_definitions</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="n">NAME</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;my_model&quot;</span><span class="p">),</span>
@@ -1581,6 +1589,31 @@
             <span class="kc">False</span><span class="p">,</span>
             <span class="n">example_value</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;mistralai/Mistral-7B-Instruct-v0.2&quot;</span><span class="p">},</span>
             <span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;MODEL_LOCATION&quot;</span><span class="p">,</span>
+            <span class="n">MODEL_LOCATION</span><span class="p">,</span>
+            <span class="nb">dict</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="n">example_value</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;connection_id&quot;</span><span class="p">:</span> <span class="s2">&quot;53628d69-ced9-4f43-a8cd-9954344039a8&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;bucket&quot;</span><span class="p">:</span> <span class="s2">&quot;cos_sample_bucket&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;file_path&quot;</span><span class="p">:</span> <span class="s2">&quot;path/to/model/on/cos&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;FRAMEWORK&quot;</span><span class="p">,</span>
+            <span class="n">FRAMEWORK</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="n">example_value</span><span class="o">=</span><span class="s2">&quot;custom_foundation_model&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;VERSION&quot;</span><span class="p">,</span>
+            <span class="n">VERSION</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="n">example_value</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">]</span>
 
@@ -3035,21 +3068,6 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">MetaNamesBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta_props_definitions</span><span class="p">)</span></div>
 
-
-
-<span class="k">class</span> <span class="nc">RAGPatternParamsMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
-    <span class="n">NUM_RETRIEVED_DOCS</span> <span class="o">=</span> <span class="s2">&quot;num_retrieved_docs&quot;</span>
-
-    <span class="n">_meta_props_definitions</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;NUM_RETRIEVED_DOCS&quot;</span><span class="p">,</span> <span class="n">NUM_RETRIEVED_DOCS</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
-    <span class="p">]</span>
-
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">MetaNamesBase</span><span class="p">(</span><span class="n">_meta_props_definitions</span><span class="p">)</span><span class="o">.</span><span class="n">_generate_doc</span><span class="p">(</span>
-        <span class="s2">&quot;RAGPatten params metanames&quot;</span>
-    <span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">MetaNamesBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta_props_definitions</span><span class="p">)</span>
 </pre></div>
         </article>
       </div>

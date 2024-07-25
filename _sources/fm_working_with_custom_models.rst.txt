@@ -2,7 +2,7 @@ Custom models
 =============
 
 .. note::
-    Available in version IBM watsonx.ai software with IBM Cloud Pak for Data 4.8.4 and higher.
+    Available in version IBM watsonx.ai software with IBM Cloud and IBM Cloud Pak for Data 4.8.4 and higher.
 
 This section shows how to list custom models specs, store & deploy model and use ModelInference module with created deployment.
 
@@ -21,6 +21,9 @@ Initialize ``APIClient`` object if needed. More details about supported ``APICli
 
 Listing models specification
 ----------------------------
+
+.. warning::
+    Only applicable for IBM Cloud Pak for Data 4.8.4 and higher.
 
 .. warning::
     The model needs to be explicitly stored & deployed in the repository to be used/listed.
@@ -42,15 +45,43 @@ Storing model in service repository
 
 To store model as an asset in the repo, first create proper ``metadata``.
 
+.. note::
+    There are metadata differences between IBM Cloud and IBM Cloud Pak for Data.
+
+Metadata creation - IBM Cloud Pak for Data
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. code-block:: python
 
     sw_spec_id = client.software_specifications.get_id_by_name('watsonx-cfm-caikit-1.0')
 
     metadata = {
         client.repository.ModelMetaNames.NAME: 'custom FM asset',
-        client.repository.ModelMetaNames.SOFTWARE_SPEC_UID: sw_spec_id,
+        client.repository.ModelMetaNames.SOFTWARE_SPEC_ID: sw_spec_id,
         client.repository.ModelMetaNames.TYPE: client.repository.ModelAssetTypes.CUSTOM_FOUNDATION_MODEL_1_0 
     }
+
+Metadata creation - IBM Cloud
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In Cloud scenario, there is a need to have an active connection to Cloud Object Storage. 
+For more information and how to create COS connection, see :ref:`working-with-connection-asset`.
+
+.. code-block:: python
+
+    metadata = {
+        client.repository.ModelMetaNames.NAME: "custom FM asset,
+        client.repository.ModelMetaNames.SOFTWARE_SPEC_ID: sw_spec_id,
+        client.repository.ModelMetaNames.TYPE: client.repository.ModelAssetTypes.CUSTOM_FOUNDATION_MODEL_1_0,
+        client.repository.ModelMetaNames.MODEL_LOCATION: {
+            "file_path": "path/to/pvc",
+            "bucket": "watsonx-llm-models",
+            "connection_id": "5e891c6b-3aa9-4f01-8e2d-785d81797466",
+        },
+    }
+
+Storing model
+^^^^^^^^^^^^^
 
 After that, it is possible to store model using ``client.repository.store_model()``.
 
