@@ -205,7 +205,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../fm_helpers.html">Helpers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fm_working_with_custom_models.html">Custom models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fm_custom_models.html">Custom models</a></li>
 </ul>
 </li>
 </ul>
@@ -2563,6 +2563,7 @@
     <span class="n">DETACHED</span> <span class="o">=</span> <span class="s2">&quot;detached&quot;</span>
     <span class="n">VIRTUAL</span> <span class="o">=</span> <span class="s2">&quot;virtual&quot;</span>
     <span class="n">HARDWARE_SPEC</span> <span class="o">=</span> <span class="s2">&quot;hardware_spec&quot;</span>
+    <span class="n">HARDWARE_REQUEST</span> <span class="o">=</span> <span class="s2">&quot;hardware_request&quot;</span>
     <span class="n">ASSET</span> <span class="o">=</span> <span class="s2">&quot;asset&quot;</span>
     <span class="n">PROMPT_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;prompt_template&quot;</span>
     <span class="n">R_SHINY</span> <span class="o">=</span> <span class="s2">&quot;r_shiny&quot;</span>
@@ -2599,6 +2600,13 @@
             <span class="n">HARDWARE_SPEC</span><span class="p">,</span>
             <span class="nb">dict</span><span class="p">,</span>
             <span class="n">example_value</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;3342-1ce536-20dc-4444-aac7-7284cf3befc&quot;</span><span class="p">},</span>
+            <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;HARDWARE_REQUEST&quot;</span><span class="p">,</span>
+            <span class="n">HARDWARE_REQUEST</span><span class="p">,</span>
+            <span class="nb">dict</span><span class="p">,</span>
+            <span class="n">example_value</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="s2">&quot;gpu_s&quot;</span><span class="p">,</span> <span class="s2">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
             <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">MetaProp</span><span class="p">(</span>
@@ -3068,6 +3076,26 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">MetaNamesBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta_props_definitions</span><span class="p">)</span></div>
 
+
+
+<span class="k">class</span> <span class="nc">TextExtractionsMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
+    <span class="n">OCR</span> <span class="o">=</span> <span class="s2">&quot;ocr&quot;</span>
+    <span class="n">TABLE_PROCESSING</span> <span class="o">=</span> <span class="s2">&quot;tables_processing&quot;</span>
+
+    <span class="n">_meta_props_definitions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;OCR&quot;</span><span class="p">,</span> <span class="n">OCR</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;process_images&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;language_list&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;en&quot;</span><span class="p">]}</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;TABLE_PROCESSING&quot;</span><span class="p">,</span> <span class="n">TABLE_PROCESSING</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}),</span>
+    <span class="p">]</span>
+
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">MetaNamesBase</span><span class="p">(</span><span class="n">_meta_props_definitions</span><span class="p">)</span><span class="o">.</span><span class="n">_generate_doc</span><span class="p">(</span>
+        <span class="s2">&quot;Text Extraction Steps&quot;</span><span class="p">,</span>
+        <span class="n">note</span><span class="o">=</span><span class="s2">&quot;For more details about Text Extraction Steps see https://cloud.ibm.com/apidocs/watsonx-ai&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">MetaNamesBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta_props_definitions</span><span class="p">)</span>
 </pre></div>
         </article>
       </div>
