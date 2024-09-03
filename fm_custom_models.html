@@ -301,17 +301,129 @@
 <p>The custom models of <cite>watsonx.ai</cite> client might differ depending on the product offering. Choose an option from the list below
 to see steps.</p>
 <ul class="simple">
+<li><p><a class="reference external" href="#id1">IBM watsonx.ai for IBM Cloud</a></p></li>
 <li><p><a class="reference external" href="#id2">IBM watsonx.ai software with IBM Cloud Pak for Data</a></p></li>
 </ul>
 <section id="id1">
-<h2>IBM watsonx.ai software with IBM Cloud Pak® for Data<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<h2>IBM watsonx.ai for IBM Cloud<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<p>This section shows how to create task credentials, store &amp; deploy model and use ModelInference module with created deployment on the IBM watsonx.ai for IBM Cloud.</p>
+<section id="initialize-apiclient-object">
+<h3>Initialize APIClient object<a class="headerlink" href="#initialize-apiclient-object" title="Link to this heading">¶</a></h3>
+<p>Initialize <code class="docutils literal notranslate"><span class="pre">APIClient</span></code> object if needed. More details about supported <code class="docutils literal notranslate"><span class="pre">APIClient</span></code> initialization can be found in <a class="reference internal" href="setup.html"><span class="doc">Setup</span></a> section,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_project</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">)</span>
+<span class="c1"># or client.set.default_space(space_id=space_id)</span>
+</pre></div>
+</div>
+</section>
+<section id="add-task-credentials">
+<h3>Add Task Credentials<a class="headerlink" href="#add-task-credentials" title="Link to this heading">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If not already added, a Task Credentials are required on IBM watsonx.ai for IBM Cloud to make a deployment.</p>
+</div>
+<p>Task credentials enable you to deploy a custom foundation model and avoid token expiration issues.
+More details can be found in: <a class="reference external" href="https://www.ibm.com/docs/en/watsonx/saas?topic=projects-adding-task-credentials">Adding task credentials</a>.</p>
+<p>To list available task credentials, use <code class="docutils literal notranslate"><span class="pre">list</span></code> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">task_credentials</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If the list is empty, you can create new task credentials by using <code class="docutils literal notranslate"><span class="pre">store</span></code> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">task_credentials</span><span class="o">.</span><span class="n">store</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To get status of available task credentials, use <code class="docutils literal notranslate"><span class="pre">get_details</span></code> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">task_credentials</span><span class="o">.</span><span class="n">get_details</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="storing-model-in-service-repository">
+<h3>Storing model in service repository<a class="headerlink" href="#storing-model-in-service-repository" title="Link to this heading">¶</a></h3>
+<p>To store model as an asset in the repo, first create proper <code class="docutils literal notranslate"><span class="pre">metadata</span></code>.</p>
+<p>In Cloud scenario, there is a need to have an active connection to Cloud Object Storage.
+For more information and how to create COS connection, see <a class="reference internal" href="autoai_working_with_dataconnection.html#working-with-connection-asset"><span class="std std-ref">Connection Asset</span></a>.
+From such connection, the user can obtain the parameters needed to fill <code class="docutils literal notranslate"><span class="pre">MODEL_LOCATION</span></code> field.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">ModelMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="s2">&quot;custom FM asset,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">ModelMetaNames</span><span class="o">.</span><span class="n">SOFTWARE_SPEC_ID</span><span class="p">:</span> <span class="n">sw_spec_id</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">ModelMetaNames</span><span class="o">.</span><span class="n">TYPE</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">ModelAssetTypes</span><span class="o">.</span><span class="n">CUSTOM_FOUNDATION_MODEL_1_0</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">ModelMetaNames</span><span class="o">.</span><span class="n">MODEL_LOCATION</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;file_path&quot;</span><span class="p">:</span> <span class="s2">&quot;path/to/pvc&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bucket&quot;</span><span class="p">:</span> <span class="s2">&quot;watsonx-llm-models&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;connection_id&quot;</span><span class="p">:</span> <span class="s2">&quot;5e891c6b-3aa9-4f01-8e2d-785d81797466&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="storing-model">
+<h3>Storing model<a class="headerlink" href="#storing-model" title="Link to this heading">¶</a></h3>
+<p>After that, it is possible to store model using <code class="docutils literal notranslate"><span class="pre">client.repository.store_model()</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">stored_model_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">store_model</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;Google/flan-t5-small&#39;</span><span class="p">,</span> <span class="n">meta_props</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To get <code class="docutils literal notranslate"><span class="pre">id</span></code> of stored asset use the details obtained.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_asset_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_model_id</span><span class="p">(</span><span class="n">stored_model_details</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>All stored models custom foundation models can be listed by client.repository.list() method with filtering by framework type.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">framework_filter</span><span class="o">=</span><span class="s1">&#39;custom_foundation_model_1.0&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="deployment-of-custom-foundation-model">
+<h3>Deployment of custom foundation model<a class="headerlink" href="#deployment-of-custom-foundation-model" title="Link to this heading">¶</a></h3>
+<p>To crete new deployment of custom foundation models dictionary with deployment <code class="docutils literal notranslate"><span class="pre">metadata</span></code> need to be defined.
+There can be specified the <code class="docutils literal notranslate"><span class="pre">NAME</span></code> of new deployment, <code class="docutils literal notranslate"><span class="pre">DESCRIPTION</span></code> and <code class="docutils literal notranslate"><span class="pre">HARDWARE_REQUEST</span></code> fields.
+The requested hardware must have specific <code class="docutils literal notranslate"><span class="pre">size</span></code> and <code class="docutils literal notranslate"><span class="pre">num_nodes</span></code>.
+If it comes to size user can use <code class="docutils literal notranslate"><span class="pre">client.deployments.HardwareRequestSizes.Small</span></code> or <code class="docutils literal notranslate"><span class="pre">client.deployments.HardwareRequestSizes.Medium</span></code>.
+Where <code class="docutils literal notranslate"><span class="pre">num_nodes</span></code> is a number.</p>
+<p>For now only online deployments are supported so <code class="docutils literal notranslate"><span class="pre">ONLINE</span></code> field is required.
+At this stage user can overwrite model parameters optionally.
+It can be done by passing dictionary with new parameters values in <code class="docutils literal notranslate"><span class="pre">FOUNDATION_MODEL</span></code> field.</p>
+<p>Besides the <code class="docutils literal notranslate"><span class="pre">metadata</span></code> with deployment configuration the <code class="docutils literal notranslate"><span class="pre">id</span></code> of stored model asset are required for deployment creation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">meta_props</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="s2">&quot;custom_fm_deployment&quot;</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DESCRIPTION</span><span class="p">:</span> <span class="s2">&quot;Testing deployment using custom foundation model&quot;</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">ONLINE</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">HARDWARE_REQUEST</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">HardwareRequestSizes</span><span class="o">.</span><span class="n">Small</span><span class="p">,</span>
+        <span class="c1"># or &#39;size&#39;: client.deployments.HardwareRequestSizes.Medium</span>
+        <span class="s1">&#39;num_nodes&#39;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="c1"># optionally overwrite model parameters here</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">FOUNDATION_MODEL</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;max_input_tokens&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">},</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">SERVING_NAME</span><span class="p">:</span> <span class="s2">&quot;test_byom_fm_01&quot;</span>
+<span class="p">}</span>
+<span class="n">deployment_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">stored_model_asset_id</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Once deployment creation process is done the <code class="docutils literal notranslate"><span class="pre">client.deployments.create</span></code> returns dictionary with deployment details,
+which can be used to retrieve the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the deployment.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">deployment_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>All existing in working space or project scope can be listed with <code class="docutils literal notranslate"><span class="pre">list</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="working-with-deployments">
+<h3>Working with deployments<a class="headerlink" href="#working-with-deployments" title="Link to this heading">¶</a></h3>
+<p>Working with deployments of foundation models is described in section <a class="reference internal" href="fm_deployments.html"><span class="doc">Models/ ModelInference for Deployments</span></a>.</p>
+</section>
+</section>
+<section id="id2">
+<h2>IBM watsonx.ai software with IBM Cloud Pak® for Data<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Available in version IBM watsonx.ai for IBM Cloud Pak® for Data 4.8.4 and later.</p>
 </div>
 <p>This section shows how to list custom models specs, store &amp; deploy model and use ModelInference module with created deployment on IBM watsonx.ai for IBM Cloud Pak® for Data.</p>
-<section id="initialize-apiclient-object">
-<h3>Initialize APIClient object<a class="headerlink" href="#initialize-apiclient-object" title="Link to this heading">¶</a></h3>
+<section id="id3">
+<h3>Initialize APIClient object<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
 <p>Initialize <code class="docutils literal notranslate"><span class="pre">APIClient</span></code> object if needed. More details about supported <code class="docutils literal notranslate"><span class="pre">APIClient</span></code> initialization can be found in <a class="reference internal" href="setup.html"><span class="doc">Setup</span></a> section,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
 
@@ -342,8 +454,8 @@ to see steps.</p>
 </pre></div>
 </div>
 </section>
-<section id="storing-model-in-service-repository">
-<h3>Storing model in service repository<a class="headerlink" href="#storing-model-in-service-repository" title="Link to this heading">¶</a></h3>
+<section id="id4">
+<h3>Storing model in service repository<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
 <p>To store model as an asset in the repo, first create proper <code class="docutils literal notranslate"><span class="pre">metadata</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sw_spec_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">software_specifications</span><span class="o">.</span><span class="n">get_id_by_name</span><span class="p">(</span><span class="s1">&#39;watsonx-cfm-caikit-1.0&#39;</span><span class="p">)</span>
 
@@ -355,8 +467,8 @@ to see steps.</p>
 </pre></div>
 </div>
 </section>
-<section id="storing-model">
-<h3>Storing model<a class="headerlink" href="#storing-model" title="Link to this heading">¶</a></h3>
+<section id="id5">
+<h3>Storing model<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
 <p>After that, it is possible to store model using <code class="docutils literal notranslate"><span class="pre">client.repository.store_model()</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">stored_model_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">store_model</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;mistralai/Mistral-7B-Instruct-v0.2&#39;</span><span class="p">,</span> <span class="n">meta_props</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
 </pre></div>
@@ -399,8 +511,8 @@ You can use custom hardware specification or pre-defined T-shirt sizes.
 </pre></div>
 </div>
 </section>
-<section id="deployment-of-custom-foundation-model">
-<h3>Deployment of custom foundation model<a class="headerlink" href="#deployment-of-custom-foundation-model" title="Link to this heading">¶</a></h3>
+<section id="id6">
+<h3>Deployment of custom foundation model<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
 <p>To crete new deployment of custom foundation models dictionary with deployment <code class="docutils literal notranslate"><span class="pre">metadata</span></code> need to be defined.
 There can be specified the <code class="docutils literal notranslate"><span class="pre">NAME</span></code> of new deployment, <code class="docutils literal notranslate"><span class="pre">DESCRIPTION</span></code> and hardware specification.
 For now only online deployments are supported so <code class="docutils literal notranslate"><span class="pre">ONLINE</span></code> field is required.
@@ -427,8 +539,8 @@ which can be used to retrieve the <code class="docutils literal notranslate"><sp
 </pre></div>
 </div>
 </section>
-<section id="working-with-deployments">
-<h3>Working with deployments<a class="headerlink" href="#working-with-deployments" title="Link to this heading">¶</a></h3>
+<section id="id7">
+<h3>Working with deployments<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
 <p>Working with deployments of foundation models is described in section <a class="reference internal" href="fm_deployments.html"><span class="doc">Models/ ModelInference for Deployments</span></a>.</p>
 </section>
 </section>
@@ -490,14 +602,23 @@ which can be used to retrieve the <code class="docutils literal notranslate"><sp
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Custom models</a><ul>
-<li><a class="reference internal" href="#id1">IBM watsonx.ai software with IBM Cloud Pak® for Data</a><ul>
+<li><a class="reference internal" href="#id1">IBM watsonx.ai for IBM Cloud</a><ul>
 <li><a class="reference internal" href="#initialize-apiclient-object">Initialize APIClient object</a></li>
-<li><a class="reference internal" href="#listing-models-specification">Listing models specification</a></li>
+<li><a class="reference internal" href="#add-task-credentials">Add Task Credentials</a></li>
 <li><a class="reference internal" href="#storing-model-in-service-repository">Storing model in service repository</a></li>
 <li><a class="reference internal" href="#storing-model">Storing model</a></li>
-<li><a class="reference internal" href="#defining-hardware-specification">Defining hardware specification</a></li>
 <li><a class="reference internal" href="#deployment-of-custom-foundation-model">Deployment of custom foundation model</a></li>
 <li><a class="reference internal" href="#working-with-deployments">Working with deployments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id2">IBM watsonx.ai software with IBM Cloud Pak® for Data</a><ul>
+<li><a class="reference internal" href="#id3">Initialize APIClient object</a></li>
+<li><a class="reference internal" href="#listing-models-specification">Listing models specification</a></li>
+<li><a class="reference internal" href="#id4">Storing model in service repository</a></li>
+<li><a class="reference internal" href="#id5">Storing model</a></li>
+<li><a class="reference internal" href="#defining-hardware-specification">Defining hardware specification</a></li>
+<li><a class="reference internal" href="#id6">Deployment of custom foundation model</a></li>
+<li><a class="reference internal" href="#id7">Working with deployments</a></li>
 </ul>
 </li>
 </ul>
