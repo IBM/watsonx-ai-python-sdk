@@ -4,159 +4,159 @@ Custom models
 The custom models of `watsonx.ai` client might differ depending on the product offering. Choose an option from the list below
 to see steps.
 
-- `IBM watsonx.ai for IBM Cloud <#id1>`_
+.. - `IBM watsonx.ai for IBM Cloud <#id1>`_
 - `IBM watsonx.ai software with IBM Cloud Pak for Data <#id2>`_
 
+..
+    IBM watsonx.ai for IBM Cloud
+    ----------------------------
 
-IBM watsonx.ai for IBM Cloud
-----------------------------
+    This section shows how to create task credentials, store & deploy model and use ModelInference module with created deployment on the IBM watsonx.ai for IBM Cloud.
 
-This section shows how to create task credentials, store & deploy model and use ModelInference module with created deployment on the IBM watsonx.ai for IBM Cloud.
+    Initialize APIClient object
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Initialize APIClient object
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    Initialize ``APIClient`` object if needed. More details about supported ``APIClient`` initialization can be found in :doc:`setup` section,
 
-Initialize ``APIClient`` object if needed. More details about supported ``APIClient`` initialization can be found in :doc:`setup` section,
+    .. code-block::
 
-.. code-block::
+        from ibm_watsonx_ai import APIClient
 
-    from ibm_watsonx_ai import APIClient
+        client = APIClient(credentials)
+        client.set.default_project(project_id=project_id)
+        # or client.set.default_space(space_id=space_id)
 
-    client = APIClient(credentials)
-    client.set.default_project(project_id=project_id)
-    # or client.set.default_space(space_id=space_id)
+    Add Task Credentials
+    ^^^^^^^^^^^^^^^^^^^^
 
-Add Task Credentials
-^^^^^^^^^^^^^^^^^^^^
+    .. warning::
+        If not already added, a Task Credentials are required on IBM watsonx.ai for IBM Cloud to make a deployment.
 
-.. warning::
-    If not already added, a Task Credentials are required on IBM watsonx.ai for IBM Cloud to make a deployment.
+    Task credentials enable you to deploy a custom foundation model and avoid token expiration issues.
+    More details can be found in: `Adding task credentials <https://www.ibm.com/docs/en/watsonx/saas?topic=projects-adding-task-credentials>`_.
 
-Task credentials enable you to deploy a custom foundation model and avoid token expiration issues.
-More details can be found in: `Adding task credentials <https://www.ibm.com/docs/en/watsonx/saas?topic=projects-adding-task-credentials>`_.
+    To list available task credentials, use ``list`` method:
 
-To list available task credentials, use ``list`` method:
+    .. code-block::
 
-.. code-block::
+        client.task_credentials.list()
 
-    client.task_credentials.list()
+    If the list is empty, you can create new task credentials by using ``store`` method:
 
-If the list is empty, you can create new task credentials by using ``store`` method:
+    .. code-block::
 
-.. code-block::
+        client.task_credentials.store()
 
-    client.task_credentials.store()
+    To get status of available task credentials, use ``get_details`` method:
 
-To get status of available task credentials, use ``get_details`` method:
+    .. code-block::
 
-.. code-block::
-
-    client.task_credentials.get_details()
-
-
-Storing model in service repository
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-To store model as an asset in the repo, first create proper ``metadata``.
-
-In Cloud scenario, there is a need to have an active connection to Cloud Object Storage. 
-For more information and how to create COS connection, see :ref:`working-with-connection-asset`. 
-From such connection, the user can obtain the parameters needed to fill ``MODEL_LOCATION`` field.
-
-.. code-block:: python
-
-    metadata = {
-        client.repository.ModelMetaNames.NAME: "custom FM asset,
-        client.repository.ModelMetaNames.SOFTWARE_SPEC_ID: sw_spec_id,
-        client.repository.ModelMetaNames.TYPE: client.repository.ModelAssetTypes.CUSTOM_FOUNDATION_MODEL_1_0,
-        client.repository.ModelMetaNames.MODEL_LOCATION: {
-            "file_path": "path/to/pvc",
-            "bucket": "watsonx-llm-models",
-            "connection_id": "5e891c6b-3aa9-4f01-8e2d-785d81797466",
-        },
-    }
-
-Storing model
-^^^^^^^^^^^^^
-
-After that, it is possible to store model using ``client.repository.store_model()``.
-
-.. code-block:: python
-
-    stored_model_details = client.repository.store_model(model='Google/flan-t5-small', meta_props=metadata)
-
-To get ``id`` of stored asset use the details obtained.
-
-.. code-block:: python
-
-    model_asset_id = client.repository.get_model_id(stored_model_details)
+        client.task_credentials.get_details()
 
 
-All stored models custom foundation models can be listed by client.repository.list() method with filtering by framework type.
+    Storing model in service repository
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code-block:: python
+    To store model as an asset in the repo, first create proper ``metadata``.
 
-    client.repository.list(framework_filter='custom_foundation_model_1.0')
+    In Cloud scenario, there is a need to have an active connection to Cloud Object Storage.
+    For more information and how to create COS connection, see :ref:`working-with-connection-asset`.
+    From such connection, the user can obtain the parameters needed to fill ``MODEL_LOCATION`` field.
 
-Deployment of custom foundation model
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-To crete new deployment of custom foundation models dictionary with deployment ``metadata`` need to be defined.
-There can be specified the ``NAME`` of new deployment, ``DESCRIPTION`` and ``HARDWARE_REQUEST`` fields. 
-The requested hardware must have specific ``size`` and ``num_nodes``. 
-If it comes to size user can use ``client.deployments.HardwareRequestSizes.Small`` or ``client.deployments.HardwareRequestSizes.Medium``.
-Where ``num_nodes`` is a number.
+    .. code-block:: python
 
-For now only online deployments are supported so ``ONLINE`` field is required.
-At this stage user can overwrite model parameters optionally.
-It can be done by passing dictionary with new parameters values in ``FOUNDATION_MODEL`` field.
+        metadata = {
+            client.repository.ModelMetaNames.NAME: "custom FM asset,
+            client.repository.ModelMetaNames.SOFTWARE_SPEC_ID: sw_spec_id,
+            client.repository.ModelMetaNames.TYPE: client.repository.ModelAssetTypes.CUSTOM_FOUNDATION_MODEL_1_0,
+            client.repository.ModelMetaNames.MODEL_LOCATION: {
+                "file_path": "path/to/pvc",
+                "bucket": "watsonx-llm-models",
+                "connection_id": "5e891c6b-3aa9-4f01-8e2d-785d81797466",
+            },
+        }
 
-Besides the ``metadata`` with deployment configuration the ``id`` of stored model asset are required for deployment creation.
+    Storing model
+    ^^^^^^^^^^^^^
 
-.. code-block:: python
+    After that, it is possible to store model using ``client.repository.store_model()``.
 
-    meta_props = {
-        client.deployments.ConfigurationMetaNames.NAME: "custom_fm_deployment",
-        client.deployments.ConfigurationMetaNames.DESCRIPTION: "Testing deployment using custom foundation model",
-        client.deployments.ConfigurationMetaNames.ONLINE: {},
-        client.deployments.ConfigurationMetaNames.HARDWARE_REQUEST: {
-            'size': client.deployments.HardwareRequestSizes.Small, 
-            # or 'size': client.deployments.HardwareRequestSizes.Medium
-            'num_nodes': 1
-        },
-        # optionally overwrite model parameters here
-        client.deployments.ConfigurationMetaNames.FOUNDATION_MODEL: {"max_input_tokens": 256}, 
-        client.deployments.ConfigurationMetaNames.SERVING_NAME: "test_byom_fm_01"
-    }
-    deployment_details = client.deployments.create(stored_model_asset_id, meta_props)
+    .. code-block:: python
 
+        stored_model_details = client.repository.store_model(model='Google/flan-t5-small', meta_props=metadata)
 
-Once deployment creation process is done the ``client.deployments.create`` returns dictionary with deployment details,
-which can be used to retrieve the ``id`` of the deployment.
+    To get ``id`` of stored asset use the details obtained.
 
-.. code-block:: python
+    .. code-block:: python
 
-    deployment_id = client.deployments.get_id(deployment_details)
+        model_asset_id = client.repository.get_model_id(stored_model_details)
 
 
-All existing in working space or project scope can be listed with ``list`` method:
+    All stored models custom foundation models can be listed by client.repository.list() method with filtering by framework type.
 
-.. code-block:: python
+    .. code-block:: python
 
-    client.deployments.list()
+        client.repository.list(framework_filter='custom_foundation_model_1.0')
+
+    Deployment of custom foundation model
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    To crete new deployment of custom foundation models dictionary with deployment ``metadata`` need to be defined.
+    There can be specified the ``NAME`` of new deployment, ``DESCRIPTION`` and ``HARDWARE_REQUEST`` fields.
+    The requested hardware must have specific ``size`` and ``num_nodes``.
+    If it comes to size user can use ``client.deployments.HardwareRequestSizes.Small`` or ``client.deployments.HardwareRequestSizes.Medium``.
+    Where ``num_nodes`` is a number.
+
+    For now only online deployments are supported so ``ONLINE`` field is required.
+    At this stage user can overwrite model parameters optionally.
+    It can be done by passing dictionary with new parameters values in ``FOUNDATION_MODEL`` field.
+
+    Besides the ``metadata`` with deployment configuration the ``id`` of stored model asset are required for deployment creation.
+
+    .. code-block:: python
+
+        meta_props = {
+            client.deployments.ConfigurationMetaNames.NAME: "custom_fm_deployment",
+            client.deployments.ConfigurationMetaNames.DESCRIPTION: "Testing deployment using custom foundation model",
+            client.deployments.ConfigurationMetaNames.ONLINE: {},
+            client.deployments.ConfigurationMetaNames.HARDWARE_REQUEST: {
+                'size': client.deployments.HardwareRequestSizes.Small,
+                # or 'size': client.deployments.HardwareRequestSizes.Medium
+                'num_nodes': 1
+            },
+            # optionally overwrite model parameters here
+            client.deployments.ConfigurationMetaNames.FOUNDATION_MODEL: {"max_input_tokens": 256},
+            client.deployments.ConfigurationMetaNames.SERVING_NAME: "test_byom_fm_01"
+        }
+        deployment_details = client.deployments.create(stored_model_asset_id, meta_props)
 
 
-Working with deployments
-^^^^^^^^^^^^^^^^^^^^^^^^
+    Once deployment creation process is done the ``client.deployments.create`` returns dictionary with deployment details,
+    which can be used to retrieve the ``id`` of the deployment.
 
-Working with deployments of foundation models is described in section :doc:`Models/ ModelInference for Deployments<fm_deployments>`.
+    .. code-block:: python
 
-IBM watsonx.ai software with IBM Cloud Pak for Data
----------------------------------------------------
+        deployment_id = client.deployments.get_id(deployment_details)
+
+
+    All existing in working space or project scope can be listed with ``list`` method:
+
+    .. code-block:: python
+
+        client.deployments.list()
+
+
+    Working with deployments
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+    Working with deployments of foundation models is described in section :doc:`Models/ ModelInference for Deployments<fm_deployments>`.
+
+IBM watsonx.ai software with IBM Cloud Pak® for Data
+----------------------------------------------------
 
 .. note::
-    Available in version IBM watsonx.ai for IBM Cloud Pak for Data 4.8.4 and higher.
+    Available in version IBM watsonx.ai for IBM Cloud Pak® for Data 4.8.4 and later.
 
-This section shows how to list custom models specs, store & deploy model and use ModelInference module with created deployment on IBM watsonx.ai for IBM Cloud Pak for Data.
+This section shows how to list custom models specs, store & deploy model and use ModelInference module with created deployment on IBM watsonx.ai for IBM Cloud Pak® for Data.
 
 Initialize APIClient object
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -175,7 +175,7 @@ Listing models specification
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. warning::
-    Only applicable for IBM watsonx.ai for IBM Cloud Pak for Data 4.8.4 and higher.
+    Only applicable for IBM watsonx.ai for IBM Cloud Pak® for Data 4.8.4 and later.
 
 .. warning::
     The model needs to be explicitly stored & deployed in the repository to be used/listed.
