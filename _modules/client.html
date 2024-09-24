@@ -219,6 +219,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -464,6 +465,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__session</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;https://wxai-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.test.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.wxai-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dai.test.cloud.ibm.com&quot;</span><span class="p">,</span>
             <span class="s2">&quot;https://wml-mcsp-dev.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
             <span class="s2">&quot;https://wml-dev.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
             <span class="s2">&quot;https://wml-fvt.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
@@ -481,6 +484,7 @@
             <span class="s2">&quot;https://private.eu-gb.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.eu-gb.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
             <span class="s2">&quot;https://private.eu-de.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.eu-de.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
             <span class="s2">&quot;https://private.us-south.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.us-south.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
         <span class="p">}</span>
 
         <span class="n">requests</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">()</span>  <span class="c1"># type: ignore[attr-defined]</span>
@@ -513,7 +517,9 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span>
 
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">platform_url</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">platform_url</span>
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="p">]</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>

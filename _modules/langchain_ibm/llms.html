@@ -219,6 +219,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -649,15 +650,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a stream response to a generation chunk.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">stream_response</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">]:</span>
             <span class="k">return</span> <span class="n">GenerationChunk</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-
-        <span class="n">finish_reason</span> <span class="o">=</span> <span class="n">stream_response</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stop_reason&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-
         <span class="k">return</span> <span class="n">GenerationChunk</span><span class="p">(</span>
             <span class="n">text</span><span class="o">=</span><span class="n">stream_response</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;generated_text&quot;</span><span class="p">],</span>
             <span class="n">generation_info</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="n">finish_reason</span><span class="o">=</span><span class="kc">None</span>
-                <span class="k">if</span> <span class="n">finish_reason</span> <span class="o">==</span> <span class="s2">&quot;not_finished&quot;</span>
-                <span class="k">else</span> <span class="n">finish_reason</span><span class="p">,</span>
+                <span class="n">finish_reason</span><span class="o">=</span><span class="n">stream_response</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stop_reason&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                 <span class="n">llm_output</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span>
                     <span class="s2">&quot;deployment_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span><span class="p">,</span>

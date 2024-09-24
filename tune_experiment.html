@@ -220,6 +220,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -333,6 +334,59 @@
 </pre></div>
 </div>
 <dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.fm_tune.TuneExperiment.fine_tuner">
+<span class="sig-name descname"><span class="pre">fine_tuner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_seq_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accumulate_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbalizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_update_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_by_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/experiment/fm_tune/tune_experiment.html#TuneExperiment.fine_tuner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.experiment.fm_tune.TuneExperiment.fine_tuner" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize a FineTuner module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name for the FineTuner</p></li>
+<li><p><strong>base_model</strong> (<em>str</em>) – model id of the base model for this fine-tuning.</p></li>
+<li><p><strong>task_id</strong> (<em>str</em>) – task that is targeted for this model.</p></li>
+<li><p><strong>description</strong> (<em>str</em><em>, </em><em>optional</em>) – description</p></li>
+<li><p><strong>num_epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – number of epochs to tune the fine vectors, this affects the quality of the trained model.
+Possible values: 1 ≤ value ≤ 50, default value: 20</p></li>
+<li><p><strong>learning_rate</strong> (<em>float</em><em>, </em><em>optional</em>) – learning rate to be used while tuning prompt vectors. Possible values: 0.01 ≤ value ≤ 0.5,
+default value: 0.3</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The batch size is a number of samples processed before the model is updated.
+Possible values: 1 ≤ value ≤ 16, default value: 16</p></li>
+<li><p><strong>max_seq_length</strong> (<em>int</em><em>, </em><em>optional</em>)</p></li>
+<li><p><strong>accumulate_steps</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of steps to be used for gradient accumulation. Gradient accumulation
+refers to a method of collecting gradient for configured number of steps instead of updating
+the model variables at every step and then applying the update to model variables.
+This can be used as a tool to overcome smaller batch size limitation.
+Often also referred in conjunction with “effective batch size”. Possible values: 1 ≤ value ≤ 128,
+default value: 16</p></li>
+<li><p><strong>verbalizer</strong> (<em>str</em><em>, </em><em>optional</em>) – Verbalizer template to be used for formatting data at train and inference time.</p></li>
+<li><p><strong>response_template</strong> (<em>str</em><em>, </em><em>optional</em>) – Separator for the prediction/response in the single sequence to train on completions only.</p></li>
+<li><p><strong>gpu</strong> (<em>dict</em><em>, </em><em>optional</em>) – The name and number of GPUs used for the FineTuning job.</p></li>
+<li><p><strong>auto_update_model</strong> (<em>bool</em><em>, </em><em>optional</em>) – define if model should be automatically updated, default value: <cite>True</cite></p></li>
+<li><p><strong>group_by_name</strong> (<em>bool</em><em>, </em><em>optional</em>) – define if tunings should be grouped by name, default value: <cite>False</cite></p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Examples</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.experiment</span> <span class="kn">import</span> <span class="n">TuneExperiment</span>
+
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">TuneExperiment</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="n">prompt_tuner</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">fine_tuner</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;fine-tuning name&quot;</span><span class="p">,</span>
+    <span class="n">base_model</span><span class="o">=</span><span class="s1">&#39;bigscience/bloom-560m&#39;</span><span class="p">,</span>
+    <span class="n">task_id</span><span class="o">=</span><span class="s2">&quot;generation&quot;</span><span class="p">,</span>
+    <span class="n">num_epochs</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">max_seq_length</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+    <span class="n">accumulate_steps</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">verbalizer</span><span class="o">=</span><span class="s1">&#39;### Input: {{input}} </span><span class="se">\n\n</span><span class="s1">### Response: {{output}}&#39;</span><span class="p">,</span>
+    <span class="n">response_template</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">### Response:&#39;</span><span class="p">,</span>
+    <span class="n">auto_update_model</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.fm_tune.TuneExperiment.prompt_tuner">
 <span class="sig-name descname"><span class="pre">prompt_tuner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accumulate_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_input_tokens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_output_tokens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbalizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tuning_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_update_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_by_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/experiment/fm_tune/tune_experiment.html#TuneExperiment.prompt_tuner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.experiment.fm_tune.TuneExperiment.prompt_tuner" title="Link to this definition">¶</a></dt>
 <dd><p>Initialize a PromptTuner module.</p>
@@ -432,7 +486,7 @@ Allowable values: [<cite>experiment.PromptTuningTypes.PT</cite>], default value:
 <dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.fm_tune.TuneRuns">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.experiment.fm_tune.</span></span><span class="sig-name descname"><span class="pre">TuneRuns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/experiment/fm_tune/tune_runs.html#TuneRuns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.experiment.fm_tune.TuneRuns" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>TuneRuns class is used to work with historical PromptTuner runs.</p>
+<p>TuneRuns class is used to work with historical PromptTuner and FineTuner runs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -473,16 +527,16 @@ Allowable values: [<cite>experiment.PromptTuningTypes.PT</cite>], default value:
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.experiment.fm_tune.TuneRuns.get_tuner">
 <span class="sig-name descname"><span class="pre">get_tuner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/experiment/fm_tune/tune_runs.html#TuneRuns.get_tuner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.experiment.fm_tune.TuneRuns.get_tuner" title="Link to this definition">¶</a></dt>
-<dd><p>Create instance of PromptTuner based on tuning run with specific run_id.</p>
+<dd><p>Create instance of PromptTuner or FineTuner based on tuning run with specific run_id.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>run_id</strong> (<em>str</em>) – ID of the run</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>prompt tuner object</p>
+<dd class="field-even"><p>prompt tuner | fine tuner object</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>PromptTuner class instance</p>
+<dd class="field-odd"><p><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.PromptTuner" title="ibm_watsonx_ai.foundation_models.PromptTuner">PromptTuner</a> | FineTuner class instance</p>
 </dd>
 </dl>
 <p><strong>Example</strong></p>
@@ -792,8 +846,9 @@ when not provided use loss one</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.utils.enums.TuneExperimentTasks">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.utils.enums.</span></span><span class="sig-name descname"><span class="pre">TuneExperimentTasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/utils/enums.html#TuneExperimentTasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.utils.enums.TuneExperimentTasks" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.utils.enums.</span></span><span class="sig-name descname"><span class="pre">TuneExperimentTasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/utils/enums.html#TuneExperimentTasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.utils.enums.TuneExperimentTasks" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.utils.enums.TuneExperimentTasks.CLASSIFICATION">
 <span class="sig-name descname"><span class="pre">CLASSIFICATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'classification'</span></em><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.utils.enums.TuneExperimentTasks.CLASSIFICATION" title="Link to this definition">¶</a></dt>
@@ -913,6 +968,7 @@ when not provided use loss one</p>
 <li><a class="reference internal" href="#">Tune Experiment</a><ul>
 <li><a class="reference internal" href="#tuneexperiment">TuneExperiment</a><ul>
 <li><a class="reference internal" href="#ibm_watsonx_ai.experiment.fm_tune.TuneExperiment"><code class="docutils literal notranslate"><span class="pre">TuneExperiment</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.experiment.fm_tune.TuneExperiment.fine_tuner"><code class="docutils literal notranslate"><span class="pre">TuneExperiment.fine_tuner()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.experiment.fm_tune.TuneExperiment.prompt_tuner"><code class="docutils literal notranslate"><span class="pre">TuneExperiment.prompt_tuner()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.experiment.fm_tune.TuneExperiment.runs"><code class="docutils literal notranslate"><span class="pre">TuneExperiment.runs()</span></code></a></li>
 </ul>

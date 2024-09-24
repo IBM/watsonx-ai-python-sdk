@@ -219,6 +219,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -354,6 +355,24 @@
     <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">tuning_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">verbalizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">FineTuningParams</span><span class="p">:</span>
+    <span class="n">base_model</span><span class="p">:</span> <span class="nb">dict</span>
+    <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">_</span><span class="p">:</span> <span class="n">KW_ONLY</span>
+    <span class="n">num_epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">max_seq_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">accumulate_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">verbalizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">response_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">gpu</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
@@ -958,77 +977,6 @@
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">extra_args</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">_GenerateEventLoop</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate loop based on implementation of shared_event_loop</span>
-<span class="sd">    from https://github.com/IBM/ibm-generative-ai</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">:</span> <span class="n">AbstractEventLoop</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_future</span><span class="p">:</span> <span class="n">Future</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_thread_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
-        <span class="c1"># Use one event loop for all threads in multithreading scenario</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ref_count</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">AbstractEventLoop</span><span class="p">:</span>
-
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread_lock</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ref_count</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="c1"># create new event loop only at the first time</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref_count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
-
-                <span class="k">def</span> <span class="nf">worker</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">loop</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">AbstractEventLoop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">)</span>
-                    <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
-
-                    <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="p">[</span>
-                        <span class="n">t</span>
-                        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">all_tasks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">done</span><span class="p">()</span> <span class="ow">or</span> <span class="n">t</span><span class="o">.</span><span class="n">cancelled</span><span class="p">())</span>
-                    <span class="p">]:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
-
-                    <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loop</span>  <span class="c1"># type: ignore[return-value]</span>
-
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">exc_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">exc_val</span><span class="p">:</span> <span class="ne">BaseException</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">exc_tb</span><span class="p">:</span> <span class="n">TracebackType</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread_lock</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ref_count</span> <span class="o">-=</span> <span class="mi">1</span>
-            <span class="c1"># Closing the event loop when no one refers to it</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">call_soon_threadsafe</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">stop</span><span class="p">())</span>  <span class="c1"># type: ignore[union-attr]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">loop</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="k">def</span> <span class="nf">_handle_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">all_tasks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">):</span>
-            <span class="n">task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_future</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_future</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
-
-
-<span class="n">generate_event_loop</span> <span class="o">=</span> <span class="n">_GenerateEventLoop</span><span class="p">()</span>
-
-
-<span class="k">def</span> <span class="nf">handle_shutdown_global</span><span class="p">(</span><span class="n">signal</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">FrameType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">generate_event_loop</span><span class="o">.</span><span class="n">_handle_shutdown</span><span class="p">()</span>
-
-
 <span class="k">class</span> <span class="nc">HAPDetectionWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span> <span class="o">...</span>
 
 
@@ -1080,6 +1028,22 @@
     <span class="n">new_func</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">update_wrapper</span><span class="p">(</span><span class="n">new_func</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>  <span class="c1"># type: ignore[assignment]</span>
     <span class="n">new_func</span><span class="o">.</span><span class="vm">__kwdefaults__</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="vm">__kwdefaults__</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">new_func</span>
+
+
+<span class="k">def</span> <span class="nf">_is_fine_tuning_endpoint_available</span><span class="p">(</span><span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">api_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fine_tunings_href</span><span class="p">()</span>
+
+        <span class="n">response_fine_tuning_api</span> <span class="o">=</span> <span class="n">api_client</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">?limit=1&quot;</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">api_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">api_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">response_fine_tuning_api</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
 </pre></div>
         </article>
       </div>

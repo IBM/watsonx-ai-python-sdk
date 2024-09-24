@@ -219,6 +219,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -301,6 +302,8 @@
 <span class="p">]</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers</span> <span class="kn">import</span> <span class="n">ContainerLocation</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -492,7 +495,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">remote_documents</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">connection</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">S3Location</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">connection</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="p">(</span><span class="n">S3Location</span><span class="p">,</span> <span class="n">ContainerLocation</span><span class="p">)):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">remote_documents</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
                     <span class="p">[</span>
                         <span class="n">RemoteDocument</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">document_id</span><span class="o">=</span><span class="n">get_document_id</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
@@ -608,17 +611,23 @@
                 <span class="n">sampled_docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs_random_sampling</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remote_documents</span><span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_type</span> <span class="o">==</span> <span class="n">DocumentsSamplingTypes</span><span class="o">.</span><span class="n">BENCHMARK_DRIVEN</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">benchmark_documents_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-                        <span class="nb">set</span><span class="p">(</span>
-                            <span class="p">[</span>
-                                <span class="n">y</span>
-                                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_dataset</span><span class="p">[</span>
-                                    <span class="s2">&quot;correct_answer_document_ids&quot;</span>
-                                <span class="p">]</span><span class="o">.</span><span class="n">values</span>
-                                <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span>
-                            <span class="p">]</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">benchmark_documents_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                            <span class="nb">set</span><span class="p">(</span>
+                                <span class="p">[</span>
+                                    <span class="n">y</span>
+                                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_dataset</span><span class="p">[</span>
+                                        <span class="s2">&quot;correct_answer_document_ids&quot;</span>
+                                    <span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                                    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span>
+                                <span class="p">]</span>
+                            <span class="p">)</span>
                         <span class="p">)</span>
-                    <span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                            <span class="s2">&quot;Unable to collect `correct_answer_document_ids` from the benchmark dataset, &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;due to invalid schema provided. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="s2">&quot;`benchmark_dataset` is mandatory for sample_type: DocumentsSamplingTypes.BENCHMARK_DRIVEN.&quot;</span>
@@ -657,18 +666,26 @@
                     <span class="n">q_input</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">doc</span><span class="p">))</span>
 
                 <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">thread_no</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+                    <span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Empty</span>
+
                     <span class="n">pool</span><span class="o">.</span><span class="n">map_async</span><span class="p">(</span><span class="n">_asynch_download</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 
                     <span class="n">res_size</span> <span class="o">=</span> <span class="mi">0</span>
 
                     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">qs_output</span><span class="p">)):</span>
-                        <span class="n">result</span> <span class="o">=</span> <span class="n">qs_output</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">result</span> <span class="o">=</span> <span class="n">qs_output</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="n">Empty</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                            <span class="n">result</span> <span class="o">=</span> <span class="n">e</span>
 
                         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
                             <span class="n">e</span> <span class="o">=</span> <span class="n">result</span>
-                            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                            <span class="n">doc_id</span> <span class="o">=</span> <span class="n">sampled_docs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">document_id</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to download the file: `</span><span class="si">{</span><span class="n">doc_id</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">Empty</span><span class="p">):</span>
+                                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
                             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_callback</span><span class="p">:</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">error_callback</span><span class="p">(</span><span class="n">sampled_docs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">document_id</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">error_callback</span><span class="p">(</span><span class="n">doc_id</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">doc</span> <span class="o">=</span> <span class="n">result</span>
                             <span class="n">res_size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
@@ -681,15 +698,21 @@
             <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>  <span class="c1"># &quot;sequential&quot; - simple sequential downloading</span>
                 <span class="n">res_size</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">sampled_docs</span><span class="p">:</span>
-                    <span class="n">doc</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">doc</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
 
-                    <span class="n">loaded_doc</span> <span class="o">=</span> <span class="n">TextLoader</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-                    <span class="n">res_size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">loaded_doc</span><span class="o">.</span><span class="n">page_content</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+                        <span class="n">loaded_doc</span> <span class="o">=</span> <span class="n">TextLoader</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+                        <span class="n">res_size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">loaded_doc</span><span class="o">.</span><span class="n">page_content</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
 
-                    <span class="k">if</span> <span class="n">size_limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">res_size</span> <span class="o">&gt;</span> <span class="n">size_limit</span><span class="p">:</span>
-                        <span class="k">return</span>
+                        <span class="k">if</span> <span class="n">size_limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">res_size</span> <span class="o">&gt;</span> <span class="n">size_limit</span><span class="p">:</span>
+                            <span class="k">return</span>
 
-                    <span class="k">yield</span> <span class="n">loaded_doc</span></div>
+                        <span class="k">yield</span> <span class="n">loaded_doc</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_callback</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">error_callback</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">document_id</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">e</span></div>
 
 </pre></div>
         </article>

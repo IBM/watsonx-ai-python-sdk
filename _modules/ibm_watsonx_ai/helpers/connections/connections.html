@@ -219,6 +219,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -664,7 +665,7 @@
 <span class="sd">        :return: list of connections to objects in a bucket location</span>
 <span class="sd">        :rtype: list[DataConnection]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">S3Location</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="p">(</span><span class="n">S3Location</span><span class="p">,</span> <span class="n">ContainerLocation</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
                 <span class="n">error_msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Can&#39;t create separate connections from this DataConnection.&quot;</span><span class="p">,</span>
                 <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;This DataConnection&#39;s location is not pointing to a S3 bucket.&quot;</span><span class="p">,</span>
@@ -674,14 +675,22 @@
         <span class="k">if</span> <span class="n">file_extension</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span>
 
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">ContainerLocation</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_if_connection_asset_is_s3</span><span class="p">()</span>
+
         <span class="n">file_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_paths_from_bucket</span><span class="p">()</span>
         <span class="n">new_data_connections</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">file_paths</span><span class="p">:</span>
-            <span class="n">new_data_conn</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="p">(</span>
-                <span class="n">connection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span>
-                <span class="n">location</span><span class="o">=</span><span class="n">S3Location</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">file_path</span><span class="p">),</span>
-            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">ContainerLocation</span><span class="p">):</span>
+                <span class="n">new_data_conn</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="p">(</span>
+                    <span class="n">location</span><span class="o">=</span><span class="n">ContainerLocation</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">file_path</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_data_conn</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="p">(</span>
+                    <span class="n">connection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span>
+                    <span class="n">location</span><span class="o">=</span><span class="n">S3Location</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">file_path</span><span class="p">),</span>
+                <span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="p">:</span>
                 <span class="n">new_data_conn</span><span class="o">.</span><span class="n">set_client</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="p">)</span>
             <span class="n">new_data_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_data_conn</span><span class="p">)</span>
@@ -2144,6 +2153,12 @@
 <span class="sd">        If no file extension is specified in self.path then empty string &quot;&quot; is returned.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">get_location</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;file_name&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span>
 
 
 <span class="k">class</span> <span class="nc">FSLocation</span><span class="p">(</span><span class="n">BaseLocation</span><span class="p">):</span>

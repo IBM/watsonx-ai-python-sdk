@@ -219,6 +219,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -611,6 +612,52 @@
             <span class="n">error_msg_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_model_specs&quot;</span><span class="p">,</span>
             <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
             <span class="n">filters</span><span class="o">=</span><span class="s2">&quot;function_prompt_tune_trainable&quot;</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+            <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
+            <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FoundationModelsManager.get_model_specs_with_fine_tuning_support">
+<a class="viewcode-back" href="../../fm_helpers.html#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_model_specs_with_fine_tuning_support">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_model_specs_with_fine_tuning_support</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Operations to query the details of the deployed foundation models with fine-tuning support.</span>
+
+<span class="sd">        :param model_id: Id of the model, defaults to None (all models specs are returned).</span>
+<span class="sd">        :type model_id: str, optional</span>
+
+<span class="sd">        :param limit:  limit number of fetched records</span>
+<span class="sd">        :type limit: int, optional</span>
+
+<span class="sd">        :param asynchronous:  if True, it will work as a generator</span>
+<span class="sd">        :type asynchronous: bool, optional</span>
+
+<span class="sd">        :param get_all:  if True, it will get all entries in &#39;limited&#39; chunks</span>
+<span class="sd">        :type get_all: bool, optional</span>
+
+<span class="sd">        :return: list of deployed foundation model specs with prompt tuning support</span>
+<span class="sd">        :rtype: dict or generator</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.foundation_models.get_model_specs_with_fine_tuning_support()</span>
+<span class="sd">            client.foundation_models.get_model_specs_with_fine_tuning_support(&#39;bigscience/bloom&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_spec</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_specifications_href</span><span class="p">(),</span>
+            <span class="n">operation_name</span><span class="o">=</span><span class="s2">&quot;Get available foundation models&quot;</span><span class="p">,</span>
+            <span class="n">error_msg_id</span><span class="o">=</span><span class="s2">&quot;fm_fine_tuning_no_model_specs&quot;</span><span class="p">,</span>
+            <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
+            <span class="n">filters</span><span class="o">=</span><span class="s2">&quot;function_fine_tune_trainable&quot;</span><span class="p">,</span>
             <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
             <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
             <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>

@@ -219,6 +219,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -296,9 +297,10 @@
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Literal</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
 <span class="kn">import</span> <span class="nn">httpx</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="p">(</span>
@@ -307,7 +309,7 @@
     <span class="n">InvalidMultipleArguments</span><span class="p">,</span>
     <span class="n">MissingExtension</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="kn">import</span> <span class="n">get_httpx_client</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="kn">import</span> <span class="n">get_httpx_client</span><span class="p">,</span> <span class="n">get_async_client</span>
 <span class="kn">import</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="k">as</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">.base_model_inference</span> <span class="kn">import</span> <span class="n">BaseModelInference</span><span class="p">,</span> <span class="n">_RETRY_STATUS_CODES</span>
 <span class="kn">from</span> <span class="nn">.fm_model_inference</span> <span class="kn">import</span> <span class="n">FMModelInference</span>
@@ -487,7 +489,6 @@
                 <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
                 <span class="n">persistent_connection</span><span class="o">=</span><span class="n">persistent_connection</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="n">BaseModelInference</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ModelInference.get_details">
 <a class="viewcode-back" href="../../../../fm_model_inference.html#ibm_watsonx_ai.foundation_models.inference.ModelInference.get_details">[docs]</a>
@@ -616,7 +617,13 @@
             <span class="k">raise</span> <span class="n">ParamOutOfRange</span><span class="p">(</span>
                 <span class="n">param_name</span><span class="o">=</span><span class="s2">&quot;concurrency_limit&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">10</span>
             <span class="p">)</span>
-
+        <span class="k">if</span> <span class="n">async_mode</span><span class="p">:</span>
+            <span class="n">warning_async_mode</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;In this mode, the results will be returned in the order in which the server returns the responses. &quot;</span>
+                <span class="s2">&quot;Please notice that it does not support non-blocking requests scheduling. &quot;</span>
+                <span class="s2">&quot;To use non-blocking native async inference method you may use `ModelInference.agenerate(...)`&quot;</span>
+            <span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">warning_async_mode</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
             <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
             <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
@@ -629,44 +636,26 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_agenerate</span><span class="p">(</span>  <span class="c1"># type: ignore[override]</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_agenerate_single</span><span class="p">(</span>  <span class="c1"># type: ignore[override]</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="n">loop</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">AbstractEventLoop</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given a text prompt as input, and parameters the selected inference</span>
 <span class="sd">        will return async generator with response.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
-            <span class="n">concurrency_limit</span><span class="p">,</span>
-            <span class="s2">&quot;concurrency_limit&quot;</span><span class="p">,</span>
-            <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
-            <span class="kc">False</span><span class="p">,</span>
-            <span class="n">raise_error_for_list</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">concurrency_limit</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>  <span class="c1"># convert float (ex. 10.0) to int</span>
-            <span class="n">concurrency_limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">concurrency_limit</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">concurrency_limit</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="ow">or</span> <span class="n">concurrency_limit</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ParamOutOfRange</span><span class="p">(</span>
-                <span class="n">param_name</span><span class="o">=</span><span class="s2">&quot;concurrency_limit&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">10</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">_agenerate</span><span class="p">(</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">_agenerate_single</span><span class="p">(</span>
             <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
             <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
             <span class="n">guardrails</span><span class="o">=</span><span class="n">guardrails</span><span class="p">,</span>
             <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="n">guardrails_hap_params</span><span class="p">,</span>
             <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">,</span>
-            <span class="n">concurrency_limit</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">,</span>
-            <span class="n">loop</span><span class="o">=</span><span class="n">loop</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="nd">@overload</span>
@@ -982,14 +971,77 @@
 <a class="viewcode-back" href="../../../../fm_model_inference.html#ibm_watsonx_ai.foundation_models.inference.ModelInference.close_persistent_connection">[docs]</a>
     <span class="k">def</span> <span class="nf">close_persistent_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Only applicable if persistent_connection was set to True in ModelInference initialization.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistent_connection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span><span class="p">,</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">_persistent_connection</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">_http_client</span><span class="p">,</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span> <span class="o">=</span> <span class="n">get_httpx_client</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">_http_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">_http_client</span> <span class="o">=</span> <span class="n">get_httpx_client</span><span class="p">(</span>
                 <span class="n">transport</span><span class="o">=</span><span class="n">requests</span><span class="o">.</span><span class="n">HTTPXRetryTransport</span><span class="p">(</span>
                     <span class="n">_retry_status_codes</span><span class="o">=</span><span class="n">_RETRY_STATUS_CODES</span><span class="p">,</span>
                     <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">verify</span><span class="p">,</span>
+                    <span class="n">limits</span><span class="o">=</span><span class="n">requests</span><span class="o">.</span><span class="n">HTTPX_DEFAULT_LIMIT</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModelInference.agenerate">
+<a class="viewcode-back" href="../../../../fm_model_inference.html#ibm_watsonx_ai.foundation_models.inference.ModelInference.agenerate">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">agenerate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">validate_prompt_variables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate response in asynchronous manner.</span>
+
+<span class="sd">        :param prompt: the prompt string, defaults to None</span>
+<span class="sd">        :type prompt: str | None, optional</span>
+
+<span class="sd">        :param params: meta props for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames, defaults to None</span>
+<span class="sd">        :type params: dict | None, optional</span>
+
+<span class="sd">        :param guardrails: If True then potentially hateful, abusive, and/or profane language (HAP) detection filter is toggle on for both prompt and generated text, defaults to False</span>
+<span class="sd">                           If HAP is detected the `HAPDetectionWarning` is issued</span>
+<span class="sd">        :type guardrails: bool, optional</span>
+
+<span class="sd">        :param guardrails_hap_params: meta props for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
+<span class="sd">                                      to view the list of MetaNames</span>
+<span class="sd">        :type guardrails_hap_params: dict | None, optional</span>
+
+<span class="sd">        :param validate_prompt_variables: If True, prompt variables provided in `params` are validated with the ones in Prompt Template Asset.</span>
+<span class="sd">                                          This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</span>
+<span class="sd">        :type validate_prompt_variables: bool, optional</span>
+
+<span class="sd">        :return: Raw response containing generated content</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">_agenerate_single</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">guardrails</span><span class="o">=</span><span class="n">guardrails</span><span class="p">,</span>
+            <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="n">guardrails_hap_params</span><span class="p">,</span>
+            <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">,</span>
+            <span class="n">validate_prompt_variables</span><span class="o">=</span><span class="n">validate_prompt_variables</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModelInference.aclose_persistent_connection">
+<a class="viewcode-back" href="../../../../fm_model_inference.html#ibm_watsonx_ai.foundation_models.inference.ModelInference.aclose_persistent_connection">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">aclose_persistent_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Only applicable if persistent_connection was set to True in ModelInference initialization.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">_persistent_connection</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">_async_http_client</span><span class="p">,</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span>
+        <span class="p">):</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">_async_http_client</span><span class="o">.</span><span class="n">aclose</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">_async_http_client</span> <span class="o">=</span> <span class="n">get_async_client</span><span class="p">(</span>
+                <span class="n">transport</span><span class="o">=</span><span class="n">requests</span><span class="o">.</span><span class="n">AsyncHTTPXRetryTransport</span><span class="p">(</span>
+                    <span class="n">_retry_status_codes</span><span class="o">=</span><span class="n">_RETRY_STATUS_CODES</span><span class="p">,</span>
+                    <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">verify</span><span class="p">,</span>
+                    <span class="n">limits</span><span class="o">=</span><span class="n">requests</span><span class="o">.</span><span class="n">HTTPX_DEFAULT_LIMIT</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span></div>
 </div>

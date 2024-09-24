@@ -219,6 +219,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -355,10 +356,13 @@
         <span class="n">training_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span>
             <span class="n">kwargs</span><span class="p">,</span> <span class="n">training_id</span><span class="p">,</span> <span class="s2">&quot;training&quot;</span><span class="p">,</span> <span class="n">can_be_none</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+        <span class="n">_is_fine_tuning</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_is_fine_tuning&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="n">Training</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">training_id</span><span class="p">,</span> <span class="s2">&quot;training_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">training_id</span><span class="p">,</span> <span class="n">_internal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+            <span class="n">training_id</span><span class="p">,</span> <span class="n">_internal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_is_fine_tuning</span><span class="o">=</span><span class="n">_is_fine_tuning</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">details</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">WMLResource</span><span class="o">.</span><span class="n">_get_required_element_from_dict</span><span class="p">(</span>
@@ -434,12 +438,18 @@
         <span class="n">training_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span>
             <span class="n">kwargs</span><span class="p">,</span> <span class="n">training_id</span><span class="p">,</span> <span class="s2">&quot;training&quot;</span><span class="p">,</span> <span class="n">can_be_none</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
+        <span class="n">_is_fine_tuning</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_is_fine_tuning&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># For CP4D, check if either spce or project ID is set</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
         <span class="n">Training</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">training_id</span><span class="p">,</span> <span class="s2">&quot;training_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
-        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_trainings_href</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">_is_fine_tuning</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fine_tunings_href</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_trainings_href</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">training_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">query_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="p">{</span>
@@ -531,7 +541,7 @@
 
 <div class="viewcode-block" id="Training.run">
 <a class="viewcode-back" href="../../core_api.html#client.Training.run">[docs]</a>
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new Machine Learning training.</span>
 
 <span class="sd">        :param meta_props: metadata of the training configuration. To see available meta names, use:</span>
@@ -655,6 +665,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
         <span class="n">Training</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">meta_props</span><span class="p">,</span> <span class="s2">&quot;meta_props&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="n">Training</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">asynchronous</span><span class="p">,</span> <span class="s2">&quot;asynchronous&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">_is_fine_tuning</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_is_fine_tuning&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">meta_props</span><span class="p">)</span>
         <span class="n">training_configuration_metadata</span> <span class="o">=</span> <span class="p">{</span>
@@ -684,6 +695,11 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">PROMPT_TUNING</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">:</span>
             <span class="n">training_configuration_metadata</span><span class="p">[</span><span class="s2">&quot;prompt_tuning&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta_props</span><span class="p">[</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">PROMPT_TUNING</span>
+            <span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">FINE_TUNING</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">:</span>
+            <span class="n">training_configuration_metadata</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta_props</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">FINE_TUNING</span>
             <span class="p">]</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">AUTO_UPDATE_MODEL</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">:</span>
@@ -740,10 +756,14 @@
             <span class="n">training_configuration_metadata</span><span class="p">[</span><span class="s2">&quot;federated_learning&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta_props</span><span class="p">[</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">FEDERATED_LEARNING</span>
             <span class="p">]</span>
-
-        <span class="n">train_endpoint</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_trainings_href</span><span class="p">()</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">_is_fine_tuning</span><span class="p">:</span>
+            <span class="n">train_endpoint</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fine_tunings_href</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">train_endpoint</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_trainings_href</span><span class="p">()</span>
+            <span class="p">)</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
         <span class="k">if</span> <span class="s2">&quot;space_id&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -771,13 +791,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">print_text_header_h1</span><span class="p">(</span><span class="s2">&quot;Running &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">trained_model_id</span><span class="p">))</span>
 
-            <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">trained_model_id</span><span class="p">)</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">trained_model_id</span><span class="p">,</span> <span class="n">_is_fine_tuning</span><span class="o">=</span><span class="n">_is_fine_tuning</span><span class="p">)</span>
             <span class="n">state</span> <span class="o">=</span> <span class="n">status</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span>
 
             <span class="k">with</span> <span class="n">StatusLogger</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="k">as</span> <span class="n">status_logger</span><span class="p">:</span>
                 <span class="k">while</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="s2">&quot;completed&quot;</span><span class="p">,</span> <span class="s2">&quot;canceled&quot;</span><span class="p">,</span> <span class="s2">&quot;failed&quot;</span><span class="p">]:</span>
                     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-                    <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">trained_model_id</span><span class="p">)</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span>
+                        <span class="n">trained_model_id</span><span class="p">,</span> <span class="n">_is_fine_tuning</span><span class="o">=</span><span class="n">_is_fine_tuning</span>
+                    <span class="p">)</span>
                     <span class="n">state</span> <span class="o">=</span> <span class="n">status</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span>
                     <span class="n">status_logger</span><span class="o">.</span><span class="n">log_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
 
@@ -795,7 +817,9 @@
                 <span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Response(</span><span class="si">{}</span><span class="s2">): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">run_details</span><span class="p">))</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">trained_model_id</span><span class="p">,</span> <span class="n">_internal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+                <span class="n">trained_model_id</span><span class="p">,</span> <span class="n">_internal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_is_fine_tuning</span><span class="o">=</span><span class="n">_is_fine_tuning</span>
+            <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Training.list">
@@ -1002,7 +1026,10 @@
 <div class="viewcode-block" id="Training.cancel">
 <a class="viewcode-back" href="../../core_api.html#client.Training.cancel">[docs]</a>
     <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">training_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">training_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancel a training that is currently running. This method can delete metadata</span>
 <span class="sd">        details of a completed or canceled training run when `hard_delete` parameter is set to `True`.</span>
@@ -1028,6 +1055,7 @@
         <span class="n">training_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span>
             <span class="n">kwargs</span><span class="p">,</span> <span class="n">training_id</span><span class="p">,</span> <span class="s2">&quot;training&quot;</span><span class="p">,</span> <span class="n">can_be_none</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+        <span class="n">_is_fine_tuning</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_is_fine_tuning&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># For CP4D, check if either spce or project ID is set</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
@@ -1038,10 +1066,22 @@
         <span class="k">if</span> <span class="n">hard_delete</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;hard_delete&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">})</span>
 
+        <span class="k">if</span> <span class="n">_is_fine_tuning</span><span class="p">:</span>
+
+            <span class="n">train_endpoint</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fine_tuning_href</span><span class="p">(</span>
+                    <span class="n">training_id</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">train_endpoint</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_training_href</span><span class="p">(</span>
+                    <span class="n">training_id</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
         <span class="n">response_delete</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_training_href</span><span class="p">(</span>
-                <span class="n">training_id</span>
-            <span class="p">),</span>
+            <span class="n">train_endpoint</span><span class="p">,</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
             <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
         <span class="p">)</span>

@@ -219,6 +219,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -698,6 +699,7 @@
     <span class="n">PIPELINE</span> <span class="o">=</span> <span class="s2">&quot;pipeline&quot;</span>
     <span class="n">MODEL_DEFINITION</span> <span class="o">=</span> <span class="s2">&quot;model_definition&quot;</span>
     <span class="n">PROMPT_TUNING</span> <span class="o">=</span> <span class="s2">&quot;prompt_tuning&quot;</span>
+    <span class="n">FINE_TUNING</span> <span class="o">=</span> <span class="s2">&quot;fine_tuning&quot;</span>
     <span class="n">AUTO_UPDATE_MODEL</span> <span class="o">=</span> <span class="s2">&quot;auto_update_model&quot;</span>
     <span class="n">FEDERATED_LEARNING</span> <span class="o">=</span> <span class="s2">&quot;federated_learning&quot;</span>
     <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
@@ -916,7 +918,17 @@
             <span class="n">PROMPT_TUNING</span><span class="p">,</span>
             <span class="nb">dict</span><span class="p">,</span>
             <span class="kc">False</span><span class="p">,</span>
-            <span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="s2">&quot;generation&quot;</span><span class="p">,</span> <span class="s2">&quot;base_model&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;google/flan-t5-xl&quot;</span><span class="p">}},</span>
+            <span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="s2">&quot;generation&quot;</span><span class="p">,</span> <span class="s2">&quot;base_model&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;google/flan-t5-xl&quot;</span><span class="p">}},</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;FINE_TUNING&quot;</span><span class="p">,</span>
+            <span class="n">FINE_TUNING</span><span class="p">,</span>
+            <span class="nb">dict</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="s2">&quot;generation&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;base_model&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;bigscience/bloom-560m&quot;</span><span class="p">},</span>
+            <span class="p">},</span>
         <span class="p">),</span>
         <span class="n">MetaProp</span><span class="p">(</span>
             <span class="s2">&quot;AUTO_UPDATE_MODEL&quot;</span><span class="p">,</span> <span class="n">AUTO_UPDATE_MODEL</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">example_value</span><span class="o">=</span><span class="kc">False</span>
@@ -3145,6 +3157,89 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">MetaNamesBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta_props_definitions</span><span class="p">)</span></div>
 
+
+
+<span class="k">class</span> <span class="nc">RAGOptimizerConfigurationMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
+    <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
+    <span class="n">DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;description&quot;</span>
+    <span class="n">INPUT_DATA_REFERENCES</span> <span class="o">=</span> <span class="s2">&quot;input_data_references&quot;</span>
+    <span class="n">TEST_DATA_REFERENCES</span> <span class="o">=</span> <span class="s2">&quot;test_data_references&quot;</span>
+    <span class="n">RESULTS_REFERENCE</span> <span class="o">=</span> <span class="s2">&quot;results_reference&quot;</span>
+    <span class="n">VECTOR_STORE_REFERENCES</span> <span class="o">=</span> <span class="s2">&quot;vector_store_references&quot;</span>
+    <span class="n">HARDWARE_SPEC</span> <span class="o">=</span> <span class="s2">&quot;hardware_spec&quot;</span>
+
+    <span class="n">_meta_props_definitions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="n">NAME</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;AutoAI RAG Optimizer&quot;</span><span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;DESCRIPTION&quot;</span><span class="p">,</span> <span class="n">DESCRIPTION</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Sample description&quot;</span><span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;INPUT_DATA_REFERENCES&quot;</span><span class="p">,</span>
+            <span class="n">INPUT_DATA_REFERENCES</span><span class="p">,</span>
+            <span class="nb">list</span><span class="p">,</span>
+            <span class="kc">True</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;training_input_data&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;training_input_data&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;data_asset&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="p">{},</span>
+                    <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;href&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;/v2/assets/cbc89dee-a087-420c-9b62-a19931fe3950?project_id=h67df788-73f2-46d0-a787-7453085782ht&quot;</span>
+                    <span class="p">},</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;TEST_DATA_REFERENCES&quot;</span><span class="p">,</span>
+            <span class="n">TEST_DATA_REFERENCES</span><span class="p">,</span>
+            <span class="nb">list</span><span class="p">,</span>
+            <span class="kc">True</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;test_input_data&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;test_input_data&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;data_asset&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="p">{},</span>
+                    <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;href&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;/v2/assets/cbc89dee-a087-420c-9b62-a19931fe3950?project_id=h67df788-73f2-46d0-a787-7453085782ht&quot;</span>
+                    <span class="p">},</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;RESULTS_REFERENCE&quot;</span><span class="p">,</span>
+            <span class="n">RESULTS_REFERENCE</span><span class="p">,</span>
+            <span class="nb">dict</span><span class="p">,</span>
+            <span class="kc">True</span><span class="p">,</span>
+            <span class="p">{</span><span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;.&quot;</span><span class="p">},</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;container&quot;</span><span class="p">},</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;VECTOR_STORE_REFERENCES&quot;</span><span class="p">,</span>
+            <span class="n">VECTOR_STORE_REFERENCES</span><span class="p">,</span>
+            <span class="nb">list</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;test_vector_store&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;some_new_milvus_conn&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;connection_asset&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;hg5d6a92-1331-h642-b314-14b40bfb0hg4&quot;</span><span class="p">},</span>
+                    <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="p">{},</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;HARDWARE_SPEC&quot;</span><span class="p">,</span>
+            <span class="n">HARDWARE_SPEC</span><span class="p">,</span>
+            <span class="nb">dict</span><span class="p">,</span>
+            <span class="kc">True</span><span class="p">,</span>
+            <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;f4c49h5b-b8e4-444c-9j63-8a7h73020h674&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;L&quot;</span><span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">MetaNamesBase</span><span class="p">(</span><span class="n">_meta_props_definitions</span><span class="p">)</span><span class="o">.</span><span class="n">_generate_doc</span><span class="p">(</span><span class="s2">&quot;rag_optimizer&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">MetaNamesBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta_props_definitions</span><span class="p">)</span>
 </pre></div>
         </article>
       </div>
