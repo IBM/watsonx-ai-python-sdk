@@ -219,6 +219,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -1219,6 +1220,87 @@
             <span class="n">optimizer</span><span class="o">.</span><span class="n">_workspace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span>
             <span class="k">return</span> <span class="n">optimizer</span></div>
 
+
+<div class="viewcode-block" id="AutoAI.rag_optimizer">
+<a class="viewcode-back" href="../../../../autoai_experiment.html#ibm_watsonx_ai.experiment.autoai.autoai.AutoAI.rag_optimizer">[docs]</a>
+    <span class="k">def</span> <span class="nf">rag_optimizer</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">chunking_methods</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">embedding_models</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">retrieval_methods</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">foundation_models</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_number_of_rag_patterns</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">optimization_metrics</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RAGOptimizer&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize an AutoAi RAG optimizer.</span>
+
+<span class="sd">        :param name: name for the RAGOptimizer</span>
+<span class="sd">        :type name: str</span>
+
+<span class="sd">        :param description: description for the RAGOptimizer</span>
+<span class="sd">        :type description: str, optional</span>
+
+<span class="sd">        :param chunking_methods: Chunking method name to be used.</span>
+<span class="sd">        :type chunking_methods: list[str], optional</span>
+
+<span class="sd">        :param embedding_models: The embedding models to try.</span>
+<span class="sd">        :type embedding_models: list[str], optional</span>
+
+<span class="sd">        :param retrieval_methods: Retrieval methods to be used.</span>
+<span class="sd">        :type retrieval_methods: list[str], optional</span>
+
+<span class="sd">        :param foundation_models: The foundation models to try.</span>
+<span class="sd">        :type foundation_models: list[str], optional</span>
+
+<span class="sd">        :param max_number_of_rag_patterns: The maximum number of RAG patterns to create.</span>
+<span class="sd">        :type max_number_of_rag_patterns: int, optional</span>
+
+<span class="sd">        :param optimization_metrics: The metric name(s) to be used for optimization.</span>
+<span class="sd">        :type optimization_metrics: list[str], optional</span>
+
+<span class="sd">        :return: AutoAI RAG optimizer</span>
+<span class="sd">        :rtype: RAGOptimizer</span>
+
+<span class="sd">        **Examples**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from ibm_watsonx_ai.experiment import AutoAI</span>
+<span class="sd">            experiment = AutoAI(...)</span>
+
+<span class="sd">            optimizer = experiment.rag_optimizer(</span>
+<span class="sd">                name=&quot;RAG - AutoAI&quot;,</span>
+<span class="sd">                description=&quot;Sample description&quot;,</span>
+<span class="sd">                max_number_of_rag_patterns=5,</span>
+<span class="sd">                optimization_metrics=[&quot;answer_correctness&quot;]</span>
+<span class="sd">            )</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">.engines</span> <span class="kn">import</span> <span class="n">RAGEngine</span>
+
+        <span class="n">engine</span> <span class="o">=</span> <span class="n">RAGEngine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="p">)</span>
+
+        <span class="kn">from</span> <span class="nn">.optimizers</span> <span class="kn">import</span> <span class="n">RAGOptimizer</span>
+
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">RAGOptimizer</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+            <span class="n">chunking_methods</span><span class="o">=</span><span class="n">chunking_methods</span><span class="p">,</span>
+            <span class="n">embedding_models</span><span class="o">=</span><span class="n">embedding_models</span><span class="p">,</span>
+            <span class="n">retrieval_methods</span><span class="o">=</span><span class="n">retrieval_methods</span><span class="p">,</span>
+            <span class="n">foundation_models</span><span class="o">=</span><span class="n">foundation_models</span><span class="p">,</span>
+            <span class="n">max_number_of_rag_patterns</span><span class="o">=</span><span class="n">max_number_of_rag_patterns</span><span class="p">,</span>
+            <span class="n">optimization_metrics</span><span class="o">=</span><span class="n">optimization_metrics</span><span class="p">,</span>
+            <span class="n">engine</span><span class="o">=</span><span class="n">engine</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">_workspace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span>
+
+        <span class="k">return</span> <span class="n">optimizer</span></div>
 
 
     <span class="k">def</span> <span class="nf">_init_estimator_enums</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
