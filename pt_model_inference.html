@@ -299,18 +299,24 @@
         <article role="main" id="furo-main-content">
           <section id="tuned-model-inference">
 <h1>Tuned Model Inference<a class="headerlink" href="#tuned-model-inference" title="Link to this heading">¶</a></h1>
-<p id="pt-model-inference-module">This section shows how to deploy model and use <code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> class with created deployment.</p>
-<p>There are two ways to query <code class="docutils literal notranslate"><span class="pre">generate_text</span></code> using the <a class="reference internal" href="#generate-text-deployments"><span class="std std-ref">deployments</span></a> module or using <a class="reference internal" href="#generate-text-modelinference"><span class="std std-ref">ModelInference</span></a> module .</p>
+<p id="pt-model-inference-module">This section shows how to deploy a model and use the <code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> class with the created deployment.</p>
+<dl class="simple">
+<dt>You can query <code class="docutils literal notranslate"><span class="pre">generate_text</span></code> in one of two ways:</dt><dd><ul class="simple">
+<li><p>the <a class="reference internal" href="#generate-text-deployments"><span class="std std-ref">deployments</span></a> module</p></li>
+<li><p>the <a class="reference internal" href="#generate-text-modelinference"><span class="std std-ref">ModelInference</span></a> module</p></li>
+</ul>
+</dd>
+</dl>
 <section id="working-with-deployments">
 <h2>Working with deployments<a class="headerlink" href="#working-with-deployments" title="Link to this heading">¶</a></h2>
-<p>This section describes methods that enable user to work with deployments. But first it will be needed to create client and set <code class="docutils literal notranslate"><span class="pre">project_id</span></code> or <code class="docutils literal notranslate"><span class="pre">space_id</span></code>.</p>
+<p>This section describes methods for working with deployments. Before you begin, create a client and set the <code class="docutils literal notranslate"><span class="pre">project_id</span></code> or <code class="docutils literal notranslate"><span class="pre">space_id</span></code>.</p>
 <div class="highlight-python notranslate" id="api-client-init"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
 <span class="n">client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_project</span><span class="p">(</span><span class="s2">&quot;7ac03029-8bdd-4d5f-a561-2c4fd1e40705&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>To create deployment with specific parameters call following lines.</p>
+<p>To create a deployment with specific parameters, call the following lines:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
 <span class="n">model_id</span> <span class="o">=</span> <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">get_model_id</span><span class="p">()</span>
@@ -323,7 +329,7 @@
 <span class="n">deployment_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>To get a deployment_id from details, use <code class="docutils literal notranslate"><span class="pre">id</span></code> from <code class="docutils literal notranslate"><span class="pre">metadata</span></code>.</p>
+<p>To get a deployment_id from details, use the <code class="docutils literal notranslate"><span class="pre">id</span></code> from <code class="docutils literal notranslate"><span class="pre">metadata</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">deployment_id</span> <span class="o">=</span> <span class="n">deployment_details</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">)</span>
 <span class="s1">&#39;7091629c-f88a-4e90-b7f0-4f414aec9c3a&#39;</span>
@@ -338,7 +344,7 @@
 </section>
 <section id="creating-modelinference-instance">
 <h2>Creating <code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> instance<a class="headerlink" href="#creating-modelinference-instance" title="Link to this heading">¶</a></h2>
-<p>At the beginning, it is recommended to define parameters (later used by module).</p>
+<p>Start by defining the parameters. They will later be used by the module.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">GenTextParamsMetaNames</span> <span class="k">as</span> <span class="n">GenParams</span>
 
 <span class="n">generate_params</span> <span class="o">=</span> <span class="p">{</span>
@@ -347,7 +353,7 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Create the ModelInference itself, using credentials and <code class="docutils literal notranslate"><span class="pre">project_id</span></code> / <code class="docutils literal notranslate"><span class="pre">space_id</span></code> or the previously initialized APIClient (see <a class="reference internal" href="#api-client-init"><span class="std std-ref">APIClient initialization</span></a>).</p>
+<p>Create the ModelInference by using credentials and <code class="docutils literal notranslate"><span class="pre">project_id</span></code> / <code class="docutils literal notranslate"><span class="pre">space_id</span></code>, or the previously initialized APIClient (see <a class="reference internal" href="#api-client-init"><span class="std std-ref">APIClient initialization</span></a>).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models</span> <span class="kn">import</span> <span class="n">ModelInference</span>
 
 <span class="n">tuned_model</span> <span class="o">=</span> <span class="n">ModelInference</span><span class="p">(</span>
@@ -373,7 +379,7 @@
 </section>
 <section id="importing-data">
 <h2>Importing data<a class="headerlink" href="#importing-data" title="Link to this heading">¶</a></h2>
-<p>To use ModelInference, an example data may be need.</p>
+<p>To use ModelInference, an example data might be needed.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;car_rental_prompt_tuning_testing_data.json&#39;</span>
@@ -390,15 +396,15 @@
 <h2>Analyzing satisfaction<a class="headerlink" href="#analyzing-satisfaction" title="Link to this heading">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The satisfaction analysis was performed for a specific example - <strong>car rental</strong>, it may not work in the case of other data sets.</p>
+<p>The satisfaction analysis was performed for a specific example, <strong>car rental</strong>, and it may not work in the case of other data sets.</p>
 </div>
-<p>To analyze satisfaction prepare batch with prompts, calculate the accuracy of tuned model and compare it with base model.</p>
+<p>To analyze the satisfaction, prepare batch with prompts, calculate the accuracy of the tuned model, and compare it with the base model.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prompts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
 <span class="n">satisfaction</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
 <span class="n">prompts_batch</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span> <span class="k">for</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">prompts</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Calculate accuracy of based model:</p>
+<p>Calculate the accuracy of the based model:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span>
 
 <span class="n">base_model</span> <span class="o">=</span> <span class="n">ModelInference</span><span class="p">(</span>
@@ -411,7 +417,7 @@
 <span class="s1">&#39;base model accuracy_score: 0.965034965034965, base model f1_score: 0.9765258215962441&#39;</span>
 </pre></div>
 </div>
-<p>Calculate accuracy of tuned model:</p>
+<p>Calculate the accuracy of the tuned model:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tuned_model_results</span> <span class="o">=</span> <span class="n">tuned_model</span><span class="o">.</span><span class="n">generate_text</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompts_batch</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;accuracy_score: </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">satisfaction</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">tuned_model_results</span><span class="p">])</span><span class="si">}</span><span class="s1">, f1_score: </span><span class="si">{</span><span class="n">f1_score</span><span class="p">(</span><span class="n">satisfaction</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">tuned_model_results</span><span class="p">])</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="s1">&#39;accuracy_score: 0.972027972027972, f1_score: 0.9811320754716981&#39;</span>
@@ -420,14 +426,14 @@
 </section>
 <section id="generate-methods">
 <h2>Generate methods<a class="headerlink" href="#generate-methods" title="Link to this heading">¶</a></h2>
-<p>The detailed explanation of available generate methods with exact parameters can be found in the <a class="reference internal" href="fm_model_inference.html#model-inference-class"><span class="std std-ref">ModelInferece class</span></a>.</p>
-<p>With previously created <code class="docutils literal notranslate"><span class="pre">tuned_model</span></code> object, it is possible to generate a text stream (generator) using defined inference and <code class="docutils literal notranslate"><span class="pre">generate_text_stream()</span></code> method.</p>
+<p>A detailed explanation of available generate methods with exact parameters can be found in the <a class="reference internal" href="fm_model_inference.html#model-inference-class"><span class="std std-ref">ModelInferece class</span></a>.</p>
+<p>With the previously created <code class="docutils literal notranslate"><span class="pre">tuned_model</span></code> object, it is possible to generate a text stream (generator) using defined inference and <code class="docutils literal notranslate"><span class="pre">generate_text_stream()</span></code> method.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tuned_model</span><span class="o">.</span><span class="n">generate_text_stream</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">input_prompt</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 <span class="s1">&#39;$10 Powerchill Leggings&#39;</span>
 </pre></div>
 </div>
-<p>And also receive more detailed result with <code class="docutils literal notranslate"><span class="pre">generate()</span></code>.</p>
+<p>Get a more detailed result with <code class="docutils literal notranslate"><span class="pre">generate()</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">details</span> <span class="o">=</span> <span class="n">tuned_model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">input_prompt</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">gen_params</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
 <span class="p">{</span>

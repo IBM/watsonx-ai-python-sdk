@@ -347,7 +347,7 @@
 <span class="sd">    :param params: parameters to use during generate requests, use ``ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()`` to view the list of MetaNames</span>
 <span class="sd">    :type params: dict, optional</span>
 
-<span class="sd">    :param credentials: credentials to Watson Machine Learning instance</span>
+<span class="sd">    :param credentials: credentials for the Watson Machine Learning instance</span>
 <span class="sd">    :type credentials: dict, optional</span>
 
 <span class="sd">    :param project_id: ID of the Watson Studio project</span>
@@ -356,29 +356,29 @@
 <span class="sd">    :param space_id: ID of the Watson Studio space</span>
 <span class="sd">    :type space_id: str, optional</span>
 
-<span class="sd">    :param api_client: Initialized APIClient object with set project or space ID. If passed, ``credentials`` and ``project_id``/``space_id`` are not required.</span>
+<span class="sd">    :param api_client: initialized APIClient object with a set project ID or space ID. If passed, ``credentials`` and ``project_id``/``space_id`` are not required.</span>
 <span class="sd">    :type api_client: APIClient, optional</span>
 
-<span class="sd">    :param verify: user can pass as verify one of following:</span>
+<span class="sd">    :param verify: You can pass one of following as verify:</span>
 
-<span class="sd">        - the path to a CA_BUNDLE file</span>
-<span class="sd">        - the path of directory with certificates of trusted CAs</span>
-<span class="sd">        - `True` - default path to truststore will be taken</span>
-<span class="sd">        - `False` - no verification will be made</span>
+<span class="sd">        * the path to a CA_BUNDLE file</span>
+<span class="sd">        * the path of a directory with certificates of trusted CAs</span>
+<span class="sd">        * `True` - default path to truststore will be taken</span>
+<span class="sd">        * `False` - no verification will be made</span>
 <span class="sd">    :type verify: bool or str, optional</span>
 
-<span class="sd">    :param persistent_connection: Whether to keep persistent connection when evaluating `generate`, &#39;embed_query&#39; and &#39;embed_documents` methods with one prompt</span>
-<span class="sd">                                  or batch of prompts not longer than documentation allows (for more details see https://cloud.ibm.com/apidocs/watsonx-ai#text-embeddings).</span>
-<span class="sd">                                  To close connection run `embeddings.close_persistent_connection()`, defaults to True. Added in 1.1.2.</span>
+<span class="sd">    :param persistent_connection: defines whether to keep a persistent connection when evaluating the `generate`, &#39;embed_query&#39;, and &#39;embed_documents` methods with one prompt</span>
+<span class="sd">                                  or batch of prompts that meet the length limit. For more details, see `Generate embeddings &lt;https://cloud.ibm.com/apidocs/watsonx-ai#text-embeddings&gt;`_.</span>
+<span class="sd">                                  To close the connection, run `embeddings.close_persistent_connection()`, defaults to True. Added in 1.1.2.</span>
 <span class="sd">    :type persistent_connection: bool, optional</span>
 
 <span class="sd">    .. note::</span>
-<span class="sd">        One of these parameters is required: [``project_id``, ``space_id``] when ``credentials`` parameter passed.</span>
+<span class="sd">        When the ``credentials`` parameter is passed, one of these parameters is required: [``project_id``, ``space_id``].</span>
 
 <span class="sd">    .. hint::</span>
 <span class="sd">        You can copy the project_id from the Project&#39;s Manage tab (Project -&gt; Manage -&gt; General -&gt; Details).</span>
 
-<span class="sd">    **Example**</span>
+<span class="sd">    **Example:**</span>
 
 <span class="sd">    .. code-block:: python</span>
 
@@ -474,14 +474,14 @@
         <span class="n">params</span><span class="p">:</span> <span class="n">ParamsType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates embeddings vectors for the given input with the given</span>
-<span class="sd">        parameters and returns a REST API response.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate embeddings vectors for the given input with the given</span>
+<span class="sd">        parameters. Returns a REST API response.</span>
 
-<span class="sd">        :param inputs: List of texts for which embedding vectors will be generated.</span>
+<span class="sd">        :param inputs: list of texts for which embedding vectors will be generated</span>
 <span class="sd">        :type inputs: list[str]</span>
-<span class="sd">        :param params: meta props for embedding generation, use ``ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()`` to view the list of MetaNames, defaults to None</span>
+<span class="sd">        :param params: MetaProps for the embedding generation, use ``ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()`` to view the list of MetaNames, defaults to None</span>
 <span class="sd">        :type params: ParamsType | None, optional</span>
-<span class="sd">        :param concurrency_limit: number of requests that will be sent in parallel, max is 10, defaults to 10</span>
+<span class="sd">        :param concurrency_limit: number of requests to be sent in parallel, max is 10, defaults to 10</span>
 <span class="sd">        :type concurrency_limit: int, optional</span>
 <span class="sd">        :return: scoring results containing generated embeddings vectors</span>
 <span class="sd">        :rtype: dict</span>
@@ -562,19 +562,19 @@
         <span class="n">params</span><span class="p">:</span> <span class="n">ParamsType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return list of embedding vectors for provided texts.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns list of embedding vectors for provided texts.</span>
 
-<span class="sd">        :param texts: List of texts for which embedding vectors will be generated.</span>
+<span class="sd">        :param texts: list of texts for which embedding vectors will be generated</span>
 <span class="sd">        :type texts: list[str]</span>
-<span class="sd">        :param params: meta props for embedding generation, use ``ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()`` to view the list of MetaNames, defaults to None</span>
+<span class="sd">        :param params: MetaProps for the embedding generation, use ``ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()`` to view the list of MetaNames, defaults to None</span>
 <span class="sd">        :type params: ParamsType | None, optional</span>
-<span class="sd">        :param concurrency_limit: number of requests that will be sent in parallel, max is 10, defaults to 10</span>
+<span class="sd">        :param concurrency_limit: number of requests to be sent in parallel, max is 10, defaults to 10</span>
 <span class="sd">        :type concurrency_limit: int, optional</span>
 
-<span class="sd">        :return: List of embedding vectors</span>
+<span class="sd">        :return: list of embedding vectors</span>
 <span class="sd">        :rtype: list[list[float]]</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -597,16 +597,16 @@
 <div class="viewcode-block" id="Embeddings.embed_query">
 <a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.Embeddings.embed_query">[docs]</a>
     <span class="k">def</span> <span class="nf">embed_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">ParamsType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return embedding vector for provided text.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an embedding vector for a provided text.</span>
 
-<span class="sd">        :param text: Text for which embedding vector will be generated.</span>
+<span class="sd">        :param text: text for which embedding vector will be generated</span>
 <span class="sd">        :type text: str</span>
-<span class="sd">        :param params: meta props for embedding generation, use ``ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()`` to view the list of MetaNames, defaults to None</span>
+<span class="sd">        :param params: MetaProps for the embedding generation, use ``ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()`` to view the list of MetaNames, defaults to None</span>
 <span class="sd">        :type params: ParamsType | None, optional</span>
-<span class="sd">        :return: Embedding vector</span>
+<span class="sd">        :return: embedding vector</span>
 <span class="sd">        :rtype: list[float]</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 

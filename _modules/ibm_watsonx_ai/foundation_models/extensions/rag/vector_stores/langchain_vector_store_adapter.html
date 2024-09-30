@@ -323,24 +323,24 @@
 <span class="k">def</span> <span class="nf">merge_window_into_a_document</span><span class="p">(</span><span class="n">window</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Merges a list of chunks into a single document.</span>
-<span class="sd">    If consecutive chunks have intersecting merged_text, the merged_text is merged so there will not be duplications.</span>
+<span class="sd">    If consecutive chunks have intersecting merged_text, the merged_text is merged to avoid duplications.</span>
 
-<span class="sd">    :param window: an ordered list of documents for merging.</span>
+<span class="sd">    :param window: ordered list of documents for merging</span>
 <span class="sd">    :type window: list[langchain_core.documents.Document]</span>
 
-<span class="sd">    :return: a document that contains the merged merged_text of the window documents</span>
+<span class="sd">    :return: document that contains the merged merged_text of the window documents</span>
 <span class="sd">    :rtype: langchain_core.documents.Document</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">merge_metadata</span><span class="p">(</span><span class="n">metadatas</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Merges a list of dictionaries (metadatas) into one metadata.</span>
-<span class="sd">        The keys remain the same but the values are changed into lists of values from all metadatas.</span>
+<span class="sd">        Merges a list of dictionaries (metadata) into one metadata</span>
+<span class="sd">        The keys remain the same but the values are changed into lists of values from all metadata</span>
 
-<span class="sd">        :param metadatas: List of metadata dictionaries to be merged.</span>
+<span class="sd">        :param metadatas: list of metadata dictionaries to be merged</span>
 <span class="sd">        :type metadatas: list[dict]</span>
 
-<span class="sd">        :return: A single merged dictionary (metadata) with unique values in lists for each key.</span>
+<span class="sd">        :return: single merged dictionary (metadata) with unique values in lists for each key</span>
 <span class="sd">        :rtype: Tuple[str, bool]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">metadatas</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -375,7 +375,7 @@
 
 <span class="sd">        :return: a tuple of:</span>
 <span class="sd">            1. str2 without its intersection to str1</span>
-<span class="sd">            2. whether there was an intersection or not.</span>
+<span class="sd">            2. whether there was an intersection or not</span>
 <span class="sd">        :rtype: Tuple[str, bool]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Start checking from the longest possible overlap to the shortest</span>
@@ -389,10 +389,10 @@
 <span class="sd">        Merges a list of texts into a single text string.</span>
 <span class="sd">        If consecutive texts have intersecting parts, the text is merged to avoid duplications.</span>
 
-<span class="sd">        :param texts: An ordered list of text strings to be merged.</span>
+<span class="sd">        :param texts: ordered list of text strings to be merged</span>
 <span class="sd">        :type texts: List[str]</span>
 
-<span class="sd">        :return: A single string containing the merged text.</span>
+<span class="sd">        :return: single string that contains the merged text</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">merged_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -419,6 +419,7 @@
 <span class="k">class</span> <span class="nc">LangChainVectorStoreAdapter</span><span class="p">(</span><span class="n">BaseVectorStore</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adapter for LangChain ``VectorStore`` base class.</span>
+
 <span class="sd">    :param vector_store: concrete LangChain vector store object</span>
 <span class="sd">    :type vector_store: langchain_core.vectorstore.VectorStore</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -532,16 +533,16 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">doc_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">seq_nums_window</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Receives a document id and a list of chunks&#39; sequence_numbers,</span>
-<span class="sd">        and searches the vector_store according to the metadata.</span>
+<span class="sd">        Receives a document ID and a list of chunks&#39; sequence_numbers,</span>
+<span class="sd">        and searches the vector store according to the metadata.</span>
 
-<span class="sd">        :param doc_id: document id</span>
+<span class="sd">        :param doc_id: ID of document</span>
 <span class="sd">        :type doc_id: str</span>
 
-<span class="sd">        :param seq_nums_window: a list of sequence numbers</span>
+<span class="sd">        :param seq_nums_window: list of sequence numbers</span>
 <span class="sd">        :type seq_nums_window: list[int]</span>
 
-<span class="sd">        :return: a list of documents from that document with these sequence_numbers</span>
+<span class="sd">        :return: list of documents from that document with these sequence_numbers</span>
 <span class="sd">        :rtype: list[Document]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">expr</span> <span class="o">=</span> <span class="p">{</span>
@@ -569,16 +570,16 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">doc_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">seq_nums_window</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Receives a document id and a list of chunks&#39; sequence_numbers,</span>
-<span class="sd">        and searches the vector_store according to the metadata.</span>
+<span class="sd">        Receives a document ID and a list of chunks&#39; sequence_numbers,</span>
+<span class="sd">        and searches the vector store according to the metadata.</span>
 
-<span class="sd">        :param doc_id: document id</span>
+<span class="sd">        :param doc_id: ID of document</span>
 <span class="sd">        :type doc_id: str</span>
 
-<span class="sd">        :param seq_nums_window: a list of sequence numbers</span>
+<span class="sd">        :param seq_nums_window: list of sequence numbers</span>
 <span class="sd">        :type seq_nums_window: list[int]</span>
 
-<span class="sd">        :return: a list of documents from that document with these sequence_numbers</span>
+<span class="sd">        :return: list of documents from that document with these sequence_numbers</span>
 <span class="sd">        :rtype: list[Document]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">expr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;document_id LIKE &#39;</span><span class="si">{</span><span class="n">doc_id</span><span class="si">}</span><span class="s2">&#39; &amp;&amp; sequence_number in </span><span class="si">{</span><span class="n">seq_nums_window</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -632,7 +633,7 @@
     <span class="k">def</span> <span class="nf">_process_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Processes arbitrary list of data to produce two lists: one with unique IDs, one with LangChain documents.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Processes arbitrary list of data to produce two lists: one with unique IDs, and one with LangChain documents.</span>
 
 <span class="sd">        Handles duplicate documents.</span>
 
@@ -662,12 +663,12 @@
     <span class="k">def</span> <span class="nf">_as_langchain_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a LangChain ``Document`` list from list of potentially unstructured data.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a LangChain ``Document`` list from a list of potentially unstructured data.</span>
 
 <span class="sd">        :param content: list of unstructured data to be parsed</span>
 <span class="sd">        :type content: list[str] | list[dict] | list</span>
 
-<span class="sd">        :raises AttributeError: when data does not fit the required schema</span>
+<span class="sd">        :raises AttributeError: raised when data does not fit the required schema</span>
 <span class="sd">        :return: list of LangChain Documents</span>
 <span class="sd">        :rtype: list[langchain_core.documents.Document]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -710,15 +711,15 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> <span class="n">window_size</span><span class="p">:</span> <span class="nb">int</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Extend document (a chunk) to its adjacent chunks (if exist) from the same origin document.</span>
-<span class="sd">        Then merge the adjacent chunks into one chunk while keeping their order,</span>
-<span class="sd">        and merge intersecting text between them (if exists).</span>
+<span class="sd">        Extends a document (a chunk) to its adjacent chunks (if they exist) from the same origin document.</span>
+<span class="sd">        Then merges the adjacent chunks into one chunk while keeping their order,</span>
+<span class="sd">        and merges intersecting text between them (if it exists).</span>
 <span class="sd">        This requires chunks to have &quot;document_id&quot; and &quot;sequence_number&quot; in their metadata.</span>
 
-<span class="sd">        :param document: the document (chunk) to extend to its window, and merge</span>
+<span class="sd">        :param document: document (chunk) to be extended to its window and merged</span>
 <span class="sd">        :type document: Document</span>
 
-<span class="sd">        :param window_size: number of adjacent chunks to retrieve before and after the center, according to the sequence_number.</span>
+<span class="sd">        :param window_size: number of adjacent chunks to retrieve before and after the center, according to the sequence_number</span>
 <span class="sd">        :type window_size: int</span>
 
 <span class="sd">        :return: merged window</span>

@@ -315,10 +315,10 @@
 <span class="sd">    .. hint::</span>
 <span class="sd">        To use the Model class with LangChain, use the :func:`to_langchain() &lt;ibm_watsonx_ai.foundation_models.Model.to_langchain&gt;` function.</span>
 
-<span class="sd">    :param model_id: the type of model to use</span>
+<span class="sd">    :param model_id: type of model to use</span>
 <span class="sd">    :type model_id: str</span>
 
-<span class="sd">    :param credentials: credentials to Watson Machine Learning instance</span>
+<span class="sd">    :param credentials: credentials for the Watson Machine Learning instance</span>
 <span class="sd">    :type credentials: Credentials or dict</span>
 
 <span class="sd">    :param params: parameters to use during generate requests</span>
@@ -330,24 +330,24 @@
 <span class="sd">    :param space_id: ID of the Watson Studio space</span>
 <span class="sd">    :type space_id: str, optional</span>
 
-<span class="sd">    :param verify: user can pass as verify one of following:</span>
+<span class="sd">    :param verify: You can pass one of following as verify:</span>
 
-<span class="sd">        - the path to a CA_BUNDLE file</span>
-<span class="sd">        - the path of directory with certificates of trusted CAs</span>
-<span class="sd">        - `True` - default path to truststore will be taken</span>
-<span class="sd">        - `False` - no verification will be made</span>
+<span class="sd">        * the path to a CA_BUNDLE file</span>
+<span class="sd">        * the path of a directory with certificates of trusted CAs</span>
+<span class="sd">        * `True` - default path to truststore will be taken</span>
+<span class="sd">        * `False` - no verification will be made</span>
 <span class="sd">    :type verify: bool or str, optional</span>
 
-<span class="sd">    :param validate: Model id validation, defaults to True</span>
+<span class="sd">    :param validate: model ID validation, defaults to True</span>
 <span class="sd">    :type validate: bool, optional</span>
 
 <span class="sd">    .. note::</span>
-<span class="sd">        One of these parameters is required: [&#39;project_id &#39;, &#39;space_id&#39;]</span>
+<span class="sd">        One of these parameters is required: [&#39;project_id &#39;, &#39;space_id&#39;].</span>
 
 <span class="sd">    .. hint::</span>
 <span class="sd">        You can copy the project_id from the Project&#39;s Manage tab (Project -&gt; Manage -&gt; General -&gt; Details).</span>
 
-<span class="sd">    **Example**</span>
+<span class="sd">    **Example:**</span>
 
 <span class="sd">    .. code-block:: python</span>
 
@@ -396,12 +396,12 @@
 <div class="viewcode-block" id="Model.get_details">
 <a class="viewcode-back" href="../../../fm_model.html#ibm_watsonx_ai.foundation_models.Model.get_details">[docs]</a>
     <span class="k">def</span> <span class="nf">get_details</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get model&#39;s details</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the model&#39;s details.</span>
 
 <span class="sd">        :return: model&#39;s details</span>
 <span class="sd">        :rtype: dict</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -419,7 +419,7 @@
 <span class="sd">        :return: WatsonxLLM wrapper for watsonx foundation models</span>
 <span class="sd">        :rtype: WatsonxLLM</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -498,35 +498,35 @@
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
         <span class="n">async_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="n">Generator</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a text prompt as input, and parameters the selected model (model_id)</span>
-<span class="sd">        will generate a completion text as generated_text.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a completion text as generated_text after getting</span>
+<span class="sd">        a text prompt as input and parameters for the selected model (model_id).</span>
 
-<span class="sd">        :param params: meta props for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames</span>
+<span class="sd">        :param params: MetaProps for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames</span>
 <span class="sd">        :type params: dict</span>
 
 <span class="sd">        :param concurrency_limit: number of requests that will be sent in parallel, max is 10</span>
 <span class="sd">        :type concurrency_limit: int</span>
 
-<span class="sd">        :param prompt: the prompt string or list of strings. If list of strings is passed requests will be managed in parallel with the rate of concurency_limit</span>
+<span class="sd">        :param prompt: the prompt string or list of strings. If a list of strings is passed, requests will be managed in parallel with the rate of concurency_limit</span>
 <span class="sd">        :type prompt: str, list</span>
 
-<span class="sd">        :param guardrails: If True then potentially hateful, abusive, and/or profane language (HAP) detection</span>
-<span class="sd">                           filter is toggle on for both prompt and generated text, defaults to False</span>
+<span class="sd">        :param guardrails: if True, the detection filter for potentially hateful, abusive, and/or profane language (HAP)</span>
+<span class="sd">                            is toggle on for both prompt and generated text, defaults to False</span>
 <span class="sd">        :type guardrails: bool</span>
 
-<span class="sd">        :param guardrails_hap_params: meta props for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
+<span class="sd">        :param guardrails_hap_params: MetaProps for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
 <span class="sd">                                      to view the list of MetaNames</span>
 <span class="sd">        :type params: dict</span>
 
-<span class="sd">        :param async_mode: If True then yield results asynchronously (using generator). In this case both prompt and</span>
+<span class="sd">        :param async_mode: if True, then yields results asynchronously using a generator. In this case, both prompt and</span>
 <span class="sd">                           generated text will be concatenated in the final response - under `generated_text`, defaults</span>
 <span class="sd">                           to False</span>
 <span class="sd">        :type async_mode: bool</span>
 
-<span class="sd">        :return: scoring result containing generated content</span>
+<span class="sd">        :return: scoring result that contains the generated content</span>
 <span class="sd">        :rtype: dict</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -607,33 +607,33 @@
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a text prompt as input, and parameters the selected model (model_id)</span>
-<span class="sd">        will generate a completion text as generated_text.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a completion text as generated_text after getting</span>
+<span class="sd">        a text prompt as input and parameters for the selected model (model_id).</span>
 
-<span class="sd">        :param params: meta props for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames</span>
+<span class="sd">        :param params: MetaProps for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames</span>
 <span class="sd">        :type params: dict</span>
 
-<span class="sd">        :param concurrency_limit: number of requests that will be sent in parallel, max is 10</span>
+<span class="sd">        :param concurrency_limit: number of requests to be sent in parallel, max is 10</span>
 <span class="sd">        :type concurrency_limit: int</span>
 
-<span class="sd">        :param prompt: the prompt string or list of strings. If list of strings is passed requests will be managed in parallel with the rate of concurency_limit</span>
+<span class="sd">        :param prompt: the prompt string or list of strings. If a list of strings is passed, requests will be managed in parallel with the rate of concurency_limit</span>
 <span class="sd">        :type prompt: str, list</span>
 
 <span class="sd">        :param raw_response: return the whole response object</span>
 <span class="sd">        :type raw_response: bool, optional</span>
 
-<span class="sd">        :param guardrails: If True then potentially hateful, abusive, and/or profane language (HAP) detection</span>
-<span class="sd">                           filter is toggle on for both prompt and generated text, defaults to False</span>
+<span class="sd">        :param guardrails: if True, the detection filter for potentially hateful, abusive, and/or profane language (HAP)</span>
+<span class="sd">                           is toggle on for both prompt and generated text, defaults to False</span>
 <span class="sd">        :type guardrails: bool</span>
 
-<span class="sd">        :param guardrails_hap_params: meta props for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
+<span class="sd">        :param guardrails_hap_params: MetaProps for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
 <span class="sd">                                      to view the list of MetaNames</span>
 <span class="sd">        :type params: dict</span>
 
 <span class="sd">        :return: generated content</span>
 <span class="sd">        :rtype: str or dict</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -665,10 +665,10 @@
         <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a text prompt as input, and parameters the selected model (model_id)</span>
-<span class="sd">        will generate a streamed text as generate_text_stream.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a streamed text as generate_text_stream after getting</span>
+<span class="sd">        a text prompt as input and parameters for the selected model (model_id).</span>
 
-<span class="sd">        :param params: meta props for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames</span>
+<span class="sd">        :param params: MetaProps for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames</span>
 <span class="sd">        :type params: dict</span>
 
 <span class="sd">        :param prompt: the prompt string</span>
@@ -677,18 +677,18 @@
 <span class="sd">        :param raw_response: yields the whole response object</span>
 <span class="sd">        :type raw_response: bool, optional</span>
 
-<span class="sd">        :param guardrails: If True then potentially hateful, abusive, and/or profane language (HAP) detection</span>
-<span class="sd">                           filter is toggle on for both prompt and generated text, defaults to False</span>
+<span class="sd">        :param guardrails: If True, the detection filter for potentially hateful, abusive, and/or profane language (HAP)</span>
+<span class="sd">                           is toggle on for both prompt and generated text, defaults to False</span>
 <span class="sd">        :type guardrails: bool</span>
 
-<span class="sd">        :param guardrails_hap_params: meta props for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
+<span class="sd">        :param guardrails_hap_params: MetaProps for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
 <span class="sd">                                      to view the list of MetaNames</span>
 <span class="sd">        :type params: dict</span>
 
-<span class="sd">        :return: scoring result containing generated content</span>
+<span class="sd">        :return: scoring result that contains the generated content</span>
 <span class="sd">        :rtype: generator</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -715,19 +715,19 @@
     <span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_tokens</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The text tokenize operation allows you to check the conversion of provided input to tokens for a given model.</span>
-<span class="sd">        It splits text into words or sub-words, which then are converted to ids through a look-up table (vocabulary).</span>
+<span class="sd">        It splits text into words or sub-words, which are are converted to IDs through a look-up table (vocabulary).</span>
 <span class="sd">        Tokenization allows the model to have a reasonable vocabulary size.</span>
 
-<span class="sd">        :param prompt: the prompt string</span>
+<span class="sd">        :param prompt: prompt string</span>
 <span class="sd">        :type prompt: str</span>
 
-<span class="sd">        :param return_tokens: the parameter for text tokenization, defaults to False</span>
+<span class="sd">        :param return_tokens: parameter for text tokenization, defaults to False</span>
 <span class="sd">        :type return_tokens: bool</span>
 
-<span class="sd">        :return: the result of tokenizing the input string.</span>
+<span class="sd">        :return: result of tokenizing the input string</span>
 <span class="sd">        :rtype: dict</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 

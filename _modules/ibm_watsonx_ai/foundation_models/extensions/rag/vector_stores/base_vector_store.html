@@ -307,15 +307,15 @@
 <div class="viewcode-block" id="BaseVectorStore">
 <a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore">[docs]</a>
 <span class="k">class</span> <span class="nc">BaseVectorStore</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base abstract class for all vector store-like classes. Interface that support simple database operations.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base abstract class for all vector store-like classes. Interface that supports simple database operations.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BaseVectorStore.get_client">
 <a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore.get_client">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns underlying native VectorStore client.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an underlying native vector store client.</span>
 
-<span class="sd">        :return: wrapped VectorStore client</span>
+<span class="sd">        :return: wrapped vector store client</span>
 <span class="sd">        :rtype: Any</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
@@ -326,10 +326,10 @@
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">set_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embedding_fn</span><span class="p">:</span> <span class="n">BaseEmbeddings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;If possible, sets a default embedding function.</span>
-<span class="sd">        Use types inheirted from ``BaseEmbeddings`` if you want to make it capable for ``RAGPattern`` deployment.</span>
-<span class="sd">        Argument ``embedding_fn`` can be a LangChain embeddings but issues with serialization will occur.</span>
+<span class="sd">        To make the function capable for a ``RAGPattern`` deployment, use types inherited from ``BaseEmbeddings``.</span>
+<span class="sd">        The ``embedding_fn`` argument can be a LangChain embedding but issues with serialization will occur.</span>
 
-<span class="sd">        *Deprecated:* Method `set_embeddings` for class `VectorStore` is deprecated, since it may cause issues for &#39;langchain &gt;= 0.2.0&#39;.</span>
+<span class="sd">        *Deprecated:* The `set_embeddings` method for the `VectorStore` class is deprecated, because it might cause issues for &#39;langchain &gt;= 0.2.0&#39;.</span>
 
 
 <span class="sd">        :param embedding_fn: embedding function</span>
@@ -346,15 +346,15 @@
     <span class="k">def</span> <span class="nf">add_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds a list of documents to the RAG&#39;s vector store as upsert operation.</span>
-<span class="sd">        IDs are determined by the text content of the document (hash) and redundant duplicates will not be added.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds a list of documents to the RAG&#39;s vector store as an upsert operation.</span>
+<span class="sd">        IDs are determined by the text content of the document (hash). Duplicates will not be added.</span>
 
-<span class="sd">        List must contain either strings, dicts with a required field ``content`` of str type or LangChain ``Document``.</span>
+<span class="sd">        The list must contain strings, dictionaries with a required ``content`` field of a string type, or a LangChain ``Document``.</span>
 
 <span class="sd">        :param content: unstructured list of data to be added</span>
 <span class="sd">        :type content: list[str] | list[dict] | list</span>
 
-<span class="sd">        :return: list of ids</span>
+<span class="sd">        :return: list of IDs</span>
 <span class="sd">        :rtype: list[str]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
@@ -367,12 +367,12 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add document to the RAG&#39;s vector store asynchronously.</span>
-<span class="sd">        List must contain either strings, dicts with a required field ``content`` of str type or LangChain ``Document``.</span>
+<span class="sd">        The list must contain strings, dictionaries with a required ``content`` field of a string type, or a LangChain ``Document``.</span>
 
 <span class="sd">        :param content: unstructured list of data to be added</span>
 <span class="sd">        :type content: list[str] | list[dict] | list</span>
 
-<span class="sd">        :return: list of ids</span>
+<span class="sd">        :return: list of IDs</span>
 <span class="sd">        :rtype: list[str]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
@@ -394,7 +394,7 @@
 <span class="sd">        :param query: question asked by a user</span>
 <span class="sd">        :type query: str</span>
 
-<span class="sd">        :param k: max number of similar documents</span>
+<span class="sd">        :param k: maximum number of similar documents</span>
 <span class="sd">        :type k: int</span>
 
 <span class="sd">        :param include_scores: return scores for documents, defaults to False</span>
@@ -422,16 +422,16 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Similarly to search method, get documents (chunks) that would fit the query.</span>
-<span class="sd">        Each chunk is extended to its adjacent chunks (if exist) from the same origin document.</span>
+<span class="sd">        Similarly to the search method, gets documents (chunks) that would fit the query.</span>
+<span class="sd">        Each chunk is extended to its adjacent chunks (if they exist) from the same origin document.</span>
 <span class="sd">        The adjacent chunks are merged into one chunk while keeping their order,</span>
-<span class="sd">        and intersecting text between them is merged (if exists).</span>
+<span class="sd">        and any intersecting text between them is merged (if it exists).</span>
 <span class="sd">        This requires chunks to have &quot;document_id&quot; and &quot;sequence_number&quot; in their metadata.</span>
 
 <span class="sd">        :param query: question asked by a user</span>
 <span class="sd">        :type query: str</span>
 
-<span class="sd">        :param k: max number of similar documents</span>
+<span class="sd">        :param k: maximum number of similar documents</span>
 <span class="sd">        :type k: int</span>
 
 <span class="sd">        :param include_scores: return scores for documents, defaults to False</span>
@@ -453,9 +453,9 @@
 <a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore.delete">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete documents with provided ids.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete documents with provided IDs.</span>
 
-<span class="sd">        :param ids: IDs of documents to delete</span>
+<span class="sd">        :param ids: IDs of documents to be deleted</span>
 <span class="sd">        :type ids: list[str]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
@@ -465,7 +465,7 @@
 <a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore.clear">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clears the current collection that is being used by the VectorStore.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clears the current collection that is being used by the vector store.</span>
 <span class="sd">        Removes all documents with all their metadata and embeddings.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
@@ -475,9 +475,9 @@
 <a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore.count">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the number of docs in the current collection.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the number of documents in the current collection.</span>
 
-<span class="sd">        :return: count of all documents in the collection</span>
+<span class="sd">        :return: number of documents in the collection</span>
 <span class="sd">        :rtype: int</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
@@ -489,7 +489,7 @@
     <span class="k">def</span> <span class="nf">as_langchain_retriever</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a LangChain retriever from this vector store.</span>
 
-<span class="sd">        :return: LangChain retriever which can be used in LangChain pipelines</span>
+<span class="sd">        :return: LangChain retriever that can be used in LangChain pipelines</span>
 <span class="sd">        :rtype: langchain_core.vectorstores.VectorStoreRetriever</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 </div>

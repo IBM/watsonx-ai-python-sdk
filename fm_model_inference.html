@@ -311,13 +311,13 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>model_id</strong> (<em>str</em><em>, </em><em>optional</em>) – the type of model to use</p></li>
+<li><p><strong>model_id</strong> (<em>str</em><em>, </em><em>optional</em>) – type of model to use</p></li>
 <li><p><strong>deployment_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of tuned model’s deployment</p></li>
-<li><p><strong>credentials</strong> (<a class="reference internal" href="base.html#credentials.Credentials" title="credentials.Credentials"><em>Credentials</em></a><em> or </em><em>dict</em><em>, </em><em>optional</em>) – credentials to Watson Machine Learning instance</p></li>
-<li><p><strong>params</strong> (<em>dict</em><em>, </em><em>optional</em>) – parameters to use during generate requests</p></li>
+<li><p><strong>credentials</strong> (<a class="reference internal" href="base.html#credentials.Credentials" title="credentials.Credentials"><em>Credentials</em></a><em> or </em><em>dict</em><em>, </em><em>optional</em>) – credentials for the Watson Machine Learning instance</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>, </em><em>optional</em>) – parameters to use during request generation</p></li>
 <li><p><strong>project_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the Watson Studio project</p></li>
 <li><p><strong>space_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the Watson Studio space</p></li>
-<li><p><strong>verify</strong> (<em>bool</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – <p>user can pass as verify one of following:</p>
+<li><p><strong>verify</strong> (<em>bool</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – <p>You can pass one of the following as verify:</p>
 <ul>
 <li><p>the path to a CA_BUNDLE file</p></li>
 <li><p>the path of directory with certificates of trusted CAs</p></li>
@@ -325,27 +325,26 @@
 <li><p><cite>False</cite> - no verification will be made</p></li>
 </ul>
 </p></li>
-<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – Initialized APIClient object with set project or space ID. If passed, <code class="docutils literal notranslate"><span class="pre">credentials</span></code> and <code class="docutils literal notranslate"><span class="pre">project_id</span></code>/<code class="docutils literal notranslate"><span class="pre">space_id</span></code> are not required.</p></li>
-<li><p><strong>validate</strong> (<em>bool</em><em>, </em><em>optional</em>) – Model id validation, defaults to True</p></li>
+<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – initialized APIClient object with a set project ID or space ID. If passed, <code class="docutils literal notranslate"><span class="pre">credentials</span></code> and <code class="docutils literal notranslate"><span class="pre">project_id</span></code>/<code class="docutils literal notranslate"><span class="pre">space_id</span></code> are not required.</p></li>
+<li><p><strong>validate</strong> (<em>bool</em><em>, </em><em>optional</em>) – Model ID validation, defaults to True</p></li>
 <li><p><strong>persistent_connection</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to keep persistent connection when evaluating <cite>generate</cite>, <cite>generate_text</cite> or <cite>tokenize</cite> methods.
-Note, this parameter is only applicable for mentioned methods when prompt is of type str.
-To close connection run <cite>model.close_persistent_connection()</cite>, defaults to True. Added in 1.1.2.</p></li>
+This parameter is only applicable for the mentioned methods when the prompt is a str type.
+To close the connection, run <cite>model.close_persistent_connection()</cite>, defaults to True. Added in 1.1.2.</p></li>
 </ul>
 </dd>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>One of these parameters is required: [<code class="docutils literal notranslate"><span class="pre">model_id</span></code>, <code class="docutils literal notranslate"><span class="pre">deployment_id</span></code>]</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>One of these parameters is required: [<code class="docutils literal notranslate"><span class="pre">project_id</span></code>, <code class="docutils literal notranslate"><span class="pre">space_id</span></code>] when <code class="docutils literal notranslate"><span class="pre">credentials</span></code> parameter passed.</p>
+<ul class="simple">
+<li><p>You must provide one of these parameters: [<code class="docutils literal notranslate"><span class="pre">model_id</span></code>, <code class="docutils literal notranslate"><span class="pre">deployment_id</span></code>]</p></li>
+<li><p>When the <code class="docutils literal notranslate"><span class="pre">credentials</span></code> parameter is passed, you must provide one of these parameters: [<code class="docutils literal notranslate"><span class="pre">project_id</span></code>, <code class="docutils literal notranslate"><span class="pre">space_id</span></code>].</p></li>
+</ul>
 </div>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>You can copy the project_id from the Project’s Manage tab (Project -&gt; Manage -&gt; General -&gt; Details).</p>
 </div>
-<p><strong>Example</strong></p>
+<p><strong>Example:</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">Credentials</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models</span> <span class="kn">import</span> <span class="n">ModelInference</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">GenTextParamsMetaNames</span> <span class="k">as</span> <span class="n">GenParams</span>
@@ -383,28 +382,28 @@ To close connection run <cite>model.close_persistent_connection()</cite>, defaul
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.inference.ModelInference.aclose_persistent_connection">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">aclose_persistent_connection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/model_inference.html#ModelInference.aclose_persistent_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.aclose_persistent_connection" title="Link to this definition">¶</a></dt>
-<dd><p>Only applicable if persistent_connection was set to True in ModelInference initialization.</p>
+<dd><p>Only applicable if persistent_connection was set to True in the ModelInference initialization.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.inference.ModelInference.agenerate">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">agenerate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails_hap_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails_pii_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_prompt_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/model_inference.html#ModelInference.agenerate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.agenerate" title="Link to this definition">¶</a></dt>
-<dd><p>Generate response in asynchronous manner.</p>
+<dd><p>Generate a response in an asynchronous manner.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>prompt</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – the prompt string, defaults to None</p></li>
-<li><p><strong>params</strong> (<em>dict</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – meta props for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames, defaults to None</p></li>
-<li><p><strong>guardrails</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True then potentially hateful, abusive, and/or profane language (HAP) detection filter is toggle on for both prompt and generated text, defaults to False
-If HAP is detected the <cite>HAPDetectionWarning</cite> is issued</p></li>
-<li><p><strong>guardrails_hap_params</strong> (<em>dict</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – meta props for HAP moderations, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()</span></code>
+<li><p><strong>prompt</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – prompt string, defaults to None</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – MetaProps for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames, defaults to None</p></li>
+<li><p><strong>guardrails</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the detection filter for potentially hateful, abusive, and/or profane language (HAP) is toggle on for both prompt and generated text, defaults to False
+If HAP is detected, then the <cite>HAPDetectionWarning</cite> is issued</p></li>
+<li><p><strong>guardrails_hap_params</strong> (<em>dict</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – MetaProps for HAP moderations, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()</span></code>
 to view the list of MetaNames</p></li>
-<li><p><strong>validate_prompt_variables</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, prompt variables provided in <cite>params</cite> are validated with the ones in Prompt Template Asset.
+<li><p><strong>validate_prompt_variables</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the prompt variables provided in <cite>params</cite> are validated with the ones in the Prompt Template Asset.
 This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Raw response containing generated content</p>
+<dd class="field-even"><p>raw response that contains the generated content</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
@@ -421,33 +420,33 @@ This parameter is only applicable in a Prompt Template Asset deployment scenario
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.inference.ModelInference.generate">
 <span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails_hap_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails_pii_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concurrency_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">async_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_prompt_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/model_inference.html#ModelInference.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.generate" title="Link to this definition">¶</a></dt>
-<dd><p>Given a text prompt as input, and parameters the selected model (model_id) or deployment (deployment_id)
-will generate a completion text as generated_text. For prompt template deployment <cite>prompt</cite> should be None.</p>
+<dd><p>Generates a completion text as generated_text after getting a text prompt as input and parameters for the
+selected model (model_id) or deployment (deployment_id). For prompt template deployment, <cite>prompt</cite> should be None.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>params</strong> (<em>dict</em>) – meta props for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
-<li><p><strong>concurrency_limit</strong> (<em>int</em>) – number of requests that will be sent in parallel, max is 10</p></li>
-<li><p><strong>prompt</strong> (<em>(</em><em>str</em><em> | </em><em>list</em><em> | </em><em>None</em><em>)</em><em>, </em><em>optional</em>) – the prompt string or list of strings. If list of strings is passed requests will be managed in parallel with the rate of concurency_limit, defaults to None</p></li>
-<li><p><strong>guardrails</strong> (<em>bool</em>) – If True then potentially hateful, abusive, and/or profane language (HAP) detection
-filter is toggle on for both prompt and generated text, defaults to False</p></li>
-<li><p><strong>guardrails_hap_params</strong> (<em>dict</em>) – meta props for HAP moderations, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()</span></code>
+<li><p><strong>params</strong> (<em>dict</em>) – MetaProps for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
+<li><p><strong>concurrency_limit</strong> (<em>int</em>) – number of requests to be sent in parallel, max is 10</p></li>
+<li><p><strong>prompt</strong> (<em>(</em><em>str</em><em> | </em><em>list</em><em> | </em><em>None</em><em>)</em><em>, </em><em>optional</em>) – prompt string or list of strings. If list of strings is passed, requests will be managed in parallel with the rate of concurency_limit, defaults to None</p></li>
+<li><p><strong>guardrails</strong> (<em>bool</em>) – If True, the detection filter for potentially hateful, abusive, and/or profane language (HAP)
+is toggle on for both prompt and generated text, defaults to False</p></li>
+<li><p><strong>guardrails_hap_params</strong> (<em>dict</em>) – MetaProps for HAP moderations, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()</span></code>
 to view the list of MetaNames</p></li>
-<li><p><strong>async_mode</strong> (<em>bool</em>) – If True then yield results asynchronously (using generator). In this case both prompt and
+<li><p><strong>async_mode</strong> (<em>bool</em>) – If True, yields results asynchronously (using a generator). In this case, both prompt and
 generated text will be concatenated in the final response - under <cite>generated_text</cite>, defaults
 to False</p></li>
-<li><p><strong>validate_prompt_variables</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, prompt variables provided in <cite>params</cite> are validated with the ones in Prompt Template Asset.
+<li><p><strong>validate_prompt_variables</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, prompt variables provided in <cite>params</cite> are validated with the ones in the Prompt Template Asset.
 This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>scoring result containing generated content</p>
+<dd class="field-even"><p>scoring result the contains the generated content</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
-<p><strong>Example</strong></p>
+<p><strong>Example:</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">q</span> <span class="o">=</span> <span class="s2">&quot;What is 1 + 1?&quot;</span>
 <span class="n">generated_response</span> <span class="o">=</span> <span class="n">model_inference</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">generated_response</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;generated_text&#39;</span><span class="p">])</span>
@@ -458,20 +457,20 @@ This parameter is only applicable in a Prompt Template Asset deployment scenario
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.inference.ModelInference.generate_text">
 <span class="sig-name descname"><span class="pre">generate_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails_hap_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails_pii_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concurrency_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_prompt_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/model_inference.html#ModelInference.generate_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.generate_text" title="Link to this definition">¶</a></dt>
-<dd><p>Given a text prompt as input, and parameters the selected model (model_id)
-will generate a completion text as generated_text. For prompt template deployment <cite>prompt</cite> should be None.</p>
+<dd><p>Generates a completion text as generated_text after getting a text prompt as input and
+parameters for the selected model (model_id). For prompt template deployment, <cite>prompt</cite> should be None.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>params</strong> (<em>dict</em>) – meta props for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
-<li><p><strong>concurrency_limit</strong> (<em>int</em>) – number of requests that will be sent in parallel, max is 10</p></li>
-<li><p><strong>prompt</strong> (<em>(</em><em>str</em><em> | </em><em>list</em><em> | </em><em>None</em><em>)</em><em>, </em><em>optional</em>) – the prompt string or list of strings. If list of strings is passed requests will be managed in parallel with the rate of concurency_limit, defaults to None</p></li>
-<li><p><strong>guardrails</strong> (<em>bool</em>) – If True then potentially hateful, abusive, and/or profane language (HAP) detection filter is toggle on for both prompt and generated text, defaults to False
-If HAP is detected the <cite>HAPDetectionWarning</cite> is issued</p></li>
-<li><p><strong>guardrails_hap_params</strong> (<em>dict</em>) – meta props for HAP moderations, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()</span></code>
+<li><p><strong>params</strong> (<em>dict</em>) – MetaProps for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
+<li><p><strong>concurrency_limit</strong> (<em>int</em>) – number of requests to be sent in parallel, max is 10</p></li>
+<li><p><strong>prompt</strong> (<em>(</em><em>str</em><em> | </em><em>list</em><em> | </em><em>None</em><em>)</em><em>, </em><em>optional</em>) – prompt string or list of strings. If list of strings is passed, requests will be managed in parallel with the rate of concurency_limit, defaults to None</p></li>
+<li><p><strong>guardrails</strong> (<em>bool</em>) – If True, the detection filter for potentially hateful, abusive, and/or profane language (HAP) is toggle on for both prompt and generated text, defaults to False
+If HAP is detected, then the <cite>HAPDetectionWarning</cite> is issued</p></li>
+<li><p><strong>guardrails_hap_params</strong> (<em>dict</em>) – MetaProps for HAP moderations, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()</span></code>
 to view the list of MetaNames</p></li>
-<li><p><strong>raw_response</strong> (<em>bool</em><em>, </em><em>optional</em>) – return the whole response object</p></li>
-<li><p><strong>validate_prompt_variables</strong> (<em>bool</em>) – If True, prompt variables provided in <cite>params</cite> are validated with the ones in Prompt Template Asset.
+<li><p><strong>raw_response</strong> (<em>bool</em><em>, </em><em>optional</em>) – returns the whole response object</p></li>
+<li><p><strong>validate_prompt_variables</strong> (<em>bool</em>) – If True, the prompt variables provided in <cite>params</cite> are validated with the ones in the Prompt Template Asset.
 This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</p></li>
 </ul>
 </dd>
@@ -484,7 +483,7 @@ This parameter is only applicable in a Prompt Template Asset deployment scenario
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>By default only the first occurrence of <cite>HAPDetectionWarning</cite> is displayed. To enable printing all warnings of this category, use:</p>
+<p>By default, only the first occurrence of <cite>HAPDetectionWarning</cite> is displayed. To enable printing all warnings of this category, use:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils</span> <span class="kn">import</span> <span class="n">HAPDetectionWarning</span>
 
@@ -492,7 +491,7 @@ This parameter is only applicable in a Prompt Template Asset deployment scenario
 </pre></div>
 </div>
 </div>
-<p><strong>Example</strong></p>
+<p><strong>Example:</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">q</span> <span class="o">=</span> <span class="s2">&quot;What is 1 + 1?&quot;</span>
 <span class="n">generated_text</span> <span class="o">=</span> <span class="n">model_inference</span><span class="o">.</span><span class="n">generate_text</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">generated_text</span><span class="p">)</span>
@@ -503,24 +502,24 @@ This parameter is only applicable in a Prompt Template Asset deployment scenario
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.inference.ModelInference.generate_text_stream">
 <span class="sig-name descname"><span class="pre">generate_text_stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails_hap_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guardrails_pii_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_prompt_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/model_inference.html#ModelInference.generate_text_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.generate_text_stream" title="Link to this definition">¶</a></dt>
-<dd><p>Given a text prompt as input, and parameters the selected model (model_id)
-will generate a streamed text as generate_text_stream. For prompt template deployment <cite>prompt</cite> should be None.</p>
+<dd><p>Generates a streamed text as generate_text_stream after getting a text prompt as input and
+parameters for the selected model (model_id). For prompt template deployment, <cite>prompt</cite> should be None.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>params</strong> (<em>dict</em>) – meta props for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
-<li><p><strong>prompt</strong> (<em>str</em><em>, </em><em>optional</em>) – the prompt string, defaults to None</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) – MetaProps for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
+<li><p><strong>prompt</strong> (<em>str</em><em>, </em><em>optional</em>) – prompt string, defaults to None</p></li>
 <li><p><strong>raw_response</strong> (<em>bool</em><em>, </em><em>optional</em>) – yields the whole response object</p></li>
-<li><p><strong>guardrails</strong> (<em>bool</em>) – If True then potentially hateful, abusive, and/or profane language (HAP) detection filter is toggle on for both prompt and generated text, defaults to False
-If HAP is detected the <cite>HAPDetectionWarning</cite> is issued</p></li>
-<li><p><strong>guardrails_hap_params</strong> (<em>dict</em>) – meta props for HAP moderations, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()</span></code>
+<li><p><strong>guardrails</strong> (<em>bool</em>) – If True, the detection filter for potentially hateful, abusive, and/or profane language (HAP) is toggle on for both prompt and generated text, defaults to False
+If HAP is detected, then the <cite>HAPDetectionWarning</cite> is issued</p></li>
+<li><p><strong>guardrails_hap_params</strong> (<em>dict</em>) – MetaProps for HAP moderations, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()</span></code>
 to view the list of MetaNames</p></li>
-<li><p><strong>validate_prompt_variables</strong> (<em>bool</em>) – If True, prompt variables provided in <cite>params</cite> are validated with the ones in Prompt Template Asset.
+<li><p><strong>validate_prompt_variables</strong> (<em>bool</em>) – If True, the prompt variables provided in <cite>params</cite> are validated with the ones in the Prompt Template Asset.
 This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>scoring result containing generated content</p>
+<dd class="field-even"><p>scoring result that contains the generated content</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>generator</p>
@@ -528,7 +527,7 @@ This parameter is only applicable in a Prompt Template Asset deployment scenario
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>By default only the first occurrence of <cite>HAPDetectionWarning</cite> is displayed. To enable printing all warnings of this category, use:</p>
+<p>By default, only the first occurrence of <cite>HAPDetectionWarning</cite> is displayed. To enable printing all warnings of this category, use:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils</span> <span class="kn">import</span> <span class="n">HAPDetectionWarning</span>
 
@@ -536,7 +535,7 @@ This parameter is only applicable in a Prompt Template Asset deployment scenario
 </pre></div>
 </div>
 </div>
-<p><strong>Example</strong></p>
+<p><strong>Example:</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">q</span> <span class="o">=</span> <span class="s2">&quot;Write an epigram about the sun&quot;</span>
 <span class="n">generated_response</span> <span class="o">=</span> <span class="n">model_inference</span><span class="o">.</span><span class="n">generate_text_stream</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
 
@@ -549,16 +548,16 @@ This parameter is only applicable in a Prompt Template Asset deployment scenario
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.inference.ModelInference.get_details">
 <span class="sig-name descname"><span class="pre">get_details</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/model_inference.html#ModelInference.get_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.get_details" title="Link to this definition">¶</a></dt>
-<dd><p>Get model interface’s details</p>
+<dd><p>Get the details of a model interface</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>details of model or deployment</p>
+<dd class="field-odd"><p>details of the model or deployment</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>dict</p>
 </dd>
 </dl>
-<p><strong>Example</strong></p>
+<p><strong>Example:</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_inference</span><span class="o">.</span><span class="n">get_details</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -581,7 +580,7 @@ This parameter is only applicable in a Prompt Template Asset deployment scenario
 <dd class="field-even"><p><a class="reference internal" href="fm_extensions_langchain.html#langchain_ibm.WatsonxLLM" title="langchain_ibm.WatsonxLLM">WatsonxLLM</a></p>
 </dd>
 </dl>
-<p><strong>Example</strong></p>
+<p><strong>Example:</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">langchain</span> <span class="kn">import</span> <span class="n">PromptTemplate</span>
 <span class="kn">from</span> <span class="nn">langchain.chains</span> <span class="kn">import</span> <span class="n">LLMChain</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">Credentials</span>
@@ -628,27 +627,27 @@ This parameter is only applicable in a Prompt Template Asset deployment scenario
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.inference.ModelInference.tokenize">
 <span class="sig-name descname"><span class="pre">tokenize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_tokens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/model_inference.html#ModelInference.tokenize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.tokenize" title="Link to this definition">¶</a></dt>
 <dd><p>The text tokenize operation allows you to check the conversion of provided input to tokens for a given model.
-It splits text into words or sub-words, which then are converted to ids through a look-up table (vocabulary).
+It splits text into words or sub-words, which then are converted to IDs through a look-up table (vocabulary).
 Tokenization allows the model to have a reasonable vocabulary size.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Method is not supported for deployments, available only for base models.</p>
+<p>The tokenization method is available only for base models and is not supported for deployments.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>prompt</strong> (<em>str</em><em>, </em><em>optional</em>) – the prompt string, defaults to None</p></li>
-<li><p><strong>return_tokens</strong> (<em>bool</em>) – the parameter for text tokenization, defaults to False</p></li>
+<li><p><strong>prompt</strong> (<em>str</em><em>, </em><em>optional</em>) – prompt string, defaults to None</p></li>
+<li><p><strong>return_tokens</strong> (<em>bool</em>) – parameter for text tokenization, defaults to False</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the result of tokenizing the input string.</p>
+<dd class="field-even"><p>result of tokenizing the input string</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
-<p><strong>Example</strong></p>
+<p><strong>Example:</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">q</span> <span class="o">=</span> <span class="s2">&quot;Write an epigram about the moon&quot;</span>
 <span class="n">tokenized_response</span> <span class="o">=</span> <span class="n">model_inference</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">return_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">tokenized_response</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">])</span>

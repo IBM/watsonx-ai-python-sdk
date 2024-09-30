@@ -309,6 +309,8 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">TypeAlias</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">base64</span>
 
 <span class="kn">import</span> <span class="nn">ibm_watsonx_ai.utils</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="n">get_user_agent_header</span>
@@ -374,7 +376,7 @@
 <span class="sd">    :param verify: certificate verification flag, deprecated, use Credentials(verify=...) to set `verify`</span>
 <span class="sd">    :type verify: bool, optional</span>
 
-<span class="sd">    **Example**</span>
+<span class="sd">    **Example:**</span>
 
 <span class="sd">    .. code-block:: python</span>
 
@@ -864,6 +866,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">WCA</span><span class="p">:</span>
             <span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;IBM-WATSONXAI-CONSUMER&quot;</span><span class="p">:</span> <span class="s2">&quot;wca&quot;</span><span class="p">})</span>
 
+        <span class="k">if</span> <span class="p">(</span><span class="n">env_variable</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;IBM_SDK_API_CLIENT_HEADERS&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span> <span class="o">|</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+                <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">env_variable</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user_headers</span><span class="p">:</span>
             <span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user_headers</span>
 

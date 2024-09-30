@@ -3,14 +3,16 @@ Tuned Model Inference
 
 .. _pt-model-inference-module:
 
-This section shows how to deploy model and use ``ModelInference`` class with created deployment.
+This section shows how to deploy a model and use the ``ModelInference`` class with the created deployment.
 
-There are two ways to query ``generate_text`` using the :ref:`deployments<generate_text_deployments>` module or using :ref:`ModelInference<generate_text_ModelInference>` module .
+You can query ``generate_text`` in one of two ways: 
+    * the :ref:`deployments<generate_text_deployments>` module 
+    * the :ref:`ModelInference<generate_text_ModelInference>` module
 
 Working with deployments
 ------------------------
 
-This section describes methods that enable user to work with deployments. But first it will be needed to create client and set ``project_id`` or ``space_id``.
+This section describes methods for working with deployments. Before you begin, create a client and set the ``project_id`` or ``space_id``.
 
 .. _api_client_init:
 .. code-block:: python
@@ -20,7 +22,7 @@ This section describes methods that enable user to work with deployments. But fi
     client = APIClient(credentials)
     client.set.default_project("7ac03029-8bdd-4d5f-a561-2c4fd1e40705")
 
-To create deployment with specific parameters call following lines.
+To create a deployment with specific parameters, call the following lines:
 
 .. code-block:: python
 
@@ -35,7 +37,7 @@ To create deployment with specific parameters call following lines.
     }
     deployment_details = client.deployments.create(model_id, meta_props)
 
-To get a deployment_id from details, use ``id`` from ``metadata``.
+To get a deployment_id from details, use the ``id`` from ``metadata``.
 
 .. code-block:: python
 
@@ -58,7 +60,7 @@ You can directly query ``generate_text`` using the deployments module.
 Creating ``ModelInference`` instance
 ------------------------------------
 
-At the beginning, it is recommended to define parameters (later used by module).
+Start by defining the parameters. They will later be used by the module.
 
 .. code-block:: python
 
@@ -69,7 +71,7 @@ At the beginning, it is recommended to define parameters (later used by module).
         GenParams.STOP_SEQUENCES: ["\n"]
     }
 
-Create the ModelInference itself, using credentials and ``project_id`` / ``space_id`` or the previously initialized APIClient (see :ref:`APIClient initialization<api_client_init>`).
+Create the ModelInference by using credentials and ``project_id`` / ``space_id``, or the previously initialized APIClient (see :ref:`APIClient initialization<api_client_init>`).
 
 .. code-block:: python
 
@@ -101,7 +103,7 @@ You can directly query ``generate_text`` using the ``ModelInference`` object.
 Importing data
 --------------
 
-To use ModelInference, an example data may be need.
+To use ModelInference, an example data might be needed.
 
 .. code-block:: python
 
@@ -119,9 +121,9 @@ Analyzing satisfaction
 ----------------------
 
 .. note::
-    The satisfaction analysis was performed for a specific example - **car rental**, it may not work in the case of other data sets.
+    The satisfaction analysis was performed for a specific example, **car rental**, and it may not work in the case of other data sets.
 
-To analyze satisfaction prepare batch with prompts, calculate the accuracy of tuned model and compare it with base model.
+To analyze the satisfaction, prepare batch with prompts, calculate the accuracy of the tuned model, and compare it with the base model.
 
 .. code-block:: python
 
@@ -129,7 +131,7 @@ To analyze satisfaction prepare batch with prompts, calculate the accuracy of tu
     satisfaction = list(data.output)
     prompts_batch = ["\n".join([prompt]) for prompt in prompts]
 
-Calculate accuracy of based model:
+Calculate the accuracy of the based model:
 
 .. code-block:: python
 
@@ -144,7 +146,7 @@ Calculate accuracy of based model:
     print(f'base model accuracy_score: {accuracy_score(satisfaction, [int(x) for x in base_model_results])}, base model f1_score: {f1_score(satisfaction, [int(x) for x in base_model_results])}')
     'base model accuracy_score: 0.965034965034965, base model f1_score: 0.9765258215962441'
 
-Calculate accuracy of tuned model:
+Calculate the accuracy of the tuned model:
 
 .. code-block:: python
 
@@ -155,9 +157,9 @@ Calculate accuracy of tuned model:
 Generate methods 
 --------------------
 
-The detailed explanation of available generate methods with exact parameters can be found in the :ref:`ModelInferece class<model-inference-class>`.
+A detailed explanation of available generate methods with exact parameters can be found in the :ref:`ModelInferece class<model-inference-class>`.
 
-With previously created ``tuned_model`` object, it is possible to generate a text stream (generator) using defined inference and ``generate_text_stream()`` method.
+With the previously created ``tuned_model`` object, it is possible to generate a text stream (generator) using defined inference and ``generate_text_stream()`` method.
 
 .. code-block:: python
 
@@ -165,7 +167,7 @@ With previously created ``tuned_model`` object, it is possible to generate a tex
         print(token, end="")
     '$10 Powerchill Leggings'
 
-And also receive more detailed result with ``generate()``.
+Get a more detailed result with ``generate()``.
 
 .. code-block:: python
 

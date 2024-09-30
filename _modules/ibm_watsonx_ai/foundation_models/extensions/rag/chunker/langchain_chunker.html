@@ -315,7 +315,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper for LangChain TextSplitter.</span>
 
-<span class="sd">    :param method: describes type of the TextSplitter as the main instance performing chunking, defaults to &quot;recursive&quot;</span>
+<span class="sd">    :param method: describes the type of TextSplitter as the main instance performing the chunking, defaults to &quot;recursive&quot;</span>
 <span class="sd">    :type method: Literal[&quot;recursive&quot;, &quot;character&quot;, &quot;token&quot;], optional</span>
 
 <span class="sd">    :param chunk_size: maximum size of a single chunk that is returned, defaults to 4000</span>
@@ -373,7 +373,7 @@
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
     <span class="k">def</span> <span class="nf">_get_text_splitter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TextSplitter</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create instance of TextSplitter based on the settings.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance of TextSplitter based on the settings.&quot;&quot;&quot;</span>
 
         <span class="n">text_splitter</span><span class="p">:</span> <span class="n">TextSplitter</span>
 
@@ -422,7 +422,7 @@
 <a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.langchain_chunker.LangChainChunker.to_dict">[docs]</a>
     <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return dict that can be used to recreate instance of the LangChainChunker.</span>
+<span class="sd">        Return dictionary that can be used to recreate an instance of the LangChainChunker.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s2">&quot;method&quot;</span><span class="p">,</span>
@@ -441,7 +441,7 @@
 <a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.langchain_chunker.LangChainChunker.from_dict">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;LangChainChunker&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create instance from the dictionary&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance from the dictionary.&quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">d</span><span class="p">)</span></div>
 
@@ -450,7 +450,7 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">documents</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Document</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Sets &quot;document_id&quot; in the metadata if missing.</span>
+<span class="sd">        Sets &quot;document_id&quot; in the metadata if it is missing.</span>
 <span class="sd">        The document_id is the hash of the document&#39;s content.</span>
 
 <span class="sd">        :param documents: sequence of documents</span>
@@ -468,7 +468,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets &quot;sequence_number&quot; in the metadata, sorted by chunks&#39; &quot;start_index&quot;.</span>
 
-<span class="sd">        :param chunks: sequence of chunks of documents that contain context in the format of text</span>
+<span class="sd">        :param chunks: sequence of chunks of documents that contain context in a text format</span>
 <span class="sd">        :type chunks: list[langchain_core.documents.Document]</span>
 
 <span class="sd">        :return: chunks: list of updated chunks, sorted by document_id and sequence_number</span>
@@ -495,12 +495,12 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Split series of documents into smaller chunks based on the provided</span>
 <span class="sd">        chunker settings. Each chunk has metadata that includes the document_id,</span>
-<span class="sd">        sequence_number and start_index.</span>
+<span class="sd">        sequence_number, and start_index.</span>
 
-<span class="sd">        :param documents: sequence of elements that contain context in the format of text</span>
+<span class="sd">        :param documents: sequence of elements that contain context in a text format</span>
 <span class="sd">        :type documents: Sequence[langchain_core.documents.Document]</span>
 
-<span class="sd">        :return: list of documents splitter into smaller ones, having less content</span>
+<span class="sd">        :return: list of documents split into smaller ones, having less content</span>
 <span class="sd">        :rtype: list[langchain_core.documents.Document]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_document_id_in_metadata_if_missing</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span>

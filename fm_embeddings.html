@@ -311,33 +311,33 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model_id</strong> (<em>str</em><em>, </em><em>optional</em>) – the type of model to use</p></li>
 <li><p><strong>params</strong> (<em>dict</em><em>, </em><em>optional</em>) – parameters to use during generate requests, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
-<li><p><strong>credentials</strong> (<em>dict</em><em>, </em><em>optional</em>) – credentials to Watson Machine Learning instance</p></li>
+<li><p><strong>credentials</strong> (<em>dict</em><em>, </em><em>optional</em>) – credentials for the Watson Machine Learning instance</p></li>
 <li><p><strong>project_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the Watson Studio project</p></li>
 <li><p><strong>space_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the Watson Studio space</p></li>
-<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – Initialized APIClient object with set project or space ID. If passed, <code class="docutils literal notranslate"><span class="pre">credentials</span></code> and <code class="docutils literal notranslate"><span class="pre">project_id</span></code>/<code class="docutils literal notranslate"><span class="pre">space_id</span></code> are not required.</p></li>
-<li><p><strong>verify</strong> (<em>bool</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – <p>user can pass as verify one of following:</p>
+<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – initialized APIClient object with a set project ID or space ID. If passed, <code class="docutils literal notranslate"><span class="pre">credentials</span></code> and <code class="docutils literal notranslate"><span class="pre">project_id</span></code>/<code class="docutils literal notranslate"><span class="pre">space_id</span></code> are not required.</p></li>
+<li><p><strong>verify</strong> (<em>bool</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – <p>You can pass one of following as verify:</p>
 <ul>
 <li><p>the path to a CA_BUNDLE file</p></li>
-<li><p>the path of directory with certificates of trusted CAs</p></li>
+<li><p>the path of a directory with certificates of trusted CAs</p></li>
 <li><p><cite>True</cite> - default path to truststore will be taken</p></li>
 <li><p><cite>False</cite> - no verification will be made</p></li>
 </ul>
 </p></li>
-<li><p><strong>persistent_connection</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to keep persistent connection when evaluating <cite>generate</cite>, ‘embed_query’ and ‘embed_documents` methods with one prompt
-or batch of prompts not longer than documentation allows (for more details see <a class="reference external" href="https://cloud.ibm.com/apidocs/watsonx-ai#text-embeddings">https://cloud.ibm.com/apidocs/watsonx-ai#text-embeddings</a>).
-To close connection run <cite>embeddings.close_persistent_connection()</cite>, defaults to True. Added in 1.1.2.</p></li>
+<li><p><strong>persistent_connection</strong> (<em>bool</em><em>, </em><em>optional</em>) – defines whether to keep a persistent connection when evaluating the <cite>generate</cite>, ‘embed_query’, and ‘embed_documents` methods with one prompt
+or batch of prompts that meet the length limit. For more details, see <a class="reference external" href="https://cloud.ibm.com/apidocs/watsonx-ai#text-embeddings">Generate embeddings</a>.
+To close the connection, run <cite>embeddings.close_persistent_connection()</cite>, defaults to True. Added in 1.1.2.</p></li>
 </ul>
 </dd>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>One of these parameters is required: [<code class="docutils literal notranslate"><span class="pre">project_id</span></code>, <code class="docutils literal notranslate"><span class="pre">space_id</span></code>] when <code class="docutils literal notranslate"><span class="pre">credentials</span></code> parameter passed.</p>
+<p>When the <code class="docutils literal notranslate"><span class="pre">credentials</span></code> parameter is passed, one of these parameters is required: [<code class="docutils literal notranslate"><span class="pre">project_id</span></code>, <code class="docutils literal notranslate"><span class="pre">space_id</span></code>].</p>
 </div>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>You can copy the project_id from the Project’s Manage tab (Project -&gt; Manage -&gt; General -&gt; Details).</p>
 </div>
-<p><strong>Example</strong></p>
+<p><strong>Example:</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">Credentials</span>
  <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models</span> <span class="kn">import</span> <span class="n">Embeddings</span>
  <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">EmbedTextParamsMetaNames</span> <span class="k">as</span> <span class="n">EmbedParams</span>
@@ -369,23 +369,23 @@ To close connection run <cite>embeddings.close_persistent_connection()</cite>, d
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.embeddings.Embeddings.embed_documents">
 <span class="sig-name descname"><span class="pre">embed_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">texts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concurrency_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/embeddings/embeddings.html#Embeddings.embed_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.embeddings.Embeddings.embed_documents" title="Link to this definition">¶</a></dt>
-<dd><p>Return list of embedding vectors for provided texts.</p>
+<dd><p>Returns list of embedding vectors for provided texts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>texts</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of texts for which embedding vectors will be generated.</p></li>
-<li><p><strong>params</strong> (<em>ParamsType</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – meta props for embedding generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()</span></code> to view the list of MetaNames, defaults to None</p></li>
-<li><p><strong>concurrency_limit</strong> (<em>int</em><em>, </em><em>optional</em>) – number of requests that will be sent in parallel, max is 10, defaults to 10</p></li>
+<li><p><strong>texts</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – list of texts for which embedding vectors will be generated</p></li>
+<li><p><strong>params</strong> (<em>ParamsType</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – MetaProps for the embedding generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()</span></code> to view the list of MetaNames, defaults to None</p></li>
+<li><p><strong>concurrency_limit</strong> (<em>int</em><em>, </em><em>optional</em>) – number of requests to be sent in parallel, max is 10, defaults to 10</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>List of embedding vectors</p>
+<dd class="field-even"><p>list of embedding vectors</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list[list[float]]</p>
 </dd>
 </dl>
-<p><strong>Example</strong></p>
+<p><strong>Example:</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">q</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;What is a Generative AI?&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Generative AI refers to a type of artificial intelligence that can original content.&quot;</span>
@@ -400,22 +400,22 @@ To close connection run <cite>embeddings.close_persistent_connection()</cite>, d
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.embeddings.Embeddings.embed_query">
 <span class="sig-name descname"><span class="pre">embed_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/embeddings/embeddings.html#Embeddings.embed_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.embeddings.Embeddings.embed_query" title="Link to this definition">¶</a></dt>
-<dd><p>Return embedding vector for provided text.</p>
+<dd><p>Returns an embedding vector for a provided text.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>text</strong> (<em>str</em>) – Text for which embedding vector will be generated.</p></li>
-<li><p><strong>params</strong> (<em>ParamsType</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – meta props for embedding generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()</span></code> to view the list of MetaNames, defaults to None</p></li>
+<li><p><strong>text</strong> (<em>str</em>) – text for which embedding vector will be generated</p></li>
+<li><p><strong>params</strong> (<em>ParamsType</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – MetaProps for the embedding generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()</span></code> to view the list of MetaNames, defaults to None</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Embedding vector</p>
+<dd class="field-even"><p>embedding vector</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list[float]</p>
 </dd>
 </dl>
-<p><strong>Example</strong></p>
+<p><strong>Example:</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">q</span> <span class="o">=</span> <span class="s2">&quot;What is a Generative AI?&quot;</span>
 <span class="n">embedding_vector</span> <span class="o">=</span> <span class="n">embedding</span><span class="o">.</span><span class="n">embed_query</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">embedding_vector</span><span class="p">)</span>
@@ -426,14 +426,14 @@ To close connection run <cite>embeddings.close_persistent_connection()</cite>, d
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.embeddings.Embeddings.generate">
 <span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concurrency_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/embeddings/embeddings.html#Embeddings.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.embeddings.Embeddings.generate" title="Link to this definition">¶</a></dt>
-<dd><p>Generates embeddings vectors for the given input with the given
-parameters and returns a REST API response.</p>
+<dd><p>Generate embeddings vectors for the given input with the given
+parameters. Returns a REST API response.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>inputs</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of texts for which embedding vectors will be generated.</p></li>
-<li><p><strong>params</strong> (<em>ParamsType</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – meta props for embedding generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()</span></code> to view the list of MetaNames, defaults to None</p></li>
-<li><p><strong>concurrency_limit</strong> (<em>int</em><em>, </em><em>optional</em>) – number of requests that will be sent in parallel, max is 10, defaults to 10</p></li>
+<li><p><strong>inputs</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – list of texts for which embedding vectors will be generated</p></li>
+<li><p><strong>params</strong> (<em>ParamsType</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – MetaProps for the embedding generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()</span></code> to view the list of MetaNames, defaults to None</p></li>
+<li><p><strong>concurrency_limit</strong> (<em>int</em><em>, </em><em>optional</em>) – number of requests to be sent in parallel, max is 10, defaults to 10</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -484,7 +484,7 @@ parameters and returns a REST API response.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings.from_dict">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/embeddings/base_embeddings.html#BaseEmbeddings.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings.from_dict" title="Link to this definition">¶</a></dt>
-<dd><p>Deserialize <code class="docutils literal notranslate"><span class="pre">BaseEmbeddings</span></code> into concrete one using arguments</p>
+<dd><p>Deserialize <code class="docutils literal notranslate"><span class="pre">BaseEmbeddings</span></code> into a concrete one using arguments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>concrete Embeddings or None if data is incorrect</p>
@@ -583,7 +583,7 @@ parameters and returns a REST API response.</p>
 <p>Supported embedding models.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Current list of supported embeddings model types of various environments, user can check with
+<p>You can check the current list of supported embeddings model types of various environments with
 <a class="reference internal" href="fm_helpers.html#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_embeddings_model_specs" title="ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_embeddings_model_specs"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_embeddings_model_specs()</span></code></a>
 or by referring to the <a class="reference external" href="https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-models-embed.html?context=wx">watsonx.ai</a>
 documentation.</p>

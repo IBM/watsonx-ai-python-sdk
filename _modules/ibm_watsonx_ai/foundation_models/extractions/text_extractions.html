@@ -318,7 +318,7 @@
 <span class="k">class</span> <span class="nc">TextExtractions</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Instantiate the Text Extraction service.</span>
 
-<span class="sd">    :param credentials: credentials to Watson Machine Learning instance</span>
+<span class="sd">    :param credentials: credentials to the Watson Machine Learning instance</span>
 <span class="sd">    :type credentials: Credentials, optional</span>
 
 <span class="sd">    :param project_id: ID of the Watson Studio project, defaults to None</span>
@@ -327,11 +327,11 @@
 <span class="sd">    :param space_id: ID of the Watson Studio space, defaults to None</span>
 <span class="sd">    :type space_id: str, optional</span>
 
-<span class="sd">    :param api_client: Initialized APIClient object with set project or space ID. If passed, ``credentials`` and ``project_id``/``space_id`` are not required, defaults to None</span>
+<span class="sd">    :param api_client: initialized APIClient object with a set project ID or space ID. If passed, ``credentials`` and ``project_id``/``space_id`` are not required, defaults to None</span>
 <span class="sd">    :type api_client: APIClient, optional</span>
 
-<span class="sd">    :raises InvalidMultipleArguments: if `space_id` and `project_id` or `credentials` and `api_client` are provided simultaneously</span>
-<span class="sd">    :raises WMLClientError: if CPD version is less than 5.0</span>
+<span class="sd">    :raises InvalidMultipleArguments: raised if `space_id` and `project_id` or `credentials` and `api_client` are provided simultaneously</span>
+<span class="sd">    :raises WMLClientError: raised if the CPD version is less than 5.0</span>
 
 <span class="sd">    .. code-block:: python</span>
 
@@ -390,21 +390,21 @@
         <span class="n">results_reference</span><span class="p">:</span> <span class="n">DataConnection</span><span class="p">,</span>
         <span class="n">steps</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start a request to extract text and metadata from document.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start a request to extract text and metadata from a document.</span>
 
-<span class="sd">        :param document_reference: Reference to document in bucket from which text will be extracted</span>
+<span class="sd">        :param document_reference: reference to the document in the bucket from which text will be extracted</span>
 <span class="sd">        :type document_reference: DataConnection</span>
 
-<span class="sd">        :param results_reference: Reference to location in bucket where results will saved</span>
+<span class="sd">        :param results_reference: reference to the location in the bucket where results will saved</span>
 <span class="sd">        :type results_reference: DataConnection</span>
 
-<span class="sd">        :param steps: The steps for the text extraction pipeline, defaults to None</span>
+<span class="sd">        :param steps: steps for the text extraction pipeline, defaults to None</span>
 <span class="sd">        :type steps: dict | None, optional</span>
 
-<span class="sd">        :return: Raw response from server with text extraction job details</span>
+<span class="sd">        :return: raw response from the server with the text extraction job details</span>
 <span class="sd">        :rtype: dict</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -477,10 +477,10 @@
 <span class="sd">        :param limit: limit number of fetched records, defaults to None</span>
 <span class="sd">        :type limit: int | None, optional</span>
 
-<span class="sd">        :return: pandas DataFrame with text extraction jobs information</span>
+<span class="sd">        :return: job information of a pandas DataFrame with text extraction</span>
 <span class="sd">        :rtype: pandas.DataFrame</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -515,18 +515,18 @@
     <span class="k">def</span> <span class="nf">get_job_details</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">extraction_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return text extraction job details. If `extraction_id` is None, return details of all text extraction jobs.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return text extraction job details. If `extraction_id` is None, returns the details of all text extraction jobs.</span>
 
-<span class="sd">        :param extraction_id: Id of text extraction job, defaults to None</span>
+<span class="sd">        :param extraction_id: ID of the text extraction job, defaults to None</span>
 <span class="sd">        :type extraction_id: str | None, optional</span>
 
 <span class="sd">        :param limit: limit number of fetched records, defaults to None</span>
 <span class="sd">        :type limit: int | None, optional</span>
 
-<span class="sd">        :return: Text extraction job details</span>
+<span class="sd">        :return: details of the text extraction job</span>
 <span class="sd">        :rtype: dict</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -565,12 +565,12 @@
 <div class="viewcode-block" id="TextExtractions.delete_job">
 <a class="viewcode-back" href="../../../../fm_text_extraction.html#ibm_watsonx_ai.foundation_models.extractions.TextExtractions.delete_job">[docs]</a>
     <span class="k">def</span> <span class="nf">delete_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extraction_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete text extraction job.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a text extraction job.</span>
 
-<span class="sd">        :return: Return &quot;SUCCESS&quot; if deletion succeed</span>
+<span class="sd">        :return: return &quot;SUCCESS&quot; if the deletion succeeds</span>
 <span class="sd">        :rtype: str</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -590,15 +590,15 @@
 <div class="viewcode-block" id="TextExtractions.get_results_reference">
 <a class="viewcode-back" href="../../../../fm_text_extraction.html#ibm_watsonx_ai.foundation_models.extractions.TextExtractions.get_results_reference">[docs]</a>
     <span class="k">def</span> <span class="nf">get_results_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extraction_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataConnection</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get `DataConnection` instance that is a reference to the results stored on COS.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a `DataConnection` instance that is a reference to the results stored on COS.</span>
 
-<span class="sd">        :param extraction_id: Id of text extraction job.</span>
+<span class="sd">        :param extraction_id: ID of text extraction job</span>
 <span class="sd">        :type extraction_id: str</span>
 
-<span class="sd">        :return: Data Connection to text extraction job results location.</span>
+<span class="sd">        :return: location of the Data Connection to text extraction job results</span>
 <span class="sd">        :rtype: DataConnection</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -627,7 +627,7 @@
 <span class="sd">        :return: unique ID of the stored extraction request</span>
 <span class="sd">        :rtype: str</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 

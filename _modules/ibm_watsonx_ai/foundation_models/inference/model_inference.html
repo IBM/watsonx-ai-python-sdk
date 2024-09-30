@@ -328,16 +328,16 @@
 <span class="sd">    .. hint::</span>
 <span class="sd">        To use the ModelInference class with LangChain, use the :func:`WatsonxLLM &lt;langchain_ibm.WatsonxLLM&gt;` wrapper.</span>
 
-<span class="sd">    :param model_id: the type of model to use</span>
+<span class="sd">    :param model_id: type of model to use</span>
 <span class="sd">    :type model_id: str, optional</span>
 
 <span class="sd">    :param deployment_id: ID of tuned model&#39;s deployment</span>
 <span class="sd">    :type deployment_id: str, optional</span>
 
-<span class="sd">    :param credentials: credentials to Watson Machine Learning instance</span>
+<span class="sd">    :param credentials: credentials for the Watson Machine Learning instance</span>
 <span class="sd">    :type credentials: Credentials or dict, optional</span>
 
-<span class="sd">    :param params: parameters to use during generate requests</span>
+<span class="sd">    :param params: parameters to use during request generation</span>
 <span class="sd">    :type params: dict, optional</span>
 
 <span class="sd">    :param project_id: ID of the Watson Studio project</span>
@@ -346,35 +346,33 @@
 <span class="sd">    :param space_id: ID of the Watson Studio space</span>
 <span class="sd">    :type space_id: str, optional</span>
 
-<span class="sd">    :param verify: user can pass as verify one of following:</span>
+<span class="sd">    :param verify: You can pass one of the following as verify:</span>
 
-<span class="sd">        - the path to a CA_BUNDLE file</span>
-<span class="sd">        - the path of directory with certificates of trusted CAs</span>
-<span class="sd">        - `True` - default path to truststore will be taken</span>
-<span class="sd">        - `False` - no verification will be made</span>
+<span class="sd">        * the path to a CA_BUNDLE file</span>
+<span class="sd">        * the path of directory with certificates of trusted CAs</span>
+<span class="sd">        * `True` - default path to truststore will be taken</span>
+<span class="sd">        * `False` - no verification will be made</span>
 <span class="sd">    :type verify: bool or str, optional</span>
 
-<span class="sd">    :param api_client: Initialized APIClient object with set project or space ID. If passed, ``credentials`` and ``project_id``/``space_id`` are not required.</span>
+<span class="sd">    :param api_client: initialized APIClient object with a set project ID or space ID. If passed, ``credentials`` and ``project_id``/``space_id`` are not required.</span>
 <span class="sd">    :type api_client: APIClient, optional</span>
 
-<span class="sd">    :param validate: Model id validation, defaults to True</span>
+<span class="sd">    :param validate: Model ID validation, defaults to True</span>
 <span class="sd">    :type validate: bool, optional</span>
 
 <span class="sd">    :param persistent_connection: Whether to keep persistent connection when evaluating `generate`, `generate_text` or `tokenize` methods.</span>
-<span class="sd">                                  Note, this parameter is only applicable for mentioned methods when prompt is of type str.</span>
-<span class="sd">                                  To close connection run `model.close_persistent_connection()`, defaults to True. Added in 1.1.2.</span>
+<span class="sd">                                  This parameter is only applicable for the mentioned methods when the prompt is a str type.</span>
+<span class="sd">                                  To close the connection, run `model.close_persistent_connection()`, defaults to True. Added in 1.1.2.</span>
 <span class="sd">    :type persistent_connection: bool, optional</span>
 
 <span class="sd">    .. note::</span>
-<span class="sd">        One of these parameters is required: [``model_id``, ``deployment_id``]</span>
-
-<span class="sd">    .. note::</span>
-<span class="sd">        One of these parameters is required: [``project_id``, ``space_id``] when ``credentials`` parameter passed.</span>
+<span class="sd">        * You must provide one of these parameters: [``model_id``, ``deployment_id``]</span>
+<span class="sd">        * When the ``credentials`` parameter is passed, you must provide one of these parameters: [``project_id``, ``space_id``].</span>
 
 <span class="sd">    .. hint::</span>
 <span class="sd">        You can copy the project_id from the Project&#39;s Manage tab (Project -&gt; Manage -&gt; General -&gt; Details).</span>
 
-<span class="sd">    **Example**</span>
+<span class="sd">    **Example:**</span>
 
 <span class="sd">    .. code-block:: python</span>
 
@@ -493,12 +491,12 @@
 <div class="viewcode-block" id="ModelInference.get_details">
 <a class="viewcode-back" href="../../../../fm_model_inference.html#ibm_watsonx_ai.foundation_models.inference.ModelInference.get_details">[docs]</a>
     <span class="k">def</span> <span class="nf">get_details</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get model interface&#39;s details</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the details of a model interface</span>
 
-<span class="sd">        :return: details of model or deployment</span>
+<span class="sd">        :return: details of the model or deployment</span>
 <span class="sd">        :rtype: dict</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -560,39 +558,39 @@
         <span class="n">async_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">validate_prompt_variables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="n">Generator</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a text prompt as input, and parameters the selected model (model_id) or deployment (deployment_id)</span>
-<span class="sd">        will generate a completion text as generated_text. For prompt template deployment `prompt` should be None.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a completion text as generated_text after getting a text prompt as input and parameters for the</span>
+<span class="sd">        selected model (model_id) or deployment (deployment_id). For prompt template deployment, `prompt` should be None.</span>
 
-<span class="sd">        :param params: meta props for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames</span>
+<span class="sd">        :param params: MetaProps for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames</span>
 <span class="sd">        :type params: dict</span>
 
-<span class="sd">        :param concurrency_limit: number of requests that will be sent in parallel, max is 10</span>
+<span class="sd">        :param concurrency_limit: number of requests to be sent in parallel, max is 10</span>
 <span class="sd">        :type concurrency_limit: int</span>
 
-<span class="sd">        :param prompt: the prompt string or list of strings. If list of strings is passed requests will be managed in parallel with the rate of concurency_limit, defaults to None</span>
+<span class="sd">        :param prompt: prompt string or list of strings. If list of strings is passed, requests will be managed in parallel with the rate of concurency_limit, defaults to None</span>
 <span class="sd">        :type prompt: (str | list | None), optional</span>
 
-<span class="sd">        :param guardrails: If True then potentially hateful, abusive, and/or profane language (HAP) detection</span>
-<span class="sd">                           filter is toggle on for both prompt and generated text, defaults to False</span>
+<span class="sd">        :param guardrails: If True, the detection filter for potentially hateful, abusive, and/or profane language (HAP)</span>
+<span class="sd">                        is toggle on for both prompt and generated text, defaults to False</span>
 <span class="sd">        :type guardrails: bool</span>
 
-<span class="sd">        :param guardrails_hap_params: meta props for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
+<span class="sd">        :param guardrails_hap_params: MetaProps for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
 <span class="sd">                                      to view the list of MetaNames</span>
 <span class="sd">        :type guardrails_hap_params: dict</span>
 
-<span class="sd">        :param async_mode: If True then yield results asynchronously (using generator). In this case both prompt and</span>
+<span class="sd">        :param async_mode: If True, yields results asynchronously (using a generator). In this case, both prompt and</span>
 <span class="sd">                           generated text will be concatenated in the final response - under `generated_text`, defaults</span>
 <span class="sd">                           to False</span>
 <span class="sd">        :type async_mode: bool</span>
 
-<span class="sd">        :param validate_prompt_variables: If True, prompt variables provided in `params` are validated with the ones in Prompt Template Asset.</span>
+<span class="sd">        :param validate_prompt_variables: If True, prompt variables provided in `params` are validated with the ones in the Prompt Template Asset.</span>
 <span class="sd">                                          This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</span>
 <span class="sd">        :type validate_prompt_variables: bool, optional</span>
 
-<span class="sd">        :return: scoring result containing generated content</span>
+<span class="sd">        :return: scoring result the contains the generated content</span>
 <span class="sd">        :rtype: dict</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -723,30 +721,30 @@
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
         <span class="n">validate_prompt_variables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a text prompt as input, and parameters the selected model (model_id)</span>
-<span class="sd">        will generate a completion text as generated_text. For prompt template deployment `prompt` should be None.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a completion text as generated_text after getting a text prompt as input and</span>
+<span class="sd">        parameters for the selected model (model_id). For prompt template deployment, `prompt` should be None.</span>
 
-<span class="sd">        :param params: meta props for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames</span>
+<span class="sd">        :param params: MetaProps for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames</span>
 <span class="sd">        :type params: dict</span>
 
-<span class="sd">        :param concurrency_limit: number of requests that will be sent in parallel, max is 10</span>
+<span class="sd">        :param concurrency_limit: number of requests to be sent in parallel, max is 10</span>
 <span class="sd">        :type concurrency_limit: int</span>
 
-<span class="sd">        :param prompt: the prompt string or list of strings. If list of strings is passed requests will be managed in parallel with the rate of concurency_limit, defaults to None</span>
+<span class="sd">        :param prompt: prompt string or list of strings. If list of strings is passed, requests will be managed in parallel with the rate of concurency_limit, defaults to None</span>
 <span class="sd">        :type prompt: (str | list | None), optional</span>
 
-<span class="sd">        :param guardrails: If True then potentially hateful, abusive, and/or profane language (HAP) detection filter is toggle on for both prompt and generated text, defaults to False</span>
-<span class="sd">                           If HAP is detected the `HAPDetectionWarning` is issued</span>
+<span class="sd">        :param guardrails: If True, the detection filter for potentially hateful, abusive, and/or profane language (HAP) is toggle on for both prompt and generated text, defaults to False</span>
+<span class="sd">                           If HAP is detected, then the `HAPDetectionWarning` is issued</span>
 <span class="sd">        :type guardrails: bool</span>
 
-<span class="sd">        :param guardrails_hap_params: meta props for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
+<span class="sd">        :param guardrails_hap_params: MetaProps for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
 <span class="sd">                                      to view the list of MetaNames</span>
 <span class="sd">        :type guardrails_hap_params: dict</span>
 
-<span class="sd">        :param raw_response: return the whole response object</span>
+<span class="sd">        :param raw_response: returns the whole response object</span>
 <span class="sd">        :type raw_response: bool, optional</span>
 
-<span class="sd">        :param validate_prompt_variables: If True, prompt variables provided in `params` are validated with the ones in Prompt Template Asset.</span>
+<span class="sd">        :param validate_prompt_variables: If True, the prompt variables provided in `params` are validated with the ones in the Prompt Template Asset.</span>
 <span class="sd">                                          This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</span>
 <span class="sd">        :type validate_prompt_variables: bool</span>
 
@@ -754,7 +752,7 @@
 <span class="sd">        :rtype: str | list | dict</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">            By default only the first occurrence of `HAPDetectionWarning` is displayed. To enable printing all warnings of this category, use:</span>
+<span class="sd">            By default, only the first occurrence of `HAPDetectionWarning` is displayed. To enable printing all warnings of this category, use:</span>
 
 <span class="sd">            .. code-block:: python</span>
 
@@ -764,7 +762,7 @@
 <span class="sd">                warnings.filterwarnings(&quot;always&quot;, category=HAPDetectionWarning)</span>
 
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -807,35 +805,35 @@
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">validate_prompt_variables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a text prompt as input, and parameters the selected model (model_id)</span>
-<span class="sd">        will generate a streamed text as generate_text_stream. For prompt template deployment `prompt` should be None.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a streamed text as generate_text_stream after getting a text prompt as input and</span>
+<span class="sd">        parameters for the selected model (model_id). For prompt template deployment, `prompt` should be None.</span>
 
-<span class="sd">        :param params: meta props for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames</span>
+<span class="sd">        :param params: MetaProps for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames</span>
 <span class="sd">        :type params: dict</span>
 
-<span class="sd">        :param prompt: the prompt string, defaults to None</span>
+<span class="sd">        :param prompt: prompt string, defaults to None</span>
 <span class="sd">        :type prompt: str, optional</span>
 
 <span class="sd">        :param raw_response: yields the whole response object</span>
 <span class="sd">        :type raw_response: bool, optional</span>
 
-<span class="sd">        :param guardrails: If True then potentially hateful, abusive, and/or profane language (HAP) detection filter is toggle on for both prompt and generated text, defaults to False</span>
-<span class="sd">                           If HAP is detected the `HAPDetectionWarning` is issued</span>
+<span class="sd">        :param guardrails: If True, the detection filter for potentially hateful, abusive, and/or profane language (HAP) is toggle on for both prompt and generated text, defaults to False</span>
+<span class="sd">                           If HAP is detected, then the `HAPDetectionWarning` is issued</span>
 <span class="sd">        :type guardrails: bool</span>
 
-<span class="sd">        :param guardrails_hap_params: meta props for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
+<span class="sd">        :param guardrails_hap_params: MetaProps for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
 <span class="sd">                                      to view the list of MetaNames</span>
 <span class="sd">        :type guardrails_hap_params: dict</span>
 
-<span class="sd">        :param validate_prompt_variables: If True, prompt variables provided in `params` are validated with the ones in Prompt Template Asset.</span>
+<span class="sd">        :param validate_prompt_variables: If True, the prompt variables provided in `params` are validated with the ones in the Prompt Template Asset.</span>
 <span class="sd">                                          This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</span>
 <span class="sd">        :type validate_prompt_variables: bool</span>
 
-<span class="sd">        :return: scoring result containing generated content</span>
+<span class="sd">        :return: scoring result that contains the generated content</span>
 <span class="sd">        :rtype: generator</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">            By default only the first occurrence of `HAPDetectionWarning` is displayed. To enable printing all warnings of this category, use:</span>
+<span class="sd">            By default, only the first occurrence of `HAPDetectionWarning` is displayed. To enable printing all warnings of this category, use:</span>
 
 <span class="sd">            .. code-block:: python</span>
 
@@ -844,7 +842,7 @@
 
 <span class="sd">                warnings.filterwarnings(&quot;always&quot;, category=HAPDetectionWarning)</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -873,22 +871,22 @@
     <span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_tokens</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The text tokenize operation allows you to check the conversion of provided input to tokens for a given model.</span>
-<span class="sd">        It splits text into words or sub-words, which then are converted to ids through a look-up table (vocabulary).</span>
+<span class="sd">        It splits text into words or sub-words, which then are converted to IDs through a look-up table (vocabulary).</span>
 <span class="sd">        Tokenization allows the model to have a reasonable vocabulary size.</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">            Method is not supported for deployments, available only for base models.</span>
+<span class="sd">            The tokenization method is available only for base models and is not supported for deployments.</span>
 
-<span class="sd">        :param prompt: the prompt string, defaults to None</span>
+<span class="sd">        :param prompt: prompt string, defaults to None</span>
 <span class="sd">        :type prompt: str, optional</span>
 
-<span class="sd">        :param return_tokens: the parameter for text tokenization, defaults to False</span>
+<span class="sd">        :param return_tokens: parameter for text tokenization, defaults to False</span>
 <span class="sd">        :type return_tokens: bool</span>
 
-<span class="sd">        :return: the result of tokenizing the input string.</span>
+<span class="sd">        :return: result of tokenizing the input string</span>
 <span class="sd">        :rtype: dict</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -908,7 +906,7 @@
 <span class="sd">        :return: WatsonxLLM wrapper for watsonx foundation models</span>
 <span class="sd">        :rtype: WatsonxLLM</span>
 
-<span class="sd">        **Example**</span>
+<span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -995,27 +993,27 @@
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">validate_prompt_variables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate response in asynchronous manner.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a response in an asynchronous manner.</span>
 
-<span class="sd">        :param prompt: the prompt string, defaults to None</span>
+<span class="sd">        :param prompt: prompt string, defaults to None</span>
 <span class="sd">        :type prompt: str | None, optional</span>
 
-<span class="sd">        :param params: meta props for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames, defaults to None</span>
+<span class="sd">        :param params: MetaProps for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames, defaults to None</span>
 <span class="sd">        :type params: dict | None, optional</span>
 
-<span class="sd">        :param guardrails: If True then potentially hateful, abusive, and/or profane language (HAP) detection filter is toggle on for both prompt and generated text, defaults to False</span>
-<span class="sd">                           If HAP is detected the `HAPDetectionWarning` is issued</span>
+<span class="sd">        :param guardrails: If True, the detection filter for potentially hateful, abusive, and/or profane language (HAP) is toggle on for both prompt and generated text, defaults to False</span>
+<span class="sd">                           If HAP is detected, then the `HAPDetectionWarning` is issued</span>
 <span class="sd">        :type guardrails: bool, optional</span>
 
-<span class="sd">        :param guardrails_hap_params: meta props for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
+<span class="sd">        :param guardrails_hap_params: MetaProps for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
 <span class="sd">                                      to view the list of MetaNames</span>
 <span class="sd">        :type guardrails_hap_params: dict | None, optional</span>
 
-<span class="sd">        :param validate_prompt_variables: If True, prompt variables provided in `params` are validated with the ones in Prompt Template Asset.</span>
+<span class="sd">        :param validate_prompt_variables: If True, the prompt variables provided in `params` are validated with the ones in the Prompt Template Asset.</span>
 <span class="sd">                                          This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</span>
 <span class="sd">        :type validate_prompt_variables: bool, optional</span>
 
-<span class="sd">        :return: Raw response containing generated content</span>
+<span class="sd">        :return: raw response that contains the generated content</span>
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
@@ -1032,7 +1030,7 @@
 <div class="viewcode-block" id="ModelInference.aclose_persistent_connection">
 <a class="viewcode-back" href="../../../../fm_model_inference.html#ibm_watsonx_ai.foundation_models.inference.ModelInference.aclose_persistent_connection">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">aclose_persistent_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Only applicable if persistent_connection was set to True in ModelInference initialization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Only applicable if persistent_connection was set to True in the ModelInference initialization.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">_persistent_connection</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">_async_http_client</span><span class="p">,</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span>
         <span class="p">):</span>

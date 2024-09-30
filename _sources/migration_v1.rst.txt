@@ -5,8 +5,8 @@ V1 Migration Guide
 
     <div style="text-align: justify;">
 
-New ``ibm_watsonx_ai`` Python SDK 1.0 is backward compatible in most common scenarios,
-but few minor adjustments in code may be needed.
+The new ``ibm_watsonx_ai`` Python SDK 1.0 is backward compatible in most common scenarios,
+but a few minor adjustments in code might be needed.
 
 .. raw:: html
 
@@ -20,13 +20,13 @@ Refactor and Cleanup
 """"""""""""""""""""""
 
 This major release marks a thorough refactoring and cleanup of the codebase.
-We've diligently worked to improve code readability, and enhance overall performance.
-As a result, users can expect a more efficient and maintainable package.
+We've diligently worked to improve code readability and enhance overall performance.
+As a result, you can expect a more efficient and maintainable package.
 
 New authorization
 """""""""""""""""
-In ``ibm_watsonx_ai`` 1.0 new class ``Credentials`` was introduced which replaces the dictionary with credentials.
-See examples and more in docs: :doc:`Authentication Cloud <setup_cloud>` and :doc:`Authentication <setup_cpd>`
+In ``ibm_watsonx_ai`` 1.0, ``Credentials``, a new class, was introduced and it replaces the credentials dictionary.
+For examples and more information, see :doc:`Authentication Cloud <setup_cloud>` and :doc:`Authentication <setup_cpd>`
 
 ✅ New approach
 
@@ -58,8 +58,8 @@ See examples and more in docs: :doc:`Authentication Cloud <setup_cloud>` and :do
 Easier project and space setup
 """"""""""""""""""""""""""""""
 
-Starting from ``ibm_watsonx_ai`` 1.0 release users can set the default space
-or project while initializing APIClient object.
+Starting from ``ibm_watsonx_ai`` 1.0, you can set the default space
+or project while initializing the APIClient object.
 
 ✅ New approach
 
@@ -78,13 +78,13 @@ or project while initializing APIClient object.
     client_space = APIClient(credentials)
     client_space.set.default_space(space_id)
 
-Foundation models functions moved under APIClient
-"""""""""""""""""""""""""""""""""""""""""""""""""
+Foundation model functions moved under APIClient
+""""""""""""""""""""""""""""""""""""""""""""""""
 
-Starting from ``ibm_watsonx_ai`` 1.0 foundation models functions (``get_model_specs``, ``get_custom_model_specs``,
-``get_model_lifecycle``, ``get_model_specs_with_prompt_tuning_support``, ``get_embedding_model_specs``) are moved into ``client.foundation_models`` object.
+Starting from ``ibm_watsonx_ai`` 1.0, foundation model functions (``get_model_specs``, ``get_custom_model_specs``,
+``get_model_lifecycle``, ``get_model_specs_with_prompt_tuning_support``, ``get_embedding_model_specs``) are moved into the ``client.foundation_models`` object.
 
-Old versions of the functions are not removed, however, as they lack authentication, they will no longer work.
+Old versions of the functions are not removed but will no longer work because they lack authentication.
 
 
 ✅ New approach - Using functions from `client.foundation_models`.
@@ -108,7 +108,7 @@ Old versions of the functions are not removed, however, as they lack authenticat
 
     client.foundation_models.get_embeddings_model_specs()
 
-❌ Old approach - Using functions from `ibm_watsonx_ai.foundation_models` module.
+❌ Old approach - Using functions from the `ibm_watsonx_ai.foundation_models` module.
 
 .. code:: python
 
@@ -148,9 +148,9 @@ Old versions of the functions are not removed, however, as they lack authenticat
 Breaking changes
 """"""""""""""""
 
-* ``client.<resource>.list()`` methods don't print the table with listed assets. They return the table as ``pandas.DataFrame``. The optional parameter for the methods ``return_as_df`` was removed.
+* The ``client.<resource>.list()`` methods don't print the table with listed assets. They return the table as ``pandas.DataFrame``. The optional parameter for the ``return_as_df`` methods was removed.
 
-✅ New approach - Access to credentials fields as class attributes.
+✅ New approach - Access to credential fields as class attributes.
 
 .. code:: python
 
@@ -172,21 +172,21 @@ Breaking changes
 
 * Methods and parameters that were marked as deprecated in ``ibm_watsonx_ai v0`` were removed. For example:
 
-✅ New approach - Use method that replaced deprecated one, for ``get_uid`` it's ``get_id``
+✅ New approach - Use the method that replaced the deprecated one, for ``get_uid`` it's ``get_id``
 
 .. code:: python
 
     asset_id = client.data_assets.get_id(asset_details)
 
-❌ Old approach - Deprecated ``get_uid`` method  called
+❌ Old approach - Deprecated ``get_uid`` method called
 
 .. code:: python
 
     client.data_assets.get_uid(asset_details)
 
-*  ``client.credentials`` and ``client.wml_credentials`` returns ``Credentials`` object instead of dictionary.
+*  ``client.credentials`` and ``client.wml_credentials`` returns a ``Credentials`` object instead of a dictionary.
 
-✅ New approach - Access to credentials fields as class attributes.
+✅ New approach - Access to credential fields as class attributes.
 
 .. code:: python
 
@@ -204,7 +204,7 @@ Breaking changes
     # OR
     url = credentials.url
 
-❌ Old approach - Access to credentials fields as keys in dictionary.
+❌ Old approach - Access to credential fields as keys in a dictionary.
 
 .. code:: python
 
@@ -220,10 +220,10 @@ Breaking changes
 
 *  Parameter changes in ``service.score(...)`` for online deployment
 
-``service.score(...)`` has additional ``forecast_window`` parameter added before ``transaction_id`` parameter.
-Additionally, ``service.score(...)`` function will require from 1.0.0 to pass all named parameters except ``payload`` parameter.
+``service.score(...)`` has an additional ``forecast_window`` parameter added before the ``transaction_id`` parameter.
+From ``ibm_watsonx_ai`` 1.0.0,  in the ``service.score(...)`` function, you need to pass all named parameters except for the ``payload`` parameter. 
 
-✅ New approach - named parameters and new parameter.
+✅ New approach - named parameters and a new parameter.
 
 .. code:: python
 
@@ -235,7 +235,7 @@ Additionally, ``service.score(...)`` function will require from 1.0.0 to pass al
         transaction_id=transaction_id,
     )
 
-❌ Old approach - all parameters not named, ``forecast_window`` parameter absent
+❌ Old approach - all parameters are not named, the ``forecast_window`` parameter is absent
 
 .. code:: python
 
@@ -250,13 +250,13 @@ Additionally, ``service.score(...)`` function will require from 1.0.0 to pass al
 Deprecations
 """"""""""""
 
-* Initializing ``APIClient`` with ``credentials`` as dictionary is deprecated.
+* Initializing ``APIClient`` with ``credentials`` as a dictionary is deprecated.
 
-* All parameters with ``wml`` in name are deprecated. They were renamed to:
+* All parameters with ``wml`` in the name are deprecated. They were renamed to:
     - ``wml_credentials`` -> ``credentials``
     - ``wml_client`` -> ``api_client``.
 
-* ``id`` naming was aligned in parameters and methods, now all ``uid`` should be replaced by ``id``. Methods that were using ``uid`` were either removed or mark as deprecated.
+* ``id`` naming was aligned in parameters and methods and all ``uid`` were replaced by ``id``. Methods that were using ``uid`` were removed or marked as deprecated.
 
 
 
