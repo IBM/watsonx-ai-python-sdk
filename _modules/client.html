@@ -250,8 +250,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../fm_helpers.html">Helpers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fm_custom_models.html">Custom models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fm_text_extraction.html">Text Extractions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fm_schema.html">Parameter Scheme</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../save_models.html">Saving external models</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../samples.html">Samples</a></li>
@@ -609,9 +611,10 @@
                                 <span class="n">namespace_from_url</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                                     <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
                                 <span class="p">)</span>
-                                <span class="n">bedrock_prefix</span> <span class="o">=</span> <span class="p">(</span>
-                                    <span class="sa">f</span><span class="s2">&quot;https://cp-console-</span><span class="si">{</span><span class="n">namespace_from_url</span><span class="si">}</span><span class="s2">&quot;</span>
+                                <span class="n">route</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="s2">&quot;cpd&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&gt;=</span> <span class="mf">5.1</span> <span class="k">else</span> <span class="s2">&quot;cp-console&quot;</span>
                                 <span class="p">)</span>
+                                <span class="n">bedrock_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://</span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">namespace_from_url</span><span class="si">}</span><span class="s2">&quot;</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">bedrock_url</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                                 <span class="p">[</span><span class="n">bedrock_prefix</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
                             <span class="p">)</span>
@@ -704,6 +707,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">factsheets</span> <span class="o">=</span> <span class="n">Factsheets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">task_credentials</span> <span class="o">=</span> <span class="n">TaskCredentials</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
 
             <span class="bp">self</span><span class="o">.</span><span class="n">remote_training_systems</span> <span class="o">=</span> <span class="n">RemoteTrainingSystem</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 

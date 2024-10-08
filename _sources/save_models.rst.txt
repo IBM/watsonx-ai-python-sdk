@@ -1,0 +1,204 @@
+.. _save_models:
+
+Saving external models
+======================
+
+In some cases, there is a need to store an external model in WML project or WML deployment space.
+Depending on model type, it has to be saved or archived with correct extension.
+
+Following types and file extensions are supported:
+
+- :ref:`tensorflow / keras (.tar.gz) <tf>`
+- :ref:`pmml (.xml) <pmml>`
+- :ref:`scikit-learn (.tar.gz) <sklearn>`
+- :ref:`spss (.str) <spss>`
+- :ref:`spark (.tar.gz) <spark>`
+- :ref:`xgboost (.tar.gz) <xgboost>`
+
+.. _tf:
+
+Tensorflow / Keras
+------------------
+
+This section shows how to save and archive a tensorflow (keras) model.
+
+
+.. code-block::
+
+    import tarfile
+    import os
+
+
+    # Prepare your tf / keras model
+    model = ... # (Sequential, Functional Model, or Model subclass)
+
+    # Set names
+    model_name = 'tf_model'
+    folder_name = 'models'
+
+    # Prepare directories
+    file_name = model_name + '.h5'
+    full_path = os.path.join(os.getcwd(), folder_name)
+    os.makedirs(full_path, exist_ok=True)
+    model_path = os.path.join(full_path, file_name)
+
+    # Save model as '.h5' file
+    model.save(model_path)
+
+    # Archive model
+    archive_name = model_name + '.tar.gz'
+    archive_path = os.path.join(full_path, archive_name)
+    with tarfile.open(archive_path, 'w:gz') as tar:
+        tar.add(model_path, arcname=os.path.basename(model_path))
+
+    # Path that can be used to store model in project or space
+    path_to_store_model = archive_path
+
+.. _pmml:
+
+PMML
+----
+
+
+For ``PMML`` models, it is required to prepare a model as file in :code:`.xml` format,
+that can be directly stored in project or space.
+
+
+.. code-block::
+
+    sample_model_path = "./models/pmml_model.xml"
+    path_to_store_model = sample_model_path
+
+.. _sklearn:
+
+Scikit-learn
+------------
+
+This section shows how to save and archive a scikit-learn model.
+
+
+.. code-block::
+
+    import joblib
+    import os
+    import tarfile
+
+
+    # Prepare your scikit-learn model
+    model = ...
+
+    # Set names
+    model_name = 'sklearn_model'
+    folder_name = 'models'
+
+    # Prepare directories
+    file_name = model_name + '.pkl'
+    full_path = os.path.join(os.getcwd(), folder_name)
+    os.makedirs(full_path, exist_ok=True)
+    model_path = os.path.join(full_path, file_name)
+
+    # Save model as '.pkl' file
+    with open(model_path, 'wb') as file:
+        joblib.dump(model, file)
+
+    # Archive model
+    archive_name = model_name + '.tar.gz'
+    archive_path = os.path.join(full_path, archive_name)
+    with tarfile.open(archive_path, 'w:gz') as tar:
+        tar.add(model_path, arcname=os.path.basename(model_path))
+
+    # Path that can be used to store model in project or space
+    path_to_store_model = archive_path
+
+.. _spss:
+
+SPSS
+----
+
+For ``SPSS`` models, it is required to prepare a model as file in :code:`.str` format,
+that can be directly stored in project or space.
+
+
+.. code-block::
+
+    sample_model_path = "./models/spss_model.str"
+    path_to_store_model = sample_model_path
+
+.. _spark:
+
+Spark
+-----
+
+This section shows how to save and archive a spark model.
+
+.. code-block::
+
+
+    import os
+    import tarfile
+
+
+    # Prepare your spark model
+    model = ...
+
+    # Set names
+    model_name = "spark_model"
+    folder_name = "models"
+
+    # Prepare directories
+    full_path = os.path.join(os.getcwd(), folder_name)
+    os.makedirs(full_path, exist_ok=True)
+    model_path = os.path.join(full_path, model_name)
+
+    # Save model
+    model.save(model_path)
+
+    # Archive model
+    archive_name = model_name + ".tar.gz"
+    archive_path = os.path.join(full_path, archive_name)
+    with tarfile.open(archive_path, 'w:gz') as tar:
+        tar.add(model_path, arcname=os.path.basename(model_path))
+
+    # Path that can be used to store model in project or space
+    path_to_store_model = archive_path
+
+.. _xgboost:
+
+XGBoost
+-------
+
+This section shows how to save and archive an XGBoost model.
+
+.. code-block::
+
+
+    import os
+    import joblib
+    import tarfile
+
+
+    # Prepare your xgboost model
+    model = ...
+
+    # Set names
+    model_name = "xgboost_model"
+    folder_name = "models"
+
+    # Prepare directories
+    file_name = model_name + '.pkl'
+    full_path = os.path.join(os.getcwd(), folder_name)
+    os.makedirs(full_path, exist_ok=True)
+    model_path = os.path.join(full_path, file_name)
+
+    # Save model as '.pkl' file
+    with open(model_path, 'wb') as file:
+        joblib.dump(model, file)
+
+    # Archive model
+    archive_name = model_name + '.tar.gz'
+    archive_path = os.path.join(full_path, archive_name)
+    with tarfile.open(archive_path, 'w:gz') as tar:
+        tar.add(model_path, arcname=os.path.basename(model_path))
+
+    # Path that can be used to store model in project or space
+    path_to_store_model = archive_path

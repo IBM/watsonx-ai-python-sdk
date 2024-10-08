@@ -250,8 +250,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../../fm_helpers.html">Helpers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_custom_models.html">Custom models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_text_extraction.html">Text Extractions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fm_schema.html">Parameter Scheme</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../save_models.html">Saving external models</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../samples.html">Samples</a></li>
@@ -716,8 +718,10 @@
 
         <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">,</span> <span class="nb">format</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">]:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_functions</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;ai_service&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_ai_services</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
                 <span class="s2">&quot;Unexpected type of artifact to download or Artifact with artifact_id: &#39;</span><span class="si">{}</span><span class="s2">&#39; does not exist.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -731,9 +735,9 @@
     <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a model, experiment, pipeline, or function from the repository.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a model, experiment, pipeline, function from the repository.</span>
 
-<span class="sd">        :param artifact_id: unique ID of the stored model, experiment, function, or pipeline</span>
+<span class="sd">        :param artifact_id: unique ID of the stored model, experiment, function, pipeline</span>
 <span class="sd">        :type artifact_id: str</span>
 
 <span class="sd">        :return: status &quot;SUCCESS&quot; if deletion is successful</span>
@@ -832,12 +836,16 @@
             <span class="n">function_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_functions</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
                 <span class="n">spec_state</span><span class="o">=</span><span class="n">spec_state</span>
             <span class="p">)</span>
+            <span class="n">ai_service_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_ai_services</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+                <span class="n">spec_state</span><span class="o">=</span><span class="n">spec_state</span>
+            <span class="p">)</span>
 
             <span class="n">details</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="n">model_details</span><span class="p">,</span>
                 <span class="s2">&quot;experiments&quot;</span><span class="p">:</span> <span class="n">experiment_details</span><span class="p">,</span>
                 <span class="s2">&quot;pipeline&quot;</span><span class="p">:</span> <span class="n">pipeline_details</span><span class="p">,</span>
                 <span class="s2">&quot;functions&quot;</span><span class="p">:</span> <span class="n">function_details</span><span class="p">,</span>
+                <span class="s2">&quot;ai_service&quot;</span><span class="p">:</span> <span class="n">ai_service_details</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">artifact_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_artifact_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">))</span>
@@ -850,6 +858,8 @@
                 <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pipeline_details</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_function_details</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;ai_service&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ai_service_details</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
                     <span class="s2">&quot;Getting artifact details failed. Artifact id: &#39;</span><span class="si">{}</span><span class="s2">&#39; not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -1088,6 +1098,7 @@
             <span class="s2">&quot;experiment&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_experiments_href</span><span class="p">(),</span>
             <span class="s2">&quot;pipeline&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_pipelines_href</span><span class="p">(),</span>
             <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_functions_href</span><span class="p">(),</span>
+            <span class="s2">&quot;ai_service&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_ai_services_href</span><span class="p">(),</span>
         <span class="p">}</span>
 
         <span class="n">artifact_get</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1130,7 +1141,11 @@
                     <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
                     <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;created_at&quot;</span><span class="p">],</span>
                     <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s2">&quot;model&quot;</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span>
-                    <span class="n">t</span> <span class="k">if</span> <span class="n">t</span> <span class="o">!=</span> <span class="s2">&quot;function&quot;</span> <span class="k">else</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; function&quot;</span><span class="p">,</span>
+                    <span class="p">(</span>
+                        <span class="n">t</span>
+                        <span class="k">if</span> <span class="n">t</span> <span class="o">!=</span> <span class="s2">&quot;function&quot;</span> <span class="ow">or</span> <span class="n">t</span> <span class="o">!=</span> <span class="s2">&quot;ai_service&quot;</span>
+                        <span class="k">else</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; function&quot;</span>
+                    <span class="p">),</span>
                     <span class="n">get_spec_info</span><span class="p">(</span>
                         <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;software_spec&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span> <span class="s2">&quot;state&quot;</span>
                     <span class="p">),</span>
@@ -1232,6 +1247,9 @@
             <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_function_href</span><span class="p">(</span>
                 <span class="n">artifact_id</span>
             <span class="p">),</span>
+            <span class="s2">&quot;ai_service&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_ai_service_href</span><span class="p">(</span>
+                <span class="n">artifact_id</span>
+            <span class="p">),</span>
         <span class="p">}</span>
 
         <span class="n">artifact_get</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1265,7 +1283,6 @@
             <span class="n">artifact</span><span class="p">:</span> <span class="n">_artifact_exists</span><span class="p">(</span><span class="n">response_get</span><span class="p">[</span><span class="n">artifact</span><span class="p">])</span>
             <span class="k">for</span> <span class="n">artifact</span> <span class="ow">in</span> <span class="n">response_get</span>
         <span class="p">}</span>
-
         <span class="k">return</span> <span class="n">artifact_type</span>
 
 <div class="viewcode-block" id="Repository.create_revision">
@@ -1292,8 +1309,10 @@
         <span class="n">artifact_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_artifact_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;experiment&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">create_revision</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;pipeline&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;pipeline&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">create_revision</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;ai_service&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_ai_services</span><span class="o">.</span><span class="n">create_revision</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
                 <span class="s2">&quot;Getting artifact details failed. Artifact id: &#39;</span><span class="si">{}</span><span class="s2">&#39; not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -1329,7 +1348,7 @@
         <span class="k">if</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;experiment&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">get_revision_details</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">artifact_type</span><span class="p">[</span><span class="s2">&quot;pipeline&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">get_revisions</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
+            <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">get_revision_details</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
                 <span class="s2">&quot;Getting artifact details failed. Artifact id: &#39;</span><span class="si">{}</span><span class="s2">&#39; not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>

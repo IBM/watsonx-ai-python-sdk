@@ -250,8 +250,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_helpers.html">Helpers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_custom_models.html">Custom models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_text_extraction.html">Text Extractions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fm_schema.html">Parameter Scheme</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../save_models.html">Saving external models</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../samples.html">Samples</a></li>
@@ -886,8 +888,9 @@
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">prediction_type</span> <span class="o">==</span> <span class="n">PredictionType</span><span class="o">.</span><span class="n">TIMESERIES_ANOMALY_PREDICTION</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
-                <span class="p">(</span><span class="s2">&quot;2.5&quot;</span><span class="p">,</span> <span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="s2">&quot;3.5&quot;</span><span class="p">,</span> <span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="s2">&quot;4.5&quot;</span><span class="p">,</span> <span class="s2">&quot;4.6&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;=</span> <span class="mf">4.6</span>
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&gt;=</span> <span class="mf">5.1</span>
             <span class="p">)</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="n">TSADNotSupported</span><span class="p">()</span>

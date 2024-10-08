@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="V1 Migration Guide" href="migration_v1.html" /><link rel="prev" title="Samples" href="samples.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Samples" href="samples.html" /><link rel="prev" title="Parameter Scheme" href="fm_schema.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>Migration from ibm_watson_machine_learning - IBM watsonx.ai</title>
+        <title>Saving external models - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
@@ -208,7 +208,7 @@
 <li class="toctree-l2"><a class="reference internal" href="setup_cpd.html">IBM watsonx.ai software</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="api.html">API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core_api.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="federated_learning.html">Federated Learning</a></li>
@@ -254,11 +254,11 @@
 <li class="toctree-l3"><a class="reference internal" href="fm_schema.html">Parameter Scheme</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="save_models.html">Saving external models</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Saving external models</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="samples.html">Samples</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration_v1.html">V1 Migration Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
@@ -279,7 +279,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/migration.rst.txt" title="View this page">
+  <a class="muted-link" href="_sources/save_models.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -299,26 +299,175 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="migration-from-ibm-watson-machine-learning">
-<h1>Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code><a class="headerlink" href="#migration-from-ibm-watson-machine-learning" title="Link to this heading">¶</a></h1>
-<div style="text-align: justify;"><p>The new <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai</span></code> Python SDK is an upgraded version of <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code>.
-They are similar in usage, but <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai</span></code> is extended with a new functionality and is clear of outdated code.</p>
-<p>To migrate to <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai</span></code>, update the imports to the new Python SDK as seen in the steps below. Run the code to see if this is a sufficient change for the migration.
-If any warnings or errors are raised, you need to make further changes. For more information, see the <a class="reference internal" href="migration_v1.html"><span class="doc">V1 Migration Guide</span></a>.</p>
-</div><section id="migration-steps-to-new-packages">
-<h2>Migration Steps to New Packages<a class="headerlink" href="#migration-steps-to-new-packages" title="Link to this heading">¶</a></h2>
-<ol class="arabic">
-<li><p><strong>Installation and import</strong>:</p>
-<p>To install <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai</span></code>, run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install -U ibm-watsonx-ai
+          <section id="saving-external-models">
+<span id="save-models"></span><h1>Saving external models<a class="headerlink" href="#saving-external-models" title="Link to this heading">¶</a></h1>
+<p>In some cases, there is a need to store an external model in WML project or WML deployment space.
+Depending on model type, it has to be saved or archived with correct extension.</p>
+<p>Following types and file extensions are supported:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#tf"><span class="std std-ref">tensorflow / keras (.tar.gz)</span></a></p></li>
+<li><p><a class="reference internal" href="#pmml"><span class="std std-ref">pmml (.xml)</span></a></p></li>
+<li><p><a class="reference internal" href="#sklearn"><span class="std std-ref">scikit-learn (.tar.gz)</span></a></p></li>
+<li><p><a class="reference internal" href="#spss"><span class="std std-ref">spss (.str)</span></a></p></li>
+<li><p><a class="reference internal" href="#spark"><span class="std std-ref">spark (.tar.gz)</span></a></p></li>
+<li><p><a class="reference internal" href="#xgboost"><span class="std std-ref">xgboost (.tar.gz)</span></a></p></li>
+</ul>
+<section id="tensorflow-keras">
+<span id="tf"></span><h2>Tensorflow / Keras<a class="headerlink" href="#tensorflow-keras" title="Link to this heading">¶</a></h2>
+<p>This section shows how to save and archive a tensorflow (keras) model.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tarfile</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<span class="c1"># Prepare your tf / keras model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># (Sequential, Functional Model, or Model subclass)</span>
+
+<span class="c1"># Set names</span>
+<span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;tf_model&#39;</span>
+<span class="n">folder_name</span> <span class="o">=</span> <span class="s1">&#39;models&#39;</span>
+
+<span class="c1"># Prepare directories</span>
+<span class="n">file_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.h5&#39;</span>
+<span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">folder_name</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+
+<span class="c1"># Save model as &#39;.h5&#39; file</span>
+<span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span>
+
+<span class="c1"># Archive model</span>
+<span class="n">archive_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.tar.gz&#39;</span>
+<span class="n">archive_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">archive_name</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">archive_path</span><span class="p">,</span> <span class="s1">&#39;w:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
+    <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span>
+
+<span class="c1"># Path that can be used to store model in project or space</span>
+<span class="n">path_to_store_model</span> <span class="o">=</span> <span class="n">archive_path</span>
 </pre></div>
 </div>
-<p>To import components from <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai</span></code>, (example of importing <code class="docutils literal notranslate"><span class="pre">APIClient</span></code>) run:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+</section>
+<section id="pmml">
+<span id="id1"></span><h2>PMML<a class="headerlink" href="#pmml" title="Link to this heading">¶</a></h2>
+<p>For <code class="docutils literal notranslate"><span class="pre">PMML</span></code> models, it is required to prepare a model as file in <code class="code docutils literal notranslate"><span class="pre">.xml</span></code> format,
+that can be directly stored in project or space.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sample_model_path</span> <span class="o">=</span> <span class="s2">&quot;./models/pmml_model.xml&quot;</span>
+<span class="n">path_to_store_model</span> <span class="o">=</span> <span class="n">sample_model_path</span>
 </pre></div>
 </div>
-</li>
-</ol>
+</section>
+<section id="scikit-learn">
+<span id="sklearn"></span><h2>Scikit-learn<a class="headerlink" href="#scikit-learn" title="Link to this heading">¶</a></h2>
+<p>This section shows how to save and archive a scikit-learn model.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">joblib</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tarfile</span>
+
+
+<span class="c1"># Prepare your scikit-learn model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="o">...</span>
+
+<span class="c1"># Set names</span>
+<span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;sklearn_model&#39;</span>
+<span class="n">folder_name</span> <span class="o">=</span> <span class="s1">&#39;models&#39;</span>
+
+<span class="c1"># Prepare directories</span>
+<span class="n">file_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.pkl&#39;</span>
+<span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">folder_name</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+
+<span class="c1"># Save model as &#39;.pkl&#39; file</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+
+<span class="c1"># Archive model</span>
+<span class="n">archive_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.tar.gz&#39;</span>
+<span class="n">archive_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">archive_name</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">archive_path</span><span class="p">,</span> <span class="s1">&#39;w:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
+    <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span>
+
+<span class="c1"># Path that can be used to store model in project or space</span>
+<span class="n">path_to_store_model</span> <span class="o">=</span> <span class="n">archive_path</span>
+</pre></div>
+</div>
+</section>
+<section id="spss">
+<span id="id2"></span><h2>SPSS<a class="headerlink" href="#spss" title="Link to this heading">¶</a></h2>
+<p>For <code class="docutils literal notranslate"><span class="pre">SPSS</span></code> models, it is required to prepare a model as file in <code class="code docutils literal notranslate"><span class="pre">.str</span></code> format,
+that can be directly stored in project or space.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sample_model_path</span> <span class="o">=</span> <span class="s2">&quot;./models/spss_model.str&quot;</span>
+<span class="n">path_to_store_model</span> <span class="o">=</span> <span class="n">sample_model_path</span>
+</pre></div>
+</div>
+</section>
+<section id="spark">
+<span id="id3"></span><h2>Spark<a class="headerlink" href="#spark" title="Link to this heading">¶</a></h2>
+<p>This section shows how to save and archive a spark model.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tarfile</span>
+
+
+<span class="c1"># Prepare your spark model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="o">...</span>
+
+<span class="c1"># Set names</span>
+<span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;spark_model&quot;</span>
+<span class="n">folder_name</span> <span class="o">=</span> <span class="s2">&quot;models&quot;</span>
+
+<span class="c1"># Prepare directories</span>
+<span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">folder_name</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+
+<span class="c1"># Save model</span>
+<span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span>
+
+<span class="c1"># Archive model</span>
+<span class="n">archive_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s2">&quot;.tar.gz&quot;</span>
+<span class="n">archive_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">archive_name</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">archive_path</span><span class="p">,</span> <span class="s1">&#39;w:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
+    <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span>
+
+<span class="c1"># Path that can be used to store model in project or space</span>
+<span class="n">path_to_store_model</span> <span class="o">=</span> <span class="n">archive_path</span>
+</pre></div>
+</div>
+</section>
+<section id="xgboost">
+<span id="id4"></span><h2>XGBoost<a class="headerlink" href="#xgboost" title="Link to this heading">¶</a></h2>
+<p>This section shows how to save and archive an XGBoost model.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">joblib</span>
+<span class="kn">import</span> <span class="nn">tarfile</span>
+
+
+<span class="c1"># Prepare your xgboost model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="o">...</span>
+
+<span class="c1"># Set names</span>
+<span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;xgboost_model&quot;</span>
+<span class="n">folder_name</span> <span class="o">=</span> <span class="s2">&quot;models&quot;</span>
+
+<span class="c1"># Prepare directories</span>
+<span class="n">file_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.pkl&#39;</span>
+<span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">folder_name</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+
+<span class="c1"># Save model as &#39;.pkl&#39; file</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+
+<span class="c1"># Archive model</span>
+<span class="n">archive_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.tar.gz&#39;</span>
+<span class="n">archive_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">archive_name</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">archive_path</span><span class="p">,</span> <span class="s1">&#39;w:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
+    <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span>
+
+<span class="c1"># Path that can be used to store model in project or space</span>
+<span class="n">path_to_store_model</span> <span class="o">=</span> <span class="n">archive_path</span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -327,23 +476,23 @@ If any warnings or errors are raised, you need to make further changes. For more
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="migration_v1.html">
+          <a class="next-page" href="samples.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">V1 Migration Guide</div>
+                <div class="title">Samples</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="samples.html">
+          <a class="prev-page" href="fm_schema.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Samples</div>
+                <div class="title">Parameter Scheme</div>
                 
               </div>
             </a>
@@ -377,8 +526,13 @@ If any warnings or errors are raised, you need to make further changes. For more
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a><ul>
-<li><a class="reference internal" href="#migration-steps-to-new-packages">Migration Steps to New Packages</a></li>
+<li><a class="reference internal" href="#">Saving external models</a><ul>
+<li><a class="reference internal" href="#tensorflow-keras">Tensorflow / Keras</a></li>
+<li><a class="reference internal" href="#pmml">PMML</a></li>
+<li><a class="reference internal" href="#scikit-learn">Scikit-learn</a></li>
+<li><a class="reference internal" href="#spss">SPSS</a></li>
+<li><a class="reference internal" href="#spark">Spark</a></li>
+<li><a class="reference internal" href="#xgboost">XGBoost</a></li>
 </ul>
 </li>
 </ul>

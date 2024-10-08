@@ -251,8 +251,10 @@
 <li class="toctree-l3"><a class="reference internal" href="fm_helpers.html">Helpers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_custom_models.html">Custom models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_text_extraction.html">Text Extractions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_schema.html">Parameter Scheme</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="save_models.html">Saving external models</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="samples.html">Samples</a></li>
@@ -314,7 +316,7 @@
 <li><p><strong>model_id</strong> (<em>str</em><em>, </em><em>optional</em>) – type of model to use</p></li>
 <li><p><strong>deployment_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of tuned model’s deployment</p></li>
 <li><p><strong>credentials</strong> (<a class="reference internal" href="base.html#credentials.Credentials" title="credentials.Credentials"><em>Credentials</em></a><em> or </em><em>dict</em><em>, </em><em>optional</em>) – credentials for the Watson Machine Learning instance</p></li>
-<li><p><strong>params</strong> (<em>dict</em><em>, </em><em>optional</em>) – parameters to use during request generation</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>, </em><a class="reference internal" href="fm_schema.html#ibm_watsonx_ai.foundation_models.schema.TextGenParameters" title="ibm_watsonx_ai.foundation_models.schema.TextGenParameters"><em>TextGenParameters</em></a><em>, </em><a class="reference internal" href="fm_schema.html#ibm_watsonx_ai.foundation_models.schema.TextChatParameters" title="ibm_watsonx_ai.foundation_models.schema.TextChatParameters"><em>TextChatParameters</em></a><em>, </em><em>optional</em>) – parameters to use during request generation</p></li>
 <li><p><strong>project_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the Watson Studio project</p></li>
 <li><p><strong>space_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the Watson Studio space</p></li>
 <li><p><strong>verify</strong> (<em>bool</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – <p>You can pass one of the following as verify:</p>
@@ -412,6 +414,77 @@ This parameter is only applicable in a Prompt Template Asset deployment scenario
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.inference.ModelInference.chat">
+<span class="sig-name descname"><span class="pre">chat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tools</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_choice</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_choice_option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/model_inference.html#ModelInference.chat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.chat" title="Link to this definition">¶</a></dt>
+<dd><p>Given a list of messages comprising a conversation, the model will return a response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>messages</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – The messages for this chat session.</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>, </em><a class="reference internal" href="fm_schema.html#ibm_watsonx_ai.foundation_models.schema.TextChatParameters" title="ibm_watsonx_ai.foundation_models.schema.TextChatParameters"><em>TextChatParameters</em></a><em>, </em><em>optional</em>) – meta props for chat generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.foundation_models.schema.TextChatParameters.show()</span></code></p></li>
+<li><p><strong>tools</strong> (<em>list</em>) – Tool functions that can be called with the response.</p></li>
+<li><p><strong>tool_choice</strong> (<em>dict</em><em>, </em><em>optional</em>) – Specifying a particular tool via {“type”: “function”, “function”: {“name”: “my_function”}} forces the model to call that tool.</p></li>
+<li><p><strong>tool_choice_option</strong> (<em>Literal</em><em>[</em><em>&quot;none&quot;</em><em>, </em><em>&quot;auto&quot;</em><em>]</em><em>, </em><em>optional</em>) – Tool choice option</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>scoring result containing generated chat content.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;You are a helpful assistant.&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Who won the world series in 2020?&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+<span class="n">generated_response</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">)</span>
+
+<span class="c1"># Print all response</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">generated_response</span><span class="p">)</span>
+
+<span class="c1"># Print only content</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;message&#39;</span><span class="p">][</span><span class="s1">&#39;content&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.inference.ModelInference.chat_stream">
+<span class="sig-name descname"><span class="pre">chat_stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tools</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_choice</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_choice_option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/model_inference.html#ModelInference.chat_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.chat_stream" title="Link to this definition">¶</a></dt>
+<dd><p>Given a list of messages comprising a conversation, the model will return a response in stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>messages</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – The messages for this chat session.</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>, </em><a class="reference internal" href="fm_schema.html#ibm_watsonx_ai.foundation_models.schema.TextChatParameters" title="ibm_watsonx_ai.foundation_models.schema.TextChatParameters"><em>TextChatParameters</em></a><em>, </em><em>optional</em>) – meta props for chat generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.foundation_models.schema.TextChatParameters.show()</span></code></p></li>
+<li><p><strong>tools</strong> (<em>list</em>) – Tool functions that can be called with the response.</p></li>
+<li><p><strong>tool_choice</strong> (<em>dict</em><em>, </em><em>optional</em>) – Specifying a particular tool via {“type”: “function”, “function”: {“name”: “my_function”}} forces the model to call that tool.</p></li>
+<li><p><strong>tool_choice_option</strong> (<em>Literal</em><em>[</em><em>&quot;none&quot;</em><em>, </em><em>&quot;auto&quot;</em><em>]</em><em>, </em><em>optional</em>) – Tool choice option</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>scoring result containing generated chat content.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>generator</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;You are a helpful assistant.&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Who won the world series in 2020?&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+<span class="n">generated_response</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">chat_stream</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">generated_response</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;delta&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.inference.ModelInference.close_persistent_connection">
 <span class="sig-name descname"><span class="pre">close_persistent_connection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/model_inference.html#ModelInference.close_persistent_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.close_persistent_connection" title="Link to this definition">¶</a></dt>
 <dd><p>Only applicable if persistent_connection was set to True in ModelInference initialization.</p>
@@ -425,7 +498,7 @@ selected model (model_id) or deployment (deployment_id). For prompt template dep
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>params</strong> (<em>dict</em>) – MetaProps for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>, </em><a class="reference internal" href="fm_schema.html#ibm_watsonx_ai.foundation_models.schema.TextGenParameters" title="ibm_watsonx_ai.foundation_models.schema.TextGenParameters"><em>TextGenParameters</em></a><em>, </em><em>optional</em>) – MetaProps for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
 <li><p><strong>concurrency_limit</strong> (<em>int</em>) – number of requests to be sent in parallel, max is 10</p></li>
 <li><p><strong>prompt</strong> (<em>(</em><em>str</em><em> | </em><em>list</em><em> | </em><em>None</em><em>)</em><em>, </em><em>optional</em>) – prompt string or list of strings. If list of strings is passed, requests will be managed in parallel with the rate of concurency_limit, defaults to None</p></li>
 <li><p><strong>guardrails</strong> (<em>bool</em>) – If True, the detection filter for potentially hateful, abusive, and/or profane language (HAP)
@@ -462,7 +535,7 @@ parameters for the selected model (model_id). For prompt template deployment, <c
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>params</strong> (<em>dict</em>) – MetaProps for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>, </em><a class="reference internal" href="fm_schema.html#ibm_watsonx_ai.foundation_models.schema.TextGenParameters" title="ibm_watsonx_ai.foundation_models.schema.TextGenParameters"><em>TextGenParameters</em></a><em>, </em><em>optional</em>) – MetaProps for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
 <li><p><strong>concurrency_limit</strong> (<em>int</em>) – number of requests to be sent in parallel, max is 10</p></li>
 <li><p><strong>prompt</strong> (<em>(</em><em>str</em><em> | </em><em>list</em><em> | </em><em>None</em><em>)</em><em>, </em><em>optional</em>) – prompt string or list of strings. If list of strings is passed, requests will be managed in parallel with the rate of concurency_limit, defaults to None</p></li>
 <li><p><strong>guardrails</strong> (<em>bool</em>) – If True, the detection filter for potentially hateful, abusive, and/or profane language (HAP) is toggle on for both prompt and generated text, defaults to False
@@ -507,7 +580,7 @@ parameters for the selected model (model_id). For prompt template deployment, <c
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>params</strong> (<em>dict</em>) – MetaProps for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>, </em><a class="reference internal" href="fm_schema.html#ibm_watsonx_ai.foundation_models.schema.TextGenParameters" title="ibm_watsonx_ai.foundation_models.schema.TextGenParameters"><em>TextGenParameters</em></a><em>, </em><em>optional</em>) – MetaProps for text generation, use <code class="docutils literal notranslate"><span class="pre">ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()</span></code> to view the list of MetaNames</p></li>
 <li><p><strong>prompt</strong> (<em>str</em><em>, </em><em>optional</em>) – prompt string, defaults to None</p></li>
 <li><p><strong>raw_response</strong> (<em>bool</em><em>, </em><em>optional</em>) – yields the whole response object</p></li>
 <li><p><strong>guardrails</strong> (<em>bool</em>) – If True, the detection filter for potentially hateful, abusive, and/or profane language (HAP) is toggle on for both prompt and generated text, defaults to False
@@ -718,6 +791,8 @@ Tokenization allows the model to have a reasonable vocabulary size.</p>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code></a><ul>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.aclose_persistent_connection"><code class="docutils literal notranslate"><span class="pre">ModelInference.aclose_persistent_connection()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.agenerate"><code class="docutils literal notranslate"><span class="pre">ModelInference.agenerate()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.chat"><code class="docutils literal notranslate"><span class="pre">ModelInference.chat()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.chat_stream"><code class="docutils literal notranslate"><span class="pre">ModelInference.chat_stream()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.close_persistent_connection"><code class="docutils literal notranslate"><span class="pre">ModelInference.close_persistent_connection()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.generate"><code class="docutils literal notranslate"><span class="pre">ModelInference.generate()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.inference.ModelInference.generate_text"><code class="docutils literal notranslate"><span class="pre">ModelInference.generate_text()</span></code></a></li>

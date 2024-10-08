@@ -251,8 +251,10 @@
 <li class="toctree-l3"><a class="reference internal" href="fm_helpers.html">Helpers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_custom_models.html">Custom models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_text_extraction.html">Text Extractions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_schema.html">Parameter Scheme</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="save_models.html">Saving external models</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="samples.html">Samples</a></li>
@@ -4157,10 +4159,10 @@ using the Watson Machine Learning Repository.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="client.Repository.delete">
 <span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/repository.html#Repository.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Repository.delete" title="Link to this definition">¶</a></dt>
-<dd><p>Delete a model, experiment, pipeline, or function from the repository.</p>
+<dd><p>Delete a model, experiment, pipeline, function from the repository.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>artifact_id</strong> (<em>str</em>) – unique ID of the stored model, experiment, function, or pipeline</p>
+<dd class="field-odd"><p><strong>artifact_id</strong> (<em>str</em>) – unique ID of the stored model, experiment, function, pipeline</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>status “SUCCESS” if deletion is successful</p>
@@ -4988,29 +4990,30 @@ In this situation it is possible to pass some variables:</p>
 <dt class="sig sig-object py" id="client.Repository.store_model">
 <span class="sig-name descname"><span class="pre">store_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_props</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_column_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtrainingId</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/repository.html#Repository.store_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Repository.store_model" title="Link to this definition">¶</a></dt>
 <dd><p>Create a model.</p>
+<p><a class="reference internal" href="save_models.html#save-models"><span class="std std-ref">Here</span></a> you can explore how to save external models in correct format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model</strong> (<em>str</em><em> (</em><em>for filename</em><em> or </em><em>path</em><em>) or </em><em>object</em><em> (</em><em>corresponding to model type</em><em>)</em>) – <p>Can be one of following:</p>
 <ul>
-<li><dl class="simple">
-<dt>The train model object:</dt><dd><ul class="simple">
+<li><p>The train model object:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>scikit-learn</p></li>
 <li><p>xgboost</p></li>
 <li><p>spark (PipelineModel)</p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
 <li><p>path to saved model in format:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>keras (.tgz)</p></li>
+<li><p>tensorflow / keras (.tar.gz)</p></li>
 <li><p>pmml (.xml)</p></li>
 <li><p>scikit-learn (.tar.gz)</p></li>
-<li><p>tensorflow (.tar.gz)</p></li>
 <li><p>spss (.str)</p></li>
 <li><p>spark (.tar.gz)</p></li>
+<li><p>xgboost (.tar.gz)</p></li>
 </ul>
 </div></blockquote>
 </li>
@@ -5127,11 +5130,10 @@ multiple schemas as dictionaries inside a list.</p></li>
 <span class="n">stored_model_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">store_model</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;Pipeline_1&quot;</span><span class="p">,</span> <span class="n">meta_props</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="n">training_id</span> <span class="o">=</span> <span class="n">training_id</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Example of storing a prompt tuned model:
-.. code-block:: python</p>
-<blockquote>
-<div><p>stored_model_details = client.repository.store_model(training_id = prompt_tuning_run_id)</p>
-</div></blockquote>
+<p>Example of storing a prompt tuned model:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">stored_model_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">store_model</span><span class="p">(</span><span class="n">training_id</span> <span class="o">=</span> <span class="n">prompt_tuning_run_id</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Example of storing a custom foundation model:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sw_spec_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">software_specifications</span><span class="o">.</span><span class="n">get_id_by_name</span><span class="p">(</span><span class="s1">&#39;watsonx-cfm-caikit-1.0&#39;</span><span class="p">)</span>
 
