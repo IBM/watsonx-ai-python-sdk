@@ -80,7 +80,7 @@ Example of creating the client using a token:
 
 **Note:**
       * The version value should be set to the version and release format (for example: `4.8`) for the IBM watsonx.ai software you are using.
-      * Setting a default space ID or project ID is mandatory. For examples, refer to the ``client.set.default_space()`` and ``client.set.default_project()`` APIs in this document.
+      * Setting a default space ID or project ID is mandatory, except for a lightweight engine. For examples, refer to the ``client.set.default_space()`` and ``client.set.default_project()`` APIs in this document.
 
 **Note for IBM watsonx.ai software with IBM Cloud Pak® for Data 4.8 and later:**
     If the following error appears during authentication:
@@ -97,3 +97,27 @@ Example of creating the client using a token:
     2. If you chose iamintegration=True during installation, the autogeneration of `bedrock_url` wasn't successful. Provide the IBM Cloud Pak foundational services URL as the `bedrock_url` param in the wml_credentials.
 
        To get the IBM Cloud Pak foundational services URL, refer to `Authenticating for programmatic access <https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=deployments-authenticating-programmatic-access>`__.
+
+watsonx.ai lightweight engines
+------------------------------
+For a watsonx.ai lightweight engine, you do not need to authenticate with a WML service and do not need to provide a `project_id` or `space_id`.
+
+Example of creating the client with only lightweight engine support:
+
+.. code-block:: python
+
+   from ibm_watsonx_ai import APIClient
+   from ibm_watsonx_ai import Credentials
+
+
+   credentials = Credentials(
+                      username="username",
+                      password="***********",
+                      url="<URL>",
+                      instance_id="openshift",
+                      version="5.0"
+                     )
+
+   client = APIClient(credentials=credentials)
+
+**Note:** Do not use methods such as ``client.set.default_space()`` and ``client.set.default_project()`` when you are using a watsonx.ai lightweight engine.

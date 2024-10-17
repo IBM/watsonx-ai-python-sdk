@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>ibm_watsonx_ai.foundation_models.utils.enums - IBM watsonx.ai</title>
+        <title>ibm_watsonx_ai.foundation_models.rerank.rerank - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -293,144 +293,207 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for ibm_watsonx_ai.foundation_models.utils.enums</h1><div class="highlight"><pre>
+          <h1>Source code for ibm_watsonx_ai.foundation_models.rerank.rerank</h1><div class="highlight"><pre>
 <span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="c1">#  (C) Copyright IBM Corp. 2023-2024.</span>
+<span class="c1">#  (C) Copyright IBM Corp. 2024.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">TypedDict</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">InvalidMultipleArguments</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai._wrappers</span> <span class="kn">import</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.schema</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RerankParameters</span><span class="p">,</span>
+    <span class="n">BaseSchema</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.utils</span> <span class="kn">import</span> <span class="n">StrEnum</span>
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;ModelTypes&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DecodingMethods&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PromptTuningTypes&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PromptTuningInitMethods&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;TuneExperimentTasks&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PromptTemplateFormats&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;EmbeddingTypes&quot;</span><span class="p">,</span>
-<span class="p">]</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
 
 
-<div class="viewcode-block" id="ModelTypes">
-<a class="viewcode-back" href="../../../../fm_model.html#ibm_watsonx_ai.foundation_models.utils.enums.ModelTypes">[docs]</a>
-<span class="k">class</span> <span class="nc">ModelTypes</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">TextDict</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<div class="viewcode-block" id="Rerank">
+<a class="viewcode-back" href="../../../../fm_rerank.html#ibm_watsonx_ai.foundation_models.rerank.Rerank">[docs]</a>
+<span class="k">class</span> <span class="nc">Rerank</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rerank texts based on some queries.</span>
 
-<span class="sd">    .. deprecated:: 1.0.5</span>
-<span class="sd">        Use :func:`TextModels` instead.</span>
+<span class="sd">    :param model_id: type of model to use</span>
+<span class="sd">    :type model_id: str</span>
 
-<span class="sd">    Supported foundation models.</span>
+<span class="sd">    :param params: parameters to use during request generation</span>
+<span class="sd">    :type params: dict, RerankParameters, optional</span>
 
-<span class="sd">    .. note::</span>
-<span class="sd">        You can check the current list of supported models types of various environments with</span>
-<span class="sd">        :func:`get_model_specs() &lt;ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_model_specs&gt;` or</span>
-<span class="sd">        by referring to the `watsonx.ai &lt;https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-models.html?context=wx&gt;`_</span>
-<span class="sd">        documentation.</span>
+<span class="sd">    :param credentials: credentials for the Watson Machine Learning instance</span>
+<span class="sd">    :type credentials: Credentials or dict, optional</span>
+
+<span class="sd">    :param project_id: ID of the Watson Studio project</span>
+<span class="sd">    :type project_id: str, optional</span>
+
+<span class="sd">    :param space_id: ID of the Watson Studio space</span>
+<span class="sd">    :type space_id: str, optional</span>
+
+<span class="sd">    :param verify: You can pass one of the following as verify:</span>
+
+<span class="sd">        * the path to a CA_BUNDLE file</span>
+<span class="sd">        * the path of directory with certificates of trusted CAs</span>
+<span class="sd">        * `True` - default path to truststore will be taken</span>
+<span class="sd">        * `False` - no verification will be made</span>
+<span class="sd">    :type verify: bool or str, optional</span>
+
+<span class="sd">    :param api_client: initialized APIClient object with a set project ID or space ID. If passed, ``credentials`` and ``project_id``/``space_id`` are not required.</span>
+<span class="sd">    :type api_client: APIClient, optional</span>
+
+<span class="sd">    **Example:**</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from ibm_watsonx_ai import Credentials</span>
+<span class="sd">        from ibm_watsonx_ai.foundation_models import Rerank</span>
+
+<span class="sd">        generate_params = {</span>
+<span class="sd">            &quot;truncate_input_tokens&quot;: 10</span>
+<span class="sd">        }</span>
+
+<span class="sd">        wx_ranker = Rerank(</span>
+<span class="sd">            model_id=&quot;&lt;RERANK MODEL&gt;&quot;,</span>
+<span class="sd">            params=generate_params,</span>
+<span class="sd">            credentials=Credentials(</span>
+<span class="sd">                api_key = &quot;***&quot;,</span>
+<span class="sd">                url = &quot;https://us-south.ml.cloud.ibm.com&quot;),</span>
+<span class="sd">            project_id=project_id</span>
+<span class="sd">        )</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">FLAN_T5_XXL</span> <span class="o">=</span> <span class="s2">&quot;google/flan-t5-xxl&quot;</span>
-    <span class="n">FLAN_UL2</span> <span class="o">=</span> <span class="s2">&quot;google/flan-ul2&quot;</span>
-    <span class="n">MT0_XXL</span> <span class="o">=</span> <span class="s2">&quot;bigscience/mt0-xxl&quot;</span>
-    <span class="n">GPT_NEOX</span> <span class="o">=</span> <span class="s2">&quot;eleutherai/gpt-neox-20b&quot;</span>
-    <span class="n">MPT_7B_INSTRUCT2</span> <span class="o">=</span> <span class="s2">&quot;ibm/mpt-7b-instruct2&quot;</span>
-    <span class="n">STARCODER</span> <span class="o">=</span> <span class="s2">&quot;bigcode/starcoder&quot;</span>
-    <span class="n">LLAMA_2_70B_CHAT</span> <span class="o">=</span> <span class="s2">&quot;meta-llama/llama-2-70b-chat&quot;</span>
-    <span class="n">LLAMA_2_13B_CHAT</span> <span class="o">=</span> <span class="s2">&quot;meta-llama/llama-2-13b-chat&quot;</span>
-    <span class="n">GRANITE_13B_INSTRUCT</span> <span class="o">=</span> <span class="s2">&quot;ibm/granite-13b-instruct-v1&quot;</span>
-    <span class="n">GRANITE_13B_CHAT</span> <span class="o">=</span> <span class="s2">&quot;ibm/granite-13b-chat-v1&quot;</span>
-    <span class="n">FLAN_T5_XL</span> <span class="o">=</span> <span class="s2">&quot;google/flan-t5-xl&quot;</span>
-    <span class="n">GRANITE_13B_CHAT_V2</span> <span class="o">=</span> <span class="s2">&quot;ibm/granite-13b-chat-v2&quot;</span>
-    <span class="n">GRANITE_13B_INSTRUCT_V2</span> <span class="o">=</span> <span class="s2">&quot;ibm/granite-13b-instruct-v2&quot;</span>
-    <span class="n">ELYZA_JAPANESE_LLAMA_2_7B_INSTRUCT</span> <span class="o">=</span> <span class="s2">&quot;elyza/elyza-japanese-llama-2-7b-instruct&quot;</span>
-    <span class="n">MIXTRAL_8X7B_INSTRUCT_V01_Q</span> <span class="o">=</span> <span class="s2">&quot;ibm-mistralai/mixtral-8x7b-instruct-v01-q&quot;</span>
-    <span class="n">CODELLAMA_34B_INSTRUCT_HF</span> <span class="o">=</span> <span class="s2">&quot;codellama/codellama-34b-instruct-hf&quot;</span>
-    <span class="n">GRANITE_20B_MULTILINGUAL</span> <span class="o">=</span> <span class="s2">&quot;ibm/granite-20b-multilingual&quot;</span>
-    <span class="n">MERLINITE_7B</span> <span class="o">=</span> <span class="s2">&quot;ibm-mistralai/merlinite-7b&quot;</span>
-    <span class="n">GRANITE_20B_CODE_INSTRUCT</span> <span class="o">=</span> <span class="s2">&quot;ibm/granite-20b-code-instruct&quot;</span>
-    <span class="n">GRANITE_34B_CODE_INSTRUCT</span> <span class="o">=</span> <span class="s2">&quot;ibm/granite-34b-code-instruct&quot;</span>
-    <span class="n">GRANITE_3B_CODE_INSTRUCT</span> <span class="o">=</span> <span class="s2">&quot;ibm/granite-3b-code-instruct&quot;</span>
-    <span class="n">GRANITE_7B_LAB</span> <span class="o">=</span> <span class="s2">&quot;ibm/granite-7b-lab&quot;</span>
-    <span class="n">GRANITE_8B_CODE_INSTRUCT</span> <span class="o">=</span> <span class="s2">&quot;ibm/granite-8b-code-instruct&quot;</span>
-    <span class="n">LLAMA_3_70B_INSTRUCT</span> <span class="o">=</span> <span class="s2">&quot;meta-llama/llama-3-70b-instruct&quot;</span>
-    <span class="n">LLAMA_3_8B_INSTRUCT</span> <span class="o">=</span> <span class="s2">&quot;meta-llama/llama-3-8b-instruct&quot;</span>
-    <span class="n">MIXTRAL_8X7B_INSTRUCT_V01</span> <span class="o">=</span> <span class="s2">&quot;mistralai/mixtral-8x7b-instruct-v01&quot;</span></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">RerankParameters</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">credentials</span><span class="p">:</span> <span class="n">Credentials</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="o">=</span> <span class="n">model_id</span>
+        <span class="n">Rerank</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="s2">&quot;model_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="n">Rerank</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">RerankParameters</span><span class="p">],</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DecodingMethods">
-<a class="viewcode-back" href="../../../../fm_model.html#ibm_watsonx_ai.foundation_models.utils.enums.DecodingMethods">[docs]</a>
-<span class="k">class</span> <span class="nc">DecodingMethods</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Supported decoding methods for text generation.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">credentials</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
 
-    <span class="n">SAMPLE</span> <span class="o">=</span> <span class="s2">&quot;sample&quot;</span>
-    <span class="n">GREEDY</span> <span class="o">=</span> <span class="s2">&quot;greedy&quot;</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">api_client</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">api_client</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span>
+                <span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;credentials&quot;</span><span class="p">,</span> <span class="s2">&quot;api_client&quot;</span><span class="p">],</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">space_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_space</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">project_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_project</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">api_client</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span>
+                <span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;space_id&quot;</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">],</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
 
+        <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PromptTuningTypes">
-<a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.foundation_models.utils.enums.PromptTuningTypes">[docs]</a>
-<span class="k">class</span> <span class="nc">PromptTuningTypes</span><span class="p">:</span>
-    <span class="n">PT</span> <span class="o">=</span> <span class="s2">&quot;prompt_tuning&quot;</span></div>
+<div class="viewcode-block" id="Rerank.generate">
+<a class="viewcode-back" href="../../../../fm_rerank.html#ibm_watsonx_ai.foundation_models.rerank.Rerank.generate">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">TextDict</span><span class="p">],</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">RerankParameters</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calling this method generates the following auditing event.</span>
 
+<span class="sd">        :param query: The rank query.</span>
+<span class="sd">        :type query: str</span>
 
+<span class="sd">        :param inputs: The rank input strings.</span>
+<span class="sd">        :type inputs: list[str], list[dict[&#39;text&#39;, str]]</span>
 
-<div class="viewcode-block" id="PromptTuningInitMethods">
-<a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.foundation_models.utils.enums.PromptTuningInitMethods">[docs]</a>
-<span class="k">class</span> <span class="nc">PromptTuningInitMethods</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Supported methods for prompt initialization in prompt tuning.&quot;&quot;&quot;</span>
+<span class="sd">        :param params:</span>
+<span class="sd">        :type params: dict, RerankParameters, optional</span>
 
-    <span class="n">RANDOM</span> <span class="o">=</span> <span class="s2">&quot;random&quot;</span>
-    <span class="n">TEXT</span> <span class="o">=</span> <span class="s2">&quot;text&quot;</span></div>
+<span class="sd">        **Example:**</span>
 
-    <span class="c1"># PRESET ?</span>
+<span class="sd">        .. code-block:: python</span>
 
+<span class="sd">            query = &quot;As a Youth, I craved excitement while in adulthood I followed Enthusiastic Pursuit.&quot;</span>
+<span class="sd">            inputs = [</span>
+<span class="sd">                &quot;In my younger years, I often reveled in the excitement of spontaneous adventures and embraced the thrill of the unknown, whereas in my grownup life, I have come to appreciate the comforting stability of a well-established routine.&quot;,</span>
+<span class="sd">                &quot;As a young man, I frequently sought out exhilarating experiences, craving the adrenaline rush of lifes novelties, while as a responsible adult, I have come to understand the profound value of accumulated wisdom and life experience.&quot;</span>
+<span class="sd">            ]</span>
+<span class="sd">            response = wx_ranker.generate(query=query, inputs=inputs)</span>
 
-<div class="viewcode-block" id="TuneExperimentTasks">
-<a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.foundation_models.utils.enums.TuneExperimentTasks">[docs]</a>
-<span class="k">class</span> <span class="nc">TuneExperimentTasks</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="n">QUESTION_ANSWERING</span> <span class="o">=</span> <span class="s2">&quot;question_answering&quot;</span>
-    <span class="n">SUMMARIZATION</span> <span class="o">=</span> <span class="s2">&quot;summarization&quot;</span>
-    <span class="n">RETRIEVAL_AUGMENTED_GENERATION</span> <span class="o">=</span> <span class="s2">&quot;retrieval_augmented_generation&quot;</span>
-    <span class="n">CLASSIFICATION</span> <span class="o">=</span> <span class="s2">&quot;classification&quot;</span>
-    <span class="n">GENERATION</span> <span class="o">=</span> <span class="s2">&quot;generation&quot;</span>
-    <span class="n">CODE_GENERATION_AND_CONVERSION</span> <span class="o">=</span> <span class="s2">&quot;code&quot;</span>
-    <span class="n">EXTRACTION</span> <span class="o">=</span> <span class="s2">&quot;extraction&quot;</span></div>
+<span class="sd">            # Print all response</span>
+<span class="sd">            print(response)</span>
 
+<span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
 
-<div class="viewcode-block" id="PromptTemplateFormats">
-<a class="viewcode-back" href="../../../../prompt_template_manager.html#ibm_watsonx_ai.foundation_models.utils.enums.PromptTemplateFormats">[docs]</a>
-<span class="k">class</span> <span class="nc">PromptTemplateFormats</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Supported formats of loaded prompt template.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="s2">&quot;query&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">PROMPTTEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;prompt&quot;</span>
-    <span class="n">STRING</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span>
-    <span class="n">LANGCHAIN</span> <span class="o">=</span> <span class="s2">&quot;langchain&quot;</span></div>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">):</span>
+            <span class="n">inputs_payload</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">el_input</span><span class="p">}</span> <span class="k">for</span> <span class="n">el_input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">inputs_payload</span> <span class="o">=</span> <span class="n">inputs</span>  <span class="c1"># type: ignore</span>
 
+        <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span>
+            <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span>
+            <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="n">inputs_payload</span><span class="p">,</span>
+        <span class="p">}</span>
 
+        <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="n">params</span>
 
-<div class="viewcode-block" id="EmbeddingTypes">
-<a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.utils.enums.EmbeddingTypes">[docs]</a>
-<span class="k">class</span> <span class="nc">EmbeddingTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    .. deprecated:: 1.0.5</span>
-<span class="sd">        Use :func:`EmbeddingModels` instead.</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
 
-<span class="sd">    Supported embedding models.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="sd">    .. note::</span>
-<span class="sd">        You can check the current list of supported embeddings model types of various environments with</span>
-<span class="sd">        :func:`get_embeddings_model_specs() &lt;ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_embeddings_model_specs&gt;`</span>
-<span class="sd">        or by referring to the `watsonx.ai &lt;https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-models-embed.html?context=wx&gt;`_</span>
-<span class="sd">        documentation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">BaseSchema</span><span class="p">):</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 
-    <span class="n">IBM_SLATE_30M_ENG</span> <span class="o">=</span> <span class="s2">&quot;ibm/slate-30m-english-rtrvr&quot;</span>
-    <span class="n">IBM_SLATE_125M_ENG</span> <span class="o">=</span> <span class="s2">&quot;ibm/slate-125m-english-rtrvr&quot;</span></div>
+        <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
+            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span><span class="p">:</span>
+            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;project_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span><span class="p">:</span>
+            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;space_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_rerank_href</span><span class="p">(),</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(</span><span class="n">skip_for_create</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_userfs</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;generate_rerank&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span></div>
+</div>
 
 </pre></div>
         </article>

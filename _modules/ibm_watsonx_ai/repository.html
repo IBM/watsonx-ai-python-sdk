@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>ibm_watsonx_ai.repository - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
@@ -251,6 +251,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../fm_custom_models.html">Custom models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_text_extraction.html">Text Extractions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_schema.html">Parameter Scheme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fm_rerank.html">Rerank</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../save_models.html">Saving external models</a></li>
@@ -310,6 +311,7 @@
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.experiments</span> <span class="kn">import</span> <span class="n">Experiments</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.functions</span> <span class="kn">import</span> <span class="n">Functions</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.ai_services</span> <span class="kn">import</span> <span class="n">AIServices</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.libs.repo.mlrepositoryclient</span> <span class="kn">import</span> <span class="n">MLRepositoryClient</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.lifecycle</span> <span class="kn">import</span> <span class="n">SpecStates</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.messages.messages</span> <span class="kn">import</span> <span class="n">Messages</span>
@@ -320,6 +322,7 @@
     <span class="n">SpacesMetaNames</span><span class="p">,</span>
     <span class="n">ModelMetaNames</span><span class="p">,</span>
     <span class="n">MemberMetaNames</span><span class="p">,</span>
+    <span class="n">AIServiceMetaNames</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.models</span> <span class="kn">import</span> <span class="n">Models</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.pipelines</span> <span class="kn">import</span> <span class="n">Pipelines</span>
@@ -327,6 +330,7 @@
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.utils</span> <span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
+
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
@@ -378,6 +382,12 @@
 
 <span class="sd">        client.repository.PipelineMetaNames.show()</span>
 
+<span class="sd">    To view AIServiceMetaNames, use:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        client.repository.AIServiceMetaNames.show()</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Repository.ModelAssetTypes">
@@ -427,6 +437,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">SpacesMetaNames</span> <span class="o">=</span> <span class="n">SpacesMetaNames</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ModelMetaNames</span> <span class="o">=</span> <span class="n">ModelMetaNames</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">MemberMetaNames</span> <span class="o">=</span> <span class="n">MemberMetaNames</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">AIServiceMetaNames</span> <span class="o">=</span> <span class="n">AIServiceMetaNames</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_repo_client</span><span class="p">()</span>  <span class="c1"># regular token is initialized in service_instance</span>
 
@@ -735,9 +746,9 @@
     <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a model, experiment, pipeline, function from the repository.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a model, experiment, pipeline, function, or AI service from the repository.</span>
 
-<span class="sd">        :param artifact_id: unique ID of the stored model, experiment, function, pipeline</span>
+<span class="sd">        :param artifact_id: unique ID of the stored model, experiment, function, pipeline, or AI service</span>
 <span class="sd">        :type artifact_id: str</span>
 
 <span class="sd">        :return: status &quot;SUCCESS&quot; if deletion is successful</span>
@@ -791,10 +802,12 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">spec_state</span><span class="p">:</span> <span class="n">SpecStates</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">artifact_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of stored artifacts. If `artifact_id` is not specified, the metadata of all models, experiments,</span>
-<span class="sd">        functions, and pipelines is returned.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of stored artifacts. If `artifact_id` and `artifact_name` are not specified,</span>
+<span class="sd">        the metadata of all models, experiments, functions, pipelines, and ai services is returned.</span>
+<span class="sd">        If only `artifact_name` is specified, metadata of all artifacts with the name is returned.</span>
 
 <span class="sd">        :param artifact_id: unique ID of the stored model, experiment, function, or pipeline</span>
 <span class="sd">        :type artifact_id: str, optional</span>
@@ -802,14 +815,21 @@
 <span class="sd">        :param spec_state: software specification state, can be used only when `artifact_id` is None</span>
 <span class="sd">        :type spec_state: SpecStates, optional</span>
 
+<span class="sd">        :param artifact_name: name of the stored model, experiment, function, pipeline, or ai service</span>
+<span class="sd">            can be used only when `artifact_id` is None</span>
+<span class="sd">        :type artifact_name: str, optional</span>
+
 <span class="sd">        :return: metadata of the stored artifact(s)</span>
-<span class="sd">        :rtype: dict (if artifact_id is not None) or {&quot;resources&quot;: [dict]} (if artifact_id is None)</span>
+<span class="sd">        :rtype:</span>
+<span class="sd">            - dict (if artifact_id is not None)</span>
+<span class="sd">            - {&quot;models&quot;: dict, &quot;experiments&quot;: dict, &quot;pipeline&quot;: dict, &quot;functions&quot;: dict, &quot;ai_service&quot;: dict} (if artifact_id is None)</span>
 
 <span class="sd">        **Examples**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
 <span class="sd">            details = client.repository.get_details(artifact_id)</span>
+<span class="sd">            details = client.repository.get_details(artifact_name=&#39;Sample_model&#39;)</span>
 <span class="sd">            details = client.repository.get_details()</span>
 
 <span class="sd">        Example of getting all repository assets with deprecated software specifications:</span>
@@ -824,20 +844,27 @@
             <span class="n">kwargs</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact&quot;</span><span class="p">,</span> <span class="n">can_be_none</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
         <span class="n">Repository</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">Repository</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">artifact_name</span><span class="p">,</span> <span class="s2">&quot;artifact_name&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">artifact_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">model_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">spec_state</span><span class="o">=</span><span class="n">spec_state</span><span class="p">)</span>
+            <span class="n">model_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+                <span class="n">spec_state</span><span class="o">=</span><span class="n">spec_state</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="n">artifact_name</span>
+            <span class="p">)</span>
             <span class="n">experiment_details</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_experiment_details</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">spec_state</span> <span class="k">else</span> <span class="p">{</span><span class="s2">&quot;resources&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_experiment_details</span><span class="p">(</span><span class="n">experiment_name</span><span class="o">=</span><span class="n">artifact_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">spec_state</span>
+                <span class="k">else</span> <span class="p">{</span><span class="s2">&quot;resources&quot;</span><span class="p">:</span> <span class="p">[]}</span>
             <span class="p">)</span>
             <span class="n">pipeline_details</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_pipeline_details</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">spec_state</span> <span class="k">else</span> <span class="p">{</span><span class="s2">&quot;resources&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_pipeline_details</span><span class="p">(</span><span class="n">pipeline_name</span><span class="o">=</span><span class="n">artifact_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">spec_state</span>
+                <span class="k">else</span> <span class="p">{</span><span class="s2">&quot;resources&quot;</span><span class="p">:</span> <span class="p">[]}</span>
             <span class="p">)</span>
             <span class="n">function_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_functions</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
-                <span class="n">spec_state</span><span class="o">=</span><span class="n">spec_state</span>
+                <span class="n">spec_state</span><span class="o">=</span><span class="n">spec_state</span><span class="p">,</span> <span class="n">function_name</span><span class="o">=</span><span class="n">artifact_name</span>
             <span class="p">)</span>
             <span class="n">ai_service_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_ai_services</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
-                <span class="n">spec_state</span><span class="o">=</span><span class="n">spec_state</span>
+                <span class="n">spec_state</span><span class="o">=</span><span class="n">spec_state</span><span class="p">,</span> <span class="n">ai_service_name</span><span class="o">=</span><span class="n">artifact_name</span>
             <span class="p">)</span>
 
             <span class="n">details</span> <span class="o">=</span> <span class="p">{</span>
@@ -847,6 +874,7 @@
                 <span class="s2">&quot;functions&quot;</span><span class="p">:</span> <span class="n">function_details</span><span class="p">,</span>
                 <span class="s2">&quot;ai_service&quot;</span><span class="p">:</span> <span class="n">ai_service_details</span><span class="p">,</span>
             <span class="p">}</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="n">artifact_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_artifact_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">))</span>
 
@@ -870,6 +898,58 @@
         <span class="k">return</span> <span class="n">details</span></div>
 
 
+<div class="viewcode-block" id="Repository.get_id_by_name">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_id_by_name">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_id_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the ID of a stored artifact by name.</span>
+
+<span class="sd">        :param artifact_name: name of the stored artifact</span>
+<span class="sd">        :type artifact_name: str</span>
+
+<span class="sd">        :return: ID of the stored artifact if exactly one with the &#39;artifact_name&#39; exists. Otherwise, raise an error.</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            artifact_id = client.repository.get_id_by_name(artifact_name)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">artifact_name</span><span class="o">=</span><span class="n">artifact_name</span><span class="p">)</span>
+
+        <span class="c1"># Check whether 0, 1, or more artifacts were found in &#39;details&#39; results</span>
+        <span class="n">details_by_name</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">artifact_type</span><span class="p">,</span> <span class="n">artifact_details</span> <span class="ow">in</span> <span class="n">details</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">artifact_details</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">details_by_name</span><span class="p">:</span>
+                <span class="c1"># Found first artifact</span>
+                <span class="n">details_by_name</span> <span class="o">=</span> <span class="n">artifact_details</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">artifact_details</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">details_by_name</span><span class="p">:</span>
+                <span class="c1"># Found another artifact of different type</span>
+                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                    <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                        <span class="n">artifact_name</span><span class="p">,</span>
+                        <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;multiple_artifacts_found_by_name&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">artifact_details</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Found more than 1 artifact of a specific type</span>
+                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                    <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                        <span class="n">artifact_name</span><span class="p">,</span>
+                        <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;multiple_artifacts_found_by_name&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">details_by_name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Artifact with artifact_name: &#39;</span><span class="si">{</span><span class="n">artifact_name</span><span class="si">}</span><span class="s2">&#39; does not exist.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">details_by_name</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]</span></div>
+
+
 <div class="viewcode-block" id="Repository.get_model_details">
 <a class="viewcode-back" href="../../core_api.html#client.Repository.get_model_details">[docs]</a>
     <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">Models</span><span class="o">.</span><span class="n">get_details</span><span class="p">)</span>
@@ -880,17 +960,19 @@
         <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">spec_state</span><span class="p">:</span> <span class="n">SpecStates</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">model_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span>
             <span class="n">kwargs</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="n">can_be_none</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
-            <span class="n">model_id</span><span class="p">,</span>
-            <span class="n">limit</span><span class="p">,</span>
+            <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
             <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
             <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
             <span class="n">spec_state</span><span class="o">=</span><span class="n">spec_state</span><span class="p">,</span>
+            <span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -914,10 +996,16 @@
         <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">experiment_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
-            <span class="n">experiment_id</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">,</span> <span class="n">get_all</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="n">experiment_id</span><span class="o">=</span><span class="n">experiment_id</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+            <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
+            <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+            <span class="n">experiment_name</span><span class="o">=</span><span class="n">experiment_name</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -942,10 +1030,17 @@
         <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">spec_state</span><span class="p">:</span> <span class="n">SpecStates</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">function_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_functions</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
-            <span class="n">function_id</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">,</span> <span class="n">get_all</span><span class="p">,</span> <span class="n">spec_state</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="n">function_id</span><span class="o">=</span><span class="n">function_id</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+            <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
+            <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+            <span class="n">spec_state</span><span class="o">=</span><span class="n">spec_state</span><span class="p">,</span>
+            <span class="n">function_name</span><span class="o">=</span><span class="n">function_name</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -969,6 +1064,7 @@
         <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">pipeline_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">pipeline_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span>
@@ -979,7 +1075,12 @@
         <span class="n">Repository</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">asynchronous</span><span class="p">,</span> <span class="s2">&quot;asynchronous&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="n">Repository</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">get_all</span><span class="p">,</span> <span class="s2">&quot;get_all&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
-            <span class="n">pipeline_id</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">,</span> <span class="n">get_all</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="n">pipeline_id</span><span class="o">=</span><span class="n">pipeline_id</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+            <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
+            <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+            <span class="n">pipeline_name</span><span class="o">=</span><span class="n">pipeline_name</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -1070,7 +1171,7 @@
 <div class="viewcode-block" id="Repository.list">
 <a class="viewcode-back" href="../../core_api.html#client.Repository.list">[docs]</a>
     <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">framework_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get and list stored models, pipelines, runtimes, libraries, functions, spaces, and experiments in a table/DataFrame format.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get and list stored models, pipelines, functions, experiments, and AI services in a table/DataFrame format.</span>
 <span class="sd">        If limit is set to None, only the first 50 records are shown.</span>
 
 <span class="sd">        :param framework_filter: get only the frameworks with the desired names</span>
@@ -1443,7 +1544,7 @@
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
     </body>

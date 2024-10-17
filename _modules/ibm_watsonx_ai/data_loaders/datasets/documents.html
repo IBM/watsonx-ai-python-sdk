@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
-    <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>ibm_watsonx_ai.data_loaders.datasets.documents - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
@@ -251,6 +251,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_custom_models.html">Custom models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_text_extraction.html">Text Extractions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_schema.html">Parameter Scheme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fm_rerank.html">Rerank</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../save_models.html">Saving external models</a></li>
@@ -304,6 +305,7 @@
 <span class="p">]</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers</span> <span class="kn">import</span> <span class="n">ContainerLocation</span>
 
@@ -349,6 +351,13 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This dataset is an Iterable stream of documents using an underneath Flight Service.</span>
 <span class="sd">    It can download documents asynchronously and serve them to you from a generator.</span>
+
+<span class="sd">    Supported types of documents:</span>
+<span class="sd">        - **text/plain** (&quot;.txt&quot; file extension) - plain structured text</span>
+<span class="sd">        - **docx** (&quot;.docx&quot; file extension) - standard Word style file</span>
+<span class="sd">        - **pdf** (&quot;.pdf&quot; file extension) - standard pdf document</span>
+<span class="sd">        - **html** (&quot;.html&quot; file extension) - saved html side</span>
+<span class="sd">        - **markdown** (&quot;.md&quot; file extension) - plain text formatted with markdown</span>
 
 <span class="sd">    :param connections: list of connections to the documents</span>
 <span class="sd">    :type connections: list[DataConnection]</span>
@@ -690,7 +699,7 @@
                                 <span class="bp">self</span><span class="o">.</span><span class="n">error_callback</span><span class="p">(</span><span class="n">doc_id</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">doc</span> <span class="o">=</span> <span class="n">result</span>
-                            <span class="n">res_size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+                            <span class="n">res_size</span> <span class="o">+=</span> <span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span><span class="p">)</span>
 
                             <span class="k">if</span> <span class="n">size_limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">res_size</span> <span class="o">&gt;</span> <span class="n">size_limit</span><span class="p">:</span>
                                 <span class="k">return</span>
@@ -749,7 +758,7 @@
     </aside>
   </div>
 </div><script src="../../../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/scripts/furo.js?v=5fa4622c"></script>
     </body>

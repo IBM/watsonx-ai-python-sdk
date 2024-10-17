@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>ibm_watsonx_ai.parameter_sets - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
@@ -251,6 +251,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../fm_custom_models.html">Custom models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_text_extraction.html">Text Extractions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_schema.html">Parameter Scheme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fm_rerank.html">Rerank</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../save_models.html">Saving external models</a></li>
@@ -302,6 +303,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">TypeAlias</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai._wrappers</span> <span class="kn">import</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">ResourceIdByNameNotFound</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">ParameterSetsMetaNames</span>
 
@@ -601,7 +603,10 @@
             <span class="k">if</span> <span class="n">parameter</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">parameter_set_name</span>
         <span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">parameter_sets_id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">parameter_sets_id</span> <span class="k">else</span> <span class="s2">&quot;Not Found&quot;</span></div>
+        <span class="k">if</span> <span class="n">parameter_sets_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">parameter_sets_id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ResourceIdByNameNotFound</span><span class="p">(</span><span class="n">parameter_set_name</span><span class="p">,</span> <span class="s2">&quot;parameter set&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ParameterSets.update">
@@ -733,7 +738,7 @@
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
     </body>

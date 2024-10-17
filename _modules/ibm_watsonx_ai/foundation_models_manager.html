@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>ibm_watsonx_ai.foundation_models_manager - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
@@ -251,6 +251,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../fm_custom_models.html">Custom models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_text_extraction.html">Text Extractions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_schema.html">Parameter Scheme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fm_rerank.html">Rerank</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../save_models.html">Saving external models</a></li>
@@ -336,6 +337,10 @@
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">PromptTunableModels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">StrEnum</span><span class="p">(</span><span class="s2">&quot;PromptTunableModels&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_dict</span><span class="p">(</span><span class="s2">&quot;prompt_tuning&quot;</span><span class="p">))</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">RerankModels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">StrEnum</span><span class="p">(</span><span class="s2">&quot;RerankModels&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_dict</span><span class="p">(</span><span class="s2">&quot;rerank&quot;</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_get_spec</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -609,6 +614,53 @@
         <span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="FoundationModelsManager.get_rerank_model_specs">
+<a class="viewcode-back" href="../../fm_helpers.html#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_rerank_model_specs">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_rerank_model_specs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the specifications of a rerank model.</span>
+
+<span class="sd">        :param model_id: ID of the model, defaults to None (all models specifications are returned)</span>
+<span class="sd">        :type model_id: str, optional</span>
+
+<span class="sd">        :param limit: limit number of fetched records</span>
+<span class="sd">        :type limit: int, optional</span>
+
+<span class="sd">        :param asynchronous: if True, will work as a generator</span>
+<span class="sd">        :type asynchronous: bool, optional</span>
+
+<span class="sd">        :param get_all: if True, will get all entries in &#39;limited&#39; chunks</span>
+<span class="sd">        :type get_all: bool, optional</span>
+
+<span class="sd">        :return: specifications of the rerank model</span>
+<span class="sd">        :rtype: dict or generator</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.foundation_models.get_rerank_model_specs()</span>
+<span class="sd">            client.foundation_models.get_rerank_model_specs(&#39;ibm/slate-125m-english-rtrvr-v2&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_spec</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_specifications_href</span><span class="p">(),</span>
+            <span class="n">operation_name</span><span class="o">=</span><span class="s2">&quot;Get available rerank models&quot;</span><span class="p">,</span>
+            <span class="n">error_msg_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_model_specs&quot;</span><span class="p">,</span>
+            <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
+            <span class="n">filters</span><span class="o">=</span><span class="s2">&quot;function_rerank&quot;</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+            <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
+            <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">get_model_specs_with_prompt_tuning_support</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -746,13 +798,16 @@
 
 
     <span class="k">def</span> <span class="nf">_get_model_dict</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;embedding&quot;</span><span class="p">,</span> <span class="s2">&quot;prompt_tuning&quot;</span><span class="p">,</span> <span class="s2">&quot;text_chat&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+            <span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;embedding&quot;</span><span class="p">,</span> <span class="s2">&quot;prompt_tuning&quot;</span><span class="p">,</span> <span class="s2">&quot;text_chat&quot;</span><span class="p">,</span> <span class="s2">&quot;rerank&quot;</span>
+        <span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the dictionary of models to Enum.</span>
 
 <span class="sd">        :param model_type: type of model function</span>
-<span class="sd">        :type model_type: Literal[&quot;base&quot;, &quot;embedding&quot;, &quot;prompt_tuning&quot;]</span>
+<span class="sd">        :type model_type: Literal[&quot;base&quot;, &quot;embedding&quot;, &quot;prompt_tuning&quot;, &quot;text_chat&quot;, &quot;rerank&quot;]</span>
 
 <span class="sd">        :return: dictionary of models to Enum</span>
 <span class="sd">        :rtype: dict</span>
@@ -762,6 +817,7 @@
             <span class="s2">&quot;embedding&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_embeddings_model_specs</span><span class="p">,</span>
             <span class="s2">&quot;prompt_tuning&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model_specs_with_prompt_tuning_support</span><span class="p">,</span>
             <span class="s2">&quot;text_chat&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_chat_model_specs</span><span class="p">,</span>
+            <span class="s2">&quot;rerank&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_rerank_model_specs</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">model_specs_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">model_spec</span> <span class="ow">in</span> <span class="n">function_dict</span><span class="p">[</span><span class="n">model_type</span><span class="p">]()[</span><span class="s2">&quot;resources&quot;</span><span class="p">]:</span>
@@ -804,7 +860,7 @@
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
     </body>

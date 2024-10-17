@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
-    <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>ibm_watsonx_ai.foundation_models.schema._api - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
@@ -251,6 +251,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_custom_models.html">Custom models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_text_extraction.html">Text Extractions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_schema.html">Parameter Scheme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fm_rerank.html">Rerank</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../save_models.html">Saving external models</a></li>
@@ -297,7 +298,7 @@
 <span class="c1">#  (C) Copyright IBM Corp. 2024.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">get_origin</span>
 <span class="kn">from</span> <span class="nn">tabulate</span> <span class="kn">import</span> <span class="n">tabulate</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
@@ -321,8 +322,10 @@
             <span class="n">field_type</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">type</span>
             <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="n">field_type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">field_type</span><span class="p">,</span> <span class="n">BaseSchema</span><span class="p">):</span>
-                    <span class="n">value</span> <span class="o">=</span> <span class="n">field_type</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">origin</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">field_type</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">origin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">BaseSchema</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="s2">&quot;from_dict&quot;</span><span class="p">):</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="n">origin</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                 <span class="n">kwargs</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -542,6 +545,8 @@
 <span class="c1">############</span>
 
 
+<div class="viewcode-block" id="RerankReturnOptions">
+<a class="viewcode-back" href="../../../../fm_schema.html#ibm_watsonx_ai.foundation_models.schema.RerankReturnOptions">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">RerankReturnOptions</span><span class="p">(</span><span class="n">BaseSchema</span><span class="p">):</span>
     <span class="n">top_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -551,9 +556,12 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_sample_params</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Provide example values for RerankReturnOptions.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;top_n&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;top_n&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span></div>
 
 
+
+<div class="viewcode-block" id="RerankParameters">
+<a class="viewcode-back" href="../../../../fm_schema.html#ibm_watsonx_ai.foundation_models.schema.RerankParameters">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">RerankParameters</span><span class="p">(</span><span class="n">BaseSchema</span><span class="p">):</span>
     <span class="n">truncate_input_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -565,7 +573,8 @@
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;truncate_input_tokens&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
             <span class="s2">&quot;return_options&quot;</span><span class="p">:</span> <span class="n">RerankReturnOptions</span><span class="o">.</span><span class="n">get_sample_params</span><span class="p">(),</span>
-        <span class="p">}</span>
+        <span class="p">}</span></div>
+
 </pre></div>
         </article>
       </div>
@@ -599,7 +608,7 @@
     </aside>
   </div>
 </div><script src="../../../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/scripts/furo.js?v=5fa4622c"></script>
     </body>
