@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Working with TuneExperiment and FineTuner" href="ft_tune_experiment_run.html" /><link rel="prev" title="Tuning" href="prompt_tuner.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Tuned Model Inference" href="pt_model_inference.html" /><link rel="prev" title="Working with TuneExperiment and PromptTuner" href="pt_tune_experiment_run.html" />
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>Working with TuneExperiment and PromptTuner - IBM watsonx.ai</title>
+        <title>Working with TuneExperiment and FineTuner - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
@@ -235,8 +235,8 @@
 </ul>
 </li>
 <li class="toctree-l3 current has-children"><a class="reference internal" href="prompt_tuner.html">Tuning</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Tuning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">Working with TuneExperiment and PromptTuner</a></li>
-<li class="toctree-l4"><a class="reference internal" href="ft_tune_experiment_run.html">Working with TuneExperiment and FineTuner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pt_tune_experiment_run.html">Working with TuneExperiment and PromptTuner</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">Working with TuneExperiment and FineTuner</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pt_model_inference.html">Tuned Model Inference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="tune_experiment.html">Tune Experiment</a></li>
 </ul>
@@ -279,7 +279,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/pt_tune_experiment_run.rst.txt" title="View this page">
+  <a class="muted-link" href="_sources/ft_tune_experiment_run.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -299,14 +299,14 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="working-with-tuneexperiment-and-prompttuner">
-<h1>Working with TuneExperiment and PromptTuner<a class="headerlink" href="#working-with-tuneexperiment-and-prompttuner" title="Link to this heading">¶</a></h1>
+          <section id="working-with-tuneexperiment-and-finetuner">
+<h1>Working with TuneExperiment and FineTuner<a class="headerlink" href="#working-with-tuneexperiment-and-finetuner" title="Link to this heading">¶</a></h1>
 <p>The <a class="reference internal" href="tune_experiment.html#tune-experiment-class"><span class="std std-ref">TuneExperiment class</span></a> is responsible for creating experiments and scheduling tunings.
 All experiment results are stored automatically in your chosen Cloud Object Storage (COS) for SaaS or
 in the cluster’s file system for Cloud Pak for Data. Then the TuneExperiment feature can fetch the results and
 provide them directly to you for further use.</p>
-<section id="configure-prompttuner">
-<h2>Configure PromptTuner<a class="headerlink" href="#configure-prompttuner" title="Link to this heading">¶</a></h2>
+<section id="configure-finetuner">
+<h2>Configure FineTuner<a class="headerlink" href="#configure-finetuner" title="Link to this heading">¶</a></h2>
 <p>For an TuneExperiment object initialization, you need authentication credentials (for examples, see <a class="reference internal" href="setup.html"><span class="doc">Setup</span></a>) and the <code class="docutils literal notranslate"><span class="pre">project_id</span></code> or the <code class="docutils literal notranslate"><span class="pre">space_id</span></code>.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
@@ -319,19 +319,20 @@ provide them directly to you for further use.</p>
     <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;7ac03029-8bdd-4d5f-a561-2c4fd1e40705&quot;</span>
 <span class="p">)</span>
 
-<span class="n">prompt_tuner</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">prompt_tuner</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;prompt tuning name&quot;</span><span class="p">,</span>
-    <span class="n">task_id</span><span class="o">=</span><span class="n">experiment</span><span class="o">.</span><span class="n">Tasks</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="p">,</span>
-    <span class="n">base_model</span><span class="o">=</span><span class="n">ModelTypes</span><span class="o">.</span><span class="n">FLAN_T5_XL</span><span class="p">,</span>
-    <span class="n">accumulate_steps</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+<span class="n">fine_tuner</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">fine_tuner</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Fine Tuning name&#39;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Fine Tuning description&#39;</span><span class="p">,</span>
+    <span class="n">base_model</span><span class="o">=</span><span class="s1">&#39;meta-llama/Meta-Llama-3-8B&#39;</span><span class="p">,</span>
+    <span class="n">task_id</span><span class="o">=</span><span class="s2">&quot;generation,</span>
+    <span class="n">num_epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
     <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
-    <span class="n">max_input_tokens</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
-    <span class="n">max_output_tokens</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">num_epochs</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
-    <span class="n">tuning_type</span><span class="o">=</span><span class="n">experiment</span><span class="o">.</span><span class="n">PromptTuningTypes</span><span class="o">.</span><span class="n">PT</span><span class="p">,</span>
-    <span class="n">verbalizer</span><span class="o">=</span><span class="s2">&quot;Extract the satisfaction from the comment. Return simple &#39;1&#39; for satisfied customer or &#39;0&#39; for unsatisfied. Input: {{input}} Output: &quot;</span><span class="p">,</span>
-    <span class="n">auto_update_model</span><span class="o">=</span><span class="kc">True</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">max_seq_length</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+    <span class="n">accumulate_steps</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">verbalizer</span><span class="o">=</span><span class="s2">&quot;### Input: {{input}} ### Response: {{output}}&quot;</span><span class="p">,</span>
+    <span class="n">response_template</span><span class="o">=</span><span class="s2">&quot;### Response:&quot;</span><span class="p">,</span>
+    <span class="n">gpu</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;num&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="n">auto_update_model</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -339,45 +340,46 @@ provide them directly to you for further use.</p>
 <section id="get-configuration-parameters">
 <h2>Get configuration parameters<a class="headerlink" href="#get-configuration-parameters" title="Link to this heading">¶</a></h2>
 <p>To see the current configuration parameters, call the <code class="docutils literal notranslate"><span class="pre">get_params()</span></code> method.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config_parameters</span> <span class="o">=</span> <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">get_params</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config_parameters</span> <span class="o">=</span> <span class="n">fine_tuner</span><span class="o">.</span><span class="n">get_params</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">config_parameters</span><span class="p">)</span>
 <span class="p">{</span>
-    <span class="s1">&#39;base_model&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;model_id&#39;</span><span class="p">:</span> <span class="s1">&#39;google/flan-t5-xl&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;accumulate_steps&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
-    <span class="s1">&#39;batch_size&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+    <span class="s1">&#39;base_model&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;model_id&#39;</span><span class="p">:</span> <span class="s1">&#39;meta-llama/Meta-Llama-3-8B&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;task_id&#39;</span><span class="p">:</span> <span class="s1">&#39;generation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;num_epochs&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
     <span class="s1">&#39;learning_rate&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-    <span class="s1">&#39;max_input_tokens&#39;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
-    <span class="s1">&#39;max_output_tokens&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-    <span class="s1">&#39;num_epochs&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
-    <span class="s1">&#39;task_id&#39;</span><span class="p">:</span> <span class="s1">&#39;classification&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;tuning_type&#39;</span><span class="p">:</span> <span class="s1">&#39;prompt_tuning&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;verbalizer&#39;</span><span class="p">:</span> <span class="s2">&quot;Extract the satisfaction from the comment. Return simple &#39;1&#39; for satisfied customer or &#39;0&#39; for unsatisfied. Input: {{input}} Output: &quot;</span><span class="p">,</span>
-    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;prompt tuning name&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Prompt tuning with SDK&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;auto_update_model&#39;</span><span class="p">:</span> <span class="kc">True</span>
+    <span class="s1">&#39;batch_size&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s1">&#39;max_seq_length&#39;</span><span class="p">:</span> <span class="mi">1024</span><span class="p">,</span>
+    <span class="s1">&#39;accumulate_steps&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s1">&#39;verbalizer&#39;</span><span class="p">:</span> <span class="s1">&#39;### Input: {{input}} ### Response: {{output}}&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;response_template&#39;</span><span class="p">:</span> <span class="s1">&#39;### Response:&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;gpu&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;num&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Fine Tuning name&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Fine Tuning description&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;auto_update_model&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">&#39;group_by_name&#39;</span><span class="p">:</span> <span class="kc">False</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </section>
-<section id="run-prompt-tuning">
-<h2>Run prompt tuning<a class="headerlink" href="#run-prompt-tuning" title="Link to this heading">¶</a></h2>
+<section id="run-fine-tuning">
+<h2>Run fine tuning<a class="headerlink" href="#run-fine-tuning" title="Link to this heading">¶</a></h2>
 <p>To schedule a tuning experiment, call the <code class="docutils literal notranslate"><span class="pre">run()</span></code> method, which will trigger a training process. The <code class="docutils literal notranslate"><span class="pre">run()</span></code> method can be synchronous (<code class="docutils literal notranslate"><span class="pre">background_mode=False</span></code>) or asynchronous (<code class="docutils literal notranslate"><span class="pre">background_mode=True</span></code>).
 If you don’t want to wait for the training to end, invoke the async version. It immediately returns only run details.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers</span> <span class="kn">import</span> <span class="n">DataConnection</span><span class="p">,</span> <span class="n">ContainerLocation</span><span class="p">,</span> <span class="n">S3Location</span>
 
-<span class="n">tuning_details</span> <span class="o">=</span> <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+<span class="n">tuning_details</span> <span class="o">=</span> <span class="n">fine_tuner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
     <span class="n">training_data_references</span><span class="o">=</span><span class="p">[</span><span class="n">DataConnection</span><span class="p">(</span>
         <span class="n">connection_asset_id</span><span class="o">=</span><span class="n">connection_id</span><span class="p">,</span>
         <span class="n">location</span><span class="o">=</span><span class="n">S3Location</span><span class="p">(</span>
-            <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;prompt_tuning_data&#39;</span><span class="p">,</span>
-            <span class="n">path</span><span class="o">=</span><span class="s1">&#39;pt_train_data.json&#39;</span>
+            <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;fine_tuning_data&#39;</span><span class="p">,</span>
+            <span class="n">path</span><span class="o">=</span><span class="s1">&#39;ft_train_data.json&#39;</span>
         <span class="p">)</span>
     <span class="p">)],</span>
     <span class="n">background_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <span class="c1"># OR</span>
 
-<span class="n">tuning_details</span> <span class="o">=</span> <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+<span class="n">tuning_details</span> <span class="o">=</span> <span class="n">fine_tuner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
     <span class="n">training_data_references</span><span class="o">=</span><span class="p">[</span><span class="n">DataConnection</span><span class="p">(</span>
         <span class="n">data_asset_id</span><span class="o">=</span><span class="s1">&#39;5d99c11a-2060-4ef6-83d5-dc593c6455e2&#39;</span><span class="p">)</span>
     <span class="p">],</span>
@@ -385,7 +387,7 @@ If you don’t want to wait for the training to end, invoke the async version. I
 
 <span class="c1"># OR</span>
 
-<span class="n">tuning_details</span> <span class="o">=</span> <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+<span class="n">tuning_details</span> <span class="o">=</span> <span class="n">fine_tuner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
     <span class="n">training_data_references</span><span class="o">=</span><span class="p">[</span><span class="n">DataConnection</span><span class="p">(</span>
         <span class="n">location</span><span class="o">=</span><span class="n">ContainerLocation</span><span class="p">(</span><span class="s2">&quot;path_to_file.json&quot;</span><span class="p">))</span>
     <span class="p">],</span>
@@ -396,7 +398,7 @@ If you don’t want to wait for the training to end, invoke the async version. I
 <section id="get-run-status-get-run-details">
 <h2>Get run status, get run details<a class="headerlink" href="#get-run-status-get-run-details" title="Link to this heading">¶</a></h2>
 <p>If you use the <code class="docutils literal notranslate"><span class="pre">run()</span></code> method asynchronously, you can monitor the run details and status by using the following two methods:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">status</span> <span class="o">=</span> <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">get_run_status</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">status</span> <span class="o">=</span> <span class="n">fine_tuner</span><span class="o">.</span><span class="n">get_run_status</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
 <span class="s1">&#39;running&#39;</span>
 
@@ -404,55 +406,14 @@ If you don’t want to wait for the training to end, invoke the async version. I
 
 <span class="s1">&#39;completed&#39;</span>
 
-<span class="n">run_details</span> <span class="o">=</span> <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">get_run_details</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">run_details</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="s1">&#39;metadata&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;created_at&#39;</span><span class="p">:</span> <span class="s1">&#39;2023-10-12T12:01:40.662Z&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Prompt tuning with SDK&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;b3bc33b3-cb3f-49e7-9fb3-88c6c4d4f8d7&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;modified_at&#39;</span><span class="p">:</span> <span class="s1">&#39;2023-10-12T12:09:42.810Z&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;prompt tuning name&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;project_id&#39;</span><span class="p">:</span> <span class="s1">&#39;efa68764-5ec2-410a-bad9-982c502fbf4e&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;prompt_tuning&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;wx_prompt_tune.3c06a0db-3cb9-478c-9421-eaf05276a1b7&#39;</span><span class="p">]},</span>
-    <span class="s1">&#39;entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;auto_update_model&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Prompt tuning with SDK&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;model_id&#39;</span><span class="p">:</span> <span class="s1">&#39;d854752e-76a7-4c6d-b7db-5f84dd11e827&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;prompt tuning name&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;project_id&#39;</span><span class="p">:</span> <span class="s1">&#39;efa68764-5ec2-410a-bad9-982c502fbf4e&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;prompt_tuning&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;accumulate_steps&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
-    <span class="s1">&#39;base_model&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;model_id&#39;</span><span class="p">:</span> <span class="s1">&#39;google/flan-t5-xl&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;batch_size&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
-    <span class="s1">&#39;init_method&#39;</span><span class="p">:</span> <span class="s1">&#39;random&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;learning_rate&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-    <span class="s1">&#39;max_input_tokens&#39;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
-    <span class="s1">&#39;max_output_tokens&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-    <span class="s1">&#39;num_epochs&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
-    <span class="s1">&#39;num_virtual_tokens&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
-    <span class="s1">&#39;task_id&#39;</span><span class="p">:</span> <span class="s1">&#39;classification&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;tuning_type&#39;</span><span class="p">:</span> <span class="s1">&#39;prompt_tuning&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;verbalizer&#39;</span><span class="p">:</span> <span class="s2">&quot;Extract the satisfaction from the comment. Return simple &#39;1&#39; for satisfied customer or &#39;0&#39; for unsatisfied. Input: {{input}} Output: &quot;</span><span class="p">},</span>
-    <span class="s1">&#39;results_reference&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;connection&#39;</span><span class="p">:</span> <span class="p">{},</span>
-    <span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;default_tuning_output&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;training&#39;</span><span class="p">:</span> <span class="s1">&#39;default_tuning_output/b3bc33b3-cb3f-49e7-9fb3-88c6c4d4f8d7&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;training_status&#39;</span><span class="p">:</span> <span class="s1">&#39;default_tuning_output/b3bc33b3-cb3f-49e7-9fb3-88c6c4d4f8d7/training-status.json&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;model_request_path&#39;</span><span class="p">:</span> <span class="s1">&#39;default_tuning_output/b3bc33b3-cb3f-49e7-9fb3-88c6c4d4f8d7/assets/b3bc33b3-cb3f-49e7-9fb3-88c6c4d4f8d7/resources/wml_model/request.json&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;assets_path&#39;</span><span class="p">:</span> <span class="s1">&#39;default_tuning_output/b3bc33b3-cb3f-49e7-9fb3-88c6c4d4f8d7/assets&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;container&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;completed_at&#39;</span><span class="p">:</span> <span class="s1">&#39;2023-10-12T12:09:42.769Z&#39;</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="s1">&#39;completed&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;prompt_tuning&#39;</span><span class="p">],</span>
-    <span class="s1">&#39;training_data_references&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;connection&#39;</span><span class="p">:</span> <span class="p">{},</span>
-        <span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;href&#39;</span><span class="p">:</span> <span class="s1">&#39;/v2/assets/90258b10-5590-4d4c-be75-5eeeccf09076&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;90258b10-5590-4d4c-be75-5eeeccf09076&#39;</span><span class="p">},</span>
-        <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;data_asset&#39;</span><span class="p">}]}</span>
-<span class="p">}</span>
+<span class="n">run_details</span> <span class="o">=</span> <span class="n">fine_tuner</span><span class="o">.</span><span class="n">get_run_details</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
 <section id="get-data-connections">
 <h2>Get data connections<a class="headerlink" href="#get-data-connections" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">data_connections</span></code> list contains all the training connections that you referenced while calling the <code class="docutils literal notranslate"><span class="pre">run()</span></code> method.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data_connections</span> <span class="o">=</span> <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">get_data_connections</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data_connections</span> <span class="o">=</span> <span class="n">fine_tuner</span><span class="o">.</span><span class="n">get_data_connections</span><span class="p">()</span>
 
 <span class="c1"># Get data in binary format</span>
 <span class="n">binary_data</span> <span class="o">=</span> <span class="n">data_connections</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">binary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -462,12 +423,12 @@ If you don’t want to wait for the training to end, invoke the async version. I
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
 <p>You can see details of models in the form of a summary table. The output type is a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> with model names, enhancements, the base model, an auto update option, the number of epochs used, and the last loss function value.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">fine_tuner</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 
-<span class="c1">#                           Enhancements            Base model  ...         loss</span>
+<span class="c1">#                           Enhancements                    Base model  ...         loss</span>
 <span class="c1">#        Model Name</span>
-<span class="c1">#  Prompt_tuned_M_1      [prompt_tuning]     google/flan-t5-xl  ...     0.449197</span>
+<span class="c1">#  model_fe09247...        [fine tuning]    meta-llama/Meta-Llama-3-8B  ...     5.433459</span>
 </pre></div>
 </div>
 </section>
@@ -478,7 +439,7 @@ If you don’t want to wait for the training to end, invoke the async version. I
 <p>Available only for Jupyter notebooks.</p>
 </div>
 <p>To see graphically how the tuning was performed, you can view learning curve graphs.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prompt_tuner</span><span class="o">.</span><span class="n">plot_learning_curve</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fine_tuner</span><span class="o">.</span><span class="n">plot_learning_curve</span><span class="p">()</span>
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="_images/learning_curves.png"><img alt="_images/learning_curves.png" class="align-center" src="_images/learning_curves.png" style="width: 600px;" /></a>
@@ -490,7 +451,7 @@ If you don’t want to wait for the training to end, invoke the async version. I
 <p>The model identifier will be available only if the tuning was scheduled first and the <code class="docutils literal notranslate"><span class="pre">auto_update_model</span></code> parameter was set as <code class="docutils literal notranslate"><span class="pre">True</span></code>, which is the default value.</p>
 </div>
 <p>To get the <code class="docutils literal notranslate"><span class="pre">model_id</span></code>, call the get_model_id method.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_id</span> <span class="o">=</span> <span class="n">prompt_tuner</span><span class="o">.</span><span class="n">get_model_id</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_id</span> <span class="o">=</span> <span class="n">fine_tuner</span><span class="o">.</span><span class="n">get_model_id</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
 <span class="s1">&#39;d854752e-76a7-4c6d-b7db-5f84dd11e827&#39;</span>
 </pre></div>
@@ -505,23 +466,23 @@ For more information, see the next section: <a class="reference internal" href="
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="ft_tune_experiment_run.html">
+          <a class="next-page" href="pt_model_inference.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Working with TuneExperiment and FineTuner</div>
+                <div class="title">Tuned Model Inference</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="prompt_tuner.html">
+          <a class="prev-page" href="pt_tune_experiment_run.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Tuning</div>
+                <div class="title">Working with TuneExperiment and PromptTuner</div>
                 
               </div>
             </a>
@@ -555,10 +516,10 @@ For more information, see the next section: <a class="reference internal" href="
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Working with TuneExperiment and PromptTuner</a><ul>
-<li><a class="reference internal" href="#configure-prompttuner">Configure PromptTuner</a></li>
+<li><a class="reference internal" href="#">Working with TuneExperiment and FineTuner</a><ul>
+<li><a class="reference internal" href="#configure-finetuner">Configure FineTuner</a></li>
 <li><a class="reference internal" href="#get-configuration-parameters">Get configuration parameters</a></li>
-<li><a class="reference internal" href="#run-prompt-tuning">Run prompt tuning</a></li>
+<li><a class="reference internal" href="#run-fine-tuning">Run fine tuning</a></li>
 <li><a class="reference internal" href="#get-run-status-get-run-details">Get run status, get run details</a></li>
 <li><a class="reference internal" href="#get-data-connections">Get data connections</a></li>
 <li><a class="reference internal" href="#summary">Summary</a></li>

@@ -1,63 +1,59 @@
 LangChain
----------
+=========
 
 IBM integration with LangChain is available under `IBM and LangChain integration documentation <https://python.langchain.com/docs/integrations/providers/ibm>`_.
 
+.. note::
+    The ``langchain_ibm==0.3.x`` package relies on version ``0.3.x`` of the ``langchain_core`` package.
 
-.. autoclass:: langchain_ibm.WatsonxLLM
-    :members:
-    :exclude-members: Config, is_lc_serializable, lc_secrets, validate_environment
+    For detailed migration instructions, please refer to the documentation `LangChain v0.3 <https://python.langchain.com/docs/versions/v0_3/>`_
 
 
-Example of using **SimpleSequentialChain**:
+Installation and Setup
+----------------------
+
+Install the integration package with
+
+.. code-block::
+
+    pip install -qU langchain-ibm
+
+Get an IBM watsonx.ai api key and set it as an environment variable (``WATSONX_APIKEY``)
+
+.. code-block:: python
+
+    import os
+
+    os.environ["WATSONX_APIKEY"] = "your IBM watsonx.ai api key"
+
+Chat Model
+----------
+
+See a `usage example <https://python.langchain.com/docs/integrations/chat/ibm_watsonx/>`_
+
+.. code-block:: python
+
+    from langchain_ibm import ChatWatsonx
+
+LLMs
+----
+
+See a `usage example <https://python.langchain.com/docs/integrations/llms/ibm_watsonx/>`_
 
 .. code-block:: python
 
     from langchain_ibm import WatsonxLLM
-    from ibm_watsonx_ai import Credentials
-    from ibm_watsonx_ai.foundation_models import ModelInference
-    from ibm_watsonx_ai.foundation_models.utils.enums import ModelTypes, DecodingMethods
-    from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
 
-    from langchain_core.prompts import PromptTemplate
-    from langchain.chains import LLMChain, SimpleSequentialChain
+Embedding Models
+----------------
 
-    params = {
-        GenParams.MAX_NEW_TOKENS: 100,
-        GenParams.MIN_NEW_TOKENS: 1,
-        GenParams.DECODING_METHOD: DecodingMethods.SAMPLE,
-        GenParams.TEMPERATURE: 0.5,
-        GenParams.TOP_K: 50,
-        GenParams.TOP_P: 1
-    }
-    credentials = Credentials(
-                      url = "https://us-south.ml.cloud.ibm.com",
-                      api_key = "***********"
-                     )
-    project = "*****"
+See a `usage example <https://python.langchain.com/docs/integrations/text_embedding/ibm_watsonx/>`_
 
-    pt1 = PromptTemplate(
-        input_variables=["topic"],
-        template="Generate a random question about {topic}: Question: ")
-    pt2 = PromptTemplate(
-        input_variables=["question"],
-        template="Answer the following question: {question}")
+.. code-block:: python
 
-    flan_ul2_model = ModelInference(
-        model_id='google/flan-ul2',
-        credentials=credentials,
-        params=params,
-        project_id=project_id)
-    flan_ul2_llm = WatsonxLLM(watsonx_model=flan_ul2_model)
+    from langchain_ibm import WatsonxEmbeddings
 
-    flan_t5_model = ModelInference(
-        model_id="google/flan-t5-xxl",
-        credentials=credentials,
-        project_id=project_id)
-    flan_t5_llm = WatsonxLLM(watsonx_model=flan_t5_model)
+API reference
+-------------
 
-    prompt_to_flan_ul2 = LLMChain(llm=flan_ul2_llm, prompt=pt1)
-    flan_ul2_to_flan_t5 = LLMChain(llm=flan_t5_llm, prompt=pt2)
-
-    qa = SimpleSequentialChain(chains=[prompt_to_flan_ul2, flan_ul2_to_flan_t5], verbose=True)
-    qa.run("cat")
+For detailed documentation of all IBM watsonx.ai features and configurations head to the API reference: `langchain-ibm <https://python.langchain.com/api_reference/ibm/index.html>`_

@@ -24,18 +24,42 @@ This section describes methods for working with deployments. Before you begin, c
 
 To create a deployment with specific parameters, call the following lines:
 
-.. code-block:: python
+.. tab-set::
 
-    from datetime import datetime
+    .. tab-item:: Prompt Tuning
 
-    model_id = prompt_tuner.get_model_id()
+        .. code-block:: python
 
-    meta_props = {
-        client.deployments.ConfigurationMetaNames.NAME: "PT DEPLOYMENT SDK - project",
-        client.deployments.ConfigurationMetaNames.ONLINE: {},
-        client.deployments.ConfigurationMetaNames.SERVING_NAME : f"pt_sdk_deployment_{datetime.utcnow().strftime('%Y_%m_%d_%H%M%S')}"
-    }
-    deployment_details = client.deployments.create(model_id, meta_props)
+            from datetime import datetime
+
+            model_id = prompt_tuner.get_model_id()
+
+            meta_props = {
+                client.deployments.ConfigurationMetaNames.NAME: "PT DEPLOYMENT SDK - project",
+                client.deployments.ConfigurationMetaNames.ONLINE: {},
+                client.deployments.ConfigurationMetaNames.SERVING_NAME : f"pt_sdk_deployment_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}"
+            }
+            deployment_details = client.deployments.create(model_id, meta_props)
+
+    .. tab-item:: Fine Tuning
+
+        .. code-block:: python
+
+            from datetime import datetime
+
+            model_id = fine_tuner.get_model_id()
+            hw_spec_id = client.hardware_specifications.get_id_by_name("WX-S")
+
+            meta_props = {
+                client.deployments.ConfigurationMetaNames.NAME: "FT DEPLOYMENT SDK - project",
+                client.deployments.ConfigurationMetaNames.ONLINE: {},
+                client.deployments.ConfigurationMetaNames.SERVING_NAME : f"ft_sdk_deployment_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}",
+                client.deployments.ConfigurationMetaNames.HARDWARE_SPEC: {
+                    "id": hw_spec_id,
+                    "num_nodes": 1
+                }
+            }
+            deployment_details = client.deployments.create(model_id, meta_props)
 
 To get a deployment_id from details, use the ``id`` from ``metadata``.
 
