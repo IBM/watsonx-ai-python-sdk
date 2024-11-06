@@ -228,8 +228,8 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../foundation_models.html">Foundation Models</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Foundation Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_embeddings.html">Embeddings</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_model_inference.html">ModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
 </li>
@@ -243,6 +243,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../fm_extensions.html">Extensions</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Extensions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_extensions_langchain.html">LangChain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../fm_extensions_llamaindex.html">LlamaIndex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_extensions_rag.html">RAG</a></li>
 </ul>
 </li>
@@ -325,6 +326,7 @@
     <span class="n">WMLClientError</span><span class="p">,</span>
     <span class="n">MissingValue</span><span class="p">,</span>
     <span class="n">InvalidValue</span><span class="p">,</span>
+    <span class="n">ApiRequestFailure</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.href_definitions</span> <span class="kn">import</span> <span class="n">is_id</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
@@ -359,7 +361,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">Small</span> <span class="o">=</span> <span class="s2">&quot;gpu_s&quot;</span>
-        <span class="n">Medium</span> <span class="o">=</span> <span class="s2">&quot;gpu_m&quot;</span></div>
+        <span class="n">Medium</span> <span class="o">=</span> <span class="s2">&quot;gpu_m&quot;</span>
+        <span class="n">Large</span> <span class="o">=</span> <span class="s2">&quot;gpu_l&quot;</span></div>
 
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">):</span>
@@ -2349,6 +2352,82 @@
             <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">,</span>
             <span class="n">validate_prompt_variables</span><span class="o">=</span><span class="n">validate_prompt_variables</span><span class="p">,</span>
         <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Deployments.run_ai_service">
+<a class="viewcode-back" href="../../core_api.html#client.Deployments.run_ai_service">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_ai_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ai_service_payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute an AI service by providing a scoring payload.</span>
+
+<span class="sd">        :param deployment_id: unique ID of the deployment</span>
+<span class="sd">        :type deployment_id: str</span>
+
+<span class="sd">        :param ai_service_payload: AI service payload to be passed to generate the method</span>
+<span class="sd">        :type ai_service_payload: dict</span>
+
+<span class="sd">        :return: response of the AI service</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;deployment_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">ai_service_payload</span><span class="p">,</span> <span class="s2">&quot;ai_service_payload&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">scoring_url</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployment_href</span><span class="p">(</span>
+                <span class="n">deployment_id</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="s2">&quot;/ai_service&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">response_scoring</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">scoring_url</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">ai_service_payload</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>  <span class="c1"># version parameter is mandatory</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;AI Service run&quot;</span><span class="p">,</span> <span class="n">response_scoring</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Deployments.run_ai_service_stream">
+<a class="viewcode-back" href="../../core_api.html#client.Deployments.run_ai_service_stream">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_ai_service_stream</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ai_service_payload</span><span class="p">:</span> <span class="nb">dict</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute an AI service by providing a scoring payload.</span>
+
+<span class="sd">        :param deployment_id: unique ID of the deployment</span>
+<span class="sd">        :type deployment_id: str</span>
+
+<span class="sd">        :param ai_service_payload: AI service payload to be passed to generate the method</span>
+<span class="sd">        :type ai_service_payload: dict</span>
+
+<span class="sd">        :return: response of the AI service</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;deployment_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">ai_service_payload</span><span class="p">,</span> <span class="s2">&quot;ai_service_payload&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">scoring_url</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployment_href</span><span class="p">(</span>
+                <span class="n">deployment_id</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="s2">&quot;/ai_service_stream&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">scoring_url</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">ai_service_payload</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(</span><span class="n">skip_for_create</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_userfs</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">iter_lines</span><span class="p">(</span><span class="n">decode_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="s2">&quot;data: &quot;</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">:</span>
+                        <span class="n">response</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;data: &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="k">yield</span> <span class="n">response</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ApiRequestFailure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failure during AI Service run steam&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span></div>
 </div>
 
 
@@ -2356,24 +2435,105 @@
 <span class="c1">### Definition of Runtime Context</span>
 
 
+<div class="viewcode-block" id="RuntimeContext">
+<a class="viewcode-back" href="../../core_api.html#client.RuntimeContext">[docs]</a>
 <span class="k">class</span> <span class="nc">RuntimeContext</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class included to keep the interface compatible with the Deployment&#39;s RuntimeContext</span>
+<span class="sd">    used in AIServices implementation.</span>
+
+<span class="sd">    :param api_client: initialized APIClient object with a set project ID or space ID. If passed, ``credentials`` and ``project_id``/``space_id`` are not required.</span>
+<span class="sd">    :type api_client: APIClient</span>
+
+<span class="sd">    :param request_payload_json: Request payload for testing of generate/ generate_stream call of AI Service.</span>
+<span class="sd">    :type request_payload_json: dict, optional</span>
+
+<span class="sd">    ``</span>
+<span class="sd">    RuntimeContext`` initialized for testing purposes before deployment:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        context = RuntimeContext(api_client=client, request_payload_json={&quot;field&quot;: &quot;value&quot;})</span>
+
+<span class="sd">    Examples of ``RuntimeContext`` usage within AI Service source code:</span>
+
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        def deployable_ai_service(context, **custom):</span>
+<span class="sd">            task_token = context.generate_token()</span>
+
+<span class="sd">            def generate(context) -&gt; dict:</span>
+<span class="sd">                user_token = context.get_token()</span>
+<span class="sd">                headers = context.get_headers()</span>
+<span class="sd">                json_body = context.get_json()</span>
+<span class="sd">                ...</span>
+<span class="sd">                return {&quot;body&quot;: json_body}</span>
+
+<span class="sd">            return generate</span>
+
+<span class="sd">        generate = deployable_ai_service(context)</span>
+<span class="sd">        generate_output = generate(context)  # returns {&quot;body&quot;: {&quot;field&quot;: &quot;value&quot;}}</span>
+
+
+<span class="sd">    Change the JSON body in ``RuntimeContext``:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        context.request_payload_json = {&quot;field2&quot;: &quot;value2&quot;}</span>
+
+<span class="sd">        generate = deployable_ai_service(context)</span>
+<span class="sd">        generate_output = generate(context)  # returns {&quot;body&quot;: {&quot;field2&quot;: &quot;value2&quot;}}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">request_payload_json</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="o">=</span> <span class="n">api_client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request_payload_json</span> <span class="o">=</span> <span class="n">request_payload_json</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">request_payload_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_payload_json</span>
+
+    <span class="nd">@request_payload_json</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">request_payload_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">json_value</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidValue</span><span class="p">(</span><span class="s2">&quot;request_payload_json&quot;</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_payload_json</span> <span class="o">=</span> <span class="n">json_value</span>
+
+<div class="viewcode-block" id="RuntimeContext.get_token">
+<a class="viewcode-back" href="../../core_api.html#client.RuntimeContext.get_token">[docs]</a>
     <span class="k">def</span> <span class="nf">get_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return user token.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_token</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="RuntimeContext.generate_token">
+<a class="viewcode-back" href="../../core_api.html#client.RuntimeContext.generate_token">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return refreshed token.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">_get_icptoken</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">_get_icptoken</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">get_request_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+
+<div class="viewcode-block" id="RuntimeContext.get_headers">
+<a class="viewcode-back" href="../../core_api.html#client.RuntimeContext.get_headers">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return headers with refreshed token&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">set_response_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set response headers.</span>
 
-<span class="sd">        Even if you locally test this method to do nothing, it is still included to keep the interface compatible with the Deployment&#39;s RuntimeContext.</span>
+<div class="viewcode-block" id="RuntimeContext.get_json">
+<a class="viewcode-back" href="../../core_api.html#client.RuntimeContext.get_json">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get payload JSON send in body of API request to the generate or generate_stream method in deployed AIService.</span>
+<span class="sd">        For testing purposes the payload JSON need to be set in RuntimeContext initialization</span>
+<span class="sd">        or later as request_payload_json property.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_payload_json</span></div>
+</div>
+
 </pre></div>
         </article>
       </div>

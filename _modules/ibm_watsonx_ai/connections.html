@@ -228,8 +228,8 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../foundation_models.html">Foundation Models</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Foundation Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_embeddings.html">Embeddings</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_model_inference.html">ModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
 </li>
@@ -243,6 +243,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../fm_extensions.html">Extensions</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Extensions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_extensions_langchain.html">LangChain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../fm_extensions_llamaindex.html">LlamaIndex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_extensions_rag.html">RAG</a></li>
 </ul>
 </li>
@@ -308,7 +309,11 @@
 <span class="kn">import</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="k">as</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.messages.messages</span> <span class="kn">import</span> <span class="n">Messages</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">ConnectionMetaNames</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span><span class="p">,</span> <span class="n">UnsupportedOperation</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">WMLClientError</span><span class="p">,</span>
+    <span class="n">UnsupportedOperation</span><span class="p">,</span>
+    <span class="n">ApiRequestFailure</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -574,12 +579,31 @@
             <span class="n">json</span><span class="o">=</span><span class="n">connection_meta</span><span class="p">,</span>
             <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
         <span class="p">)</span>
-        <span class="n">connection_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
-            <span class="mi">201</span><span class="p">,</span>
-            <span class="s2">&quot;creating new connection&quot;</span><span class="p">,</span>
-            <span class="n">creation_response</span><span class="p">,</span>
-            <span class="n">_silent_response_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">connection_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                <span class="mi">201</span><span class="p">,</span>
+                <span class="s2">&quot;creating new connection&quot;</span><span class="p">,</span>
+                <span class="n">creation_response</span><span class="p">,</span>
+                <span class="n">_silent_response_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">ApiRequestFailure</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">creation_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span><span class="p">:</span>
+                <span class="n">datasource_type_id</span> <span class="o">=</span> <span class="n">connection_meta</span><span class="p">[</span><span class="s2">&quot;datasource_type&quot;</span><span class="p">]</span>
+                <span class="n">datasource_type_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_datasource_type_details_by_id</span><span class="p">(</span>
+                    <span class="n">datasource_type_id</span><span class="p">,</span> <span class="n">connection_properties</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="n">connection_properties</span> <span class="o">=</span> <span class="n">datasource_type_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span>
+                    <span class="s2">&quot;connection&quot;</span>
+                <span class="p">]</span>
+                <span class="n">properties_names</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">conn_property</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">conn_property</span> <span class="ow">in</span> <span class="n">connection_properties</span>
+                <span class="p">]</span>
+                <span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Incorrect connection properties for datasource type id: </span><span class="si">{</span><span class="n">datasource_type_id</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;The following properties are correct: </span><span class="si">{</span><span class="n">properties_names</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
         <span class="k">if</span> <span class="n">creation_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;success&quot;</span><span class="p">))</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_required_element_from_response</span><span class="p">(</span><span class="n">connection_details</span><span class="p">)</span>

@@ -229,8 +229,8 @@
 <li class="toctree-l2 current has-children"><a class="reference internal" href="foundation_models.html">Foundation Models</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Foundation Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="fm_embeddings.html">Embeddings</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="fm_model_inference.html">ModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
 </li>
@@ -244,6 +244,7 @@
 <li class="toctree-l3"><a class="reference internal" href="prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="fm_extensions.html">Extensions</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Extensions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="fm_extensions_langchain.html">LangChain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fm_extensions_llamaindex.html">LlamaIndex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="fm_extensions_rag.html">RAG</a></li>
 </ul>
 </li>
@@ -380,8 +381,8 @@ To see how to create a COS connection, refer to <a class="reference internal" hr
 <h3>Deploy the custom foundation model<a class="headerlink" href="#deploy-the-custom-foundation-model" title="Link to this heading">¶</a></h3>
 <p>To create a new deployment of a custom foundation model, you need to define a dictionary with deployment <code class="docutils literal notranslate"><span class="pre">metadata</span></code>.
 Specify the deployment <code class="docutils literal notranslate"><span class="pre">NAME</span></code>, <code class="docutils literal notranslate"><span class="pre">DESCRIPTION</span></code> and <code class="docutils literal notranslate"><span class="pre">HARDWARE_REQUEST</span></code> fields, and the <code class="docutils literal notranslate"><span class="pre">size</span></code> and <code class="docutils literal notranslate"><span class="pre">num_nodes</span></code> of the requested hardware.
-For size, enter <code class="docutils literal notranslate"><span class="pre">client.deployments.HardwareRequestSizes.Small</span></code> or <code class="docutils literal notranslate"><span class="pre">client.deployments.HardwareRequestSizes.Medium</span></code>.
-For the <code class="docutils literal notranslate"><span class="pre">num_nodes</span></code> fields, provide a number.</p>
+For <code class="docutils literal notranslate"><span class="pre">size</span></code>, enter <code class="docutils literal notranslate"><span class="pre">client.deployments.HardwareRequestSizes.Small</span></code>, <code class="docutils literal notranslate"><span class="pre">client.deployments.HardwareRequestSizes.Medium</span></code> or <code class="docutils literal notranslate"><span class="pre">client.deployments.HardwareRequestSizes.Large</span></code>.
+For the <code class="docutils literal notranslate"><span class="pre">num_nodes</span></code> field, provide a number.</p>
 <p>Only online deployments are supported, so the <code class="docutils literal notranslate"><span class="pre">ONLINE</span></code> field is required.</p>
 <p>Optional: At this stage, you can overwrite model parameters. To overwrite them, pass a dictionary with new parameters values in the <code class="docutils literal notranslate"><span class="pre">FOUNDATION_MODEL</span></code> field.</p>
 <p>You also need to provide the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the stored model asset to create the deployment.</p>
@@ -392,6 +393,7 @@ For the <code class="docutils literal notranslate"><span class="pre">num_nodes</
     <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">HARDWARE_REQUEST</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">HardwareRequestSizes</span><span class="o">.</span><span class="n">Small</span><span class="p">,</span>
         <span class="c1"># or &#39;size&#39;: client.deployments.HardwareRequestSizes.Medium</span>
+        <span class="c1"># or &#39;size&#39;: client.deployments.HardwareRequestSizes.Large</span>
         <span class="s1">&#39;num_nodes&#39;</span><span class="p">:</span> <span class="mi">1</span>
     <span class="p">},</span>
     <span class="c1"># optionally overwrite model parameters here</span>

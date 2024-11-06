@@ -228,8 +228,8 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../foundation_models.html">Foundation Models</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Foundation Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_embeddings.html">Embeddings</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_model_inference.html">ModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
 </li>
@@ -243,6 +243,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../fm_extensions.html">Extensions</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Extensions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_extensions_langchain.html">LangChain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../fm_extensions_llamaindex.html">LlamaIndex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_extensions_rag.html">RAG</a></li>
 </ul>
 </li>
@@ -310,6 +311,7 @@
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.experiments</span> <span class="kn">import</span> <span class="n">Experiments</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.functions</span> <span class="kn">import</span> <span class="n">Functions</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.ai_services</span> <span class="kn">import</span> <span class="n">AIServices</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.libs.repo.mlrepositoryclient</span> <span class="kn">import</span> <span class="n">MLRepositoryClient</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.lifecycle</span> <span class="kn">import</span> <span class="n">SpecStates</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.messages.messages</span> <span class="kn">import</span> <span class="n">Messages</span>
@@ -823,7 +825,7 @@
 <span class="sd">        :return: metadata of the stored artifact(s)</span>
 <span class="sd">        :rtype:</span>
 <span class="sd">            - dict (if artifact_id is not None)</span>
-<span class="sd">            - {&quot;models&quot;: dict, &quot;experiments&quot;: dict, &quot;pipeline&quot;: dict, &quot;functions&quot;: dict} (if artifact_id is None)</span>
+<span class="sd">            - {&quot;models&quot;: dict, &quot;experiments&quot;: dict, &quot;pipeline&quot;: dict, &quot;functions&quot;: dict, &quot;ai_service&quot;: dict} (if artifact_id is None)</span>
 
 <span class="sd">        **Examples**</span>
 
@@ -1519,6 +1521,96 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">promote</span><span class="p">(</span>
             <span class="n">model_id</span><span class="p">,</span> <span class="n">source_project_id</span><span class="p">,</span> <span class="n">target_space_id</span>
         <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.store_ai_service">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.store_ai_service">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">AIServices</span><span class="o">.</span><span class="n">store</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">store_ai_service</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">ai_service</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_ai_services</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">ai_service</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_ai_service_details">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_ai_service_details">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">AIServices</span><span class="o">.</span><span class="n">get_details</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_ai_service_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ai_service_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">spec_state</span><span class="p">:</span> <span class="n">SpecStates</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ai_service_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_ai_services</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+            <span class="n">ai_service_id</span><span class="o">=</span><span class="n">ai_service_id</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+            <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
+            <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+            <span class="n">spec_state</span><span class="o">=</span><span class="n">spec_state</span><span class="p">,</span>
+            <span class="n">ai_service_name</span><span class="o">=</span><span class="n">ai_service_name</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.update_ai_service">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.update_ai_service">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">AIServices</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">update_ai_service</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ai_service_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">changes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">update_ai_service</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_ai_services</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="n">ai_service_id</span><span class="p">,</span> <span class="n">changes</span><span class="p">,</span> <span class="n">update_ai_service</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_ai_service_id">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_ai_service_id">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">AIServices</span><span class="o">.</span><span class="n">get_id</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_ai_service_id</span><span class="p">(</span><span class="n">ai_service_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">AIServices</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">ai_service_details</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.list_ai_services">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.list_ai_services">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">AIServices</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">list_ai_services</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_ai_services</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.create_ai_service_revision">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.create_ai_service_revision">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">AIServices</span><span class="o">.</span><span class="n">create_revision</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">create_ai_service_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ai_service_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_ai_services</span><span class="o">.</span><span class="n">create_revision</span><span class="p">(</span>
+            <span class="n">ai_service_id</span><span class="o">=</span><span class="n">ai_service_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.get_ai_service_revision_details">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.get_ai_service_revision_details">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">AIServices</span><span class="o">.</span><span class="n">get_revision_details</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_ai_service_revision_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">ai_service_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_ai_services</span><span class="o">.</span><span class="n">get_revision_details</span><span class="p">(</span>
+            <span class="n">ai_service_id</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Repository.list_ai_service_revisions">
+<a class="viewcode-back" href="../../core_api.html#client.Repository.list_ai_service_revisions">[docs]</a>
+    <span class="nd">@inherited_docstring</span><span class="p">(</span><span class="n">AIServices</span><span class="o">.</span><span class="n">list_revisions</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">list_ai_service_revisions</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">ai_service_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_ai_services</span><span class="o">.</span><span class="n">list_revisions</span><span class="p">(</span><span class="n">ai_service_id</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

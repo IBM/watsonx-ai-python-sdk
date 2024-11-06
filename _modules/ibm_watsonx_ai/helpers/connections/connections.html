@@ -228,8 +228,8 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../foundation_models.html">Foundation Models</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Foundation Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_embeddings.html">Embeddings</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_model_inference.html">ModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
 </li>
@@ -243,6 +243,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../fm_extensions.html">Extensions</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Extensions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_extensions_langchain.html">LangChain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../fm_extensions_llamaindex.html">LlamaIndex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_extensions_rag.html">RAG</a></li>
 </ul>
 </li>
@@ -349,6 +350,8 @@
     <span class="n">NotExistingCOSResource</span><span class="p">,</span>
     <span class="n">CannotReadSavedRemoteDataBeforeFit</span><span class="p">,</span>
     <span class="n">NoAutomatedHoldoutSplit</span><span class="p">,</span>
+    <span class="n">DirectoryHasNoFilename</span><span class="p">,</span>
+    <span class="n">CannotGetFilename</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">all_logging_disabled</span><span class="p">,</span>
@@ -363,6 +366,7 @@
 <span class="kn">from</span> <span class="nn">.base_connection</span> <span class="kn">import</span> <span class="n">BaseConnection</span>
 <span class="kn">from</span> <span class="nn">.base_data_connection</span> <span class="kn">import</span> <span class="n">BaseDataConnection</span>
 <span class="kn">from</span> <span class="nn">.base_location</span> <span class="kn">import</span> <span class="n">BaseLocation</span>
+<span class="kn">from</span> <span class="nn">.flight_service</span> <span class="kn">import</span> <span class="n">FlightConnection</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.workspace</span> <span class="kn">import</span> <span class="n">WorkSpace</span>
@@ -621,6 +625,53 @@
 
 
     <span class="k">def</span> <span class="nf">_get_file_paths_from_bucket</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns file paths (keys) of objects that are stored at a bucket location.</span>
+
+<span class="sd">        Returns all file paths under the ``self.location.get_location()`` prefix.</span>
+<span class="sd">        First checks if the prefix exists as a bucket &quot;directory&quot; - if not, treats prefix as the file name.</span>
+
+<span class="sd">        :return: list of file names (keys) of objects in a bucket location</span>
+<span class="sd">        :rtype: list[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+
+        <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.data_loaders.datasets.tabular</span> <span class="kn">import</span> <span class="n">TabularIterableDataset</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">flight_parameters</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">TabularIterableDataset</span><span class="o">.</span><span class="n">_update_params_with_connection_properties</span><span class="p">(</span>
+                    <span class="n">connection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+                    <span class="n">flight_parameters</span><span class="o">=</span><span class="p">{},</span>
+                    <span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">conn</span> <span class="o">=</span> <span class="n">FlightConnection</span><span class="p">(</span>
+                <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+                <span class="n">sampling_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">learning_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">connection_id</span><span class="o">=</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">),</span>
+                <span class="n">flight_parameters</span><span class="o">=</span><span class="n">flight_parameters</span><span class="p">,</span>
+                <span class="n">params</span><span class="o">=</span><span class="p">{},</span>
+                <span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">default_project_id</span><span class="p">,</span>
+                <span class="n">space_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">default_space_id</span><span class="p">,</span>
+                <span class="n">_api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">r</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">conn</span><span class="o">.</span><span class="n">discovery</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)[</span><span class="s2">&quot;assets&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;file&quot;</span>
+            <span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Flight discovery didn&#39;t work, error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_paths_from_bucket_fallback</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_file_paths_from_bucket_fallback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns file paths (keys) of objects that are stored at a bucket location.</span>
 
 <span class="sd">        Returns all file paths under the ``self.location.get_location()`` prefix.</span>
@@ -1477,7 +1528,7 @@
                     <span class="p">)</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">FS</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_training_data_from_file_system</span><span class="p">()</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_training_data_from_file_system</span><span class="p">(</span><span class="n">binary</span><span class="o">=</span><span class="n">binary</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">CA</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">CN</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span>
@@ -1899,6 +1950,28 @@
                     <span class="n">remote_name</span><span class="o">=</span><span class="n">remote_name</span><span class="p">,</span>
                     <span class="n">flight_parameters</span><span class="o">=</span><span class="n">flight_parameters</span><span class="p">,</span>
                     <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">FS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_data</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_upload_data_to_file_system</span><span class="p">(</span>
+                        <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+                        <span class="n">data</span><span class="o">=</span><span class="n">file_data</span><span class="p">,</span>
+                        <span class="n">remote_name</span><span class="o">=</span><span class="n">remote_name</span><span class="p">,</span>
+                    <span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">):</span>
+                <span class="n">buffer</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_upload_data_to_file_system</span><span class="p">(</span>
+                    <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+                    <span class="n">data</span><span class="o">=</span><span class="n">io</span><span class="o">.</span><span class="n">BufferedReader</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span>
+                    <span class="n">remote_name</span><span class="o">=</span><span class="n">remote_name</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s1">&#39;data should be either of type &quot;str&quot; or &quot;pandas.DataFrame&quot;&#39;</span>
                 <span class="p">)</span></div>
 
 
@@ -1992,7 +2065,45 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">binary</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span></div>
-</div>
+
+
+    <span class="k">def</span> <span class="nf">_get_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get file name of the file in data connection, if applicable.</span>
+
+<span class="sd">        :return: file name</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Examples**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            document_reference = DataConnection(</span>
+<span class="sd">                connection_asset_id=&quot;&lt;connection_id&gt;&quot;,</span>
+<span class="sd">                location=S3Location(bucket=&quot;&lt;bucket_name&gt;&quot;, path=&quot;path/to/file&quot;),</span>
+<span class="sd">                )</span>
+<span class="sd">            filename = document_reference._get_filename()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">AssetLocation</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span>
+                    <span class="s2">&quot;API client missing. Please initialize API client and pass it to &quot;</span>
+                    <span class="s2">&quot;DataConnection._api_client property to be able to use this functionality.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">asset_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">data_assets</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">asset_details</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;resource_key&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="s2">&quot;file_name&quot;</span><span class="p">):</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">file_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">or</span> <span class="n">filename</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DirectoryHasNoFilename</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">filename</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">):</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">or</span> <span class="n">filename</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DirectoryHasNoFilename</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">filename</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CannotGetFilename</span><span class="p">()</span></div>
 
 
 

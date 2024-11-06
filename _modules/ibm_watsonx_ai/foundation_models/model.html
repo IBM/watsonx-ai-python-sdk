@@ -228,8 +228,8 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../foundation_models.html">Foundation Models</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Foundation Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../fm_embeddings.html">Embeddings</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../fm_model_inference.html">ModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
 </li>
@@ -243,6 +243,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../fm_extensions.html">Extensions</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Extensions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../fm_extensions_langchain.html">LangChain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../fm_extensions_llamaindex.html">LlamaIndex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../fm_extensions_rag.html">RAG</a></li>
 </ul>
 </li>
@@ -299,6 +300,8 @@
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">catch_warnings</span><span class="p">,</span> <span class="n">simplefilter</span>
+
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Literal</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.inference</span> <span class="kn">import</span> <span class="n">ModelInference</span>
@@ -317,6 +320,9 @@
 <a class="viewcode-back" href="../../../fm_model.html#ibm_watsonx_ai.foundation_models.Model">[docs]</a>
 <span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">ModelInference</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Instantiate the model interface.</span>
+
+<span class="sd">    .. deprecated:: 1.1.21</span>
+<span class="sd">        Use :func:`ModelInference() &lt;ibm_watsonx_ai.foundation_models.inference.ModelInference&gt;` instead.</span>
 
 <span class="sd">    .. hint::</span>
 <span class="sd">        To use the Model class with LangChain, use the :func:`to_langchain() &lt;ibm_watsonx_ai.foundation_models.Model.to_langchain&gt;` function.</span>
@@ -388,6 +394,16 @@
         <span class="n">verify</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">validate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;The `Model` class is deprecated and will be removed in a future release. &quot;</span>
+                    <span class="s2">&quot;Please use the `ModelInference` class instead. &quot;</span>
+                    <span class="s2">&quot;To update your imports, use: `from ibm_watsonx_ai.foundation_models import ModelInference`.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="n">ModelInference</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>

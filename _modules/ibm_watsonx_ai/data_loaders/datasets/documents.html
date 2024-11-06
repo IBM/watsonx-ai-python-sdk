@@ -228,8 +228,8 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../foundation_models.html">Foundation Models</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Foundation Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_embeddings.html">Embeddings</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_model_inference.html">ModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
 </li>
@@ -243,6 +243,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../prompt_template_manager.html">Prompt Template Manager</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../fm_extensions.html">Extensions</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Extensions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_extensions_langchain.html">LangChain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../fm_extensions_llamaindex.html">LlamaIndex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_extensions_rag.html">RAG</a></li>
 </ul>
 </li>
@@ -493,14 +494,8 @@
                     <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;The asset with id </span><span class="si">{</span><span class="n">conn</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> could not be found.&quot;</span>
                     <span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="s2">&quot;file_name&quot;</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">conn</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">file_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">conn</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                    <span class="s2">&quot;Unsupported connection type for extracting document id.&quot;</span>
-                <span class="p">)</span>
+                <span class="k">return</span> <span class="n">conn</span><span class="o">.</span><span class="n">_get_filename</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">remote_documents</span> <span class="o">=</span> <span class="p">[]</span>
 
