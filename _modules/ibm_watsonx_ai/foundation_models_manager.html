@@ -229,6 +229,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../fm_embeddings.html">Embeddings</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_model_inference.html">ModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../fm_ts_model_inference.html">TSModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -341,6 +342,10 @@
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">RerankModels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">StrEnum</span><span class="p">(</span><span class="s2">&quot;RerankModels&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_dict</span><span class="p">(</span><span class="s2">&quot;rerank&quot;</span><span class="p">))</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">TimeSeriesModels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">StrEnum</span><span class="p">(</span><span class="s2">&quot;TimeSeriesModels&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_dict</span><span class="p">(</span><span class="s2">&quot;time_series_forecast&quot;</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_get_spec</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -507,6 +512,55 @@
         <span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="FoundationModelsManager.get_chat_function_calling_model_specs">
+<a class="viewcode-back" href="../../fm_helpers.html#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_chat_function_calling_model_specs">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_chat_function_calling_model_specs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Operations to retrieve the list of chat foundation models specifications with function calling support .</span>
+
+<span class="sd">        :param model_id: Id of the model, defaults to None (all models specs are returned).</span>
+<span class="sd">        :type model_id: str or ModelTypes, optional</span>
+
+<span class="sd">        :param limit:  limit number of fetched records</span>
+<span class="sd">        :type limit: int, optional</span>
+
+<span class="sd">        :param asynchronous:  if True, it will work as a generator</span>
+<span class="sd">        :type asynchronous: bool, optional</span>
+
+<span class="sd">        :param get_all:  if True, it will get all entries in &#39;limited&#39; chunks</span>
+<span class="sd">        :type get_all: bool, optional</span>
+
+<span class="sd">        :return: list of deployed foundation model specs</span>
+<span class="sd">        :rtype: dict or generator</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            # GET CHAT FUNCTION CALLING MODEL SPECS</span>
+<span class="sd">            client.foundation_models.get_chat_function_calling_model_specs()</span>
+
+<span class="sd">            # GET CHAT FUNCTION CALLING MODEL SPECS BY MODEL_ID</span>
+<span class="sd">            client.foundation_models.get_chat_function_calling_model_specs(model_id=&quot;meta-llama/llama-3-1-70b-instruct&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_spec</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_specifications_href</span><span class="p">(),</span>
+            <span class="n">operation_name</span><span class="o">=</span><span class="s2">&quot;Get available chat function calling models&quot;</span><span class="p">,</span>
+            <span class="n">error_msg_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_model_specs&quot;</span><span class="p">,</span>
+            <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
+            <span class="n">filters</span><span class="o">=</span><span class="s2">&quot;task_function_calling&quot;</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+            <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
+            <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="FoundationModelsManager.get_custom_model_specs">
 <a class="viewcode-back" href="../../fm_helpers.html#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_custom_model_specs">[docs]</a>
     <span class="k">def</span> <span class="nf">get_custom_model_specs</span><span class="p">(</span>
@@ -608,6 +662,52 @@
             <span class="n">error_msg_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_model_specs&quot;</span><span class="p">,</span>
             <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
             <span class="n">filters</span><span class="o">=</span><span class="s2">&quot;function_embedding&quot;</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+            <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
+            <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FoundationModelsManager.get_time_series_model_specs">
+<a class="viewcode-back" href="../../fm_helpers.html#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_time_series_model_specs">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_time_series_model_specs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the specifications of an time series model.</span>
+
+<span class="sd">        :param model_id: ID of the model, defaults to None (all models specifications are returned)</span>
+<span class="sd">        :type model_id: str, optional</span>
+
+<span class="sd">        :param limit: limit number of fetched records</span>
+<span class="sd">        :type limit: int, optional</span>
+
+<span class="sd">        :param asynchronous: if True, will work as a generator</span>
+<span class="sd">        :type asynchronous: bool, optional</span>
+
+<span class="sd">        :param get_all: if True, will get all entries in &#39;limited&#39; chunks</span>
+<span class="sd">        :type get_all: bool, optional</span>
+
+<span class="sd">        :return: specifications of the time series model</span>
+<span class="sd">        :rtype: dict or generator</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.foundation_models.get_time_series_model_specs()</span>
+<span class="sd">            client.foundation_models.get_time_series_model_specs(&#39;ibm/granite-ttm-1536-96-r2&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_spec</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_specifications_href</span><span class="p">(),</span>
+            <span class="n">operation_name</span><span class="o">=</span><span class="s2">&quot;Get available time series models&quot;</span><span class="p">,</span>
+            <span class="n">error_msg_id</span><span class="o">=</span><span class="s2">&quot;fm_prompt_tuning_no_model_specs&quot;</span><span class="p">,</span>
+            <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
+            <span class="n">filters</span><span class="o">=</span><span class="s2">&quot;function_time_series_forecast&quot;</span><span class="p">,</span>
             <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
             <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
             <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
@@ -800,14 +900,19 @@
     <span class="k">def</span> <span class="nf">_get_model_dict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
-            <span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;embedding&quot;</span><span class="p">,</span> <span class="s2">&quot;prompt_tuning&quot;</span><span class="p">,</span> <span class="s2">&quot;text_chat&quot;</span><span class="p">,</span> <span class="s2">&quot;rerank&quot;</span>
+            <span class="s2">&quot;base&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;embedding&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;prompt_tuning&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;text_chat&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rerank&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;time_series_forecast&quot;</span><span class="p">,</span>
         <span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the dictionary of models to Enum.</span>
 
 <span class="sd">        :param model_type: type of model function</span>
-<span class="sd">        :type model_type: Literal[&quot;base&quot;, &quot;embedding&quot;, &quot;prompt_tuning&quot;, &quot;text_chat&quot;, &quot;rerank&quot;]</span>
+<span class="sd">        :type model_type: Literal[&quot;base&quot;, &quot;embedding&quot;, &quot;prompt_tuning&quot;, &quot;text_chat&quot;, &quot;rerank&quot;, &quot;time_series_forecast&quot;]</span>
 
 <span class="sd">        :return: dictionary of models to Enum</span>
 <span class="sd">        :rtype: dict</span>
@@ -818,6 +923,7 @@
             <span class="s2">&quot;prompt_tuning&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model_specs_with_prompt_tuning_support</span><span class="p">,</span>
             <span class="s2">&quot;text_chat&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_chat_model_specs</span><span class="p">,</span>
             <span class="s2">&quot;rerank&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_rerank_model_specs</span><span class="p">,</span>
+            <span class="s2">&quot;time_series_forecast&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_time_series_model_specs</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">model_specs_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">model_spec</span> <span class="ow">in</span> <span class="n">function_dict</span><span class="p">[</span><span class="n">model_type</span><span class="p">]()[</span><span class="s2">&quot;resources&quot;</span><span class="p">]:</span>

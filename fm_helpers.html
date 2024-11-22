@@ -230,6 +230,7 @@
 <li class="toctree-l3"><a class="reference internal" href="fm_embeddings.html">Embeddings</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="fm_model_inference.html">ModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fm_ts_model_inference.html">TSModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -306,6 +307,36 @@
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models_manager.</span></span><span class="sig-name descname"><span class="pre">FoundationModelsManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models_manager.html#FoundationModelsManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager" title="Link to this definition">¶</a></dt>
 <dd><dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_chat_function_calling_model_specs">
+<span class="sig-name descname"><span class="pre">get_chat_function_calling_model_specs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models_manager.html#FoundationModelsManager.get_chat_function_calling_model_specs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_chat_function_calling_model_specs" title="Link to this definition">¶</a></dt>
+<dd><p>Operations to retrieve the list of chat foundation models specifications with function calling support .</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_id</strong> (<em>str</em><em> or </em><a class="reference internal" href="fm_model.html#ibm_watsonx_ai.foundation_models.utils.enums.ModelTypes" title="ibm_watsonx_ai.foundation_models.utils.enums.ModelTypes"><em>ModelTypes</em></a><em>, </em><em>optional</em>) – Id of the model, defaults to None (all models specs are returned).</p></li>
+<li><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – limit number of fetched records</p></li>
+<li><p><strong>asynchronous</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, it will work as a generator</p></li>
+<li><p><strong>get_all</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, it will get all entries in ‘limited’ chunks</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of deployed foundation model specs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict or generator</p>
+</dd>
+</dl>
+<p><strong>Example</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># GET CHAT FUNCTION CALLING MODEL SPECS</span>
+<span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_chat_function_calling_model_specs</span><span class="p">()</span>
+
+<span class="c1"># GET CHAT FUNCTION CALLING MODEL SPECS BY MODEL_ID</span>
+<span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_chat_function_calling_model_specs</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;meta-llama/llama-3-1-70b-instruct&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_chat_model_specs">
 <span class="sig-name descname"><span class="pre">get_chat_model_specs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models_manager.html#FoundationModelsManager.get_chat_model_specs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_chat_model_specs" title="Link to this definition">¶</a></dt>
 <dd><p>Operations to retrieve the list of chat foundation models specifications.</p>
@@ -529,6 +560,33 @@ If <code class="docutils literal notranslate"><span class="pre">asynchronous</sp
 </div>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_time_series_model_specs">
+<span class="sig-name descname"><span class="pre">get_time_series_model_specs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models_manager.html#FoundationModelsManager.get_time_series_model_specs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_time_series_model_specs" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the specifications of an time series model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the model, defaults to None (all models specifications are returned)</p></li>
+<li><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – limit number of fetched records</p></li>
+<li><p><strong>asynchronous</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, will work as a generator</p></li>
+<li><p><strong>get_all</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, will get all entries in ‘limited’ chunks</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>specifications of the time series model</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict or generator</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_time_series_model_specs</span><span class="p">()</span>
+<span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_time_series_model_specs</span><span class="p">(</span><span class="s1">&#39;ibm/granite-ttm-1536-96-r2&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
@@ -707,6 +765,7 @@ If <code class="docutils literal notranslate"><span class="pre">asynchronous</sp
             <ul>
 <li><a class="reference internal" href="#">Helpers</a><ul>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager"><code class="docutils literal notranslate"><span class="pre">FoundationModelsManager</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_chat_function_calling_model_specs"><code class="docutils literal notranslate"><span class="pre">FoundationModelsManager.get_chat_function_calling_model_specs()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_chat_model_specs"><code class="docutils literal notranslate"><span class="pre">FoundationModelsManager.get_chat_model_specs()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_custom_model_specs"><code class="docutils literal notranslate"><span class="pre">FoundationModelsManager.get_custom_model_specs()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_embeddings_model_specs"><code class="docutils literal notranslate"><span class="pre">FoundationModelsManager.get_embeddings_model_specs()</span></code></a></li>
@@ -715,6 +774,7 @@ If <code class="docutils literal notranslate"><span class="pre">asynchronous</sp
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_model_specs_with_fine_tuning_support"><code class="docutils literal notranslate"><span class="pre">FoundationModelsManager.get_model_specs_with_fine_tuning_support()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_model_specs_with_prompt_tuning_support"><code class="docutils literal notranslate"><span class="pre">FoundationModelsManager.get_model_specs_with_prompt_tuning_support()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_rerank_model_specs"><code class="docutils literal notranslate"><span class="pre">FoundationModelsManager.get_rerank_model_specs()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models_manager.FoundationModelsManager.get_time_series_model_specs"><code class="docutils literal notranslate"><span class="pre">FoundationModelsManager.get_time_series_model_specs()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.get_model_specs"><code class="docutils literal notranslate"><span class="pre">get_model_specs()</span></code></a></li>

@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Samples" href="samples.html" /><link rel="prev" title="Rerank" href="fm_rerank.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Model" href="fm_model.html" /><link rel="prev" title="ModelInference" href="fm_model_inference.html" />
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>Saving external models - IBM watsonx.ai</title>
+        <title>TSModelInference - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
@@ -226,11 +226,11 @@
 <li class="toctree-l3"><a class="reference internal" href="autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="foundation_models.html">Foundation Models</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Foundation Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="foundation_models.html">Foundation Models</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Foundation Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="fm_embeddings.html">Embeddings</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="fm_models.html">Models</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="fm_model_inference.html">ModelInference</a></li>
-<li class="toctree-l4"><a class="reference internal" href="fm_ts_model_inference.html">TSModelInference</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">TSModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -256,7 +256,7 @@
 <li class="toctree-l3"><a class="reference internal" href="fm_rerank.html">Rerank</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Saving external models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="save_models.html">Saving external models</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="samples.html">Samples</a></li>
@@ -281,7 +281,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/save_models.rst.txt" title="View this page">
+  <a class="muted-link" href="_sources/fm_ts_model_inference.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -301,175 +301,134 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="saving-external-models">
-<span id="save-models"></span><h1>Saving external models<a class="headerlink" href="#saving-external-models" title="Link to this heading">¶</a></h1>
-<p>In some cases, there is a need to store an external model in WML project or WML deployment space.
-Depending on model type, it has to be saved or archived with correct extension.</p>
-<p>Following types and file extensions are supported:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#tf"><span class="std std-ref">tensorflow / keras (.tar.gz)</span></a></p></li>
-<li><p><a class="reference internal" href="#pmml"><span class="std std-ref">pmml (.xml)</span></a></p></li>
-<li><p><a class="reference internal" href="#sklearn"><span class="std std-ref">scikit-learn (.tar.gz)</span></a></p></li>
-<li><p><a class="reference internal" href="#spss"><span class="std std-ref">spss (.str)</span></a></p></li>
-<li><p><a class="reference internal" href="#spark"><span class="std std-ref">spark (.tar.gz)</span></a></p></li>
-<li><p><a class="reference internal" href="#xgboost"><span class="std std-ref">xgboost (.tar.gz)</span></a></p></li>
+          <section id="tsmodelinference">
+<h1>TSModelInference<a class="headerlink" href="#tsmodelinference" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.inference.TSModelInference">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.inference.</span></span><span class="sig-name descname"><span class="pre">TSModelInference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/ts_model_inference.html#TSModelInference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.TSModelInference" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WMLResource</span></code></p>
+<p>Instantiate the time series model interface</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_id</strong> (<em>str</em>) – type of model to use</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>, </em><a class="reference internal" href="fm_schema.html#ibm_watsonx_ai.foundation_models.schema.TSForecastParameters" title="ibm_watsonx_ai.foundation_models.schema.TSForecastParameters"><em>TSForecastParameters</em></a><em>, </em><em>optional</em>) – parameters to use during request generation</p></li>
+<li><p><strong>credentials</strong> (<a class="reference internal" href="base.html#credentials.Credentials" title="credentials.Credentials"><em>Credentials</em></a><em> or </em><em>dict</em><em>, </em><em>optional</em>) – credentials for the Watson Machine Learning instance</p></li>
+<li><p><strong>project_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the Watson Studio project</p></li>
+<li><p><strong>space_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the Watson Studio space</p></li>
+<li><p><strong>verify</strong> (<em>bool</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – <p>You can pass one of the following as verify:</p>
+<ul>
+<li><p>the path to a CA_BUNDLE file</p></li>
+<li><p>the path of directory with certificates of trusted CAs</p></li>
+<li><p><cite>True</cite> - default path to truststore will be taken</p></li>
+<li><p><cite>False</cite> - no verification will be made</p></li>
 </ul>
-<section id="tensorflow-keras">
-<span id="tf"></span><h2>Tensorflow / Keras<a class="headerlink" href="#tensorflow-keras" title="Link to this heading">¶</a></h2>
-<p>This section shows how to save and archive a tensorflow (keras) model.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tarfile</span>
-<span class="kn">import</span> <span class="nn">os</span>
+</p></li>
+<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – initialized APIClient object with a set project ID or space ID. If passed, <code class="docutils literal notranslate"><span class="pre">credentials</span></code> and <code class="docutils literal notranslate"><span class="pre">project_id</span></code>/<code class="docutils literal notranslate"><span class="pre">space_id</span></code> are not required.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">Credentials</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models</span> <span class="kn">import</span> <span class="n">TSModelInference</span>
 
+<span class="n">forecasting_params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;prediction_length&quot;</span><span class="p">:</span> <span class="mi">10</span>
+<span class="p">}</span>
 
-<span class="c1"># Prepare your tf / keras model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># (Sequential, Functional Model, or Model subclass)</span>
-
-<span class="c1"># Set names</span>
-<span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;tf_model&#39;</span>
-<span class="n">folder_name</span> <span class="o">=</span> <span class="s1">&#39;models&#39;</span>
-
-<span class="c1"># Prepare directories</span>
-<span class="n">file_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.h5&#39;</span>
-<span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">folder_name</span><span class="p">)</span>
-<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
-
-<span class="c1"># Save model as &#39;.h5&#39; file</span>
-<span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span>
-
-<span class="c1"># Archive model</span>
-<span class="n">archive_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.tar.gz&#39;</span>
-<span class="n">archive_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">archive_name</span><span class="p">)</span>
-<span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">archive_path</span><span class="p">,</span> <span class="s1">&#39;w:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
-    <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span>
-
-<span class="c1"># Path that can be used to store model in project or space</span>
-<span class="n">path_to_store_model</span> <span class="o">=</span> <span class="n">archive_path</span>
+<span class="n">ts_model</span> <span class="o">=</span> <span class="n">TSModelInference</span><span class="p">(</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;&lt;TIME SERIES MODEL&gt;&quot;</span><span class="p">,</span>
+    <span class="n">params</span><span class="o">=</span><span class="n">forecasting_params</span><span class="p">,</span>
+    <span class="n">credentials</span><span class="o">=</span><span class="n">Credentials</span><span class="p">(</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="s2">&quot;***&quot;</span><span class="p">,</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">),</span>
+    <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="pmml">
-<span id="id1"></span><h2>PMML<a class="headerlink" href="#pmml" title="Link to this heading">¶</a></h2>
-<p>For <code class="docutils literal notranslate"><span class="pre">PMML</span></code> models, it is required to prepare a model as file in <code class="code docutils literal notranslate"><span class="pre">.xml</span></code> format,
-that can be directly stored in project or space.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sample_model_path</span> <span class="o">=</span> <span class="s2">&quot;./models/pmml_model.xml&quot;</span>
-<span class="n">path_to_store_model</span> <span class="o">=</span> <span class="n">sample_model_path</span>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.inference.TSModelInference.forecast">
+<span class="sig-name descname"><span class="pre">forecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/ts_model_inference.html#TSModelInference.forecast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.TSModelInference.forecast" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a forecast based on the provided data and model parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em><em>, </em><em>pd.DataFrame</em><em>, </em><em>required</em>) – A payload of data matching the schema provided. For more information about the data limitation see the product documentation <a class="reference external" href="https://cloud.ibm.com/apidocs/watsonx-ai">https://cloud.ibm.com/apidocs/watsonx-ai</a>.</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>, </em><a class="reference internal" href="fm_schema.html#ibm_watsonx_ai.foundation_models.schema.TSForecastParameters" title="ibm_watsonx_ai.foundation_models.schema.TSForecastParameters"><em>TSForecastParameters</em></a><em>, </em><em>optional</em>) – Contains basic metadata about your time series data input. These metadata are used by the server to understand which field represents a time stamp or which are unique identifiers for separating time series from different input channels.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># number of elements in the array for each field must be at least 512, 1024, or 1536 depending on the model; for example 512 for ibm/granite-ttm-512-96-r2</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;2017-10-02T16:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;2017-10-02T17:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;2017-10-02T18:00:00&quot;</span>
+            <span class="o">...</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;HUFL&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">1.1</span><span class="p">,</span>
+            <span class="mf">2.2</span><span class="p">,</span>
+            <span class="mf">3.3</span>
+            <span class="o">...</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+
+<span class="n">params</span> <span class="o">=</span>  <span class="p">{</span>
+    <span class="s2">&quot;timestamp_column&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;target_columns&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;HUFL&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;prediction_length&quot;</span><span class="p">:</span> <span class="mi">10</span>
+    <span class="s2">&quot;freq&quot;</span><span class="p">:</span> <span class="s2">&quot;1h&quot;</span>
+<span class="p">},</span>
+
+<span class="c1"># The number of elements in the array for each field must be the prediction length of the model depending on the model; for example 96 for ibm/granite-ttm-512-96-r2,</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">ts_model</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+
+<span class="c1"># Print all response</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="scikit-learn">
-<span id="sklearn"></span><h2>Scikit-learn<a class="headerlink" href="#scikit-learn" title="Link to this heading">¶</a></h2>
-<p>This section shows how to save and archive a scikit-learn model.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">joblib</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">tarfile</span>
+</dd></dl>
 
+</dd></dl>
 
-<span class="c1"># Prepare your scikit-learn model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="o">...</span>
+<section id="enums">
+<h2>Enums<a class="headerlink" href="#enums" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="TimeSeriesModels">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TimeSeriesModels</span></span><a class="headerlink" href="#TimeSeriesModels" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="docutils literal notranslate"><span class="pre">StrEnum</span></code></p>
+<p>This represents a dynamically generated Enum for Time Series Foundation Models.</p>
+<p><strong>Example of getting TimeSeriesModels:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># GET TimeSeriesModels ENUM</span>
+<span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">TimeSeriesModels</span>
 
-<span class="c1"># Set names</span>
-<span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;sklearn_model&#39;</span>
-<span class="n">folder_name</span> <span class="o">=</span> <span class="s1">&#39;models&#39;</span>
-
-<span class="c1"># Prepare directories</span>
-<span class="n">file_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.pkl&#39;</span>
-<span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">folder_name</span><span class="p">)</span>
-<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
-
-<span class="c1"># Save model as &#39;.pkl&#39; file</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-    <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
-
-<span class="c1"># Archive model</span>
-<span class="n">archive_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.tar.gz&#39;</span>
-<span class="n">archive_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">archive_name</span><span class="p">)</span>
-<span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">archive_path</span><span class="p">,</span> <span class="s1">&#39;w:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
-    <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span>
-
-<span class="c1"># Path that can be used to store model in project or space</span>
-<span class="n">path_to_store_model</span> <span class="o">=</span> <span class="n">archive_path</span>
+<span class="c1"># PRINT dict of Enums</span>
+<span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">TimeSeriesModels</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</section>
-<section id="spss">
-<span id="id2"></span><h2>SPSS<a class="headerlink" href="#spss" title="Link to this heading">¶</a></h2>
-<p>For <code class="docutils literal notranslate"><span class="pre">SPSS</span></code> models, it is required to prepare a model as file in <code class="code docutils literal notranslate"><span class="pre">.str</span></code> format,
-that can be directly stored in project or space.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sample_model_path</span> <span class="o">=</span> <span class="s2">&quot;./models/spss_model.str&quot;</span>
-<span class="n">path_to_store_model</span> <span class="o">=</span> <span class="n">sample_model_path</span>
+<p><strong>Example Output:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;GRANITE_TTM_1024_96_R2&#39;</span><span class="p">:</span> <span class="s1">&#39;ibm/granite-ttm-1024-96-r2&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;GRANITE_TTM_1536_96_R2&#39;</span><span class="p">:</span> <span class="s1">&#39;ibm/granite-ttm-1536-96-r2&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;GRANITE_TTM_512_96_R2&#39;</span><span class="p">:</span> <span class="s1">&#39;ibm/granite-ttm-512-96-r2&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
-</section>
-<section id="spark">
-<span id="id3"></span><h2>Spark<a class="headerlink" href="#spark" title="Link to this heading">¶</a></h2>
-<p>This section shows how to save and archive a spark model.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">tarfile</span>
+<p><strong>Example of initialising ModelInference with TimeSeriesModels Enum:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models</span> <span class="kn">import</span> <span class="n">TSModelInference</span>
 
-
-<span class="c1"># Prepare your spark model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="o">...</span>
-
-<span class="c1"># Set names</span>
-<span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;spark_model&quot;</span>
-<span class="n">folder_name</span> <span class="o">=</span> <span class="s2">&quot;models&quot;</span>
-
-<span class="c1"># Prepare directories</span>
-<span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">folder_name</span><span class="p">)</span>
-<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
-
-<span class="c1"># Save model</span>
-<span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span>
-
-<span class="c1"># Archive model</span>
-<span class="n">archive_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s2">&quot;.tar.gz&quot;</span>
-<span class="n">archive_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">archive_name</span><span class="p">)</span>
-<span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">archive_path</span><span class="p">,</span> <span class="s1">&#39;w:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
-    <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span>
-
-<span class="c1"># Path that can be used to store model in project or space</span>
-<span class="n">path_to_store_model</span> <span class="o">=</span> <span class="n">archive_path</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">TSModelInference</span><span class="p">(</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">TimeSeriesModels</span><span class="o">.</span><span class="n">GRANITE_TTM_1024_96_R2</span><span class="p">,</span>
+    <span class="n">credentials</span><span class="o">=</span><span class="n">Credentials</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+    <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="xgboost">
-<span id="id4"></span><h2>XGBoost<a class="headerlink" href="#xgboost" title="Link to this heading">¶</a></h2>
-<p>This section shows how to save and archive an XGBoost model.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">joblib</span>
-<span class="kn">import</span> <span class="nn">tarfile</span>
+</dd></dl>
 
-
-<span class="c1"># Prepare your xgboost model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="o">...</span>
-
-<span class="c1"># Set names</span>
-<span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;xgboost_model&quot;</span>
-<span class="n">folder_name</span> <span class="o">=</span> <span class="s2">&quot;models&quot;</span>
-
-<span class="c1"># Prepare directories</span>
-<span class="n">file_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.pkl&#39;</span>
-<span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">folder_name</span><span class="p">)</span>
-<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
-
-<span class="c1"># Save model as &#39;.pkl&#39; file</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-    <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
-
-<span class="c1"># Archive model</span>
-<span class="n">archive_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.tar.gz&#39;</span>
-<span class="n">archive_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">archive_name</span><span class="p">)</span>
-<span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">archive_path</span><span class="p">,</span> <span class="s1">&#39;w:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
-    <span class="n">tar</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span>
-
-<span class="c1"># Path that can be used to store model in project or space</span>
-<span class="n">path_to_store_model</span> <span class="o">=</span> <span class="n">archive_path</span>
-</pre></div>
-</div>
 </section>
 </section>
 
@@ -478,23 +437,23 @@ that can be directly stored in project or space.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="samples.html">
+          <a class="next-page" href="fm_model.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Samples</div>
+                <div class="title">Model</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="fm_rerank.html">
+          <a class="prev-page" href="fm_model_inference.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Rerank</div>
+                <div class="title">ModelInference</div>
                 
               </div>
             </a>
@@ -528,13 +487,15 @@ that can be directly stored in project or space.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Saving external models</a><ul>
-<li><a class="reference internal" href="#tensorflow-keras">Tensorflow / Keras</a></li>
-<li><a class="reference internal" href="#pmml">PMML</a></li>
-<li><a class="reference internal" href="#scikit-learn">Scikit-learn</a></li>
-<li><a class="reference internal" href="#spss">SPSS</a></li>
-<li><a class="reference internal" href="#spark">Spark</a></li>
-<li><a class="reference internal" href="#xgboost">XGBoost</a></li>
+<li><a class="reference internal" href="#">TSModelInference</a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.inference.TSModelInference"><code class="docutils literal notranslate"><span class="pre">TSModelInference</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.inference.TSModelInference.forecast"><code class="docutils literal notranslate"><span class="pre">TSModelInference.forecast()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#enums">Enums</a><ul>
+<li><a class="reference internal" href="#TimeSeriesModels"><code class="docutils literal notranslate"><span class="pre">TimeSeriesModels</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -229,6 +229,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_embeddings.html">Embeddings</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_model_inference.html">ModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_ts_model_inference.html">TSModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -328,6 +329,7 @@
     <span class="n">ELASTICSEARCH</span> <span class="o">=</span> <span class="s2">&quot;elasticsearch&quot;</span>
     <span class="n">CHROMA</span> <span class="o">=</span> <span class="s2">&quot;chroma&quot;</span>
     <span class="n">MILVUS</span> <span class="o">=</span> <span class="s2">&quot;milvus&quot;</span>
+    <span class="n">MILVUS_WXD</span> <span class="o">=</span> <span class="s2">&quot;milvuswxd&quot;</span>  <span class="c1"># IBM watsonx.data Milvus</span>
     <span class="n">UNDEFINED</span> <span class="o">=</span> <span class="s2">&quot;undefined&quot;</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -412,7 +414,9 @@
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_elasticsearch</span><span class="p">()</span>
             <span class="k">case</span> <span class="n">VectorStoreDataSourceType</span><span class="o">.</span><span class="n">CHROMA</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_chroma</span><span class="p">()</span>
-            <span class="k">case</span> <span class="n">VectorStoreDataSourceType</span><span class="o">.</span><span class="n">MILVUS</span><span class="p">:</span>
+            <span class="k">case</span> <span class="p">(</span>
+                <span class="n">VectorStoreDataSourceType</span><span class="o">.</span><span class="n">MILVUS</span> <span class="o">|</span> <span class="n">VectorStoreDataSourceType</span><span class="o">.</span><span class="n">MILVUS_WXD</span>
+            <span class="p">):</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_milvus</span><span class="p">()</span>
             <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Data source type not supported.&quot;</span><span class="p">)</span></div>
