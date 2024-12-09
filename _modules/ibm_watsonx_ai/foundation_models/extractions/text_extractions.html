@@ -253,6 +253,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_text_extraction.html">Text Extractions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_schema.html">Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_rerank.html">Rerank</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fm_deploy_on_demand.html">Deploy on Demand</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../save_models.html">Saving external models</a></li>
@@ -606,6 +607,32 @@
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="s2">&quot;delete_job&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>  <span class="c1"># type: ignore[return-value]</span></div>
+
+
+<div class="viewcode-block" id="TextExtractions.cancel_job">
+<a class="viewcode-back" href="../../../../fm_text_extraction.html#ibm_watsonx_ai.foundation_models.extractions.TextExtractions.cancel_job">[docs]</a>
+    <span class="k">def</span> <span class="nf">cancel_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extraction_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancel a text extraction job.</span>
+
+<span class="sd">        :return: return &quot;SUCCESS&quot; if the cancellation succeeds</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            extraction.cancel_job(extraction_id=&quot;&lt;extraction_id&gt;&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">TextExtractions</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">extraction_id</span><span class="p">,</span> <span class="s2">&quot;extraction_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_text_extraction_href</span><span class="p">()</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">extraction_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(</span><span class="n">skip_userfs</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="s2">&quot;cancel_job&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>  <span class="c1"># type: ignore[return-value]</span></div>
 
 
 <div class="viewcode-block" id="TextExtractions.get_results_reference">

@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Model" href="fm_model.html" /><link rel="prev" title="ModelInference" href="fm_model_inference.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Saving external models" href="save_models.html" /><link rel="prev" title="Rerank" href="fm_rerank.html" />
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>TSModelInference - IBM watsonx.ai</title>
+        <title>Deploy on Demand - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
@@ -228,9 +228,9 @@
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="foundation_models.html">Foundation Models</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Foundation Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="fm_embeddings.html">Embeddings</a></li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="fm_models.html">Models</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="fm_model_inference.html">ModelInference</a></li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">TSModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fm_ts_model_inference.html">TSModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -254,7 +254,7 @@
 <li class="toctree-l3"><a class="reference internal" href="fm_text_extraction.html">Text Extractions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_schema.html">Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_rerank.html">Rerank</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fm_deploy_on_demand.html">Deploy on Demand</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Deploy on Demand</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="save_models.html">Saving external models</a></li>
@@ -282,7 +282,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/fm_ts_model_inference.rst.txt" title="View this page">
+  <a class="muted-link" href="_sources/fm_deploy_on_demand.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -302,134 +302,105 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="tsmodelinference">
-<h1>TSModelInference<a class="headerlink" href="#tsmodelinference" title="Link to this heading">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.inference.TSModelInference">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.inference.</span></span><span class="sig-name descname"><span class="pre">TSModelInference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/ts_model_inference.html#TSModelInference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.TSModelInference" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WMLResource</span></code></p>
-<p>Instantiate the time series model interface</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>model_id</strong> (<em>str</em>) – type of model to use</p></li>
-<li><p><strong>params</strong> (<em>dict</em><em>, </em><a class="reference internal" href="fm_schema.html#ibm_watsonx_ai.foundation_models.schema.TSForecastParameters" title="ibm_watsonx_ai.foundation_models.schema.TSForecastParameters"><em>TSForecastParameters</em></a><em>, </em><em>optional</em>) – parameters to use during request generation</p></li>
-<li><p><strong>credentials</strong> (<a class="reference internal" href="base.html#credentials.Credentials" title="credentials.Credentials"><em>Credentials</em></a><em> or </em><em>dict</em><em>, </em><em>optional</em>) – credentials for the Watson Machine Learning instance</p></li>
-<li><p><strong>project_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the Watson Studio project</p></li>
-<li><p><strong>space_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the Watson Studio space</p></li>
-<li><p><strong>verify</strong> (<em>bool</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – <p>You can pass one of the following as verify:</p>
-<ul>
-<li><p>the path to a CA_BUNDLE file</p></li>
-<li><p>the path of directory with certificates of trusted CAs</p></li>
-<li><p><cite>True</cite> - default path to truststore will be taken</p></li>
-<li><p><cite>False</cite> - no verification will be made</p></li>
+          <section id="deploy-on-demand">
+<h1>Deploy on Demand<a class="headerlink" href="#deploy-on-demand" title="Link to this heading">¶</a></h1>
+<p>IBM watsonx.ai makes a curated collection of foundation models available for you to deploy on-demand
+on dedicated hardware for the exclusive use of your organization.
+By using this approach, you can access the capabilities of these powerful foundation models without the need
+for extensive computational resources.
+Foundation models that you deploy on-demand are hosted in a dedicated deployment space where you can use these models for inferencing.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="#id1">IBM watsonx.ai for IBM Cloud</a></p></li>
 </ul>
-</p></li>
-<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – initialized APIClient object with a set project ID or space ID. If passed, <code class="docutils literal notranslate"><span class="pre">credentials</span></code> and <code class="docutils literal notranslate"><span class="pre">project_id</span></code>/<code class="docutils literal notranslate"><span class="pre">space_id</span></code> are not required.</p></li>
-</ul>
-</dd>
-</dl>
-<p><strong>Example:</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">Credentials</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models</span> <span class="kn">import</span> <span class="n">TSModelInference</span>
+<section id="id1">
+<h2>IBM watsonx.ai for IBM Cloud<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<p>This section shows how to create task credentials, store and deploy a model, and use the ModelInference module with the created deployment on IBM watsonx.ai for IBM Cloud.</p>
+<section id="initialize-an-apiclient-object">
+<h3>Initialize an APIClient object<a class="headerlink" href="#initialize-an-apiclient-object" title="Link to this heading">¶</a></h3>
+<p>Initialize an <code class="docutils literal notranslate"><span class="pre">APIClient</span></code> object if needed. For more details about supported <code class="docutils literal notranslate"><span class="pre">APIClient</span></code> initialization, see <a class="reference internal" href="setup.html"><span class="doc">Setup</span></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
 
-<span class="n">forecasting_params</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;prediction_length&quot;</span><span class="p">:</span> <span class="mi">10</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">)</span>
+<span class="c1"># or: client = APIClient(credentials, space_id=space_id)</span>
+</pre></div>
+</div>
+</section>
+<section id="add-task-credentials">
+<h3>Add Task Credentials<a class="headerlink" href="#add-task-credentials" title="Link to this heading">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If not already added, Task Credentials are required on IBM watsonx.ai for IBM Cloud to make a deployment.</p>
+</div>
+<p>With task credentials, you can deploy a curated foundation model and avoid token expiration issues.
+For more details, see <a class="reference external" href="https://www.ibm.com/docs/en/watsonx/saas?topic=projects-adding-task-credentials">Adding task credentials</a>.</p>
+<p>To list available task credentials, use the <code class="docutils literal notranslate"><span class="pre">list</span></code> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">task_credentials</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If the list is empty, you can create new task credentials with the <code class="docutils literal notranslate"><span class="pre">store</span></code> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">task_credentials</span><span class="o">.</span><span class="n">store</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To get details of available task credentials, use the <code class="docutils literal notranslate"><span class="pre">get_details</span></code> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">task_credentials</span><span class="o">.</span><span class="n">get_details</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="store-the-model-in-the-service-repository">
+<h3>Store the model in the service repository<a class="headerlink" href="#store-the-model-in-the-service-repository" title="Link to this heading">¶</a></h3>
+<p>To store a model as an asset in the repo, you must first create proper <code class="docutils literal notranslate"><span class="pre">metadata</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">ModelMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="s2">&quot;curated FM asset&quot;</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">ModelMetaNames</span><span class="o">.</span><span class="n">TYPE</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">ModelAssetTypes</span><span class="o">.</span><span class="n">CURATED_FOUNDATION_MODEL_1_0</span><span class="p">,</span>
 <span class="p">}</span>
-
-<span class="n">ts_model</span> <span class="o">=</span> <span class="n">TSModelInference</span><span class="p">(</span>
-    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;&lt;TIME SERIES MODEL&gt;&quot;</span><span class="p">,</span>
-    <span class="n">params</span><span class="o">=</span><span class="n">forecasting_params</span><span class="p">,</span>
-    <span class="n">credentials</span><span class="o">=</span><span class="n">Credentials</span><span class="p">(</span>
-        <span class="n">api_key</span> <span class="o">=</span> <span class="s2">&quot;***&quot;</span><span class="p">,</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">),</span>
-    <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span>
-<span class="p">)</span>
 </pre></div>
 </div>
-<dl class="py method">
-<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.inference.TSModelInference.forecast">
-<span class="sig-name descname"><span class="pre">forecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/ts_model_inference.html#TSModelInference.forecast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.TSModelInference.forecast" title="Link to this definition">¶</a></dt>
-<dd><p>Generates a forecast based on the provided data and model parameters.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>dict</em><em>, </em><em>pd.DataFrame</em><em>, </em><em>required</em>) – A payload of data matching the schema provided. For more information about the data limitation see the product documentation <a class="reference external" href="https://cloud.ibm.com/apidocs/watsonx-ai">https://cloud.ibm.com/apidocs/watsonx-ai</a>.</p></li>
-<li><p><strong>params</strong> (<em>dict</em><em>, </em><a class="reference internal" href="fm_schema.html#ibm_watsonx_ai.foundation_models.schema.TSForecastParameters" title="ibm_watsonx_ai.foundation_models.schema.TSForecastParameters"><em>TSForecastParameters</em></a><em>, </em><em>optional</em>) – Contains basic metadata about your time series data input. These metadata are used by the server to understand which field represents a time stamp or which are unique identifiers for separating time series from different input channels.</p></li>
-</ul>
-</dd>
-</dl>
-<p><strong>Example:</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># number of elements in the array for each field must be at least 512, 1024, or 1536 depending on the model; for example 512 for ibm/granite-ttm-512-96-r2</span>
-<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s2">&quot;2017-10-02T16:00:00&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;2017-10-02T17:00:00&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;2017-10-02T18:00:00&quot;</span>
-            <span class="o">...</span>
-        <span class="p">],</span>
-        <span class="s2">&quot;HUFL&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="mf">1.1</span><span class="p">,</span>
-            <span class="mf">2.2</span><span class="p">,</span>
-            <span class="mf">3.3</span>
-            <span class="o">...</span>
-        <span class="p">]</span>
-    <span class="p">}</span>
-
-<span class="n">params</span> <span class="o">=</span>  <span class="p">{</span>
-    <span class="s2">&quot;timestamp_column&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;target_columns&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&quot;HUFL&quot;</span><span class="p">,</span>
-    <span class="p">],</span>
-    <span class="s2">&quot;prediction_length&quot;</span><span class="p">:</span> <span class="mi">10</span>
-    <span class="s2">&quot;freq&quot;</span><span class="p">:</span> <span class="s2">&quot;1h&quot;</span>
-<span class="p">},</span>
-
-<span class="c1"># The number of elements in the array for each field must be the prediction length of the model depending on the model; for example 96 for ibm/granite-ttm-512-96-r2,</span>
-
-<span class="n">response</span> <span class="o">=</span> <span class="n">ts_model</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
-
-<span class="c1"># Print all response</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</section>
+<section id="store-the-model">
+<h3>Store the model<a class="headerlink" href="#store-the-model" title="Link to this heading">¶</a></h3>
+<p>After creating the proper <code class="docutils literal notranslate"><span class="pre">metadata</span></code>, you can store the model using <code class="docutils literal notranslate"><span class="pre">client.repository.store_model()</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">stored_model_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">store_model</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;ibm/granite-13b-chat-v2-curated&#39;</span><span class="p">,</span> <span class="n">meta_props</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
 </pre></div>
 </div>
-</dd></dl>
-
-</dd></dl>
-
-<section id="enums">
-<h2>Enums<a class="headerlink" href="#enums" title="Link to this heading">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="TimeSeriesModels">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TimeSeriesModels</span></span><a class="headerlink" href="#TimeSeriesModels" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="docutils literal notranslate"><span class="pre">StrEnum</span></code></p>
-<p>This represents a dynamically generated Enum for Time Series Foundation Models.</p>
-<p><strong>Example of getting TimeSeriesModels:</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># GET TimeSeriesModels ENUM</span>
-<span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">TimeSeriesModels</span>
-
-<span class="c1"># PRINT dict of Enums</span>
-<span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">TimeSeriesModels</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<p>To get the <code class="docutils literal notranslate"><span class="pre">id</span></code> of a stored model asset, use the obtained details.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">stored_model_asset_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_model_id</span><span class="p">(</span><span class="n">stored_model_details</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Example Output:</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;GRANITE_TTM_1024_96_R2&#39;</span><span class="p">:</span> <span class="s1">&#39;ibm/granite-ttm-1024-96-r2&#39;</span><span class="p">,</span>
- <span class="s1">&#39;GRANITE_TTM_1536_96_R2&#39;</span><span class="p">:</span> <span class="s1">&#39;ibm/granite-ttm-1536-96-r2&#39;</span><span class="p">,</span>
- <span class="s1">&#39;GRANITE_TTM_512_96_R2&#39;</span><span class="p">:</span> <span class="s1">&#39;ibm/granite-ttm-512-96-r2&#39;</span><span class="p">}</span>
+<p>List all stored curated foundation models and filter them by framework type.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">framework_filter</span><span class="o">=</span><span class="s1">&#39;curated_foundation_model_1.0&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Example of initialising ModelInference with TimeSeriesModels Enum:</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models</span> <span class="kn">import</span> <span class="n">TSModelInference</span>
-
-<span class="n">model</span> <span class="o">=</span> <span class="n">TSModelInference</span><span class="p">(</span>
-    <span class="n">model_id</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">TimeSeriesModels</span><span class="o">.</span><span class="n">GRANITE_TTM_1024_96_R2</span><span class="p">,</span>
-    <span class="n">credentials</span><span class="o">=</span><span class="n">Credentials</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
-    <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
-<span class="p">)</span>
+</section>
+<section id="deploy-the-curated-foundation-model">
+<h3>Deploy the curated foundation model<a class="headerlink" href="#deploy-the-curated-foundation-model" title="Link to this heading">¶</a></h3>
+<p>To create a new deployment of a curated foundation model, you need to define a dictionary with deployment metadata: <code class="docutils literal notranslate"><span class="pre">meta_props</span></code>.
+Specify the deployment <code class="docutils literal notranslate"><span class="pre">NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">DESCRIPTION</span></code> fields.</p>
+<p>Only online deployments are supported, so the <code class="docutils literal notranslate"><span class="pre">ONLINE</span></code> field is required.</p>
+<p>Optional: At this stage, you can overwrite model parameters. To overwrite them, pass a dictionary with new parameters values in the <code class="docutils literal notranslate"><span class="pre">FOUNDATION_MODEL</span></code> field.</p>
+<p>You also need to provide the <code class="docutils literal notranslate"><span class="pre">stored_model_asset_id</span></code> to create the deployment.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">meta_props</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="s2">&quot;curated_fm_deployment&quot;</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DESCRIPTION</span><span class="p">:</span> <span class="s2">&quot;Testing deployment using curated foundation model&quot;</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">ONLINE</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">SERVING_NAME</span><span class="p">:</span> <span class="s2">&quot;test_curated_fm_01&quot;</span>
+<span class="p">}</span>
+<span class="n">deployment_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">stored_model_asset_id</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">)</span>
 </pre></div>
 </div>
-</dd></dl>
-
+<p>Once the deployment creation process is done, the <code class="docutils literal notranslate"><span class="pre">create</span></code> method returns a dictionary with the deployment details,
+which can be used to retrieve the <code class="docutils literal notranslate"><span class="pre">deployment_id</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">deployment_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can list all existing deployments in the working space or project scope with the <code class="docutils literal notranslate"><span class="pre">list</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="work-with-deployments">
+<h3>Work with deployments<a class="headerlink" href="#work-with-deployments" title="Link to this heading">¶</a></h3>
+<p>For information on working with foundation model deployments, see <a class="reference internal" href="fm_deployments.html"><span class="doc">Models/ ModelInference for Deployments</span></a>.</p>
+</section>
 </section>
 </section>
 
@@ -438,23 +409,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="fm_model.html">
+          <a class="next-page" href="save_models.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Model</div>
+                <div class="title">Saving external models</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="fm_model_inference.html">
+          <a class="prev-page" href="fm_rerank.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">ModelInference</div>
+                <div class="title">Rerank</div>
                 
               </div>
             </a>
@@ -488,13 +459,14 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">TSModelInference</a><ul>
-<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.inference.TSModelInference"><code class="docutils literal notranslate"><span class="pre">TSModelInference</span></code></a><ul>
-<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.inference.TSModelInference.forecast"><code class="docutils literal notranslate"><span class="pre">TSModelInference.forecast()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#enums">Enums</a><ul>
-<li><a class="reference internal" href="#TimeSeriesModels"><code class="docutils literal notranslate"><span class="pre">TimeSeriesModels</span></code></a></li>
+<li><a class="reference internal" href="#">Deploy on Demand</a><ul>
+<li><a class="reference internal" href="#id1">IBM watsonx.ai for IBM Cloud</a><ul>
+<li><a class="reference internal" href="#initialize-an-apiclient-object">Initialize an APIClient object</a></li>
+<li><a class="reference internal" href="#add-task-credentials">Add Task Credentials</a></li>
+<li><a class="reference internal" href="#store-the-model-in-the-service-repository">Store the model in the service repository</a></li>
+<li><a class="reference internal" href="#store-the-model">Store the model</a></li>
+<li><a class="reference internal" href="#deploy-the-curated-foundation-model">Deploy the curated foundation model</a></li>
+<li><a class="reference internal" href="#work-with-deployments">Work with deployments</a></li>
 </ul>
 </li>
 </ul>
