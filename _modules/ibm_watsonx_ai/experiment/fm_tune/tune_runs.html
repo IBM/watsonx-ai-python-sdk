@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=302659d7" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/mystyle2.css?v=c40128c6" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/mystyle2.css?v=4014603e" />
     
     
 
@@ -297,7 +297,7 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for ibm_watsonx_ai.experiment.fm_tune.tune_runs</h1><div class="highlight"><pre>
 <span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="c1">#  (C) Copyright IBM Corp. 2023-2024.</span>
+<span class="c1">#  (C) Copyright IBM Corp. 2023-2025.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
@@ -306,6 +306,7 @@
 
 <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
 
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.ilab_tuner</span> <span class="kn">import</span> <span class="n">ILabTuner</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.prompt_tuner</span> <span class="kn">import</span> <span class="n">PromptTuner</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.fine_tuner</span> <span class="kn">import</span> <span class="n">FineTuner</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="p">(</span>
@@ -407,9 +408,19 @@
                 <span class="n">limit</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tuning_name</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span>
                 <span class="n">_internal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">_is_fine_tuning</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
 
-            <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">ft_runs_details</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">]:</span>
+            <span class="n">ilabt_runs_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+                <span class="n">get_all</span><span class="o">=</span><span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tuning_name</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="n">limit</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tuning_name</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span>
+                <span class="n">training_type</span><span class="o">=</span><span class="s2">&quot;ilab&quot;</span><span class="p">,</span>
+                <span class="n">_internal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">_is_fine_tuning</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+
+            <span class="n">ft_runs_details</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ilabt_runs_details</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">ft_runs_details</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">:</span>
                     <span class="k">break</span>
 
@@ -433,14 +444,14 @@
 
 <div class="viewcode-block" id="TuneRuns.get_tuner">
 <a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.experiment.fm_tune.TuneRuns.get_tuner">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_tuner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PromptTuner</span> <span class="o">|</span> <span class="n">FineTuner</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance of PromptTuner or FineTuner based on a tuning run with a specific run_id.</span>
+    <span class="k">def</span> <span class="nf">get_tuner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PromptTuner</span> <span class="o">|</span> <span class="n">FineTuner</span> <span class="o">|</span> <span class="n">ILabTuner</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance of PromptTuner or FineTuner or ILabTuner based on a tuning run with a specific run_id.</span>
 
 <span class="sd">        :param run_id: ID of the run</span>
 <span class="sd">        :type run_id: str</span>
 
-<span class="sd">        :return: prompt tuner | fine tuner object</span>
-<span class="sd">        :rtype: PromptTuner | FineTuner class instance</span>
+<span class="sd">        :return: prompt tuner | fine | ilab tuner object</span>
+<span class="sd">        :rtype: PromptTuner | FineTuner | ILabTuner class instance</span>
 
 <span class="sd">        **Example:**</span>
 
@@ -462,8 +473,10 @@
                 <span class="n">tuning_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
                     <span class="n">run_id</span><span class="p">,</span> <span class="n">_is_fine_tuning</span><span class="o">=</span><span class="kc">True</span>
                 <span class="p">)</span>
-                <span class="n">entity</span> <span class="o">=</span> <span class="n">tuning_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entity&quot;</span><span class="p">)</span>
-                <span class="n">tuning_type</span> <span class="o">=</span> <span class="s2">&quot;fine_tuning&quot;</span>
+                <span class="n">entity</span> <span class="o">=</span> <span class="n">tuning_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entity&quot;</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="n">tuning_type</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;ilab_tuning&quot;</span> <span class="k">if</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;ilab&quot;</span> <span class="k">else</span> <span class="s2">&quot;fine_tuning&quot;</span>
+                <span class="p">)</span>
             <span class="k">except</span> <span class="n">ApiRequestFailure</span><span class="p">:</span>
                 <span class="n">tuning_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">run_id</span><span class="p">)</span>
                 <span class="n">entity</span> <span class="o">=</span> <span class="n">tuning_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entity&quot;</span><span class="p">)</span>
@@ -476,7 +489,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">entity</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Provided run_id was invalid&quot;</span><span class="p">)</span>
 
-        <span class="n">tuner</span><span class="p">:</span> <span class="n">PromptTuner</span> <span class="o">|</span> <span class="n">FineTuner</span>
+        <span class="n">tuner</span><span class="p">:</span> <span class="n">PromptTuner</span> <span class="o">|</span> <span class="n">FineTuner</span> <span class="o">|</span> <span class="n">ILabTuner</span>
 
         <span class="k">match</span> <span class="n">tuning_type</span><span class="p">:</span>
             <span class="k">case</span> <span class="s2">&quot;prompt_tuning&quot;</span><span class="p">:</span>
@@ -499,6 +512,9 @@
                     <span class="n">auto_update_model</span><span class="o">=</span><span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;auto_update_model&quot;</span><span class="p">),</span>
                 <span class="p">)</span>
                 <span class="n">tuner</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span>
+
+            <span class="k">case</span> <span class="s2">&quot;ilab_tuning&quot;</span><span class="p">:</span>
+                <span class="n">tuner</span> <span class="o">=</span> <span class="n">ILabTuner</span><span class="p">(</span><span class="n">tuning_details</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">)</span>
 
             <span class="k">case</span> <span class="s2">&quot;fine_tuning&quot;</span><span class="p">:</span>
                 <span class="n">tuning_params</span> <span class="o">=</span> <span class="n">entity</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">]</span>
@@ -561,6 +577,14 @@
                     <span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                         <span class="s2">&quot;resources&quot;</span>
                     <span class="p">)</span>
+                    <span class="n">resources</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+                            <span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">training_type</span><span class="o">=</span><span class="s2">&quot;ilab&quot;</span><span class="p">,</span>
+                            <span class="n">_internal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">_is_fine_tuning</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="p">[])</span>
+                    <span class="p">)</span>
                 <span class="k">except</span> <span class="n">ApiRequestFailure</span><span class="p">:</span>
                     <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>  <span class="c1"># type: ignore[assignment]</span>
                         <span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">training_type</span><span class="o">=</span><span class="s2">&quot;prompt_tuning&quot;</span><span class="p">,</span> <span class="n">_internal</span><span class="o">=</span><span class="kc">True</span>
@@ -581,7 +605,7 @@
                 <span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">resources</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">details</span> <span class="o">=</span> <span class="n">resources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">resources</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">resources</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">timestamps</span> <span class="o">=</span> <span class="p">{}</span>
                 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">resources</span><span class="p">):</span>
                     <span class="k">try</span><span class="p">:</span>
@@ -631,7 +655,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2023-2024, IBM
+                Copyright &#169; 2023-2025, IBM
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

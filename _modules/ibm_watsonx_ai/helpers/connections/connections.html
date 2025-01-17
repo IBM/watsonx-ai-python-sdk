@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=302659d7" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/mystyle2.css?v=c40128c6" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/mystyle2.css?v=4014603e" />
     
     
 
@@ -310,10 +310,11 @@
     <span class="s2">&quot;ConnectionAssetLocation&quot;</span><span class="p">,</span>
     <span class="s2">&quot;DatabaseLocation&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ContainerLocation&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GithubLocation&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="c1">#  (C) Copyright IBM Corp. 2023-2024.</span>
+<span class="c1">#  (C) Copyright IBM Corp. 2023-2025.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
@@ -368,7 +369,6 @@
 <span class="kn">from</span> <span class="nn">.base_connection</span> <span class="kn">import</span> <span class="n">BaseConnection</span>
 <span class="kn">from</span> <span class="nn">.base_data_connection</span> <span class="kn">import</span> <span class="n">BaseDataConnection</span>
 <span class="kn">from</span> <span class="nn">.base_location</span> <span class="kn">import</span> <span class="n">BaseLocation</span>
-<span class="kn">from</span> <span class="nn">.flight_service</span> <span class="kn">import</span> <span class="n">FlightConnection</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.workspace</span> <span class="kn">import</span> <span class="n">WorkSpace</span>
@@ -401,6 +401,7 @@
             <span class="s2">&quot;ConnectionAssetLocation&quot;</span><span class="p">,</span>
             <span class="s2">&quot;DatabaseLocation&quot;</span><span class="p">,</span>
             <span class="s2">&quot;ContainerLocation&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;GithubLocation&quot;</span><span class="p">,</span>
         <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">connection</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
             <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;S3Connection&quot;</span><span class="p">,</span> <span class="s2">&quot;NFSConnection&quot;</span><span class="p">,</span> <span class="s2">&quot;ConnectionAsset&quot;</span><span class="p">]</span>
@@ -478,6 +479,9 @@
             <span class="n">location</span><span class="p">,</span> <span class="p">(</span><span class="n">AssetLocation</span><span class="p">,</span> <span class="n">CloudAssetLocation</span><span class="p">,</span> <span class="n">DeploymentOutputAssetLocation</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">DS</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">GithubLocation</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">GH</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">auto_pipeline_params</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">{}</span>
@@ -639,6 +643,7 @@
         <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 
         <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.data_loaders.datasets.tabular</span> <span class="kn">import</span> <span class="n">TabularIterableDataset</span>
+        <span class="kn">from</span> <span class="nn">.flight_service</span> <span class="kn">import</span> <span class="n">FlightConnection</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">flight_parameters</span> <span class="o">=</span> <span class="p">(</span>
@@ -663,8 +668,7 @@
                 <span class="n">space_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">default_space_id</span><span class="p">,</span>
                 <span class="n">_api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="p">,</span>
             <span class="p">)</span>
-
-            <span class="k">return</span> <span class="p">[</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">r</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">conn</span><span class="o">.</span><span class="n">discovery</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)[</span><span class="s2">&quot;assets&quot;</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;file&quot;</span>
@@ -672,6 +676,11 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Flight discovery didn&#39;t work, error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_paths_from_bucket_fallback</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">paths</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">paths</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidLocationInDataConnection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">get_location</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="nf">_get_file_paths_from_bucket_fallback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns file paths (keys) of objects that are stored at a bucket location.</span>
@@ -2571,6 +2580,29 @@
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
 
+<span class="k">class</span> <span class="nc">GithubLocation</span><span class="p">(</span><span class="n">BaseLocation</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Connection class to a Github.</span>
+
+<span class="sd">    :param secret_manager_url: url of Secrets Manager service where the Github PAT and url are stored.</span>
+<span class="sd">    :type secret_manager_url: str</span>
+
+<span class="sd">    :param secret_id: ID of the secret with Github PAT and url in the Secrets Manager</span>
+<span class="sd">    :type secret_id: str</span>
+
+<span class="sd">    :param path: path within github repo to the file</span>
+<span class="sd">    :type path: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secret_manager_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">secret_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secret_manager_url</span> <span class="o">=</span> <span class="n">secret_manager_url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secret_id</span> <span class="o">=</span> <span class="n">secret_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a json dictionary representing this model.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+
 <span class="k">class</span> <span class="nc">ConnectionAsset</span><span class="p">(</span><span class="n">BaseConnection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Connection class for a Connection Asset.</span>
 
@@ -2721,7 +2753,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2023-2024, IBM
+                Copyright &#169; 2023-2025, IBM
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

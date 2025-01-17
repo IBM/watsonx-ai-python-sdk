@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=302659d7" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/mystyle2.css?v=c40128c6" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/mystyle2.css?v=4014603e" />
     
     
 
@@ -297,7 +297,7 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for ibm_watsonx_ai.foundation_models.embeddings.base_embeddings</h1><div class="highlight"><pre>
 <span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="c1">#  (C) Copyright IBM Corp. 2024.</span>
+<span class="c1">#  (C) Copyright IBM Corp. 2024-2025.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
@@ -305,7 +305,10 @@
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">UnexpectedKeyWordArgument</span>
 
 
 <div class="viewcode-block" id="BaseEmbeddings">
@@ -343,12 +346,21 @@
 <div class="viewcode-block" id="BaseEmbeddings.from_dict">
 <a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings.from_dict">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseEmbeddings</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseEmbeddings</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Deserialize ``BaseEmbeddings`` into a concrete one using arguments.</span>
 
 <span class="sd">        :return: concrete Embeddings or None if data is incorrect</span>
 <span class="sd">        :rtype: BaseEmbeddings | None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">supported_kwargs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;api_client&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">unsupported_kwargs</span> <span class="o">:=</span> <span class="nb">set</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">supported_kwargs</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">kword</span> <span class="ow">in</span> <span class="n">unsupported_kwargs</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">UnexpectedKeyWordArgument</span><span class="p">(</span>
+                    <span class="n">kword</span><span class="p">,</span>
+                    <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kword</span><span class="si">}</span><span class="s2"> is not supported as a keyword argument. Supported kwargs: </span><span class="si">{</span><span class="n">supported_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="n">api_client</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;api_client&quot;</span><span class="p">)</span>
+
         <span class="n">data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">class_type</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;__class__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -366,6 +378,14 @@
                         <span class="p">)</span>
 
                     <span class="k">if</span> <span class="bp">cls</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="n">module_name</span>
+                            <span class="o">==</span> <span class="s2">&quot;ibm_watsonx_ai.foundation_models.embeddings.embeddings&quot;</span>
+                            <span class="ow">and</span> <span class="n">api_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                        <span class="p">):</span>
+                            <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;credentials&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;api_client&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">api_client</span>
+
                         <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">(</span><span class="n">record</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
                             <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
                             <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
@@ -385,7 +405,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2023-2024, IBM
+                Copyright &#169; 2023-2025, IBM
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

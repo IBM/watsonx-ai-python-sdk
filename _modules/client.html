@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystyle2.css?v=c40128c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystyle2.css?v=4014603e" />
     
     
 
@@ -297,7 +297,7 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for client</h1><div class="highlight"><pre>
 <span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="c1">#  (C) Copyright IBM Corp. 2023-2024.</span>
+<span class="c1">#  (C) Copyright IBM Corp. 2023-2025.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
@@ -389,7 +389,7 @@
 
 <span class="sd">        credentials = Credentials(</span>
 <span class="sd">            url = &quot;&lt;url&gt;&quot;,</span>
-<span class="sd">            api_key = &quot;&lt;api_key&gt;&quot;</span>
+<span class="sd">            api_key = IAM_API_KEY</span>
 <span class="sd">        )</span>
 
 <span class="sd">        client = APIClient(credentials, space_id=&quot;&lt;space_id&gt;&quot;)</span>
@@ -472,8 +472,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__session</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;https://ca-tor.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://ca-tor.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.ca-tor.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.ca-tor.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://ca-tor.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.ca-tor.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.ca-tor.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.ca-tor.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
             <span class="s2">&quot;https://wxai-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.test.cloud.ibm.com&quot;</span><span class="p">,</span>
             <span class="s2">&quot;https://private.wxai-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dai.test.cloud.ibm.com&quot;</span><span class="p">,</span>
             <span class="s2">&quot;https://wml-mcsp-dev.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
@@ -529,6 +529,10 @@
 
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">platform_url</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">platform_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https://&quot;</span><span class="p">):</span>
+                            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_platform_url&quot;</span><span class="p">)</span>
+                            <span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">platform_url</span>
                     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="p">]</span>
@@ -548,6 +552,14 @@
                     <span class="s2">&quot;icp&quot;</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">instance_id</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
                     <span class="ow">or</span> <span class="s2">&quot;openshift&quot;</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">instance_id</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
                 <span class="p">):</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                        <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                    <span class="p">):</span>
+                        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_cloud_url&quot;</span><span class="p">)</span>
+                        <span class="p">)</span>
+
                     <span class="bp">self</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;DEPLOYMENT_PLATFORM&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;private&quot;</span>
 
@@ -991,7 +1003,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2023-2024, IBM
+                Copyright &#169; 2023-2025, IBM
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
