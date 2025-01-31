@@ -600,10 +600,12 @@
                 <span class="n">properties_names</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">conn_property</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">conn_property</span> <span class="ow">in</span> <span class="n">connection_properties</span>
                 <span class="p">]</span>
-                <span class="n">warn</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Incorrect connection properties for datasource type id: </span><span class="si">{</span><span class="n">datasource_type_id</span><span class="si">}</span><span class="s2">. &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;The following properties are correct: </span><span class="si">{</span><span class="n">properties_names</span><span class="si">}</span><span class="s2">.&quot;</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">ApiRequestFailure</span><span class="p">(</span>
+                    <span class="n">error_msg</span><span class="o">=</span><span class="s2">&quot;Failure during </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;creating new connection&quot;</span><span class="p">),</span>
+                    <span class="n">response</span><span class="o">=</span><span class="n">creation_response</span><span class="p">,</span>
+                    <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Incorrect connection properties for datasource type id: </span><span class="si">{</span><span class="n">datasource_type_id</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;The following properties are correct: </span><span class="si">{</span><span class="n">properties_names</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="k">raise</span> <span class="n">e</span>
 
         <span class="k">if</span> <span class="n">creation_response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span><span class="p">:</span>
@@ -770,7 +772,7 @@
         <span class="p">]</span>
 
         <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span>
-            <span class="n">space_values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;DATASOURCE_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;TYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="n">space_values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;DATASOURCE_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;TYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">],</span> <span class="kc">None</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">table</span></div>
 
@@ -802,7 +804,7 @@
         <span class="p">]</span>
 
         <span class="n">list_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span>
-            <span class="n">space_values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CREATED&quot;</span><span class="p">,</span> <span class="s2">&quot;DATASOURCE_TYPE_ID&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="n">space_values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CREATED&quot;</span><span class="p">,</span> <span class="s2">&quot;DATASOURCE_TYPE_ID&quot;</span><span class="p">],</span> <span class="kc">None</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">list_table</span></div>
 
@@ -840,7 +842,7 @@
             <span class="p">)</span>
             <span class="n">jars</span> <span class="o">=</span> <span class="p">[[</span><span class="n">el</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;resources&quot;</span><span class="p">]]</span>
 
-            <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span><span class="n">jars</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span><span class="n">jars</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">table</span></div>
 
 
@@ -894,7 +896,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">jars</span> <span class="o">=</span> <span class="p">[[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_uploaded_db_drivers</span><span class="p">()]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span><span class="n">jars</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span><span class="n">jars</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Connections.get_datasource_type_details_by_id">
 <a class="viewcode-back" href="../../core_api.html#client.Connections.get_datasource_type_details_by_id">[docs]</a>

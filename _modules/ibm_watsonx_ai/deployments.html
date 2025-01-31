@@ -311,6 +311,8 @@
     <span class="n">TYPE_CHECKING</span><span class="p">,</span>
     <span class="n">NoReturn</span><span class="p">,</span>
     <span class="n">Generator</span><span class="p">,</span>
+    <span class="n">TypeAlias</span><span class="p">,</span>
+    <span class="n">AsyncGenerator</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">json</span>
@@ -330,6 +332,7 @@
     <span class="n">InvalidValue</span><span class="p">,</span>
     <span class="n">ApiRequestFailure</span><span class="p">,</span>
 <span class="p">)</span>
+
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.href_definitions</span> <span class="kn">import</span> <span class="n">is_id</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.messages.messages</span> <span class="kn">import</span> <span class="n">Messages</span>
@@ -347,6 +350,8 @@
     <span class="kn">import</span> <span class="nn">pandas</span>
 
 <span class="n">lib_checker</span> <span class="o">=</span> <span class="n">LibraryChecker</span><span class="p">()</span>
+
+<span class="n">ListType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">list</span>
 
 
 <div class="viewcode-block" id="Deployments">
@@ -1235,7 +1240,7 @@
     <span class="k">def</span> <span class="nf">list</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">artifact_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns deployments in a table format. If limit is set to None, only the first 50 records are shown.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns deployments in a table format.</span>
 
 <span class="sd">        :param limit: limit number of fetched records</span>
 <span class="sd">        :type limit: int, optional</span>
@@ -1256,7 +1261,9 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;</span> <span class="mf">4.8</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_space_is_set</span><span class="p">()</span>
 
-        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span>
+        <span class="n">get_all</span> <span class="o">=</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span>
+
         <span class="n">resources</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
 
         <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1343,7 +1350,6 @@
                 <span class="s2">&quot;SPEC_REPLACEMENT&quot;</span><span class="p">,</span>
             <span class="p">],</span>
             <span class="n">limit</span><span class="p">,</span>
-            <span class="mi">50</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">table</span></div>
@@ -1353,7 +1359,6 @@
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.list_jobs">[docs]</a>
     <span class="k">def</span> <span class="nf">list_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the async deployment jobs in a table format.</span>
-<span class="sd">        If the limit is set to None, only the first 50 records are shown.</span>
 
 <span class="sd">        :param limit: limit number of fetched records</span>
 <span class="sd">        :type limit: int, optional</span>
@@ -1397,7 +1402,7 @@
             <span class="n">index</span> <span class="o">=</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span>
 
         <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span>
-            <span class="n">values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;JOB-ID&quot;</span><span class="p">,</span> <span class="s2">&quot;STATE&quot;</span><span class="p">,</span> <span class="s2">&quot;CREATED&quot;</span><span class="p">,</span> <span class="s2">&quot;DEPLOYMENT-ID&quot;</span><span class="p">],</span> <span class="n">limit</span><span class="p">,</span> <span class="mi">50</span>
+            <span class="n">values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;JOB-ID&quot;</span><span class="p">,</span> <span class="s2">&quot;STATE&quot;</span><span class="p">,</span> <span class="s2">&quot;CREATED&quot;</span><span class="p">,</span> <span class="s2">&quot;DEPLOYMENT-ID&quot;</span><span class="p">],</span> <span class="n">limit</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">table</span></div>
@@ -2095,10 +2100,10 @@
 
         <span class="k">return</span> <span class="n">filter_func</span>
 
-    <span class="k">def</span> <span class="nf">_get_model_inference_text</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">_get_model_inference</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">inference_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;text_stream&quot;</span><span class="p">],</span>
+        <span class="n">inference_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;text_stream&quot;</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;chat_stream&quot;</span><span class="p">],</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Based on provided deployment_id and params get ModelInference object.</span>
@@ -2121,10 +2126,18 @@
                     <span class="n">generated_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_deployment_generation_href</span><span class="p">(</span>
                         <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="s2">&quot;text_stream&quot;</span>
                     <span class="p">)</span>
+            <span class="k">case</span> <span class="s2">&quot;chat&quot;</span><span class="p">:</span>
+                <span class="n">generated_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_deployment_chat_href</span><span class="p">(</span>
+                    <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span>
+                <span class="p">)</span>
+            <span class="k">case</span> <span class="s2">&quot;chat_stream&quot;</span><span class="p">:</span>
+                <span class="n">generated_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_deployment_chat_stream_href</span><span class="p">(</span>
+                    <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span>
+                <span class="p">)</span>
             <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">InvalidValue</span><span class="p">(</span>
                     <span class="n">value_name</span><span class="o">=</span><span class="s2">&quot;inference_type&quot;</span><span class="p">,</span>
-                    <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Available types: &#39;text&#39;, &#39;text_stream&#39;, got: </span><span class="si">{</span><span class="n">inference_type</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
+                    <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Available types: &#39;text&#39;, &#39;text_stream&#39;, &#39;chat&#39;, &#39;chat_stream&#39;, got: </span><span class="si">{</span><span class="n">inference_type</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
 
         <span class="n">inference_url_list</span> <span class="o">=</span> <span class="p">[</span>
@@ -2139,18 +2152,18 @@
                 <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="p">{})</span>
                 <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;serving_urls&quot;</span><span class="p">,</span> <span class="p">[])</span>
             <span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">generated_url</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inference_url_list</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">inference_url</span> <span class="ow">in</span> <span class="n">inference_url_list</span><span class="p">:</span>  <span class="c1"># Remove on CPD 5.0 release</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="s2">&quot;v1-beta/deployments&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inference_url</span>
-                <span class="p">):</span>  <span class="c1"># Remove on CPD 5.0 release</span>
-                    <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                        <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
-                            <span class="n">deployment_id</span><span class="p">,</span>
-                            <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_deployment_has_not_inference_for_generation&quot;</span><span class="p">,</span>
+        <span class="k">if</span> <span class="n">inference_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;text_stream&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">generated_url</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inference_url_list</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">inference_url</span> <span class="ow">in</span> <span class="n">inference_url_list</span><span class="p">:</span>  <span class="c1"># Remove on CPD 5.0 release</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="s2">&quot;v1-beta/deployments&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inference_url</span>
+                    <span class="p">):</span>  <span class="c1"># Remove on CPD 5.0 release</span>
+                        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                                <span class="n">deployment_id</span><span class="p">,</span>
+                                <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_deployment_has_not_inference_for_generation&quot;</span><span class="p">,</span>
+                            <span class="p">)</span>
                         <span class="p">)</span>
-                    <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">ModelInference</span><span class="p">(</span>
             <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span>
@@ -2204,7 +2217,7 @@
 <span class="sd">        :return: scoring result containing generated content</span>
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference_text</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
             <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
             <span class="n">guardrails</span><span class="o">=</span><span class="n">guardrails</span><span class="p">,</span>
@@ -2275,7 +2288,7 @@
 <span class="sd">                warnings.filterwarnings(&quot;always&quot;, category=HAPDetectionWarning)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference_text</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">generate_text</span><span class="p">(</span>
             <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
             <span class="n">raw_response</span><span class="o">=</span><span class="n">raw_response</span><span class="p">,</span>
@@ -2342,9 +2355,7 @@
 <span class="sd">                warnings.filterwarnings(&quot;always&quot;, category=HAPDetectionWarning)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference_text</span><span class="p">(</span>
-            <span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;text_stream&quot;</span><span class="p">,</span> <span class="n">params</span>
-        <span class="p">)</span>
+        <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;text_stream&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">generate_text_stream</span><span class="p">(</span>
             <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
             <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
@@ -2355,6 +2366,34 @@
             <span class="n">validate_prompt_variables</span><span class="o">=</span><span class="n">validate_prompt_variables</span><span class="p">,</span>
         <span class="p">)</span></div>
 
+
+    <span class="k">def</span> <span class="nf">chat</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">chat_stream</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
+        <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;chat_stream&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">chat_stream</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">achat</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="k">await</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">achat</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">achat_stream</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">:</span>
+        <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;chat_stream&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="k">await</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">achat_stream</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Deployments.run_ai_service">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.run_ai_service">[docs]</a>
@@ -2369,6 +2408,10 @@
 
 <span class="sd">        :return: response of the AI service</span>
 <span class="sd">        :rtype: Any</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            * By executing this class method, a POST request is performed.</span>
+<span class="sd">            * In case of `method not allowed` error, try sending requests directly to your deployed ai service.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;deployment_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">ai_service_payload</span><span class="p">,</span> <span class="s2">&quot;ai_service_payload&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
@@ -2386,6 +2429,18 @@
             <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>  <span class="c1"># version parameter is mandatory</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
         <span class="p">)</span>
+
+        <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;POST is not supported using this method. Send requests directly to the deployed ai_service.&quot;</span>
+        <span class="n">reason</span> <span class="o">=</span> <span class="n">response_scoring</span><span class="o">.</span><span class="n">text</span>
+
+        <span class="k">if</span> <span class="n">response_scoring</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">405</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">error_msg</span>
+                <span class="o">+</span> <span class="s2">&quot; Error: &quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">response_scoring</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">&quot;. &quot;</span>
+                <span class="o">+</span> <span class="n">reason</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;AI Service run&quot;</span><span class="p">,</span> <span class="n">response_scoring</span><span class="p">)</span></div>
 
@@ -2425,8 +2480,8 @@
         <span class="p">)</span> <span class="k">as</span> <span class="n">resp</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">iter_lines</span><span class="p">(</span><span class="n">decode_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="s2">&quot;data: &quot;</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">:</span>
-                        <span class="n">response</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;data: &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">field_name</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">field_name</span> <span class="o">==</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span>
                         <span class="k">yield</span> <span class="n">response</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">ApiRequestFailure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failure during AI Service run steam&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span></div>

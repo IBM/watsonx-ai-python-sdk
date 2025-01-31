@@ -423,6 +423,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+        <span class="n">wml_full_version</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
         <span class="k">if</span> <span class="n">verify</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;`verify` parameter is deprecated. Use `ibm_watsonx_ai.Credentials` for passing `verify` parameter.&quot;</span><span class="p">,</span>
@@ -509,7 +511,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">proceed</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__predefined_instance_type_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;icp&quot;</span><span class="p">,</span> <span class="s2">&quot;openshift&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">credentials</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NoWMLCredentialsProvided</span><span class="p">()</span>
@@ -577,11 +578,11 @@
                         <span class="p">)</span>
 
                     <span class="k">if</span> <span class="n">response_get_wml_services</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
-                        <span class="n">wml_version</span> <span class="o">=</span> <span class="n">response_get_wml_services</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="n">wml_full_version</span> <span class="o">=</span> <span class="n">response_get_wml_services</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                             <span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
                         <span class="p">)</span>
-                        <span class="k">if</span> <span class="n">wml_version</span><span class="p">:</span>
-                            <span class="n">wml_version</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">wml_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span><span class="mi">2</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="n">wml_full_version</span><span class="p">:</span>
+                            <span class="n">wml_version</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">wml_full_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span><span class="mi">2</span><span class="p">])</span>
                             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">wml_version</span>
                             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="o">!=</span> <span class="n">wml_version</span><span class="p">:</span>
@@ -680,7 +681,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_use_pta_ga_api</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="ow">or</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&gt;=</span> <span class="mf">5.0</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="kc">None</span>
 
             <span class="c1"># For cloud, service_instance.details will be set during space creation( if instance is associated ) or</span>
             <span class="c1"># while patching a space with an instance</span>
@@ -727,7 +727,9 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">factsheets</span> <span class="o">=</span> <span class="n">Factsheets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">task_credentials</span> <span class="o">=</span> <span class="n">TaskCredentials</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-                <span class="c1"># AI service available only on CLOUD</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;</span> <span class="mf">5.1</span> <span class="ow">or</span> <span class="n">wml_full_version</span> <span class="o">==</span> <span class="s2">&quot;5.1.0&quot;</span><span class="p">:</span>
+                <span class="k">pass</span>  <span class="c1"># AI services available only on CLOUD and CPD 5.1.1 or higher</span>
+            <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__ai_services</span> <span class="o">=</span> <span class="n">AIServices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">remote_training_systems</span> <span class="o">=</span> <span class="n">RemoteTrainingSystem</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -769,6 +771,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_auth_method</span><span class="o">.</span><span class="n">get_token</span><span class="p">()</span>
+
+    <span class="nd">@token</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_auth_method</span><span class="o">.</span><span class="n">_token</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RequestsLikeType</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__session</span> <span class="o">=</span> <span class="n">_APIClientSession</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -780,7 +790,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_ai_services</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AIServices</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&gt;=</span> <span class="mf">5.1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_ai_services_endpoint_available</span><span class="p">()</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ai_services</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
@@ -861,7 +873,7 @@
 
         <span class="k">if</span> <span class="n">zen</span><span class="p">:</span>
             <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="n">content_type</span><span class="p">}</span>
-            <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_create_token</span><span class="p">()</span>
+            <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Basic &quot;</span> <span class="o">+</span> <span class="n">token</span><span class="p">})</span>
 
@@ -880,7 +892,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">token</span> <span class="o">=</span> <span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">token_to_use</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">token</span> <span class="o">=</span> <span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_get_token</span><span class="p">()</span>
+                <span class="n">token</span> <span class="o">=</span> <span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span>
             <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="n">token</span><span class="p">,</span>
                 <span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="n">get_user_agent_header</span><span class="p">(),</span>
@@ -957,7 +969,7 @@
 
 
     <span class="k">def</span> <span class="nf">_get_icptoken</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_create_token</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span>
 
     <span class="k">def</span> <span class="nf">_is_default_space_set</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -989,7 +1001,20 @@
             <span class="p">),</span>
             <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_param</span><span class="p">},</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">response_ga_api</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span></div>
+        <span class="k">return</span> <span class="n">response_ga_api</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+
+    <span class="k">def</span> <span class="nf">_is_ai_services_endpoint_available</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_ai_services_href</span><span class="p">()</span>
+
+            <span class="n">response_ai_services_api</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">?limit=1&quot;</span><span class="p">,</span>
+                <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+                <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">response_ai_services_api</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">404</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
 
 </pre></div>
         </article>

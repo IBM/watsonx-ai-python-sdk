@@ -302,7 +302,7 @@
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">AsyncGenerator</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
@@ -532,6 +532,7 @@
         <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tool_choice</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tool_choice_option</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;auto&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given a list of messages comprising a conversation, the model will return a response.</span>
@@ -550,6 +551,10 @@
 
 <span class="sd">        :param tool_choice_option: Tool choice option</span>
 <span class="sd">        :type tool_choice_option: Literal[&quot;none&quot;, &quot;auto&quot;], optional</span>
+
+<span class="sd">        :param context: context variable can be present in chat `system_prompt` or chat messages content fields and are</span>
+<span class="sd">            identified by sentence &#39;{{ context }}&#39;. Supported only with `deployment_id`, defaults to None.</span>
+<span class="sd">        :type context: str, optional</span>
 
 <span class="sd">        :return: scoring result containing generated chat content.</span>
 <span class="sd">        :rtype: dict</span>
@@ -574,9 +579,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="s2">&quot;messages&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">TextChatParameters</span><span class="p">],</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">context</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;chat_deployment_scenario&quot;</span><span class="p">)</span>
+                <span class="s2">&quot;The `context` parameter is only supported for inferring a chat prompt deployment.&quot;</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span>
@@ -585,6 +590,7 @@
             <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
             <span class="n">tool_choice</span><span class="o">=</span><span class="n">tool_choice</span><span class="p">,</span>
             <span class="n">tool_choice_option</span><span class="o">=</span><span class="n">tool_choice_option</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -597,6 +603,7 @@
         <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tool_choice</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tool_choice_option</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;auto&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given a list of messages comprising a conversation, the model will return a response in stream.</span>
@@ -615,6 +622,10 @@
 
 <span class="sd">        :param tool_choice_option: Tool choice option</span>
 <span class="sd">        :type tool_choice_option: Literal[&quot;none&quot;, &quot;auto&quot;], optional</span>
+
+<span class="sd">        :param context: context variable can be present in chat `system_prompt` or chat messages content fields and are</span>
+<span class="sd">            identified by sentence &#39;{{ context }}&#39;. Supported only with `deployment_id`, defaults to None.</span>
+<span class="sd">        :type context: str, optional</span>
 
 <span class="sd">        :return: scoring result containing generated chat content.</span>
 <span class="sd">        :rtype: generator</span>
@@ -636,9 +647,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="s2">&quot;messages&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">TextChatParameters</span><span class="p">],</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">context</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;chat_deployment_scenario&quot;</span><span class="p">)</span>
+                <span class="s2">&quot;The `context` parameter is only supported for inferring a chat prompt deployment.&quot;</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">chat_stream</span><span class="p">(</span>
@@ -647,6 +658,7 @@
             <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
             <span class="n">tool_choice</span><span class="o">=</span><span class="n">tool_choice</span><span class="p">,</span>
             <span class="n">tool_choice_option</span><span class="o">=</span><span class="n">tool_choice_option</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -659,6 +671,7 @@
         <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tool_choice</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tool_choice_option</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;auto&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given a list of messages comprising a conversation with a chat model in an asynchronous manner.</span>
@@ -677,6 +690,10 @@
 
 <span class="sd">        :param tool_choice_option: Tool choice option</span>
 <span class="sd">        :type tool_choice_option: Literal[&quot;none&quot;, &quot;auto&quot;], optional</span>
+
+<span class="sd">        :param context: context variable can be present in chat `system_prompt` or chat messages content fields and are</span>
+<span class="sd">            identified by sentence &#39;{{ context }}&#39;. Supported only with `deployment_id`, defaults to None.</span>
+<span class="sd">        :type context: str, optional</span>
 
 <span class="sd">        :return: scoring result containing generated chat content.</span>
 <span class="sd">        :rtype: dict</span>
@@ -701,9 +718,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="s2">&quot;messages&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">TextChatParameters</span><span class="p">],</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">context</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;chat_deployment_scenario&quot;</span><span class="p">)</span>
+                <span class="s2">&quot;The `context` parameter is only supported for inferring a chat prompt deployment.&quot;</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">achat</span><span class="p">(</span>
@@ -712,6 +729,75 @@
             <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
             <span class="n">tool_choice</span><span class="o">=</span><span class="n">tool_choice</span><span class="p">,</span>
             <span class="n">tool_choice_option</span><span class="o">=</span><span class="n">tool_choice_option</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModelInference.achat_stream">
+<a class="viewcode-back" href="../../../../fm_model_inference.html#ibm_watsonx_ai.foundation_models.inference.ModelInference.achat_stream">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">achat_stream</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">TextChatParameters</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tool_choice</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tool_choice_option</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;auto&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a list of messages comprising a conversation, the model will return a response in stream in an asynchronous manner.</span>
+
+<span class="sd">        :param messages: The messages for this chat session.</span>
+<span class="sd">        :type messages: list[dict]</span>
+
+<span class="sd">        :param params: meta props for chat generation, use ``ibm_watsonx_ai.foundation_models.schema.TextChatParameters.show()``</span>
+<span class="sd">        :type params: dict, TextChatParameters, optional</span>
+
+<span class="sd">        :param tools: Tool functions that can be called with the response.</span>
+<span class="sd">        :type tools: list</span>
+
+<span class="sd">        :param tool_choice: Specifying a particular tool via {&quot;type&quot;: &quot;function&quot;, &quot;function&quot;: {&quot;name&quot;: &quot;my_function&quot;}} forces the model to call that tool.</span>
+<span class="sd">        :type tool_choice: dict, optional</span>
+
+<span class="sd">        :param tool_choice_option: Tool choice option</span>
+<span class="sd">        :type tool_choice_option: Literal[&quot;none&quot;, &quot;auto&quot;], optional</span>
+
+<span class="sd">        :param context: context variable can be present in chat `system_prompt` or chat messages content fields and are</span>
+<span class="sd">            identified by sentence &#39;{{ context }}&#39;. Supported only with `deployment_id`, defaults to None.</span>
+<span class="sd">        :type context: str, optional</span>
+
+<span class="sd">        :return: scoring result containing generated chat content.</span>
+<span class="sd">        :rtype: AsyncGenerator</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            messages = [</span>
+<span class="sd">                {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful assistant.&quot;},</span>
+<span class="sd">                {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Who won the world series in 2020?&quot;}</span>
+<span class="sd">            ]</span>
+<span class="sd">            generated_response = await model.achat_stream(messages=messages)</span>
+
+<span class="sd">            async for chunk in generated_response:</span>
+<span class="sd">                print(chunk[&#39;choices&#39;][0][&#39;delta&#39;].get(&#39;content&#39;, &#39;&#39;), end=&#39;&#39;, flush=True)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="s2">&quot;messages&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">TextChatParameters</span><span class="p">],</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">context</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="s2">&quot;The `context` parameter is only supported for inferring a chat prompt deployment.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">achat_stream</span><span class="p">(</span>
+            <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
+            <span class="n">tool_choice</span><span class="o">=</span><span class="n">tool_choice</span><span class="p">,</span>
+            <span class="n">tool_choice_option</span><span class="o">=</span><span class="n">tool_choice_option</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -864,6 +950,75 @@
             <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="n">guardrails_hap_params</span><span class="p">,</span>
             <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">,</span>
         <span class="p">)</span>
+
+<div class="viewcode-block" id="ModelInference.agenerate_stream">
+<a class="viewcode-back" href="../../../../fm_model_inference.html#ibm_watsonx_ai.foundation_models.inference.ModelInference.agenerate_stream">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">agenerate_stream</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">TextGenParameters</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">validate_prompt_variables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a stream as agenerate_stream after getting a text prompt as input and</span>
+<span class="sd">        parameters for the selected model (model_id). For prompt template deployment, `prompt` should be None.</span>
+
+<span class="sd">        :param params: MetaProps for text generation, use ``ibm_watsonx_ai.metanames.GenTextParamsMetaNames().show()`` to view the list of MetaNames</span>
+<span class="sd">        :type params: dict, TextGenParameters, optional</span>
+
+<span class="sd">        :param prompt: prompt string, defaults to None</span>
+<span class="sd">        :type prompt: str, optional</span>
+
+<span class="sd">        :param guardrails: If True, the detection filter for potentially hateful, abusive, and/or profane language (HAP) is toggle on for both prompt and generated text, defaults to False</span>
+<span class="sd">                           If HAP is detected, then the `HAPDetectionWarning` is issued</span>
+<span class="sd">        :type guardrails: bool</span>
+
+<span class="sd">        :param guardrails_hap_params: MetaProps for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
+<span class="sd">                                      to view the list of MetaNames</span>
+<span class="sd">        :type guardrails_hap_params: dict</span>
+
+<span class="sd">        :param validate_prompt_variables: If True, the prompt variables provided in `params` are validated with the ones in the Prompt Template Asset.</span>
+<span class="sd">                                          This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</span>
+<span class="sd">        :type validate_prompt_variables: bool</span>
+
+<span class="sd">        :return: scoring result that contains the generated content</span>
+<span class="sd">        :rtype: AsyncGenerator</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            By default, only the first occurrence of `HAPDetectionWarning` is displayed. To enable printing all warnings of this category, use:</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                import warnings</span>
+<span class="sd">                from ibm_watsonx_ai.foundation_models.utils import HAPDetectionWarning</span>
+
+<span class="sd">                warnings.filterwarnings(&quot;always&quot;, category=HAPDetectionWarning)</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            q = &quot;Write an epigram about the sun&quot;</span>
+<span class="sd">            generated_response = await model_inference.agenerate_stream(prompt=q)</span>
+
+<span class="sd">            async for chunk in generated_response:</span>
+<span class="sd">                print(chunk, end=&#39;&#39;, flush=True)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">TextGenParameters</span><span class="p">],</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="o">.</span><span class="n">agenerate_stream</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">guardrails</span><span class="o">=</span><span class="n">guardrails</span><span class="p">,</span>
+            <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="n">guardrails_hap_params</span><span class="p">,</span>
+            <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">,</span>
+            <span class="n">validate_prompt_variables</span><span class="o">=</span><span class="n">validate_prompt_variables</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
 
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">generate_text</span><span class="p">(</span>
@@ -1136,7 +1291,7 @@
 <span class="sd">            prompt_template = &quot;What color is the {flower}?&quot;</span>
 
 <span class="sd">            llm_chain = LLMChain(llm=flan_ul2_model.to_langchain(), prompt=PromptTemplate.from_template(prompt_template))</span>
-<span class="sd">            llm_chain(&#39;sunflower&#39;)</span>
+<span class="sd">            llm_chain.invoke(&#39;sunflower&#39;)</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -1157,7 +1312,7 @@
 <span class="sd">            prompt_template = &quot;What color is the {car}?&quot;</span>
 
 <span class="sd">            llm_chain = LLMChain(llm=deployed_model.to_langchain(), prompt=PromptTemplate.from_template(prompt_template))</span>
-<span class="sd">            llm_chain(&#39;sunflower&#39;)</span>
+<span class="sd">            llm_chain.invoke(&#39;sunflower&#39;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>

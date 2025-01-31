@@ -303,17 +303,23 @@
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">TypeAlias</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">langchain</span>
     <span class="kn">from</span> <span class="nn">langchain.prompts</span> <span class="kn">import</span> <span class="n">PromptTemplate</span> <span class="k">as</span> <span class="n">LcPromptTemplate</span>
+    <span class="kn">from</span> <span class="nn">langchain.prompts</span> <span class="kn">import</span> <span class="n">ChatPromptTemplate</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 
-<span class="kn">from</span> <span class="nn">.base_prompt_template</span> <span class="kn">import</span> <span class="n">BasePromptTemplate</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.prompts.base_prompt_template</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BasePromptTemplate</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.prompts.base_prompt</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BasePrompt</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">import</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="k">as</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="p">(</span>
@@ -327,6 +333,9 @@
     <span class="n">ModelTypes</span><span class="p">,</span>
     <span class="n">PromptTemplateFormats</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.prompts.chat_prompt</span> <span class="kn">import</span> <span class="n">ChatPrompt</span>
+
+<span class="n">ListType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">list</span>
 
 
 <span class="nd">@dataclass</span>
@@ -396,7 +405,8 @@
 <span class="sd">            name=&quot;My freeform prompt&quot;,</span>
 <span class="sd">            model_id=&quot;ibm/granite-13b-chat-v2&quot;,</span>
 <span class="sd">            input_text=&#39;What are the most famous monuments in ?&#39;,</span>
-<span class="sd">            input_variables=[&#39;country&#39;])</span>
+<span class="sd">            input_variables=[&#39;country&#39;]</span>
+<span class="sd">        )</span>
 
 <span class="sd">        # Traceback (most recent call last):</span>
 <span class="sd">        #    ...</span>
@@ -410,7 +420,8 @@
 <span class="sd">            name=&quot;My freeform prompt&quot;,</span>
 <span class="sd">            model_id=&quot;ibm/granite-13b-chat-v2&quot;</span>
 <span class="sd">            input_text=&#39;What are the most famous monuments in {country}?&#39;,</span>
-<span class="sd">            input_variables=[&#39;country&#39;])</span>
+<span class="sd">            input_variables=[&#39;country&#39;]</span>
+<span class="sd">        )</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -534,7 +545,8 @@
 <span class="sd">            name=&quot;My structured prompt&quot;,</span>
 <span class="sd">            model_id=&quot;ibm/granite-13b-chat-v2&quot;</span>
 <span class="sd">            input_text=&#39;What are the most famous monuments in ?&#39;,</span>
-<span class="sd">            input_variables=[&#39;country&#39;])</span>
+<span class="sd">            input_variables=[&#39;country&#39;]</span>
+<span class="sd">        )</span>
 
 <span class="sd">        # Traceback (most recent call last):</span>
 <span class="sd">        #     ...</span>
@@ -548,7 +560,8 @@
 <span class="sd">            name=&quot;My structured prompt&quot;,</span>
 <span class="sd">            model_id=&quot;ibm/granite-13b-chat-v2&quot;</span>
 <span class="sd">            input_text=&#39;What are the most famous monuments in {country}?&#39;,</span>
-<span class="sd">            input_variables=[&#39;country&#39;])</span>
+<span class="sd">            input_variables=[&#39;country&#39;]</span>
+<span class="sd">        )</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -717,9 +730,10 @@
 <span class="sd">            detached_model_id=&quot;&lt;model id&gt;&quot;,</span>
 <span class="sd">            detached_model_provider=&quot;&lt;provider&gt;&quot;,</span>
 <span class="sd">            detached_prompt_url=&quot;&lt;url&gt;&quot;,</span>
-<span class="sd">            detached_prompt_additional_information=[[{&quot;key&quot;:&quot;value&quot;}]]},</span>
+<span class="sd">            detached_prompt_additional_information=[{&quot;key&quot;:&quot;value&quot;}],</span>
 <span class="sd">            detached_model_name=&quot;&lt;model name&gt;&quot;,</span>
-<span class="sd">            detached_model_url =&quot;&lt;model url&gt;&quot;)</span>
+<span class="sd">            detached_model_url =&quot;&lt;model url&gt;&quot;</span>
+<span class="sd">        )</span>
 
 <span class="sd">        # Traceback (most recent call last):</span>
 <span class="sd">        #     ...</span>
@@ -738,9 +752,10 @@
 <span class="sd">            detached_model_id=&quot;&lt;model id&gt;&quot;,</span>
 <span class="sd">            detached_model_provider=&quot;&lt;provider&gt;&quot;,</span>
 <span class="sd">            detached_prompt_url=&quot;&lt;url&gt;&quot;,</span>
-<span class="sd">            detached_prompt_additional_information=[[{&quot;key&quot;:&quot;value&quot;}]]},</span>
+<span class="sd">            detached_prompt_additional_information=[{&quot;key&quot;:&quot;value&quot;}],</span>
 <span class="sd">            detached_model_name=&quot;&lt;model name&gt;&quot;,</span>
-<span class="sd">            detached_model_url =&quot;&lt;model url&gt;&quot;))</span>
+<span class="sd">            detached_model_url =&quot;&lt;model url&gt;&quot;</span>
+<span class="sd">        )</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -951,12 +966,12 @@
                 <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the parameters were set.&quot;</span><span class="p">,</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_create_request_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">BasePromptTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_create_request_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">BasePrompt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a request body from a PromptTemplate object.</span>
 
 <span class="sd">        :param prompt_template: PromptTemplate object based on which the request</span>
 <span class="sd">                                body will be created.</span>
-<span class="sd">        :type prompt_template: BasePromptTemplate</span>
+<span class="sd">        :type prompt_template: BasePrompt</span>
 
 <span class="sd">        :return: Request body</span>
 <span class="sd">        :rtype: dict</span>
@@ -964,7 +979,12 @@
         <span class="n">json_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;prompt&quot;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">()}</span>
         <span class="k">if</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">json_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">description</span><span class="p">})</span>
-        <span class="k">if</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">input_variables</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="n">BasePromptTemplate</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">input_variables</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+
             <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
                 <span class="n">prompt_template</span><span class="o">.</span><span class="n">input_variables</span><span class="p">,</span> <span class="s2">&quot;input_variables&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="kc">False</span>
             <span class="p">)</span>
@@ -983,14 +1003,27 @@
                 <span class="n">prompt_template</span><span class="o">.</span><span class="n">task_ids</span><span class="p">,</span> <span class="s2">&quot;task_ids&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">False</span>
             <span class="p">)</span>
             <span class="n">json_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;task_ids&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">task_ids</span><span class="p">})</span>
-        <span class="k">if</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">template_version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="n">BasePromptTemplate</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">template_version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
             <span class="n">json_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span><span class="s2">&quot;model_version&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;number&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">template_version</span><span class="p">}}</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="n">ChatPrompt</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">prompt_version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="n">json_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;model_version&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;number&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">prompt_version</span><span class="p">}}</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;_input_mode&quot;</span><span class="p">):</span>
             <span class="n">json_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;input_mode&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">_input_mode</span><span class="p">})</span>
 
-        <span class="k">if</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">input_text</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="n">BasePromptTemplate</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">input_text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
             <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
                 <span class="n">prompt_template</span><span class="o">.</span><span class="n">input_text</span><span class="p">,</span> <span class="s2">&quot;input_text&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span>
             <span class="p">)</span>
@@ -1096,24 +1129,43 @@
 
             <span class="n">json_data</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;external_information&quot;</span><span class="p">:</span> <span class="n">external_information</span><span class="p">})</span>
 
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="n">ChatPrompt</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">chat_items</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+                    <span class="n">prompt_template</span><span class="o">.</span><span class="n">chat_items</span><span class="p">,</span> <span class="s2">&quot;chat_items&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="n">json_data</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;chat_items&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">chat_items</span><span class="p">})</span>
+
+            <span class="k">if</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">system_prompt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+                    <span class="n">prompt_template</span><span class="o">.</span><span class="n">system_prompt</span><span class="p">,</span> <span class="s2">&quot;system_prompt&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="n">json_data</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">&quot;system_prompt&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">system_prompt</span><span class="p">}</span>
+                <span class="p">)</span>
+
         <span class="n">json_data</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">json_data</span>
 
     <span class="k">def</span> <span class="nf">_from_json_to_prompt</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nb">dict</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FreeformPromptTemplate</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="n">DetachedPromptTemplate</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FreeformPromptTemplate</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="n">DetachedPromptTemplate</span> <span class="o">|</span> <span class="n">ChatPrompt</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert json response to FreeformPromptTemplate or PromptTemplate object.</span>
 
 <span class="sd">        :param response: Response body after request operation.</span>
 <span class="sd">        :type response: dict</span>
 
 <span class="sd">        :return: PromptTemplate object with given details.</span>
-<span class="sd">        :rtype: FreeformPromptTemplate | PromptTemplate</span>
+<span class="sd">        :rtype: FreeformPromptTemplate | PromptTemplate | DetachedPromptTemplate | ChatPrompt</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">prompt_field</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prompt&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
         <span class="n">data_field</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">prompt_field</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
         <span class="n">prompt_template</span><span class="p">:</span> <span class="p">(</span>
-            <span class="n">FreeformPromptTemplate</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="n">DetachedPromptTemplate</span>
+            <span class="n">FreeformPromptTemplate</span>
+            <span class="o">|</span> <span class="n">PromptTemplate</span>
+            <span class="o">|</span> <span class="n">DetachedPromptTemplate</span>
+            <span class="o">|</span> <span class="n">ChatPrompt</span>
         <span class="p">)</span>
 
         <span class="k">match</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;input_mode&quot;</span><span class="p">):</span>
@@ -1171,6 +1223,19 @@
                     <span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">),</span>
                     <span class="n">validate_template</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="p">)</span>
+
+            <span class="k">case</span> <span class="s2">&quot;chat&quot;</span><span class="p">:</span>
+                <span class="n">prompt_template</span> <span class="o">=</span> <span class="n">ChatPrompt</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">),</span>
+                    <span class="n">description</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">),</span>
+                    <span class="n">model_id</span><span class="o">=</span><span class="n">prompt_field</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_id&quot;</span><span class="p">),</span>
+                    <span class="n">model_params</span><span class="o">=</span><span class="n">prompt_field</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_parameters&quot;</span><span class="p">),</span>
+                    <span class="n">task_ids</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;task_ids&quot;</span><span class="p">),</span>
+                    <span class="n">prompt_version</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_version&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">),</span>
+                    <span class="n">chat_items</span><span class="o">=</span><span class="n">prompt_field</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;chat_items&quot;</span><span class="p">),</span>
+                    <span class="n">system_prompt</span><span class="o">=</span><span class="n">prompt_field</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system_prompt&quot;</span><span class="p">),</span>
+                <span class="p">)</span>
+
             <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
                 <span class="n">prompt_template</span> <span class="o">=</span> <span class="n">PromptTemplate</span><span class="p">(</span>
                     <span class="n">name</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">),</span>
@@ -1267,6 +1332,24 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;change_lock&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
 
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_prepare_lc_messages</span><span class="p">(</span>
+        <span class="n">system_prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">chat_items</span><span class="p">:</span> <span class="n">ListType</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="n">system_prompt</span><span class="p">)]</span>
+
+        <span class="n">mapping_to_lc</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="s2">&quot;human&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;ai&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">chat_items</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">chat_items</span><span class="p">:</span>
+                <span class="n">role</span> <span class="o">=</span> <span class="n">mapping_to_lc</span><span class="p">[</span><span class="n">el</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]]</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="n">el</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">role</span><span class="p">,</span> <span class="n">content</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">load_prompt</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1308,8 +1391,10 @@
         <span class="n">FreeformPromptTemplate</span>
         <span class="o">|</span> <span class="n">PromptTemplate</span>
         <span class="o">|</span> <span class="n">DetachedPromptTemplate</span>
+        <span class="o">|</span> <span class="n">ChatPrompt</span>
         <span class="o">|</span> <span class="nb">str</span>
         <span class="o">|</span> <span class="n">LcPromptTemplate</span>
+        <span class="o">|</span> <span class="n">ChatPromptTemplate</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve a prompt template asset.</span>
 
@@ -1323,7 +1408,7 @@
 <span class="sd">        :type prompt_variables: dict[str, str]</span>
 
 <span class="sd">        :return: prompt template asset</span>
-<span class="sd">        :rtype: FreeformPromptTemplate | PromptTemplate | DetachedPromptTemplate | str | langchain.prompts.PromptTemplate</span>
+<span class="sd">        :rtype: FreeformPromptTemplate | PromptTemplate | DetachedPromptTemplate | ChatPrompt | str | langchain.prompts.PromptTemplate</span>
 
 <span class="sd">        **Example:**</span>
 
@@ -1366,9 +1451,24 @@
                 <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">key</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">PromptVariablesError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">langchain.prompts</span> <span class="kn">import</span> <span class="n">PromptTemplate</span> <span class="k">as</span> <span class="n">LcPromptTemplate</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+                <span class="n">response_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                    <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;_load_json_prompt&quot;</span><span class="p">,</span> <span class="n">response</span>
+                <span class="p">)</span>
 
-                <span class="k">return</span> <span class="n">LcPromptTemplate</span><span class="o">.</span><span class="n">from_template</span><span class="p">(</span><span class="n">response_input</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">response_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;input_mode&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;chat&quot;</span><span class="p">:</span>
+                    <span class="kn">from</span> <span class="nn">langchain.prompts</span> <span class="kn">import</span> <span class="n">ChatPromptTemplate</span>
+
+                    <span class="n">system_prompt</span> <span class="o">=</span> <span class="n">response_json</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system_prompt&quot;</span><span class="p">)</span>
+                    <span class="n">chat_items</span> <span class="o">=</span> <span class="n">response_json</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;chat_items&quot;</span><span class="p">)</span>
+
+                    <span class="n">messages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_lc_messages</span><span class="p">(</span><span class="n">system_prompt</span><span class="p">,</span> <span class="n">chat_items</span><span class="p">)</span>
+
+                    <span class="k">return</span> <span class="n">ChatPromptTemplate</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="kn">from</span> <span class="nn">langchain.prompts</span> <span class="kn">import</span> <span class="n">PromptTemplate</span> <span class="k">as</span> <span class="n">LcPromptTemplate</span>
+
+                    <span class="k">return</span> <span class="n">LcPromptTemplate</span><span class="o">.</span><span class="n">from_template</span><span class="p">(</span><span class="n">response_input</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InvalidValue</span><span class="p">(</span><span class="s2">&quot;astype&quot;</span><span class="p">)</span></div>
 
@@ -1433,20 +1533,26 @@
             <span class="n">FreeformPromptTemplate</span>
             <span class="o">|</span> <span class="n">PromptTemplate</span>
             <span class="o">|</span> <span class="n">DetachedPromptTemplate</span>
+            <span class="o">|</span> <span class="n">ChatPrompt</span>
             <span class="o">|</span> <span class="n">langchain</span><span class="o">.</span><span class="n">prompts</span><span class="o">.</span><span class="n">PromptTemplate</span>
         <span class="p">),</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FreeformPromptTemplate</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="n">DetachedPromptTemplate</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FreeformPromptTemplate</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="n">DetachedPromptTemplate</span> <span class="o">|</span> <span class="n">ChatPrompt</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Store a new prompt template.</span>
 
 <span class="sd">        :param prompt_template: PromptTemplate to be stored.</span>
-<span class="sd">        :type prompt_template: (FreeformPromptTemplate | PromptTemplate | DetachedPromptTemplate | langchain.prompts.PromptTemplate)</span>
+<span class="sd">        :type prompt_template: (FreeformPromptTemplate | PromptTemplate | DetachedPromptTemplate | ChatPrompt | langchain.prompts.PromptTemplate)</span>
 
 <span class="sd">        :return: PromptTemplate object that is initialized with values provided in the server response object.</span>
-<span class="sd">        :rtype: FreeformPromptTemplate | PromptTemplate | DetachedPromptTemplate</span>
+<span class="sd">        :rtype: FreeformPromptTemplate | PromptTemplate | DetachedPromptTemplate | ChatPrompt</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
             <span class="n">prompt_template</span><span class="p">,</span>
-            <span class="p">(</span><span class="n">PromptTemplate</span> <span class="o">|</span> <span class="n">FreeformPromptTemplate</span> <span class="o">|</span> <span class="n">DetachedPromptTemplate</span><span class="p">),</span>
+            <span class="p">(</span>
+                <span class="n">PromptTemplate</span>
+                <span class="o">|</span> <span class="n">FreeformPromptTemplate</span>
+                <span class="o">|</span> <span class="n">DetachedPromptTemplate</span>
+                <span class="o">|</span> <span class="n">ChatPrompt</span>
+            <span class="p">),</span>
         <span class="p">):</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1560,6 +1666,35 @@
                             <span class="p">),</span>
                             <span class="n">validate_template</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span>
                                 <span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;validate_template&quot;</span><span class="p">,</span> <span class="kc">True</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
+                    <span class="k">case</span> <span class="s2">&quot;chat&quot;</span><span class="p">:</span>
+                        <span class="n">prompt_template</span> <span class="o">=</span> <span class="n">ChatPrompt</span><span class="p">(</span>
+                            <span class="n">name</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span>
+                                <span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;My prompt&quot;</span>
+                            <span class="p">),</span>
+                            <span class="n">model_id</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span>
+                                <span class="n">prompt_template</span><span class="p">,</span>
+                                <span class="s2">&quot;model_id&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;meta-llama/llama-3-1-70b-instruct&quot;</span><span class="p">,</span>
+                            <span class="p">),</span>
+                            <span class="n">model_params</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span>
+                                <span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;model_params&quot;</span><span class="p">,</span> <span class="kc">None</span>
+                            <span class="p">),</span>
+                            <span class="n">prompt_version</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span>
+                                <span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;template_version&quot;</span><span class="p">,</span> <span class="kc">None</span>
+                            <span class="p">),</span>
+                            <span class="n">task_ids</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span>
+                                <span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;task_ids&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">must_be_list</span><span class="o">=</span><span class="kc">True</span>
+                            <span class="p">),</span>
+                            <span class="n">description</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span>
+                                <span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="kc">None</span>
+                            <span class="p">),</span>
+                            <span class="n">chat_items</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span>
+                                <span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;chat_items&quot;</span><span class="p">,</span> <span class="kc">None</span>
+                            <span class="p">),</span>
+                            <span class="n">system_prompt</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span>
+                                <span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;system_prompt&quot;</span><span class="p">,</span> <span class="kc">None</span>
                             <span class="p">),</span>
                         <span class="p">)</span>
                     <span class="k">case</span> <span class="s2">&quot;detached&quot;</span><span class="p">:</span>
@@ -1678,7 +1813,10 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prompt_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">prompt_template</span><span class="p">:</span> <span class="p">(</span>
-            <span class="n">FreeformPromptTemplate</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="n">DetachedPromptTemplate</span>
+            <span class="n">FreeformPromptTemplate</span>
+            <span class="o">|</span> <span class="n">PromptTemplate</span>
+            <span class="o">|</span> <span class="n">DetachedPromptTemplate</span>
+            <span class="o">|</span> <span class="n">ChatPrompt</span>
         <span class="p">),</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update prompt template data.</span>
@@ -1686,8 +1824,8 @@
 <span class="sd">        :param prompt_id: ID of the prompt template to be updated</span>
 <span class="sd">        :type prompt_id: str</span>
 
-<span class="sd">        :param prompt: prompt template with new data</span>
-<span class="sd">        :type prompt: FreeformPromptTemplate | PromptTemplate | DetachedPromptTemplate</span>
+<span class="sd">        :param prompt_template: prompt template with new data</span>
+<span class="sd">        :type prompt_template: FreeformPromptTemplate | PromptTemplate | DetachedPromptTemplate | ChatPrompt</span>
 
 <span class="sd">        :return: metadata of the updated deployment</span>
 <span class="sd">        :rtype: dict</span>
@@ -1696,7 +1834,7 @@
 
 <span class="sd">        .. code-block:: python</span>
 
-<span class="sd">            updataed_prompt_template = PromptTemplate(name=&quot;New name&quot;)</span>
+<span class="sd">            updated_prompt_template = PromptTemplate(name=&quot;New name&quot;)</span>
 <span class="sd">            prompt_mgr.update_prompt(prompt_id, prompt_template)  # {&#39;name&#39;: &#39;New name&#39;} in metadata</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1820,6 +1958,64 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_change_lock</span><span class="p">(</span><span class="n">prompt_id</span><span class="o">=</span><span class="n">prompt_id</span><span class="p">,</span> <span class="n">locked</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">lock_state</span></div>
+
+
+<div class="viewcode-block" id="PromptTemplateManager.add_chat_items">
+<a class="viewcode-back" href="../../../../prompt_template_manager.html#ibm_watsonx_ai.foundation_models.prompts.PromptTemplateManager.add_chat_items">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_chat_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">chat_items</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a new chat items to a prompt.</span>
+
+<span class="sd">        :param prompt_id: ID of the prompt template</span>
+<span class="sd">        :type prompt_id: str</span>
+
+<span class="sd">        :param chat_items: Chat items to be added to prompt</span>
+<span class="sd">        :type chat_items: list[dict]</span>
+
+<span class="sd">        :return: status (&quot;SUCCESS&quot; if succeeded)</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            prompt_mgr.add_chat_items(</span>
+<span class="sd">                prompt_id=&quot;&lt;PROMPT_ID&gt;&quot;,</span>
+<span class="sd">                chat_items=[</span>
+<span class="sd">                    {</span>
+<span class="sd">                        &quot;type&quot;: &quot;&lt;CHAT ITEM TYPE&gt;&quot;,</span>
+<span class="sd">                        &quot;content&quot;: &quot;&lt;CHAT ITEM CONTENT&gt;&quot;,</span>
+<span class="sd">                        &quot;status&quot;: &quot;&lt;CHAT ITEM STATUS&gt;&quot;,</span>
+<span class="sd">                        &quot;timestamp&quot;: &lt;TIMESTAMP_AS_INT&gt;,</span>
+<span class="sd">                    },</span>
+<span class="sd">                    {</span>
+<span class="sd">                        &quot;type&quot;: &quot;&lt;CHAT ITEM TYPE&gt;&quot;,</span>
+<span class="sd">                        &quot;content&quot;: &quot;&lt;CHAT ITEM CONTENT&gt;&quot;,</span>
+<span class="sd">                        &quot;status&quot;: &quot;&lt;CHAT ITEM STATUS&gt;&quot;,</span>
+<span class="sd">                        &quot;timestamp&quot;: &lt;TIMESTAMP_AS_INT&gt;,</span>
+<span class="sd">                    }</span>
+<span class="sd">                ]</span>
+<span class="sd">            )</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_prompts_href</span><span class="p">(</span>
+                <span class="n">ga_api</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_use_pta_ga_api</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">prompt_id</span><span class="si">}</span><span class="s2">/chat_items&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">chat_items</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;SUCCESS&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                <span class="mi">201</span><span class="p">,</span> <span class="s2">&quot;add_chat_items&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">json_response</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span></div>
 </div>
 
 </pre></div>

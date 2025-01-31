@@ -411,7 +411,7 @@
 <div class="viewcode-block" id="TextGenLengthPenalty">
 <a class="viewcode-back" href="../../../../fm_schema.html#ibm_watsonx_ai.foundation_models.schema.TextGenLengthPenalty">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">TextGenLengthPenalty</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">TextGenLengthPenalty</span><span class="p">(</span><span class="n">BaseSchema</span><span class="p">):</span>
     <span class="n">decay_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">start_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -636,6 +636,32 @@
             <span class="s2">&quot;target_columns&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;col1&quot;</span><span class="p">,</span> <span class="s2">&quot;col2&quot;</span><span class="p">],</span>
         <span class="p">}</span></div>
 
+
+
+<span class="c1">#################</span>
+<span class="c1">#  FINE TUNING  #</span>
+<span class="c1">#################</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">PeftParameters</span><span class="p">(</span><span class="n">BaseSchema</span><span class="p">):</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">rank</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">target_modules</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">lora_alpha</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">lora_dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_sample_params</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provide example values for PeftParameters.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;lora&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rank&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+            <span class="s2">&quot;target_modules&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;all-linear&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;lora_alpha&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+            <span class="s2">&quot;lora_dropout&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+        <span class="p">}</span>
 </pre></div>
         </article>
       </div>

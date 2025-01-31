@@ -316,8 +316,6 @@
     <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
     <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
 
-<span class="n">_DEFAULT_LIST_LENGTH</span> <span class="o">=</span> <span class="mi">50</span>
-
 
 <div class="viewcode-block" id="RemoteTrainingSystem">
 <a class="viewcode-back" href="../federated_learning.html#remote_training_system.RemoteTrainingSystem">[docs]</a>
@@ -525,7 +523,6 @@
 <a class="viewcode-back" href="../federated_learning.html#remote_training_system.RemoteTrainingSystem.list">[docs]</a>
     <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Lists stored remote training systems in a table format.</span>
-<span class="sd">        If limit is set to None, only the first 50 records are shown.</span>
 
 <span class="sd">        :param limit: limit number of fetched records</span>
 <span class="sd">        :type limit: int, optional</span>
@@ -541,16 +538,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
 
-        <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">()[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+        <span class="n">get_all</span> <span class="o">=</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
 
         <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;created_at&quot;</span><span class="p">])</span>
             <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">resources</span>
         <span class="p">]</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span>
-            <span class="n">values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;CREATED&quot;</span><span class="p">],</span> <span class="n">limit</span><span class="p">,</span> <span class="n">_DEFAULT_LIST_LENGTH</span>
-        <span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;CREATED&quot;</span><span class="p">],</span> <span class="n">limit</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RemoteTrainingSystem.get_id">
@@ -759,9 +755,7 @@
             <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">resources</span>
         <span class="p">]</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span>
-            <span class="n">values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;REV&quot;</span><span class="p">,</span> <span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;CREATED&quot;</span><span class="p">],</span> <span class="n">limit</span><span class="p">,</span> <span class="n">_DEFAULT_LIST_LENGTH</span>
-        <span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;REV&quot;</span><span class="p">,</span> <span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;CREATED&quot;</span><span class="p">],</span> <span class="n">limit</span><span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="nf">_validate_party_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">party_metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
