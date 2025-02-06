@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Extensions" href="fm_extensions.html" /><link rel="prev" title="Tune Experiment" href="tune_experiment.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Extensions" href="fm_extensions.html" /><link rel="prev" title="InstructLab Experiment (BETA)" href="ilab_tuner.html" />
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>Prompt Template Manager - IBM watsonx.ai</title>
@@ -238,8 +238,10 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="prompt_tuner.html">Tuning</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Tuning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="pt_tune_experiment_run.html">Working with TuneExperiment and PromptTuner</a></li>
 <li class="toctree-l4"><a class="reference internal" href="ft_tune_experiment_run.html">Working with TuneExperiment and FineTuner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="it_tune_experiment_run.html">Working with TuneExperiment and ILabTuner (BETA)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pt_model_inference.html">Tuned Model Inference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="tune_experiment.html">Tune Experiment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ilab_tuner.html">InstructLab Experiment (BETA)</a></li>
 </ul>
 </li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Prompt Template Manager</a></li>
@@ -331,7 +333,6 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">Credentials</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.prompts</span> <span class="kn">import</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">PromptTemplateManager</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.enums</span> <span class="kn">import</span> <span class="n">ModelTypes</span>
 
 <span class="n">prompt_mgr</span> <span class="o">=</span> <span class="n">PromptTemplateManager</span><span class="p">(</span>
                 <span class="n">credentials</span><span class="o">=</span><span class="n">Credentials</span><span class="p">(</span>
@@ -342,7 +343,7 @@
                 <span class="p">)</span>
 
 <span class="n">prompt_template</span> <span class="o">=</span> <span class="n">PromptTemplate</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;My prompt&quot;</span><span class="p">,</span>
-                                 <span class="n">model_id</span><span class="o">=</span><span class="n">ModelTypes</span><span class="o">.</span><span class="n">GRANITE_13B_CHAT_V2</span><span class="p">,</span>
+                                 <span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;meta-llama/llama-3-3-70b-instruct&#39;</span><span class="p">,</span>
                                  <span class="n">input_prefix</span><span class="o">=</span><span class="s2">&quot;Human:&quot;</span><span class="p">,</span>
                                  <span class="n">output_prefix</span><span class="o">=</span><span class="s2">&quot;Assistant:&quot;</span><span class="p">,</span>
                                  <span class="n">input_text</span><span class="o">=</span><span class="s2">&quot;What is </span><span class="si">{object}</span><span class="s2"> and how does it work?&quot;</span><span class="p">,</span>
@@ -362,7 +363,7 @@
 <span class="n">meta_props</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="s2">&quot;SAMPLE DEPLOYMENT PROMPT TEMPLATE&quot;</span><span class="p">,</span>
     <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">ONLINE</span><span class="p">:</span> <span class="p">{},</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">BASE_MODEL_ID</span><span class="p">:</span> <span class="n">ModelTypes</span><span class="o">.</span><span class="n">GRANITE_13B_CHAT_V2</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">BASE_MODEL_ID</span><span class="p">:</span> <span class="s1">&#39;meta-llama/llama-3-3-70b-instruct&#39;</span>
     <span class="p">}</span>
 
 <span class="n">deployment_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">stored_prompt_template</span><span class="o">.</span><span class="n">prompt_id</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">)</span>
@@ -876,14 +877,14 @@ Raised only when <cite>validate_template</cite> is set to True.</p>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="tune_experiment.html">
+          <a class="prev-page" href="ilab_tuner.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Tune Experiment</div>
+                <div class="title">InstructLab Experiment (BETA)</div>
                 
               </div>
             </a>

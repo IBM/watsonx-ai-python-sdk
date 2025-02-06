@@ -238,8 +238,10 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="prompt_tuner.html">Tuning</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Tuning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="pt_tune_experiment_run.html">Working with TuneExperiment and PromptTuner</a></li>
 <li class="toctree-l4"><a class="reference internal" href="ft_tune_experiment_run.html">Working with TuneExperiment and FineTuner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="it_tune_experiment_run.html">Working with TuneExperiment and ILabTuner (BETA)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pt_model_inference.html">Tuned Model Inference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="tune_experiment.html">Tune Experiment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ilab_tuner.html">InstructLab Experiment (BETA)</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="prompt_template_manager.html">Prompt Template Manager</a></li>
@@ -418,7 +420,7 @@ identified by sentence ‘{{ context }}’. Supported only with <cite>deployment
 <span class="nb">print</span><span class="p">(</span><span class="n">generated_response</span><span class="p">)</span>
 
 <span class="c1"># Print only content</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;message&#39;</span><span class="p">][</span><span class="s1">&#39;content&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">generated_response</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;message&#39;</span><span class="p">][</span><span class="s1">&#39;content&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -454,7 +456,8 @@ identified by sentence ‘{{ context }}’. Supported only with <cite>deployment
 <span class="n">generated_response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">model</span><span class="o">.</span><span class="n">achat_stream</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">)</span>
 
 <span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">generated_response</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;delta&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;delta&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -570,7 +573,7 @@ identified by sentence ‘{{ context }}’. Supported only with <cite>deployment
 <span class="nb">print</span><span class="p">(</span><span class="n">generated_response</span><span class="p">)</span>
 
 <span class="c1"># Print only content</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;message&#39;</span><span class="p">][</span><span class="s1">&#39;content&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">generated_response</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;message&#39;</span><span class="p">][</span><span class="s1">&#39;content&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -606,7 +609,8 @@ identified by sentence ‘{{ context }}’. Supported only with <cite>deployment
 <span class="n">generated_response</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">chat_stream</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">generated_response</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;delta&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;delta&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

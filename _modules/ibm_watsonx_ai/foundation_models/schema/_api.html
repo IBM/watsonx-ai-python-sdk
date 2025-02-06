@@ -237,8 +237,10 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../prompt_tuner.html">Tuning</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Tuning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../pt_tune_experiment_run.html">Working with TuneExperiment and PromptTuner</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../ft_tune_experiment_run.html">Working with TuneExperiment and FineTuner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../it_tune_experiment_run.html">Working with TuneExperiment and ILabTuner (BETA)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../pt_model_inference.html">Tuned Model Inference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../tune_experiment.html">Tune Experiment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../ilab_tuner.html">InstructLab Experiment (BETA)</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../prompt_template_manager.html">Prompt Template Manager</a></li>
@@ -532,6 +534,9 @@
     <span class="n">time_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">top_p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">logit_bias</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">stop</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_sample_params</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
@@ -547,6 +552,9 @@
             <span class="s2">&quot;time_limit&quot;</span><span class="p">:</span> <span class="mi">600000</span><span class="p">,</span>
             <span class="s2">&quot;top_p&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
             <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;logit_bias&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;1003&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;1004&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">100</span><span class="p">},</span>
+            <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="mi">41</span><span class="p">,</span>
+            <span class="s2">&quot;stop&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;this&quot;</span><span class="p">,</span> <span class="s2">&quot;the&quot;</span><span class="p">],</span>
         <span class="p">}</span></div>
 
 
@@ -643,6 +651,8 @@
 <span class="c1">#################</span>
 
 
+<div class="viewcode-block" id="PeftParameters">
+<a class="viewcode-back" href="../../../../fm_schema.html#ibm_watsonx_ai.foundation_models.schema.PeftParameters">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">PeftParameters</span><span class="p">(</span><span class="n">BaseSchema</span><span class="p">):</span>
 
@@ -661,7 +671,8 @@
             <span class="s2">&quot;target_modules&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;all-linear&quot;</span><span class="p">],</span>
             <span class="s2">&quot;lora_alpha&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
             <span class="s2">&quot;lora_dropout&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
-        <span class="p">}</span>
+        <span class="p">}</span></div>
+
 </pre></div>
         </article>
       </div>

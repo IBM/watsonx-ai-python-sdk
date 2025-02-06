@@ -237,8 +237,10 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../prompt_tuner.html">Tuning</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Tuning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../pt_tune_experiment_run.html">Working with TuneExperiment and PromptTuner</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../ft_tune_experiment_run.html">Working with TuneExperiment and FineTuner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../it_tune_experiment_run.html">Working with TuneExperiment and ILabTuner (BETA)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../pt_model_inference.html">Tuned Model Inference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../tune_experiment.html">Tune Experiment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../ilab_tuner.html">InstructLab Experiment (BETA)</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../prompt_template_manager.html">Prompt Template Manager</a></li>
@@ -573,7 +575,7 @@
 <span class="sd">            print(generated_response)</span>
 
 <span class="sd">            # Print only content</span>
-<span class="sd">            print(response[&#39;choices&#39;][0][&#39;message&#39;][&#39;content&#39;])</span>
+<span class="sd">            print(generated_response[&#39;choices&#39;][0][&#39;message&#39;][&#39;content&#39;])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="s2">&quot;messages&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
@@ -641,7 +643,8 @@
 <span class="sd">            generated_response = model.chat_stream(messages=messages)</span>
 
 <span class="sd">            for chunk in generated_response:</span>
-<span class="sd">                print(chunk[&#39;choices&#39;][0][&#39;delta&#39;].get(&#39;content&#39;, &#39;&#39;), end=&#39;&#39;, flush=True)</span>
+<span class="sd">                if chunk[&#39;choices&#39;]:</span>
+<span class="sd">                    print(chunk[&#39;choices&#39;][0][&#39;delta&#39;].get(&#39;content&#39;, &#39;&#39;), end=&#39;&#39;, flush=True)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="s2">&quot;messages&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
@@ -712,7 +715,7 @@
 <span class="sd">            print(generated_response)</span>
 
 <span class="sd">            # Print only content</span>
-<span class="sd">            print(response[&#39;choices&#39;][0][&#39;message&#39;][&#39;content&#39;])</span>
+<span class="sd">            print(generated_response[&#39;choices&#39;][0][&#39;message&#39;][&#39;content&#39;])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="s2">&quot;messages&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
@@ -780,7 +783,8 @@
 <span class="sd">            generated_response = await model.achat_stream(messages=messages)</span>
 
 <span class="sd">            async for chunk in generated_response:</span>
-<span class="sd">                print(chunk[&#39;choices&#39;][0][&#39;delta&#39;].get(&#39;content&#39;, &#39;&#39;), end=&#39;&#39;, flush=True)</span>
+<span class="sd">                if chunk[&#39;choices&#39;]:</span>
+<span class="sd">                    print(chunk[&#39;choices&#39;][0][&#39;delta&#39;].get(&#39;content&#39;, &#39;&#39;), end=&#39;&#39;, flush=True)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="s2">&quot;messages&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>

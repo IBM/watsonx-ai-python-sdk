@@ -39,6 +39,28 @@ For an TuneExperiment object initialization, you need authentication credentials
         auto_update_model=True,
     )
 
+It is possible to configure FineTuner job with LoRA/QLoRA using ``peft_parameters``
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.foundation_models.schema import PeftParameters
+
+    fine_tuner = experiment.fine_tuner(
+        name='Fine Tuning name with LoRA/QLoRA',
+        description='Fine Tuning description with LoRA/QLoRA',
+        base_model='meta-llama/Meta-Llama-3-8B',
+        ...
+        peft_parameters=PeftParameters(
+            type="lora",
+            rank=8,
+            lora_alpha= 2,
+            lora_dropout=0.05,
+            target_modules=['all-linear'],
+        )
+        gpu={"num": 1},
+        auto_update_model=True,
+    )
+
 Get configuration parameters
 ----------------------------
 
