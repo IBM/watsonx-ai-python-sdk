@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="API" href="api.html" /><link rel="prev" title="IBM watsonx.ai for IBM Cloud" href="setup_cloud.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
         <title>IBM watsonx.ai software - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
@@ -332,6 +332,26 @@
 <p><code class="docutils literal notranslate"><span class="pre">{cpd_cluster}</span></code> represents the name or IP address of your deployed cluster. For the Cloud Pak for Data system, use a hostname that resolves to an IP address in the cluster.</p>
 <p>To find the base URL, view the details for the service instance from the Cloud Pak for Data web client. Use that URL in your requests to watsonx.ai software.</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The version value should be set to the two-digit release version number separated by a dot (e.g., ‘5.0’) for the IBM watsonx.ai software you are using.</p></li>
+<li><p>Starting with CPD version 4.8, specifying the version during initialization is no longer required, as it is now an optional field.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
+
+<span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span>
+                   <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;&lt;URL&gt;&quot;</span><span class="p">,</span>
+                   <span class="n">token</span> <span class="o">=</span> <span class="n">access_token</span><span class="p">,</span>
+                   <span class="n">instance_id</span> <span class="o">=</span> <span class="s2">&quot;openshift&quot;</span>
+                  <span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Setting a default space ID or project ID is mandatory, except for a lightweight engine. For examples, refer to the <code class="docutils literal notranslate"><span class="pre">client.set.default_space()</span></code> and <code class="docutils literal notranslate"><span class="pre">client.set.default_project()</span></code> APIs in this document.</p></li>
+</ul>
+</div>
 <p>Example of creating the client using <cite>username</cite> and <cite>password</cite> credentials:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">Credentials</span>
@@ -379,26 +399,6 @@
                   <span class="p">)</span>
 <span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
 </pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul class="simple">
-<li><p>The version value should be set to the version and release format (for example: <cite>5.1</cite>) for the IBM watsonx.ai software you are using.</p></li>
-<li><p>Starting with CPD version 4.8, specifying the version during initialization is no longer required, as it is now an optional field.</p></li>
-</ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
-
-<span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span>
-                   <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;&lt;URL&gt;&quot;</span><span class="p">,</span>
-                   <span class="n">token</span> <span class="o">=</span> <span class="n">access_token</span><span class="p">,</span>
-                   <span class="n">instance_id</span> <span class="o">=</span> <span class="s2">&quot;openshift&quot;</span>
-                  <span class="p">)</span>
-<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
-</pre></div>
-</div>
-<ul class="simple">
-<li><p>Setting a default space ID or project ID is mandatory, except for a lightweight engine. For examples, refer to the <code class="docutils literal notranslate"><span class="pre">client.set.default_space()</span></code> and <code class="docutils literal notranslate"><span class="pre">client.set.default_project()</span></code> APIs in this document.</p></li>
-</ul>
 </div>
 <dl>
 <dt><strong>Note for IBM watsonx.ai software with IBM Cloud Pak® for Data 4.8 and later:</strong></dt><dd><p>If the following error appears during authentication:</p>
@@ -512,7 +512,7 @@ If iamintegration=False, please validate your credentials.
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
