@@ -331,7 +331,7 @@
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.models</span> <span class="kn">import</span> <span class="n">Models</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.pipelines</span> <span class="kn">import</span> <span class="n">Pipelines</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="n">inherited_docstring</span><span class="p">,</span> <span class="n">get_url</span><span class="p">,</span> <span class="n">get_user_agent_header</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.utils</span> <span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">,</span> <span class="n">_is_iam_token</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.utils</span> <span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
 
@@ -442,55 +442,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">MemberMetaNames</span> <span class="o">=</span> <span class="n">MemberMetaNames</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">AIServiceMetaNames</span> <span class="o">=</span> <span class="n">AIServiceMetaNames</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_repo_client</span><span class="p">()</span>  <span class="c1"># regular token is initialized in service_instance</span>
+        <span class="c1"># make sure that old repo client is aware of token changes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_auth_method</span><span class="o">.</span><span class="n">_on_token_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_repo_client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_auth_method</span><span class="o">.</span><span class="n">_on_token_creation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_repo_client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_auth_method</span><span class="o">.</span><span class="n">_on_token_refresh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_repo_client</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_repo_client</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_refresh_repo_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">def</span> <span class="nf">set_client_headers</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">_add_header</span><span class="p">(</span>
-                <span class="s2">&quot;User-Agent&quot;</span><span class="p">,</span> <span class="n">get_user_agent_header</span><span class="p">()</span>
-            <span class="p">)</span>
-
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">_add_header</span><span class="p">(</span>
-                    <span class="s2">&quot;X-Watson-Project-ID&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span>
-                <span class="p">)</span>
-
-        <span class="c1"># If apiKey is passed in credentials then refresh repoclient with IAM token else MLToken</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span> <span class="o">=</span> <span class="n">MLRepositoryClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">proceed</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="c1"># _is_iam_token is used here in strange way</span>
-            <span class="c1"># it is checked if token is iam and has instance_id or is not iam token</span>
-            <span class="k">if</span> <span class="n">_is_iam_token</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">token</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">authorize_with_token</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">authorize_with_iamtoken</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">instance_id</span><span class="p">,</span>
-                    <span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span>
-
-            <span class="n">set_client_headers</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_is_IAM</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">authorize_with_iamtoken</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">instance_id</span><span class="p">,</span>
-                    <span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">set_client_headers</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_repotoken</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">token</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repotoken</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Bearer&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">authorize_with_token</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_token</span>
-                    <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">password</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="n">set_client_headers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">authorize_with_token</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ml_repository_client</span><span class="o">.</span><span class="n">_add_header</span><span class="p">(</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">,</span> <span class="n">get_user_agent_header</span><span class="p">())</span>
 
 <div class="viewcode-block" id="Repository.store_experiment">
 <a class="viewcode-back" href="../../core_api.html#client.Repository.store_experiment">[docs]</a>

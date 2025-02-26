@@ -361,7 +361,6 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Bearer &lt;USER AUTHORIZATION TOKEN&gt;&#39;</span><span class="p">,</span>
     <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;ibm-watsonx-ai/1.0.1 (lang=python; arch=x86_64; os=darwin; python.version=3.10.13)&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;X-Watson-Project-ID&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;PROJECT ID&gt;&#39;</span><span class="p">,</span>
     <span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span>
 <span class="p">}</span>
 
@@ -374,6 +373,11 @@
 <dt class="sig sig-object py" id="client.APIClient.set_token">
 <span class="sig-name descname"><span class="pre">set_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/client.html#APIClient.set_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.APIClient.set_token" title="Link to this definition">¶</a></dt>
 <dd><p>Method which allows refresh/set new User Authorization Token.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Using this function will cause that token will not be automatically refreshed anymore, if <cite>password</cite> or <cite>apikey</cite> were passed.
+The user needs to take care of token refresh using <cite>set_token</cite> function from that point in time until they finish using the client instance.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>token</strong> (<em>str</em>) – User Authorization Token</p>
@@ -406,7 +410,7 @@
 <li><p><strong>username</strong> (<em>str</em><em>, </em><em>optional</em>) – username, used in username/password or username/api_key authentication, applicable for ICP only</p></li>
 <li><p><strong>password</strong> (<em>str</em><em>, </em><em>optional</em>) – password, used in username/password authentication, applicable for ICP only</p></li>
 <li><p><strong>instance_id</strong> (<em>str</em><em>, </em><em>optional</em>) – instance ID, mandatory for ICP</p></li>
-<li><p><strong>version</strong> (<em>str</em><em>, </em><em>optional</em>) – ICP version, mandatory for ICP</p></li>
+<li><p><strong>version</strong> (<em>str</em><em>, </em><em>optional</em>) – IBM Cloud Pak® for Data two-digit version, if not provided the version will be recognized automatically for IBM Cloud Pak® for Data 4.8 release and higher.</p></li>
 <li><p><strong>bedrock_url</strong> (<em>str</em><em>, </em><em>optional</em>) – Bedrock URL, applicable for ICP only</p></li>
 <li><p><strong>proxies</strong> (<em>dict</em><em>, </em><em>optional</em>) – dictionary of proxies, containing protocol and URL mapping (example: <cite>{ “https”: “https://example.url.com” }</cite>)</p></li>
 <li><p><strong>verify</strong> (<em>bool</em><em>, </em><em>optional</em>) – certificate verification flag</p></li>
@@ -443,8 +447,7 @@
     <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;&lt;URL&gt;&quot;</span><span class="p">,</span>
     <span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;&lt;USERNAME&gt;&quot;</span><span class="p">,</span>
     <span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;&lt;PASSWORD&gt;&quot;</span><span class="p">,</span>
-    <span class="n">instance_id</span> <span class="o">=</span> <span class="s2">&quot;openshift&quot;</span><span class="p">,</span>
-    <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;5.0&quot;</span>
+    <span class="n">instance_id</span> <span class="o">=</span> <span class="s2">&quot;openshift&quot;</span>
 <span class="p">)</span>
 
 <span class="c1"># Example of creating the credentials using username and apikey:</span>
@@ -452,8 +455,7 @@
     <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;&lt;URL&gt;&quot;</span><span class="p">,</span>
     <span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;&lt;USERNAME&gt;&quot;</span><span class="p">,</span>
     <span class="n">api_key</span> <span class="o">=</span> <span class="n">IAM_API_KEY</span><span class="p">,</span>
-    <span class="n">instance_id</span> <span class="o">=</span> <span class="s2">&quot;openshift&quot;</span><span class="p">,</span>
-    <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;5.0&quot;</span>
+    <span class="n">instance_id</span> <span class="o">=</span> <span class="s2">&quot;openshift&quot;</span>
 <span class="p">)</span>
 
 <span class="c1"># Example of creating the credentials using a token:</span>
@@ -462,7 +464,7 @@
     <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;&lt;URL&gt;&quot;</span><span class="p">,</span>
     <span class="n">token</span> <span class="o">=</span> <span class="n">access_token</span><span class="p">,</span>
     <span class="n">instance_id</span> <span class="o">=</span> <span class="s2">&quot;openshift&quot;</span>
-    <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;5.0&quot;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;5.0&quot;</span> <span class="c1"># optional</span>
 <span class="p">)</span>
 </pre></div>
 </div>

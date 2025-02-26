@@ -321,6 +321,7 @@
 
 <span class="kn">import</span> <span class="nn">ibm_watsonx_ai.utils</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="n">get_user_agent_header</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.auth</span> <span class="kn">import</span> <span class="n">get_auth_method</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.utils</span> <span class="kn">import</span> <span class="n">_APIClientSession</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.Set</span> <span class="kn">import</span> <span class="n">Set</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.assets</span> <span class="kn">import</span> <span class="n">Assets</span>
@@ -417,7 +418,10 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">wml_credentials</span> <span class="o">:=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;wml_credentials&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;`wml_credentials` parameter is deprecated, please use `credentials`&quot;</span><span class="p">)</span>
+            <span class="n">wml_credentials_parameter_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;`wml_credentials` parameter is deprecated, please use `credentials`&quot;</span>
+            <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">wml_credentials_parameter_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>  <span class="c1"># fmt: skip</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">credentials</span><span class="p">:</span>
                 <span class="n">credentials</span> <span class="o">=</span> <span class="n">wml_credentials</span>
         <span class="k">if</span> <span class="n">wml_credentials</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">credentials</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -428,16 +432,18 @@
         <span class="n">wml_full_version</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">verify</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;`verify` parameter is deprecated. Use `ibm_watsonx_ai.Credentials` for passing `verify` parameter.&quot;</span><span class="p">,</span>
-                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">verify_parameter_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;`verify` parameter is deprecated. &quot;</span>
+                <span class="s2">&quot;Use `ibm_watsonx_ai.Credentials` for passing `verify` parameter.&quot;</span>
             <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">verify_parameter_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;`credentials` parameter as dict is deprecated. Use `ibm_watsonx_ai.Credentials` for passing parameters.&quot;</span><span class="p">,</span>
-                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">credentials_parameter_as_dict_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;`credentials` parameter as dict is deprecated. &quot;</span>
+                <span class="s2">&quot;Use `ibm_watsonx_ai.Credentials` for passing parameters.&quot;</span>
             <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">credentials_parameter_as_dict_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>  <span class="c1"># fmt: skip</span>
             <span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">_verify</span><span class="o">=</span><span class="n">verify</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">space_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -476,43 +482,45 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__session</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="c1"># Dallas</span>
+            <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.us-south.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># Frankfurt</span>
+            <span class="s2">&quot;https://eu-de.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.eu-de.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.eu-de.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.eu-de.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># London</span>
+            <span class="s2">&quot;https://eu-gb.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.eu-gb.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.eu-gb.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.eu-gb.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># Tokio</span>
+            <span class="s2">&quot;https://jp-tok.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.jp-tok.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.jp-tok.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.jp-tok.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># Sydney</span>
+            <span class="s2">&quot;https://au-syd.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.au-syd.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.au-syd.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.au-syd.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># Toronto</span>
             <span class="s2">&quot;https://ca-tor.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.ca-tor.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
             <span class="s2">&quot;https://private.ca-tor.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.ca-tor.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># YPCR</span>
+            <span class="s2">&quot;https://yp-cr.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.yp-cr.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># MCSP QA</span>
             <span class="s2">&quot;https://wxai-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.test.cloud.ibm.com&quot;</span><span class="p">,</span>
             <span class="s2">&quot;https://private.wxai-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dai.test.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># YPQA</span>
+            <span class="s2">&quot;https://yp-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.yp-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># MCSP DEV</span>
             <span class="s2">&quot;https://wml-mcsp-dev.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
             <span class="s2">&quot;https://private.wml-mcsp-dev.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dai.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://wml-dev.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># FVT</span>
             <span class="s2">&quot;https://wml-fvt.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.wml-fvt.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.wml-fvt.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># YS1Prod</span>
             <span class="s2">&quot;https://us-south.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://yp-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.yp-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://yp-cr.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.yp-cr.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://jp-tok.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.jp-tok.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://eu-gb.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.eu-gb.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://eu-de.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.eu-de.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://au-syd.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.au-syd.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.jp-tok.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.jp-tok.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.eu-gb.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.eu-gb.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.eu-de.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.eu-de.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.us-south.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.us-south.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.au-syd.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.au-syd.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.us-south.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
         <span class="p">}</span>
 
         <span class="n">requests</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">()</span>  <span class="c1"># type: ignore[attr-defined]</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">api_key</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">password</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">proceed</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># _is_env_token is used for initialising client on cluster with USER_ACCESS_TOKEN environment variable.</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">proceed</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">_is_env_token</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">proceed</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__predefined_instance_type_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;icp&quot;</span><span class="p">,</span> <span class="s2">&quot;openshift&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">credentials</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -589,11 +597,12 @@
                             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">wml_version</span>
                             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="o">!=</span> <span class="n">wml_version</span><span class="p">:</span>
-                                <span class="n">warn</span><span class="p">(</span>
+                                <span class="n">cpd_version_mismatch_warning</span> <span class="o">=</span> <span class="p">(</span>
                                     <span class="sa">f</span><span class="s2">&quot;The provided version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2"> &quot;</span>
                                     <span class="sa">f</span><span class="s2">&quot;is different from the current CP4D version: </span><span class="si">{</span><span class="n">wml_version</span><span class="si">}</span><span class="s2">. &quot;</span>
                                     <span class="sa">f</span><span class="s2">&quot;Correct the credentials with proper CP4D version number.&quot;</span>
                                 <span class="p">)</span>
+                                <span class="n">warn</span><span class="p">(</span><span class="n">cpd_version_mismatch_warning</span><span class="p">)</span>
 
                             <span class="k">if</span> <span class="p">(</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span>
@@ -685,6 +694,9 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&gt;=</span> <span class="mf">5.0</span>
             <span class="p">)</span>
 
+            <span class="bp">self</span><span class="o">.</span><span class="n">_auth_method</span> <span class="o">=</span> <span class="n">get_auth_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_auth_method</span><span class="o">.</span><span class="n">get_token</span><span class="p">()</span>
+
             <span class="c1"># For cloud, service_instance.details will be set during space creation( if instance is associated ) or</span>
             <span class="c1"># while patching a space with an instance</span>
 
@@ -751,35 +763,45 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">wml_credentials</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;`wml_credentials` attribute is deprecated, please use `client.credentials` instead&quot;</span>
+        <span class="n">wml_credentials_attribute_deprecated</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`wml_credentials` attribute is deprecated, &quot;</span>
+            <span class="s2">&quot;please use `client.credentials` instead&quot;</span>
         <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">wml_credentials_attribute_deprecated</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 
     <span class="nd">@wml_credentials</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">wml_credentials</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;`wml_credentials` attribute is deprecated, please use `client.credentials` instead&quot;</span>
+        <span class="n">wml_credentials_attribute_deprecated</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`wml_credentials` attribute is deprecated, &quot;</span>
+            <span class="s2">&quot;please use `client.credentials` instead&quot;</span>
         <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">wml_credentials_attribute_deprecated</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">wml_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;`wml_token` attribute is deprecated, please use `client.token` instead&quot;</span><span class="p">)</span>
+        <span class="n">wml_token_attribute_deprecated</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`wml_token` attribute is deprecated, please use `client.token` instead&quot;</span>
+        <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">wml_token_attribute_deprecated</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span>
 
     <span class="nd">@wml_token</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">wml_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;`wml_token` attribute is deprecated, please use `client.token` instead&quot;</span><span class="p">)</span>
+        <span class="n">wml_token_attribute_deprecated</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`wml_token` attribute is deprecated, please use `client.token` instead&quot;</span>
+        <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">wml_token_attribute_deprecated</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_auth_method</span><span class="o">.</span><span class="n">get_token</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auth_method</span><span class="o">.</span><span class="n">get_token</span><span class="p">()</span>
 
     <span class="nd">@token</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_auth_method</span><span class="o">.</span><span class="n">_token</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_auth_method</span><span class="o">.</span><span class="n">_token</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RequestsLikeType</span><span class="p">:</span>
@@ -801,6 +823,19 @@
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
                 <span class="n">error_msg</span><span class="o">=</span><span class="s2">&quot;AI service is unsupported for this release.&quot;</span>
             <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">proceed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.auth</span> <span class="kn">import</span> <span class="n">TokenAuth</span>
+
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;`APIClient.proceed` is deprecated and will be removed in future. To use `proceed` scenario, &quot;</span>
+                <span class="s2">&quot;pass `token` into credentials without `apikey` or `password`, or use `APIClient.set_token` function.&quot;</span>
+            <span class="p">),</span>
+            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_auth_method</span><span class="p">,</span> <span class="n">TokenAuth</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get_api_version_param</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -874,39 +909,24 @@
         <span class="n">projects_token</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 
-        <span class="k">if</span> <span class="n">zen</span><span class="p">:</span>
-            <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="n">content_type</span><span class="p">}</span>
-            <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Basic &quot;</span> <span class="o">+</span> <span class="n">token</span><span class="p">})</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
 
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">token</span><span class="p">})</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">no_content_type</span><span class="p">:</span>
+            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">content_type</span>
+
+        <span class="n">token_to_use</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">projects_token</span>
+            <span class="k">if</span> <span class="n">projects_token</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">projects_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">token_to_use</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Authorization&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Basic &quot;</span> <span class="o">+</span> <span class="n">token_to_use</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">proceed</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="n">token_to_use</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">projects_token</span>
-                    <span class="k">if</span> <span class="n">projects_token</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">projects_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                    <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">token</span>
-                <span class="p">)</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">token_to_use</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">token</span> <span class="o">=</span> <span class="s2">&quot;Basic &quot;</span> <span class="o">+</span> <span class="n">token_to_use</span>
+            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Authorization&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">token_to_use</span>
 
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">token</span> <span class="o">=</span> <span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">token_to_use</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">token</span> <span class="o">=</span> <span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span>
-            <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="n">token</span><span class="p">,</span>
-                <span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="n">get_user_agent_header</span><span class="p">(),</span>
-            <span class="p">}</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;X-Watson-Project-ID&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_project_id</span><span class="p">})</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">no_content_type</span><span class="p">:</span>
-                <span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="n">content_type</span><span class="p">})</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">zen</span><span class="p">:</span>
+            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_user_agent_header</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_ux_tag</span><span class="p">:</span>
             <span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;X-WX-UX&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">})</span>
@@ -930,6 +950,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method which allows refresh/set new User Authorization Token.</span>
 
+<span class="sd">        .. note::</span>
+<span class="sd">            Using this function will cause that token will not be automatically refreshed anymore, if `password` or `apikey` were passed.</span>
+<span class="sd">            The user needs to take care of token refresh using `set_token` function from that point in time until they finish using the client instance.</span>
+
 <span class="sd">        :param token: User Authorization Token</span>
 <span class="sd">        :type token: str</span>
 
@@ -940,9 +964,24 @@
 <span class="sd">            client.set_token(&quot;&lt;USER AUTHORIZATION TOKEN&gt;&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">proceed</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
+        <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.auth</span> <span class="kn">import</span> <span class="n">TokenAuth</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_auth_method</span><span class="p">,</span> <span class="n">TokenAuth</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_auth_method</span><span class="o">.</span><span class="n">set_token</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># the auth method type was changed to TokenAuth</span>
+            <span class="n">authentication_method_changed_warning</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Authentication method changed to TokenAuth. &quot;</span>
+                <span class="s2">&quot;The token will not be automatically refreshed from this point of time. &quot;</span>
+                <span class="s2">&quot;Use `APIClient.set_token` function to manually update token.&quot;</span>
+            <span class="p">)</span>
+
+            <span class="n">warn</span><span class="p">(</span><span class="n">authentication_method_changed_warning</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_auth_method</span> <span class="o">=</span> <span class="n">TokenAuth</span><span class="p">(</span>
+                <span class="n">token</span><span class="p">,</span> <span class="n">on_token_set</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">_refresh_repo_client</span>
+            <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="APIClient.set_headers">
@@ -961,7 +1000,6 @@
 <span class="sd">            headers = {</span>
 <span class="sd">                &#39;Authorization&#39;: &#39;Bearer &lt;USER AUTHORIZATION TOKEN&gt;&#39;,</span>
 <span class="sd">                &#39;User-Agent&#39;: &#39;ibm-watsonx-ai/1.0.1 (lang=python; arch=x86_64; os=darwin; python.version=3.10.13)&#39;,</span>
-<span class="sd">                &#39;X-Watson-Project-ID&#39;: &#39;&lt;PROJECT ID&gt;&#39;,</span>
 <span class="sd">                &#39;Content-Type&#39;: &#39;application/json&#39;</span>
 <span class="sd">            }</span>
 

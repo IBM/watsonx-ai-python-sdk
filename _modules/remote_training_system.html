@@ -540,8 +540,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
 
-        <span class="n">get_all</span> <span class="o">=</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+        <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">get_all</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_should_get_all_values</span><span class="p">(</span><span class="n">limit</span><span class="p">))[</span>
+            <span class="s2">&quot;resources&quot;</span>
+        <span class="p">]</span>
 
         <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;created_at&quot;</span><span class="p">])</span>
@@ -744,7 +745,11 @@
         <span class="p">)</span>
 
         <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_artifact_details</span><span class="p">(</span>
-            <span class="n">href</span> <span class="o">+</span> <span class="s2">&quot;/revisions&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="s2">&quot;remote system revisions&quot;</span>
+            <span class="n">href</span> <span class="o">+</span> <span class="s2">&quot;/revisions&quot;</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;remote system revisions&quot;</span><span class="p">,</span>
+            <span class="n">_all</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_should_get_all_values</span><span class="p">(</span><span class="n">limit</span><span class="p">),</span>
         <span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
 
         <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>

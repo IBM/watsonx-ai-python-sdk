@@ -304,7 +304,6 @@
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">import</span> <span class="nn">types</span>
@@ -442,10 +441,11 @@
 <span class="sd">            )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;`get_model_specs()` function is deprecated from 1.0, please use `client.foundation_models.get_model_specs()` function instead.&quot;</span><span class="p">,</span>
-        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+    <span class="n">get_model_specs_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;`get_model_specs()` function is deprecated from 1.0, &quot;</span>
+        <span class="s2">&quot;please use `client.foundation_models.get_model_specs()` function instead.&quot;</span>
     <span class="p">)</span>
+    <span class="n">warn</span><span class="p">(</span><span class="n">get_model_specs_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">model_id</span><span class="p">:</span>
@@ -546,15 +546,18 @@
 <span class="sd">            print(spec, end=&quot;&quot;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;`get_custom_model_specs()` function is deprecated from 1.0, please use `client.foundation_models.get_custom_model_specs()` function instead.&quot;</span><span class="p">,</span>
-        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
-    <span class="p">)</span>
 
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;Model needs to be first stored via client.repository.store_model(model_id, meta_props=metadata)&quot;</span>
-        <span class="s2">&quot; and deployed via client.deployments.create(asset_id, metadata) to be used.&quot;</span>
+    <span class="n">get_custom_model_specs_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;`get_custom_model_specs()` function is deprecated from 1.0, &quot;</span>
+        <span class="s2">&quot;please use `client.foundation_models.get_custom_model_specs()` function instead.&quot;</span>
     <span class="p">)</span>
+    <span class="n">warn</span><span class="p">(</span><span class="n">get_custom_model_specs_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+    <span class="n">model_usage_warning</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;Model needs to be first stored via client.repository.store_model(model_id, meta_props=metadata) &quot;</span>
+        <span class="s2">&quot;and deployed via client.deployments.create(asset_id, metadata) to be used.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">warn</span><span class="p">(</span><span class="n">model_usage_warning</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">credentials</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">api_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span>
@@ -649,10 +652,12 @@
 <span class="sd">            model_id=&quot;ibm/granite-13b-instruct-v2&quot;</span>
 <span class="sd">            )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;`get_model_lifecycle()` function is deprecated from 1.0, please use `client.foundation_models.get_model_lifecycle()` function instead.&quot;</span><span class="p">,</span>
-        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+
+    <span class="n">get_model_lifecycle_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;`get_model_lifecycle()` function is deprecated from 1.0, &quot;</span>
+        <span class="s2">&quot;please use `client.foundation_models.get_model_lifecycle()` function instead.&quot;</span>
     <span class="p">)</span>
+    <span class="n">warn</span><span class="p">(</span><span class="n">get_model_lifecycle_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
     <span class="n">model_specs</span> <span class="o">=</span> <span class="n">get_model_specs</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
     <span class="n">model_spec</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
@@ -708,36 +713,32 @@
         <span class="p">)</span>
         <span class="n">model_lifecycle</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">model_lifecycle</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;since_version&quot;</span><span class="p">):</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="n">deprecated_or_constricted_warning_template_cpd</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
-                    <span class="n">state</span><span class="o">=</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">DEPRECATED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
-                    <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                        <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alternative_model_ids&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">])</span>
-                    <span class="p">),</span>
+            <span class="n">model_state_warning</span> <span class="o">=</span> <span class="n">deprecated_or_constricted_warning_template_cpd</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
+                <span class="n">state</span><span class="o">=</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">DEPRECATED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alternative_model_ids&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">])</span>
                 <span class="p">),</span>
-                <span class="n">category</span><span class="o">=</span><span class="n">LifecycleWarning</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="n">default_warning_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
-                    <span class="n">state</span><span class="o">=</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">DEPRECATED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
-                    <span class="n">start_date</span><span class="o">=</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_date&quot;</span><span class="p">),</span>
-                    <span class="n">withdrawn_start_date</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span>
-                        <span class="p">(</span>
-                            <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_date&quot;</span><span class="p">)</span>
-                            <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">lifecycle</span>
-                            <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">WITHDRAWN</span><span class="o">.</span><span class="n">value</span>
-                        <span class="p">),</span>
-                        <span class="kc">None</span><span class="p">,</span>
+            <span class="n">model_state_warning</span> <span class="o">=</span> <span class="n">default_warning_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
+                <span class="n">state</span><span class="o">=</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">DEPRECATED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                <span class="n">start_date</span><span class="o">=</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_date&quot;</span><span class="p">),</span>
+                <span class="n">withdrawn_start_date</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_date&quot;</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">lifecycle</span>
+                        <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">WITHDRAWN</span><span class="o">.</span><span class="n">value</span>
                     <span class="p">),</span>
-                    <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                        <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alternative_model_ids&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">])</span>
-                    <span class="p">),</span>
+                    <span class="kc">None</span><span class="p">,</span>
                 <span class="p">),</span>
-                <span class="n">category</span><span class="o">=</span><span class="n">LifecycleWarning</span><span class="p">,</span>
+                <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alternative_model_ids&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">])</span>
+                <span class="p">),</span>
             <span class="p">)</span>
+
+        <span class="n">warn</span><span class="p">(</span><span class="n">model_state_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">LifecycleWarning</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">lifecycle</span> <span class="ow">and</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">modes_list</span><span class="p">:</span>
         <span class="n">model_lifecycle</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
@@ -746,40 +747,32 @@
         <span class="p">)</span>
         <span class="n">model_lifecycle</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">model_lifecycle</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;since_version&quot;</span><span class="p">):</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="n">deprecated_or_constricted_warning_template_cpd</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
-                    <span class="n">state</span><span class="o">=</span><span class="p">(</span>
-                        <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span>
-                    <span class="p">),</span>
-                    <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                        <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alternative_model_ids&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">])</span>
-                    <span class="p">),</span>
+            <span class="n">model_state_warning</span> <span class="o">=</span> <span class="n">deprecated_or_constricted_warning_template_cpd</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
+                <span class="n">state</span><span class="o">=</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alternative_model_ids&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">])</span>
                 <span class="p">),</span>
-                <span class="n">category</span><span class="o">=</span><span class="n">LifecycleWarning</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="n">default_warning_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
-                    <span class="n">state</span><span class="o">=</span><span class="p">(</span>
-                        <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">model_state_warning</span> <span class="o">=</span> <span class="n">default_warning_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
+                <span class="n">state</span><span class="o">=</span><span class="p">(</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                <span class="n">start_date</span><span class="o">=</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_date&quot;</span><span class="p">),</span>
+                <span class="n">withdrawn_start_date</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_date&quot;</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">lifecycle</span>
+                        <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">WITHDRAWN</span><span class="o">.</span><span class="n">value</span>
                     <span class="p">),</span>
-                    <span class="n">start_date</span><span class="o">=</span><span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_date&quot;</span><span class="p">),</span>
-                    <span class="n">withdrawn_start_date</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span>
-                        <span class="p">(</span>
-                            <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_date&quot;</span><span class="p">)</span>
-                            <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">lifecycle</span>
-                            <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">WITHDRAWN</span><span class="o">.</span><span class="n">value</span>
-                        <span class="p">),</span>
-                        <span class="kc">None</span><span class="p">,</span>
-                    <span class="p">),</span>
-                    <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                        <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alternative_model_ids&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">])</span>
-                    <span class="p">),</span>
+                    <span class="kc">None</span><span class="p">,</span>
                 <span class="p">),</span>
-                <span class="n">category</span><span class="o">=</span><span class="n">LifecycleWarning</span><span class="p">,</span>
+                <span class="n">alternative_model_ids</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">model_lifecycle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alternative_model_ids&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">])</span>
+                <span class="p">),</span>
             <span class="p">)</span>
+
+        <span class="n">warn</span><span class="p">(</span><span class="n">model_state_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">LifecycleWarning</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_model_specs_with_prompt_tuning_support">
@@ -806,10 +799,12 @@
 <span class="sd">            url=&quot;https://us-south.ml.cloud.ibm.com&quot;</span>
 <span class="sd">            )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;`get_model_specs_with_prompt_tuning_support()` function is deprecated from 1.0, please use `client.foundation_models.get_model_specs_with_prompt_tuning_support()` function instead.&quot;</span><span class="p">,</span>
-        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+
+    <span class="n">get_model_specs_with_prompt_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;`get_model_specs_with_prompt_tuning_support()` function is deprecated from 1.0, &quot;</span>
+        <span class="s2">&quot;please use `client.foundation_models.get_model_specs_with_prompt_tuning_support()` function instead.&quot;</span>
     <span class="p">)</span>
+    <span class="n">warn</span><span class="p">(</span><span class="n">get_model_specs_with_prompt_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -897,13 +892,11 @@
         <span class="k">if</span> <span class="n">api_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">api_client</span> <span class="o">=</span> <span class="n">wml_client</span>
 
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="s2">&quot;`wml_client` parameter is deprecated and will be removed in future. &quot;</span>
-                <span class="s2">&quot;Instead, please use `api_client`.&quot;</span>
-            <span class="p">),</span>
-            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">wml_client_parameter_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`wml_client` parameter is deprecated and will be removed in future. &quot;</span>
+            <span class="s2">&quot;Instead, please use `api_client`.&quot;</span>
         <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">wml_client_parameter_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
     <span class="c1"># --- end note</span>
     <span class="k">if</span> <span class="n">run_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">run_params</span> <span class="o">=</span> <span class="n">api_client</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">run_id</span><span class="p">)</span>
@@ -961,13 +954,11 @@
         <span class="k">if</span> <span class="n">api_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">api_client</span> <span class="o">=</span> <span class="n">wml_client</span>
 
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="s2">&quot;`wml_client` parameter is deprecated and will be removed in future. &quot;</span>
-                <span class="s2">&quot;Instead, please use `api_client`.&quot;</span>
-            <span class="p">),</span>
-            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">wml_client_parameter_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`wml_client` parameter is deprecated and will be removed in future. &quot;</span>
+            <span class="s2">&quot;Instead, please use `api_client`.&quot;</span>
         <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">wml_client_parameter_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
     <span class="c1"># --- end note</span>
     <span class="k">if</span> <span class="n">training_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
@@ -998,24 +989,24 @@
 
 
 <span class="k">def</span> <span class="nf">_raise_watsonxllm_deprecation_warning</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;ibm_watsonx_ai.foundation_models.extensions.langchain.WatsonxLLM&quot;</span>
-        <span class="s2">&quot; is deprecated and will not be supported in the future. &quot;</span>
+    <span class="n">watsonx_llm_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;ibm_watsonx_ai.foundation_models.extensions.langchain.WatsonxLLM &quot;</span>
+        <span class="s2">&quot;is deprecated and will not be supported in the future. &quot;</span>
         <span class="s2">&quot;Please import from langchain-ibm instead.</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="s2">&quot;To install langchain-ibm run `pip install -U langchain-ibm`.&quot;</span><span class="p">,</span>
-        <span class="n">category</span><span class="o">=</span><span class="n">WatsonxLLMDeprecationWarning</span><span class="p">,</span>
-        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="s2">&quot;To install langchain-ibm run `pip install -U langchain-ibm`.&quot;</span>
     <span class="p">)</span>
+    <span class="n">warn</span><span class="p">(</span><span class="n">watsonx_llm_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">WatsonxLLMDeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># fmt: skip</span>
 
 
 <span class="k">def</span> <span class="nf">get_embedding_model_specs</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    **Decrecated:** From ``ibm_watsonx_ai`` 1.0, the `get_embedding_model_specs()` function is deprecated, use the `client.foundation_models.get_embeddings_model_specs()` function instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;`get_embedding_model_specs()` function is deprecated from 1.0, please use `client.foundation_models.get_embeddings_model_specs()` function instead.&quot;</span><span class="p">,</span>
-        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+    <span class="n">get_embedding_model_specs_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;`get_embedding_model_specs()` function is deprecated from 1.0, &quot;</span>
+        <span class="s2">&quot;please use `client.foundation_models.get_embeddings_model_specs()` function instead.&quot;</span>
     <span class="p">)</span>
+    <span class="n">warn</span><span class="p">(</span><span class="n">get_embedding_model_specs_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">_get_foundation_models_spec</span><span class="p">(</span>
         <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/v1/foundation_model_specs&quot;</span><span class="p">,</span>

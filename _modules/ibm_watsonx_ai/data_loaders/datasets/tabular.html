@@ -308,11 +308,11 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;TabularIterableDataset&quot;</span><span class="p">]</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Sequence</span>
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers.connections.local</span> <span class="kn">import</span> <span class="n">LocalBatchReader</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.enums</span> <span class="kn">import</span> <span class="n">SamplingTypes</span><span class="p">,</span> <span class="n">DocumentsSamplingTypes</span>
@@ -487,10 +487,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">experiment_metadata</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_metadata</span><span class="p">)</span>
         <span class="c1"># Note: backward compatibility after sampling refactoring #27255</span>
         <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;with_sampling&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;normal_read&quot;</span><span class="p">):</span>
-            <span class="n">warn</span><span class="p">(</span>
+            <span class="n">parameters_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="s2">&quot;The parameters with_sampling and normal_read in TabularIterableDataset are deprecated. &quot;</span>
                 <span class="s2">&quot;Use enable_sampling and sampling_type instead.&quot;</span>
             <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">parameters_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;normal_read&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">enable_sampling</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;with_sampling&quot;</span><span class="p">):</span>
@@ -597,26 +599,22 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_wml_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">APIClient</span><span class="p">:</span>
         <span class="c1"># note: backward compatibility</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="s2">&quot;`_wml_client` is deprecated and will be removed in future. &quot;</span>
-                <span class="s2">&quot;Instead, please use `_api_client`.&quot;</span>
-            <span class="p">),</span>
-            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">wml_client_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`_wml_client` is deprecated and will be removed in future. &quot;</span>
+            <span class="s2">&quot;Instead, please use `_api_client`.&quot;</span>
         <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">wml_client_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="c1"># --- end note</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span>  <span class="c1"># type: ignore[return-value]</span>
 
     <span class="nd">@_wml_client</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">_wml_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># note: backward compatibility</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="s2">&quot;`_wml_client` is deprecated and will be removed in future. &quot;</span>
-                <span class="s2">&quot;Instead, please use `_api_client`.&quot;</span>
-            <span class="p">),</span>
-            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">wml_client_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`_wml_client` is deprecated and will be removed in future. &quot;</span>
+            <span class="s2">&quot;Instead, please use `_api_client`.&quot;</span>
         <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">wml_client_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="c1"># --- end note</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="o">=</span> <span class="n">var</span>
 

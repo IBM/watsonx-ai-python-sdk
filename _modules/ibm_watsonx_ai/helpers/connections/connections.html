@@ -500,26 +500,22 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_wml_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># note: backward compatibility</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="s2">&quot;`_wml_client` is deprecated and will be removed in future. &quot;</span>
-                <span class="s2">&quot;Instead, please use `_api_client`.&quot;</span>
-            <span class="p">),</span>
-            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">wml_client_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`_wml_client` is deprecated and will be removed in future. &quot;</span>
+            <span class="s2">&quot;Instead, please use `_api_client`.&quot;</span>
         <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">wml_client_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="c1"># --- end note</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__api_client</span>
 
     <span class="nd">@_wml_client</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">_wml_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
         <span class="c1"># note: backward compatibility</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="s2">&quot;`_wml_client` is deprecated and will be removed in future. &quot;</span>
-                <span class="s2">&quot;Instead, please use `_api_client`.&quot;</span>
-            <span class="p">),</span>
-            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">wml_client_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`_wml_client` is deprecated and will be removed in future. &quot;</span>
+            <span class="s2">&quot;Instead, please use `_api_client`.&quot;</span>
         <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">wml_client_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="c1"># --- end note</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="o">=</span> <span class="n">var</span>
 
@@ -557,13 +553,11 @@
             <span class="k">if</span> <span class="n">api_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">api_client</span> <span class="o">=</span> <span class="n">wml_client</span>
 
-            <span class="n">warn</span><span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="s2">&quot;`wml_client` is deprecated and will be removed in future. &quot;</span>
-                    <span class="s2">&quot;Instead, please use `api_client`.&quot;</span>
-                <span class="p">),</span>
-                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">wml_client_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;`_wml_client` is deprecated and will be removed in future. &quot;</span>
+                <span class="s2">&quot;Instead, please use `_api_client`.&quot;</span>
             <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">wml_client_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
             <span class="c1"># --- end note</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="o">=</span> <span class="n">api_client</span></div>
 
@@ -1175,9 +1169,12 @@
                     <span class="p">)</span>
                 <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_pipeline_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time_ordered_data&quot;</span><span class="p">):</span>
-                        <span class="n">warn</span><span class="p">(</span>
-                            <span class="s2">&quot;Outdated autoai_libs - time_ordered_data parameter is not supported. Please update autoai_libs to version &gt;=1.16.2&quot;</span>
+                        <span class="n">time_ordered_data_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="s2">&quot;Outdated `autoai_libs` - time_ordered_data parameter is not supported. &quot;</span>
+                            <span class="s2">&quot;Please update to `autoai_libs&gt;=1.16.2`&quot;</span>
                         <span class="p">)</span>
+                        <span class="n">warn</span><span class="p">(</span><span class="n">time_ordered_data_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>  <span class="c1"># fmt: skip</span>
+
                     <span class="n">X_train</span><span class="p">,</span> <span class="n">X_holdout</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_holdout</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">make_holdout_split</span><span class="p">(</span>
                         <span class="n">x</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
                         <span class="n">y</span><span class="o">=</span><span class="n">dfy</span><span class="p">,</span>
@@ -1332,9 +1329,11 @@
 
         <span class="c1"># Deprecation of excel_sheet as number:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">excel_sheet</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="n">warn</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Support for excel sheet as number of the sheet (int) is deprecated! Please set excel sheet with name of the sheet.&quot;</span>
+            <span class="n">excel_sheet_as_number_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Support for excel sheet as number of the sheet (int) is deprecated. &quot;</span>
+                <span class="s2">&quot;Please set excel sheet with name of the sheet.&quot;</span>
             <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">excel_sheet_as_number_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
         <span class="n">flight_parameters</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;flight_parameters&quot;</span><span class="p">,</span> <span class="p">{})</span>
         <span class="n">impersonate_header</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;impersonate_header&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1534,9 +1533,7 @@
                             <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">download_data_error</span><span class="p">)</span>
                         <span class="p">)</span>
                     <span class="p">):</span>
-                        <span class="kn">import</span> <span class="nn">warnings</span>
-
-                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">download_data_error</span><span class="p">),</span> <span class="ne">Warning</span><span class="p">)</span>
+                        <span class="n">warn</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">download_data_error</span><span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="ne">Warning</span><span class="p">)</span>
 
                         <span class="k">try</span><span class="p">:</span>
                             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_training_data_from_data_asset_storage</span><span class="p">(</span>
@@ -2212,9 +2209,10 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_internal_use</span><span class="p">:</span>
-            <span class="n">warn</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;S3 DataConnection is not supported. Please use data_asset_id instead.&quot;</span>
+            <span class="n">s3_dataconnection_not_supported_warning</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;S3 DataConnection is not supported. Please use data_asset_id instead.&quot;</span>
             <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">s3_dataconnection_not_supported_warning</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="n">access_key_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">secret_access_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
             <span class="n">api_key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">auth_endpoint</span> <span class="ow">is</span> <span class="kc">None</span>
@@ -2545,26 +2543,22 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">wml_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># note: backward compatibility</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="s2">&quot;`wml_client` is deprecated and will be removed in future. &quot;</span>
-                <span class="s2">&quot;Instead, please use `api_client`.&quot;</span>
-            <span class="p">),</span>
-            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">wml_client_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`wml_client` is deprecated and will be removed in future. &quot;</span>
+            <span class="s2">&quot;Instead, please use `api_client`.&quot;</span>
         <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">wml_client_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="c1"># --- end note</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__api_client</span>
 
     <span class="nd">@wml_client</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">wml_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
         <span class="c1"># note: backward compatibility</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="s2">&quot;`wml_client` is deprecated and will be removed in future. &quot;</span>
-                <span class="s2">&quot;Instead, please use `api_client`.&quot;</span>
-            <span class="p">),</span>
-            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">wml_client_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`wml_client` is deprecated and will be removed in future. &quot;</span>
+            <span class="s2">&quot;Instead, please use `api_client`.&quot;</span>
         <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">wml_client_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="c1"># --- end note</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_client</span> <span class="o">=</span> <span class="n">var</span>
 

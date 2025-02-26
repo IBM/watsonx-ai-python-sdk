@@ -306,7 +306,7 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">cast</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.base_tuner</span> <span class="kn">import</span> <span class="n">BaseTuner</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.ilab.documents</span> <span class="kn">import</span> <span class="n">DocumentExtractions</span>
@@ -345,10 +345,11 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;InstructLab fine tuning is supported on Cloud only.&quot;</span><span class="p">)</span>
 
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="n">beta_release_warning</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s2">&quot;Warning: This beta release is a preview IBM Cloud service and is not meant for production use. &quot;</span>
             <span class="s2">&quot;Usage limitations that are explained in the Service Description apply.&quot;</span>
         <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">beta_release_warning</span><span class="p">)</span>
 
         <span class="n">WMLResource</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mandatory</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 

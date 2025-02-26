@@ -304,9 +304,8 @@
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">catch_warnings</span><span class="p">,</span> <span class="n">simplefilter</span>
-
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">catch_warnings</span><span class="p">,</span> <span class="n">simplefilter</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.inference</span> <span class="kn">import</span> <span class="n">ModelInference</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">MissingExtension</span>
@@ -400,14 +399,13 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">catch_warnings</span><span class="p">():</span>
             <span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
-            <span class="n">warn</span><span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="s2">&quot;The `Model` class is deprecated and will be removed in a future release. &quot;</span>
-                    <span class="s2">&quot;Please use the `ModelInference` class instead. &quot;</span>
-                    <span class="s2">&quot;To update your imports, use: `from ibm_watsonx_ai.foundation_models import ModelInference`.&quot;</span>
-                <span class="p">),</span>
-                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">model_class_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;The `Model` class is deprecated and will be removed in a future release. &quot;</span>
+                <span class="s2">&quot;Please use the `ModelInference` class instead. &quot;</span>
+                <span class="s2">&quot;To update your imports, use: `from ibm_watsonx_ai.foundation_models import ModelInference`.&quot;</span>
             <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">model_class_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
         <span class="n">ModelInference</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
@@ -521,7 +519,7 @@
         <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">ModelInference</span><span class="o">.</span><span class="n">DEFAULT_CONCURRENCY_LIMIT</span><span class="p">,</span>
         <span class="n">async_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="n">Generator</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a completion text as generated_text after getting</span>
@@ -631,7 +629,7 @@
         <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">ModelInference</span><span class="o">.</span><span class="n">DEFAULT_CONCURRENCY_LIMIT</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a completion text as generated_text after getting</span>
 <span class="sd">        a text prompt as input and parameters for the selected model (model_id).</span>

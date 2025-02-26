@@ -321,8 +321,7 @@
 <span class="kn">from</span> <span class="nn">.base_embeddings</span> <span class="kn">import</span> <span class="n">BaseEmbeddings</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">get_httpx_client</span><span class="p">,</span>
-    <span class="n">get_httpx_client_transport</span><span class="p">,</span>
+    <span class="n">_get_httpx_client</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">import</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="k">as</span> <span class="nn">requests</span>
 
@@ -491,13 +490,13 @@
 
         <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transport_params</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">_httpx_transport_params</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">retry_status_codes</span><span class="o">=</span><span class="n">_RETRY_STATUS_CODES</span>
+        <span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistent_connection</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span> <span class="o">=</span> <span class="n">get_httpx_client</span><span class="p">(</span>
-                <span class="n">transport</span><span class="o">=</span><span class="n">get_httpx_client_transport</span><span class="p">(</span>
-                    <span class="n">_retry_status_codes</span><span class="o">=</span><span class="n">_RETRY_STATUS_CODES</span><span class="p">,</span>
-                    <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">verify</span><span class="p">,</span>
-                    <span class="n">limits</span><span class="o">=</span><span class="n">requests</span><span class="o">.</span><span class="n">HTTPX_DEFAULT_LIMIT</span><span class="p">,</span>
-                <span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span> <span class="o">=</span> <span class="n">_get_httpx_client</span><span class="p">(</span>
+                <span class="n">transport_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_transport_params</span><span class="p">,</span>
                 <span class="n">timeout</span><span class="o">=</span><span class="n">EMBEDDINGS_HTTPX_TIMEOUT</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -540,12 +539,8 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># For batch of prompts use keep-alive connection even if persistent_connection=False</span>
             <span class="n">http_client</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">get_httpx_client</span><span class="p">(</span>
-                    <span class="n">transport</span><span class="o">=</span><span class="n">get_httpx_client_transport</span><span class="p">(</span>
-                        <span class="n">_retry_status_codes</span><span class="o">=</span><span class="n">_RETRY_STATUS_CODES</span><span class="p">,</span>
-                        <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">verify</span><span class="p">,</span>
-                        <span class="n">limits</span><span class="o">=</span><span class="n">requests</span><span class="o">.</span><span class="n">HTTPX_DEFAULT_LIMIT</span><span class="p">,</span>
-                    <span class="p">),</span>
+                <span class="n">_get_httpx_client</span><span class="p">(</span>
+                    <span class="n">transport_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_transport_params</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistent_connection</span>
                 <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span>
@@ -743,12 +738,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span><span class="p">,</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span>
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span> <span class="o">=</span> <span class="n">get_httpx_client</span><span class="p">(</span>
-                <span class="n">transport</span><span class="o">=</span><span class="n">get_httpx_client_transport</span><span class="p">(</span>
-                    <span class="n">_retry_status_codes</span><span class="o">=</span><span class="n">_RETRY_STATUS_CODES</span><span class="p">,</span>
-                    <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">verify</span><span class="p">,</span>
-                    <span class="n">limits</span><span class="o">=</span><span class="n">requests</span><span class="o">.</span><span class="n">HTTPX_DEFAULT_LIMIT</span><span class="p">,</span>
-                <span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span> <span class="o">=</span> <span class="n">_get_httpx_client</span><span class="p">(</span>
+                <span class="n">transport_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_transport_params</span><span class="p">,</span>
                 <span class="n">timeout</span><span class="o">=</span><span class="n">EMBEDDINGS_HTTPX_TIMEOUT</span><span class="p">,</span>
             <span class="p">)</span></div>
 </div>

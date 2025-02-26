@@ -443,13 +443,12 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">wml_credentials</span> <span class="o">:=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;wml_credentials&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">credentials</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">credentials</span> <span class="o">=</span> <span class="n">wml_credentials</span>
-            <span class="n">warn</span><span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="s2">&quot;`wml_credentials` is deprecated and will be removed in future. &quot;</span>
-                    <span class="s2">&quot;Instead, please use `credentials`.&quot;</span>
-                <span class="p">),</span>
-                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+
+            <span class="n">wml_credentials_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;`wml_credentials` is deprecated and will be removed in future. &quot;</span>
+                <span class="s2">&quot;Instead, please use `credentials`.&quot;</span>
             <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">wml_credentials_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">_verify</span><span class="o">=</span><span class="n">verify</span><span class="p">)</span>
@@ -595,7 +594,7 @@
         <span class="n">feature_selector_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;RemoteAutoPipelines&quot;</span><span class="p">,</span> <span class="s2">&quot;LocalAutoPipelines&quot;</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize an AutoAI optimizer.</span>
 
 <span class="sd">        :param name: name of the AutoPipelines</span>
@@ -891,9 +890,11 @@
 
         <span class="c1"># Deprecation of excel_sheet as number:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">excel_sheet</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="n">warn</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Support for excel sheet as number of the sheet (int) is deprecated! Please set excel sheet with name of the sheet.&quot;</span>
+            <span class="n">excel_sheet_as_number_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Support for excel sheet as number of the sheet (int) is deprecated. &quot;</span>
+                <span class="s2">&quot;Please set excel sheet with name of the sheet.&quot;</span>
             <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">excel_sheet_as_number_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">prediction_type</span> <span class="o">==</span> <span class="n">PredictionType</span><span class="o">.</span><span class="n">TIMESERIES_ANOMALY_PREDICTION</span>

@@ -304,7 +304,9 @@
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">TypeAlias</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">import</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="k">as</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="p">(</span>
@@ -319,8 +321,6 @@
     <span class="n">ApiRequestFailure</span><span class="p">,</span>
     <span class="n">ForbiddenActionForGitBasedProject</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 
 
 <span class="n">ListType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">list</span>
@@ -492,13 +492,13 @@
                 <span class="s2">&quot;self._client.software_specifications.get_id_by_name(sw_name)&quot;</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">shiny_sw_spec_id</span> <span class="ow">and</span> <span class="n">shiny_sw_spec_id</span> <span class="ow">in</span> <span class="n">deprecated_shiny_sw_spec_ids</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="n">software_spec_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="s2">&quot;Provided software spec is deprecated for R Shiny assets. &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;Only base software specs </span><span class="si">{</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">shiny_sw_specs</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="s2">&quot;are supported. Specify &quot;</span>
-                <span class="s2">&quot;the id you get via &quot;</span>
+                <span class="s2">&quot;are supported. Specify the id you get via &quot;</span>
                 <span class="s2">&quot;self._client.software_specifications.get_id_by_name(sw_name)&quot;</span>
             <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">software_spec_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
         <span class="n">asset_meta</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -697,10 +697,8 @@
         <span class="n">rev_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">rev_id</span><span class="p">,</span> <span class="s2">&quot;rev&quot;</span><span class="p">,</span> <span class="n">can_be_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># Backward compatibility in past `rev_id` was an int.</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rev_id</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;`rev_id` parameter type as int is deprecated, please convert to str instead&quot;</span><span class="p">,</span>
-                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="n">rev_id_as_int_warning</span> <span class="o">=</span> <span class="s2">&quot;`rev_id` parameter type as int is deprecated, please convert to str instead&quot;</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">rev_id_as_int_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
             <span class="n">rev_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rev_id</span><span class="p">)</span>
         <span class="n">Shiny</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">shiny_id</span><span class="p">,</span> <span class="s2">&quot;shiny_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="n">Shiny</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">rev_id</span><span class="p">,</span> <span class="s2">&quot;rev_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
@@ -1119,14 +1117,13 @@
         <span class="p">)</span>
 
         <span class="c1"># /v2/assets/{asset_id}/revisions returns &#39;results&#39; object</span>
-        <span class="n">get_all</span> <span class="o">=</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="n">shiny_resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_with_or_without_limit</span><span class="p">(</span>
             <span class="n">url</span><span class="p">,</span>
-            <span class="n">limit</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
             <span class="s2">&quot;List Shiny revisions&quot;</span><span class="p">,</span>
             <span class="n">summary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">pre_defined</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+            <span class="n">_all</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_should_get_all_values</span><span class="p">(</span><span class="n">limit</span><span class="p">),</span>
         <span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
 
         <span class="n">shiny_values</span> <span class="o">=</span> <span class="p">[</span>
@@ -1176,10 +1173,8 @@
 
         <span class="c1"># Backward compatibility in past `rev_id` was an int.</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rev_id</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;`rev_id` parameter type as int is deprecated, please convert to str instead&quot;</span><span class="p">,</span>
-                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="n">rev_id_as_int_warning</span> <span class="o">=</span> <span class="s2">&quot;`rev_id` parameter type as int is deprecated, please convert to str instead&quot;</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">rev_id_as_int_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
             <span class="n">rev_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rev_id</span><span class="p">)</span>
 
         <span class="c1"># For CP4D, check if either space or project ID is set</span>

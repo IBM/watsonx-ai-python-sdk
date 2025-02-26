@@ -27,6 +27,24 @@ Starting with IBM Cloud Pak® for Data version 4.8, users of IBM watsonx.ai soft
 
     To find the base URL, view the details for the service instance from the Cloud Pak for Data web client. Use that URL in your requests to watsonx.ai software.
 
+.. Note::
+    * The version value should be set to the two-digit release version number separated by a dot (e.g., '5.0') for the IBM watsonx.ai software you are using.
+    * Starting with CPD version 4.8, specifying the version during initialization is no longer required, as it is now an optional field.
+
+    .. code-block::
+
+        from ibm_watsonx_ai import APIClient, Credentials
+
+        credentials = Credentials(
+                           url = "<URL>",
+                           token = access_token,
+                           instance_id = "openshift"
+                          )
+        client = APIClient(credentials)
+
+    * Setting a default space ID or project ID is mandatory, except for a lightweight engine. For examples, refer to the ``client.set.default_space()`` and ``client.set.default_project()`` APIs in this document.
+
+
 Example of creating the client using `username` and `password` credentials:
 
 .. code-block:: python
@@ -80,22 +98,6 @@ Example of creating the client using a token:
                       )
     client = APIClient(credentials)
 
-.. Note::
-    * The version value should be set to the version and release format (for example: `5.1`) for the IBM watsonx.ai software you are using.
-    * Starting with CPD version 4.8, specifying the version during initialization is no longer required, as it is now an optional field.
-
-    .. code-block::
-
-        from ibm_watsonx_ai import APIClient, Credentials
-
-        credentials = Credentials(
-                           url = "<URL>",
-                           token = access_token,
-                           instance_id = "openshift"
-                          )
-        client = APIClient(credentials)
-
-    * Setting a default space ID or project ID is mandatory, except for a lightweight engine. For examples, refer to the ``client.set.default_space()`` and ``client.set.default_project()`` APIs in this document.
 
 **Note for IBM watsonx.ai software with IBM Cloud Pak® for Data 4.8 and later:**
     If the following error appears during authentication:

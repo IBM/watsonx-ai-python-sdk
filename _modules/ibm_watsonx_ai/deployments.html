@@ -361,6 +361,8 @@
 <span class="k">class</span> <span class="nc">Deployments</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Deploy and score published artifacts (models and functions).&quot;&quot;&quot;</span>
 
+    <span class="n">DEFAULT_CONCURRENCY_LIMIT</span> <span class="o">=</span> <span class="mi">8</span>
+
 <div class="viewcode-block" id="Deployments.HardwareRequestSizes">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.HardwareRequestSizes">[docs]</a>
     <span class="k">class</span> <span class="nc">HardwareRequestSizes</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
@@ -475,10 +477,11 @@
         <span class="p">)</span>
         <span class="c1"># Backward compatibility in past `rev_id` was an int.</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rev_id</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;`rev_id` parameter type as int is deprecated, please convert to str instead&quot;</span><span class="p">,</span>
-                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">rev_id_as_int_deprecated</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;`rev_id` parameter type as int is deprecated, &quot;</span>
+                <span class="s2">&quot;please convert to str instead&quot;</span>
             <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">rev_id_as_int_deprecated</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
             <span class="n">rev_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rev_id</span><span class="p">)</span>
 
         <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
@@ -574,12 +577,11 @@
             <span class="n">deployment_details</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;background_mode&quot;</span><span class="p">):</span>
-                <span class="n">warn</span><span class="p">(</span>
-                    <span class="p">(</span>
-                        <span class="s2">&quot;Background mode is turn on and deployment scoring will be available only when status of deployment will be `ready`. &quot;</span>
-                        <span class="s2">&quot;To check deployment status run `client.deployment.get_details(deployment_id)&quot;</span>
-                    <span class="p">)</span>
+                <span class="n">background_mode_turned_on_warning</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;Background mode is turn on and deployment scoring will be available only when status of deployment will be `ready`. &quot;</span>
+                    <span class="s2">&quot;To check deployment status run `client.deployment.get_details(deployment_id)&quot;</span>
                 <span class="p">)</span>
+                <span class="n">warn</span><span class="p">(</span><span class="n">background_mode_turned_on_warning</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">deployment_details</span>
             <span class="k">else</span><span class="p">:</span>
 
@@ -673,13 +675,11 @@
 <span class="sd">            deployment_uid = client.deployments.get_uid(deployment)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="s2">&quot;`get_uid()` is deprecated and will be removed in future. &quot;</span>
-                <span class="s2">&quot;Instead, please use `get_id()`.&quot;</span>
-            <span class="p">),</span>
-            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">get_uid_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`get_uid()` is deprecated and will be removed in future. &quot;</span>
+            <span class="s2">&quot;Instead, please use `get_id()`.&quot;</span>
         <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">get_uid_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Deployments</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">)</span></div>
 
 
@@ -1263,8 +1263,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;</span> <span class="mf">4.8</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_space_is_set</span><span class="p">()</span>
 
-        <span class="n">get_all</span> <span class="o">=</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span>
+        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">get_all</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_should_get_all_values</span><span class="p">(</span><span class="n">limit</span><span class="p">))</span>
 
         <span class="n">resources</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
 
@@ -1991,13 +1990,11 @@
 <span class="sd">            job_status = client.deployments.get_job_uid(job_details)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="s2">&quot;`get_job_uid()` is deprecated and will be removed in future. &quot;</span>
-                <span class="s2">&quot;Instead, please use `get_job_id()`.&quot;</span>
-            <span class="p">),</span>
-            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">get_job_uid_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`get_job_uid()` is deprecated and will be removed in future. &quot;</span>
+            <span class="s2">&quot;Instead, please use `get_job_id()`.&quot;</span>
         <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">get_job_uid_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_job_id</span><span class="p">(</span><span class="n">job_details</span><span class="p">)</span></div>
 
 
@@ -2181,7 +2178,7 @@
         <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_CONCURRENCY_LIMIT</span><span class="p">,</span>
         <span class="n">async_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">validate_prompt_variables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -2243,7 +2240,7 @@
         <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_CONCURRENCY_LIMIT</span><span class="p">,</span>
         <span class="n">validate_prompt_variables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Given the selected deployment (deployment_id), a text prompt as input, and the parameters and concurrency_limit,</span>

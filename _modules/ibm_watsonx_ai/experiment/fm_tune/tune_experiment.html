@@ -304,9 +304,9 @@
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">EnumMeta</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">TypeAlias</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">catch_warnings</span><span class="p">,</span> <span class="n">simplefilter</span>
+
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.prompt_tuner</span> <span class="kn">import</span> <span class="n">PromptTuner</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.fine_tuner</span> <span class="kn">import</span> <span class="n">FineTuner</span>
@@ -544,8 +544,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">foundation_models</span><span class="o">.</span><span class="n">get_model_specs_with_prompt_tuning_support</span><span class="p">()</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">catch_warnings</span><span class="p">():</span>
+                <span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
                 <span class="n">model_specs</span> <span class="o">=</span> <span class="n">get_model_specs_with_prompt_tuning_support</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span>  <span class="c1"># type: ignore[arg-type]</span>
                 <span class="p">)</span>

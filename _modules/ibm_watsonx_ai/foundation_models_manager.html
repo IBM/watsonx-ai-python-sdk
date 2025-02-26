@@ -308,7 +308,7 @@
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">cached_property</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Any</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.messages.messages</span> <span class="kn">import</span> <span class="n">Messages</span>
@@ -609,10 +609,11 @@
                 <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;custom_models_cloud_scenario&quot;</span><span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;Model needs to be first stored via client.repository.store_model(model_id, meta_props=metadata)&quot;</span>
-            <span class="s2">&quot; and deployed via client.deployments.create(asset_id, metadata) to be used.&quot;</span>
+        <span class="n">model_usage_warning</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Model needs to be first stored via client.repository.store_model(model_id, meta_props=metadata) &quot;</span>
+            <span class="s2">&quot;and deployed via client.deployments.create(asset_id, metadata) to be used.&quot;</span>
         <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">model_usage_warning</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_spec</span><span class="p">(</span>
             <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_custom_foundation_models_href</span><span class="p">(),</span>
