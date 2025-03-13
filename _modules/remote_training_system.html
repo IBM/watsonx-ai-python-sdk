@@ -206,6 +206,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../setup.html">Setup</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Setup</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../setup_cloud.html">IBM watsonx.ai for IBM Cloud</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../setup_cpd.html">IBM watsonx.ai software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../httpx_configuration.html">Configuring the HTTP Client</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -256,6 +257,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../fm_schema.html">Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fm_deploy_on_demand.html">Deploy on Demand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rate_limit.html">Rate Limits</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../save_models.html">Saving external models</a></li>
@@ -306,6 +308,7 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai._wrappers</span> <span class="kn">import</span> <span class="n">requests</span>
 
@@ -317,6 +320,8 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
     <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+
+<span class="n">FL_DEPRECATED_WARNING</span> <span class="o">=</span> <span class="s2">&quot;Federated Learning is deprecated and will be removed in IBM Cloud Pak for Data 5.2.&quot;</span>
 
 
 <div class="viewcode-block" id="RemoteTrainingSystem">
@@ -358,6 +363,8 @@
 <span class="sd">            client.set.default_space(&#39;3fc54cf1-252f-424b-b52d-5cdd9814987f&#39;)</span>
 <span class="sd">            details = client.remote_training_systems.store(meta_props=metadata)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
 
         <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">meta_props</span><span class="p">,</span> <span class="s2">&quot;meta_props&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
@@ -429,6 +436,8 @@
 
 <span class="sd">            client.remote_training_systems.delete(remote_training_systems_id=&#39;6213cf1-252f-424b-b52d-5cdd9814956c&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
         <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
             <span class="n">remote_training_systems_id</span><span class="p">,</span> <span class="s2">&quot;remote_training_systems_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span>
@@ -495,6 +504,8 @@
 <span class="sd">                details.extend(entry)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
 
         <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
@@ -538,6 +549,8 @@
 
 <span class="sd">            client.remote_training_systems.list()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
 
         <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">get_all</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_should_get_all_values</span><span class="p">(</span><span class="n">limit</span><span class="p">))[</span>
@@ -571,6 +584,8 @@
 <span class="sd">            details = client.remote_training_systems.get_details(remote_training_system_id)</span>
 <span class="sd">            id = client.remote_training_systems.get_id(details)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
         <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
             <span class="n">remote_training_system_details</span><span class="p">,</span>
             <span class="s2">&quot;remote_training_system_details&quot;</span><span class="p">,</span>
@@ -608,6 +623,8 @@
 <span class="sd">            details = client.remote_training_systems.update(remote_training_system_id, changes=metadata)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
@@ -658,6 +675,8 @@
 
 <span class="sd">            client.remote_training_systems.create_revision(remote_training_system_id)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
         <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
             <span class="n">remote_training_system_id</span><span class="p">,</span> <span class="s2">&quot;remote_training_system_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span>
         <span class="p">)</span>
@@ -690,6 +709,8 @@
 
 <span class="sd">            details = client.remote_training_systems.get_details(remote_training_system_id, rev_id)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
 
         <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
@@ -734,6 +755,8 @@
 
 <span class="sd">            client.remote_training_systems.list_revisions(remote_training_system_id)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
 
         <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
@@ -823,6 +846,7 @@
 <span class="sd">            party = client.remote_training_systems.create_party(remote_training_system_id, party_metadata)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
         <span class="n">RemoteTrainingSystem</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
             <span class="n">remote_training_system_id</span><span class="p">,</span> <span class="s2">&quot;remote_training_system_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span>

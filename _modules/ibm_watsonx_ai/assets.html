@@ -206,6 +206,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../setup.html">Setup</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Setup</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../setup_cloud.html">IBM watsonx.ai for IBM Cloud</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../setup_cpd.html">IBM watsonx.ai software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../httpx_configuration.html">Configuring the HTTP Client</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -256,6 +257,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../fm_schema.html">Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_deploy_on_demand.html">Deploy on Demand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rate_limit.html">Rate Limits</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../save_models.html">Saving external models</a></li>
@@ -305,6 +307,7 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
@@ -312,6 +315,7 @@
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.messages.messages</span> <span class="kn">import</span> <span class="n">Messages</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">AssetsMetaNames</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="n">DATA_ASSETS_DETAILS_TYPE</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.enums</span> <span class="kn">import</span> <span class="n">AssetDuplicateAction</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.utils</span> <span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span><span class="p">,</span> <span class="n">ApiRequestFailure</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
@@ -377,7 +381,12 @@
 
 <div class="viewcode-block" id="Assets.create">
 <a class="viewcode-back" href="../../core_api.html#client.Assets.create">[docs]</a>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">duplicate_action</span><span class="p">:</span> <span class="n">AssetDuplicateAction</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a data asset and upload content to it.</span>
 
 <span class="sd">        :param name: name to be given to the data asset</span>
@@ -385,6 +394,10 @@
 
 <span class="sd">        :param file_path: path to the content file to be uploaded</span>
 <span class="sd">        :type file_path: str</span>
+
+<span class="sd">        :param duplicate_action: determines behaviour when asset with the same name already exists,</span>
+<span class="sd">            if not specified, the value from catalogs/projects/spaces will be used</span>
+<span class="sd">        :type duplicate_action: AssetDuplicateAction, optional</span>
 
 <span class="sd">        :return: metadata of the stored data asset</span>
 <span class="sd">        :rtype: dict</span>
@@ -400,7 +413,15 @@
         <span class="c1"># TODO add error handling and cleaning (remove the file)</span>
         <span class="n">Assets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="n">Assets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;file_path&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_asset</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_asset</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">file_path</span><span class="p">,</span>
+            <span class="n">duplicate_action</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">duplicate_action</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">duplicate_action</span><span class="p">,</span> <span class="n">Enum</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">duplicate_action</span>
+            <span class="p">),</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Assets.store">
@@ -476,8 +497,20 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DESCRIPTION</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">:</span>
             <span class="n">description</span> <span class="o">=</span> <span class="n">meta_props</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DESCRIPTION</span><span class="p">]</span>
 
+        <span class="n">duplicate_action</span> <span class="o">=</span> <span class="n">meta_props</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DUPLICATE_ACTION</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_asset</span><span class="p">(</span>
-            <span class="n">name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">connection_id</span><span class="o">=</span><span class="n">connection_id</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">file_path</span><span class="p">,</span>
+            <span class="n">connection_id</span><span class="o">=</span><span class="n">connection_id</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+            <span class="n">duplicate_action</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">duplicate_action</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">duplicate_action</span><span class="p">,</span> <span class="n">Enum</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">duplicate_action</span>
+            <span class="p">),</span>
         <span class="p">)</span></div>
 
 
@@ -487,6 +520,7 @@
         <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">connection_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">duplicate_action</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="c1">##Step1: Create a data asset</span>
         <span class="n">desc</span> <span class="o">=</span> <span class="n">description</span>
@@ -515,13 +549,18 @@
         <span class="k">if</span> <span class="n">connection_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">asset_meta</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;connected-data&quot;</span><span class="p">]})</span>
 
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">duplicate_action</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;duplicate_action&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">duplicate_action</span>
+
         <span class="c1"># Step1  : Create an asset</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;creating_data_asset&quot;</span><span class="p">))</span>
 
         <span class="n">creation_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_data_assets_href</span><span class="p">(),</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
-            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
             <span class="n">json</span><span class="o">=</span><span class="n">asset_meta</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -894,12 +933,19 @@
 <div class="viewcode-block" id="Assets.delete">
 <a class="viewcode-back" href="../../core_api.html#client.Assets.delete">[docs]</a>
     <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">purge_on_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># asset_id is optional for backward compatibility</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a stored data asset.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Soft delete the stored data asset. The asset will be moved to trashed assets</span>
+<span class="sd">        and will not be visible in asset list. To permanently delete assets set `purge_on_delete` parameter to True.</span>
 
 <span class="sd">        :param asset_id: unique ID of the data asset</span>
 <span class="sd">        :type asset_id: str</span>
+
+<span class="sd">        :param purge_on_delete: if set to True will purge the asset</span>
+<span class="sd">        :type purge_on_delete: bool, optional</span>
 
 <span class="sd">        :return: status (&quot;SUCCESS&quot; or &quot;FAILED&quot;) or dictionary, if deleted asynchronously</span>
 <span class="sd">        :rtype: str or dict</span>
@@ -915,9 +961,14 @@
 
         <span class="n">Assets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">asset_id</span><span class="p">,</span> <span class="s2">&quot;asset_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">purge_on_delete</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;purge_on_delete&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_asset_href</span><span class="p">(</span><span class="n">asset_id</span><span class="p">),</span>
-            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>

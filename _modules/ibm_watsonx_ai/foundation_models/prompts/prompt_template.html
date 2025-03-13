@@ -206,6 +206,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../setup.html">Setup</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Setup</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../setup_cloud.html">IBM watsonx.ai for IBM Cloud</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../setup_cpd.html">IBM watsonx.ai software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../httpx_configuration.html">Configuring the HTTP Client</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -256,6 +257,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_schema.html">Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_deploy_on_demand.html">Deploy on Demand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../rate_limit.html">Rate Limits</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../save_models.html">Saving external models</a></li>
@@ -304,17 +306,17 @@
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">TypeAlias</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">Mapping</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">langchain</span>
     <span class="kn">from</span> <span class="nn">langchain.prompts</span> <span class="kn">import</span> <span class="n">PromptTemplate</span> <span class="k">as</span> <span class="n">LcPromptTemplate</span>
     <span class="kn">from</span> <span class="nn">langchain.prompts</span> <span class="kn">import</span> <span class="n">ChatPromptTemplate</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
-<span class="kn">import</span> <span class="nn">pandas</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">pandas</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.prompts.base_prompt_template</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">BasePromptTemplate</span><span class="p">,</span>
@@ -322,7 +324,6 @@
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.prompts.base_prompt</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">BasePrompt</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">import</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="k">as</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">WMLClientError</span><span class="p">,</span>
@@ -465,13 +466,11 @@
 
 <span class="sd">        :raises ValidationError: raised when input_variables do not fit the placeholders in the input body.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">input_variables</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">input_variables</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_variables</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
-        <span class="p">)</span>
+        <span class="n">input_variables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_variables</span> <span class="ow">or</span> <span class="p">[]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_prompt</span><span class="p">(</span>
             <span class="n">input_variables</span><span class="p">,</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_text</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_text</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -529,7 +528,7 @@
 <span class="sd">    :type output_prefix: str, optional</span>
 
 <span class="sd">    :param examples: examples that might help the model adjust the response; [[input1, output1], ...], defaults to None.</span>
-<span class="sd">    :type examples: list[list[str]]], optional</span>
+<span class="sd">    :type examples: list[list[str]], optional</span>
 
 <span class="sd">    :param validate_template: if True, the prompt template is validated for the presence of input variables, defaults to True.</span>
 <span class="sd">    :type validate_template: bool, optional</span>
@@ -601,7 +600,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">instruction</span> <span class="o">=</span> <span class="n">instruction</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_prefix</span> <span class="o">=</span> <span class="n">input_prefix</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_prefix</span> <span class="o">=</span> <span class="n">output_prefix</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">examples</span> <span class="o">=</span> <span class="n">examples</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">examples</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">examples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">examples</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">examples</span><span class="p">)</span> <span class="k">if</span> <span class="n">examples</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">examples</span>
 
         <span class="n">supported_pt_kwargs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;input_mode&quot;</span><span class="p">,</span> <span class="s2">&quot;external_information&quot;</span><span class="p">]</span>
         <span class="n">unsupported_pt_keys</span> <span class="o">=</span> <span class="p">[</span>
@@ -627,9 +626,7 @@
 
 <span class="sd">        :raises ValidationError: raised when input_variables do not fit the placeholders in the input body.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">input_variables</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">input_variables</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_variables</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
-        <span class="p">)</span>
+        <span class="n">input_variables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_variables</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="n">template_text</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">instruction</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_prefix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_prefix</span><span class="p">])</span>
         <span class="p">)</span>
@@ -639,11 +636,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_prompt</span><span class="p">(</span>
             <span class="n">input_variables</span><span class="p">,</span>
-            <span class="p">(</span>
-                <span class="n">template_text</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_text</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                <span class="k">else</span> <span class="n">template_text</span>
-            <span class="p">),</span>
+            <span class="n">template_text</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_text</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
         <span class="p">)</span></div>
 
 
@@ -711,8 +704,20 @@
 <span class="sd">    :param detached_model_url: URL for the external model, defaults to None</span>
 <span class="sd">    :type detached_model_url: str | None, optional</span>
 
-<span class="sd">    :param validate_template: if True, the prompt template is validated for the presence of input variables, defaults to True.</span>
+<span class="sd">    :param validate_template: if True, the prompt template is validated for the presence of input variables, defaults to True</span>
 <span class="sd">    :type validate_template: bool, optional</span>
+
+<span class="sd">    :param instruction: instruction for the model, defaults to None</span>
+<span class="sd">    :type instruction: str, optional</span>
+
+<span class="sd">    :param input_prefix: prefix string placed before the input text, defaults to None</span>
+<span class="sd">    :type input_prefix: str, optional</span>
+
+<span class="sd">    :param output_prefix: prefix placed before the model response, defaults to None</span>
+<span class="sd">    :type output_prefix: str, optional</span>
+
+<span class="sd">    :param examples: examples that might help the model adjust the response; [[input1, output1], ...], defaults to None</span>
+<span class="sd">    :type examples: list[list[str]], optional</span>
 
 <span class="sd">    :raises ValidationError: raised when the set of input_variables is not consistent with the input variables present in the template.</span>
 <span class="sd">                             Raised only when `validate_template` is set to True.</span>
@@ -781,6 +786,10 @@
         <span class="n">detached_model_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">detached_model_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">validate_template</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">instruction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">input_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">output_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">examples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">input_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_mode</span><span class="p">,</span>
@@ -793,6 +802,11 @@
             <span class="n">input_text</span><span class="o">=</span><span class="n">input_text</span><span class="p">,</span>
             <span class="n">input_variables</span><span class="o">=</span><span class="n">input_variables</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instruction</span> <span class="o">=</span> <span class="n">instruction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_prefix</span> <span class="o">=</span> <span class="n">input_prefix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_prefix</span> <span class="o">=</span> <span class="n">output_prefix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">examples</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">examples</span><span class="p">)</span> <span class="k">if</span> <span class="n">examples</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">examples</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">detached_prompt_id</span> <span class="o">=</span> <span class="n">detached_prompt_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">detached_model_id</span> <span class="o">=</span> <span class="n">detached_model_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">detached_model_provider</span> <span class="o">=</span> <span class="n">detached_model_provider</span>
@@ -810,15 +824,19 @@
     <span class="k">def</span> <span class="nf">_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the template structure.</span>
 
-<span class="sd">        :raises ValidationError: raised when input_variables does not fit the placeholders in the input body.</span>
+<span class="sd">        :raises ValidationError: raised when input_variables do not fit the placeholders in the input body.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">input_variables</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">input_variables</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_variables</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="n">input_variables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_variables</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">template_text</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">instruction</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_prefix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_prefix</span><span class="p">])</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">example</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="p">:</span>
+                <span class="n">template_text</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">example</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_prompt</span><span class="p">(</span>
             <span class="n">input_variables</span><span class="p">,</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_text</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="n">template_text</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_text</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
         <span class="p">)</span></div>
 
 
@@ -1050,7 +1068,7 @@
             <span class="p">)</span>
 
         <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="n">PromptTemplate</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="n">DetachedPromptTemplate</span><span class="p">):</span>
 
             <span class="k">if</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">instruction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;instruction&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">instruction</span><span class="p">})</span>
@@ -1066,69 +1084,71 @@
                 <span class="p">)</span>
                 <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;examples&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">examples</span><span class="p">})</span>
 
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="n">DetachedPromptTemplate</span><span class="p">):</span>
-            <span class="n">external_information</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-            <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
-                <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_prompt_id</span><span class="p">,</span> <span class="s2">&quot;detached_prompt_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span>
-            <span class="p">)</span>
-            <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
-                <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_id</span><span class="p">,</span> <span class="s2">&quot;detached_model_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span>
-            <span class="p">)</span>
-            <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
-                <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_provider</span><span class="p">,</span>
-                <span class="s2">&quot;detached_model_provider&quot;</span><span class="p">,</span>
-                <span class="nb">str</span><span class="p">,</span>
-                <span class="kc">True</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">external_information</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                <span class="p">{</span>
-                    <span class="s2">&quot;external_prompt_id&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_prompt_id</span><span class="p">,</span>
-                    <span class="s2">&quot;external_model_id&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_id</span><span class="p">,</span>
-                    <span class="s2">&quot;external_model_provider&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_provider</span><span class="p">,</span>
-                <span class="p">}</span>
-            <span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_prompt_additional_information</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="n">DetachedPromptTemplate</span><span class="p">):</span>
+                <span class="n">external_information</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
                 <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
-                    <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_prompt_url</span><span class="p">,</span>
-                    <span class="s2">&quot;detached_prompt_url&quot;</span><span class="p">,</span>
+                    <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_prompt_id</span><span class="p">,</span> <span class="s2">&quot;detached_prompt_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+                    <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_id</span><span class="p">,</span> <span class="s2">&quot;detached_model_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+                    <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_provider</span><span class="p">,</span>
+                    <span class="s2">&quot;detached_model_provider&quot;</span><span class="p">,</span>
                     <span class="nb">str</span><span class="p">,</span>
                     <span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">external_information</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                     <span class="p">{</span>
-                        <span class="s2">&quot;external_prompt&quot;</span><span class="p">:</span> <span class="p">{</span>
-                            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_prompt_url</span><span class="p">,</span>
-                            <span class="s2">&quot;additional_information&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_prompt_additional_information</span><span class="p">,</span>
-                        <span class="p">}</span>
-                    <span class="p">}</span>
-                <span class="p">)</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                <span class="ow">or</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="p">):</span>
-                <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
-                    <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_url</span><span class="p">,</span>
-                    <span class="s2">&quot;detached_model_url&quot;</span><span class="p">,</span>
-                    <span class="nb">str</span><span class="p">,</span>
-                    <span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
-                    <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_name</span><span class="p">,</span>
-                    <span class="s2">&quot;detached_model_name&quot;</span><span class="p">,</span>
-                    <span class="nb">str</span><span class="p">,</span>
-                    <span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">external_information</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                    <span class="p">{</span>
-                        <span class="s2">&quot;external_model&quot;</span><span class="p">:</span> <span class="p">{</span>
-                            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_url</span><span class="p">,</span>
-                            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_name</span><span class="p">,</span>
-                        <span class="p">}</span>
+                        <span class="s2">&quot;external_prompt_id&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_prompt_id</span><span class="p">,</span>
+                        <span class="s2">&quot;external_model_id&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_id</span><span class="p">,</span>
+                        <span class="s2">&quot;external_model_provider&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_provider</span><span class="p">,</span>
                     <span class="p">}</span>
                 <span class="p">)</span>
 
-            <span class="n">json_data</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;external_information&quot;</span><span class="p">:</span> <span class="n">external_information</span><span class="p">})</span>
+                <span class="k">if</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_prompt_additional_information</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+                        <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_prompt_url</span><span class="p">,</span>
+                        <span class="s2">&quot;detached_prompt_url&quot;</span><span class="p">,</span>
+                        <span class="nb">str</span><span class="p">,</span>
+                        <span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">external_information</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="p">{</span>
+                            <span class="s2">&quot;external_prompt&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_prompt_url</span><span class="p">,</span>
+                                <span class="s2">&quot;additional_information&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_prompt_additional_information</span><span class="p">,</span>
+                            <span class="p">}</span>
+                        <span class="p">}</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="ow">or</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="p">):</span>
+                    <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+                        <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_url</span><span class="p">,</span>
+                        <span class="s2">&quot;detached_model_url&quot;</span><span class="p">,</span>
+                        <span class="nb">str</span><span class="p">,</span>
+                        <span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">PromptTemplateManager</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
+                        <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_name</span><span class="p">,</span>
+                        <span class="s2">&quot;detached_model_name&quot;</span><span class="p">,</span>
+                        <span class="nb">str</span><span class="p">,</span>
+                        <span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">external_information</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="p">{</span>
+                            <span class="s2">&quot;external_model&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_url</span><span class="p">,</span>
+                                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">detached_model_name</span><span class="p">,</span>
+                            <span class="p">}</span>
+                        <span class="p">}</span>
+                    <span class="p">)</span>
+
+                <span class="n">json_data</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">&quot;external_information&quot;</span><span class="p">:</span> <span class="n">external_information</span><span class="p">}</span>
+                <span class="p">)</span>
 
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_template</span><span class="p">,</span> <span class="n">ChatPrompt</span><span class="p">):</span>
 
@@ -1199,6 +1219,10 @@
                     <span class="p">),</span>
                     <span class="n">input_variables</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prompt_variables&quot;</span><span class="p">),</span>
                     <span class="n">input_text</span><span class="o">=</span><span class="n">prompt_field</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]])[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="n">instruction</span><span class="o">=</span><span class="n">data_field</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;instruction&quot;</span><span class="p">),</span>
+                    <span class="n">input_prefix</span><span class="o">=</span><span class="n">data_field</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;input_prefix&quot;</span><span class="p">),</span>
+                    <span class="n">output_prefix</span><span class="o">=</span><span class="n">data_field</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;output_prefix&quot;</span><span class="p">),</span>
+                    <span class="n">examples</span><span class="o">=</span><span class="n">data_field</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;examples&quot;</span><span class="p">),</span>
                     <span class="n">detached_prompt_id</span><span class="o">=</span><span class="n">external_information_field</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                         <span class="s2">&quot;external_prompt_id&quot;</span>
                     <span class="p">),</span>
@@ -1293,7 +1317,7 @@
         <span class="n">prompts_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">bookmark</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">while</span> <span class="n">bookmark</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
                 <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json_data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span>
             <span class="p">)</span>
             <span class="n">details_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;Get next details&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
@@ -1320,7 +1344,10 @@
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">|</span> <span class="p">{</span><span class="s2">&quot;prompt_id&quot;</span><span class="p">:</span> <span class="n">prompt_id</span><span class="p">,</span> <span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="n">force</span><span class="p">}</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">|</span> <span class="p">{</span>
+            <span class="s2">&quot;prompt_id&quot;</span><span class="p">:</span> <span class="n">prompt_id</span><span class="p">,</span>
+            <span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="n">force</span><span class="p">,</span>
+        <span class="p">}</span>
         <span class="n">json_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;locked&quot;</span><span class="p">:</span> <span class="n">locked</span><span class="p">}</span>
 
         <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
@@ -1329,7 +1356,9 @@
             <span class="p">)</span>
             <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">prompt_id</span><span class="si">}</span><span class="s2">/lock&quot;</span>
         <span class="p">)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json_data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json_data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;change_lock&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
 
@@ -1378,7 +1407,9 @@
         <span class="p">]</span> <span class="o">=</span> <span class="n">PromptTemplateFormats</span><span class="o">.</span><span class="n">PROMPTTEMPLATE</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">prompt_variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FreeformPromptTemplate</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="n">DetachedPromptTemplate</span><span class="p">:</span> <span class="o">...</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span>
+        <span class="n">FreeformPromptTemplate</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="n">DetachedPromptTemplate</span> <span class="o">|</span> <span class="n">ChatPrompt</span>
+    <span class="p">):</span> <span class="o">...</span>
 
 <div class="viewcode-block" id="PromptTemplateManager.load_prompt">
 <a class="viewcode-back" href="../../../../prompt_template_manager.html#ibm_watsonx_ai.foundation_models.prompts.PromptTemplateManager.load_prompt">[docs]</a>
@@ -1432,12 +1463,16 @@
             <span class="n">astype</span> <span class="o">=</span> <span class="n">astype</span><span class="o">.</span><span class="n">value</span>
 
         <span class="k">if</span> <span class="n">astype</span> <span class="o">==</span> <span class="s2">&quot;prompt&quot;</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_from_json_to_prompt</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;_load_json_prompt&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">astype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;langchain&quot;</span><span class="p">,</span> <span class="s2">&quot;string&quot;</span><span class="p">):</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span> <span class="o">+</span> <span class="s2">&quot;/input&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="n">url</span> <span class="o">+</span> <span class="s2">&quot;/input&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
+            <span class="p">)</span>
             <span class="n">response_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;load_prompt&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="s2">&quot;input&quot;</span>
             <span class="p">)</span>
@@ -1450,9 +1485,11 @@
                         <span class="k">else</span> <span class="n">response_input</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_variables</span><span class="p">)</span>
                     <span class="p">)</span>
                 <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">key</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">PromptVariablesError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+                    <span class="k">raise</span> <span class="n">PromptVariablesError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">))</span> <span class="kn">from</span> <span class="nn">key</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
+                <span class="p">)</span>
                 <span class="n">response_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
                     <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;_load_json_prompt&quot;</span><span class="p">,</span> <span class="n">response</span>
                 <span class="p">)</span>
@@ -1721,6 +1758,21 @@
                             <span class="n">input_text</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span>
                                 <span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;input_text&quot;</span><span class="p">,</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">template</span>
                             <span class="p">),</span>
+                            <span class="n">instruction</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span>
+                                <span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;instruction&quot;</span><span class="p">,</span> <span class="kc">None</span>
+                            <span class="p">),</span>
+                            <span class="n">input_prefix</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span>
+                                <span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;input_prefix&quot;</span><span class="p">,</span> <span class="kc">None</span>
+                            <span class="p">),</span>
+                            <span class="n">output_prefix</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span>
+                                <span class="n">prompt_template</span><span class="p">,</span> <span class="s2">&quot;output_prefix&quot;</span><span class="p">,</span> <span class="kc">None</span>
+                            <span class="p">),</span>
+                            <span class="n">examples</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span>
+                                <span class="n">prompt_template</span><span class="p">,</span>
+                                <span class="s2">&quot;examples&quot;</span><span class="p">,</span>
+                                <span class="kc">None</span><span class="p">,</span>
+                                <span class="n">must_be_nested_list</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="p">),</span>
                             <span class="n">input_variables</span><span class="o">=</span><span class="n">get_metadata_value</span><span class="p">(</span>
                                 <span class="n">prompt_template</span><span class="p">,</span>
                                 <span class="s2">&quot;input_variables&quot;</span><span class="p">,</span>
@@ -1763,12 +1815,12 @@
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_prompts_href</span><span class="p">(</span>
             <span class="n">ga_api</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_use_pta_ga_api</span>
         <span class="p">)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
             <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json_data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span>
         <span class="p">)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">201</span><span class="p">,</span> <span class="s2">&quot;store_prompt&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">201</span><span class="p">,</span> <span class="s2">&quot;store_prompt&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_from_json_to_prompt</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_from_json_to_prompt</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PromptTemplateManager.delete_prompt">
@@ -1803,7 +1855,9 @@
             <span class="p">)</span>
             <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">prompt_id</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="s2">&quot;delete_prompt&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>  <span class="c1"># type: ignore[return-value]</span></div>
 
@@ -1875,7 +1929,7 @@
             <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">prompt_id</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
-        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
             <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">new_body</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;update_prompt&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span></div>
@@ -1907,7 +1961,9 @@
             <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">prompt_id</span><span class="si">}</span><span class="s2">/lock&quot;</span>
         <span class="p">)</span>
 
-        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;get_lock&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span></div>
 
@@ -2008,7 +2064,7 @@
             <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">prompt_id</span><span class="si">}</span><span class="s2">/chat_items&quot;</span>
         <span class="p">)</span>
 
-        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
             <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">chat_items</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span><span class="p">:</span>

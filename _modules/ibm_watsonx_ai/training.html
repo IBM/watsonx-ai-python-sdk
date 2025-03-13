@@ -206,6 +206,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../setup.html">Setup</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Setup</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../setup_cloud.html">IBM watsonx.ai for IBM Cloud</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../setup_cpd.html">IBM watsonx.ai software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../httpx_configuration.html">Configuring the HTTP Client</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -256,6 +257,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../fm_schema.html">Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_deploy_on_demand.html">Deploy on Demand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rate_limit.html">Rate Limits</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../save_models.html">Saving external models</a></li>
@@ -309,6 +311,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">from</span> <span class="nn">ibm_boto3.exceptions</span> <span class="kn">import</span> <span class="n">Boto3Error</span>
 <span class="kn">from</span> <span class="nn">lomond</span> <span class="kn">import</span> <span class="n">WebSocket</span>
@@ -763,6 +766,9 @@
                 <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">FEDERATED_LEARNING</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">:</span>
+            <span class="n">fl_deprecated_warning</span> <span class="o">=</span> <span class="s2">&quot;Federated Learning is deprecated and will be removed in IBM Cloud Pak for Data 5.2.&quot;</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">fl_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
             <span class="n">training_configuration_metadata</span><span class="p">[</span><span class="s2">&quot;federated_learning&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta_props</span><span class="p">[</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">FEDERATED_LEARNING</span>
             <span class="p">]</span>

@@ -206,6 +206,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../setup.html">Setup</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Setup</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../setup_cloud.html">IBM watsonx.ai for IBM Cloud</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../setup_cpd.html">IBM watsonx.ai software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../httpx_configuration.html">Configuring the HTTP Client</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -256,6 +257,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../fm_schema.html">Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fm_deploy_on_demand.html">Deploy on Demand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rate_limit.html">Rate Limits</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../save_models.html">Saving external models</a></li>
@@ -318,11 +320,22 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">TypeAlias</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">httpx</span>
 
 <span class="kn">import</span> <span class="nn">ibm_watsonx_ai.utils</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="n">get_user_agent_header</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.trashed_assets</span> <span class="kn">import</span> <span class="n">TrashedAssets</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_get_httpx_client</span><span class="p">,</span>
+    <span class="n">_httpx_transport_params</span><span class="p">,</span>
+    <span class="n">_get_async_client</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.auth</span> <span class="kn">import</span> <span class="n">get_auth_method</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.utils</span> <span class="kn">import</span> <span class="n">_APIClientSession</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="n">get_user_agent_header</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_APIClientSession</span><span class="p">,</span>
+    <span class="n">HttpClientConfig</span><span class="p">,</span>
+    <span class="n">DEFAULT_HTTP_CLIENT_CONFIG</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.Set</span> <span class="kn">import</span> <span class="n">Set</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.assets</span> <span class="kn">import</span> <span class="n">Assets</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.connections</span> <span class="kn">import</span> <span class="n">Connections</span>
@@ -366,8 +379,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The main class of ibm_watsonx_ai. The very heart of the module. APIClient contains objects that manage the service reasources.</span>
 
 <span class="sd">    To explore how to use APIClient, refer to:</span>
-<span class="sd">     - :ref:`Setup&lt;setup&gt;` - to check correct initialization of APIClient for a specific environment.</span>
-<span class="sd">     - :ref:`Core&lt;core&gt;` - to explore core properties of an APIClient object.</span>
+
+<span class="sd">    - :ref:`Setup&lt;setup&gt;` - to check correct initialization of APIClient for a specific environment.</span>
+<span class="sd">    - :ref:`Core&lt;core&gt;` - to explore core properties of an APIClient object.</span>
 
 <span class="sd">    :param url: URL of the service</span>
 <span class="sd">    :type url: str</span>
@@ -383,6 +397,57 @@
 
 <span class="sd">    :param verify: certificate verification flag, deprecated, use Credentials(verify=...) to set `verify`</span>
 <span class="sd">    :type verify: bool, optional</span>
+
+<span class="sd">    :param httpx_client: A customizable `httpx.Client` for ModelInference, Embeddings and methods related to the deployments management and scoring.</span>
+<span class="sd">        The `httpx.Client` is used to improve performance across deployments, foundation models, and embeddings. This parameter accepts two types of input:</span>
+
+<span class="sd">        - A direct instance of `httpx.Client()`</span>
+<span class="sd">        - A set of parameters provided via the `HttpClientConfig` class</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from ibm_watsonx_ai.utils.utils import HttpClientConfig</span>
+
+<span class="sd">            limits=httpx.Limits(</span>
+<span class="sd">                max_connections=5</span>
+<span class="sd">            )</span>
+<span class="sd">            timeout = httpx.Timeout(7)</span>
+<span class="sd">            http_config = HttpClientConfig(timeout=timeout, limits=limits)</span>
+
+<span class="sd">        If not provided, a default instance of `httpx.Client` is created.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            If you need to adjust timeouts or limits, using ``HttpClientConfig`` is the recommended approach.</span>
+<span class="sd">            When the ``proxies`` parameter is provided in credentials, ``httpx.Client`` will use these proxies.</span>
+<span class="sd">            However, if you want to create a separate ``httpx.Client``, all parameters must be provided by the user.</span>
+<span class="sd">    :type httpx_client: httpx.Client, HttpClientConfig, optional</span>
+
+<span class="sd">    :param async_httpx_client: A customizable `httpx.AsyncClient` for ModelInference. The `httpx.AsyncClient` is used to improve performance of foundation models inference. This parameter accepts two types of input:</span>
+
+<span class="sd">        - A direct instance of `httpx.AsyncClient`</span>
+<span class="sd">        - A set of parameters provided via the `HttpClientConfig` class</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from ibm_watsonx_ai.utils.utils import HttpClientConfig</span>
+
+<span class="sd">            limits=httpx.Limits(</span>
+<span class="sd">                max_connections=5</span>
+<span class="sd">            )</span>
+<span class="sd">            timeout = httpx.Timeout(7)</span>
+<span class="sd">            http_config = HttpClientConfig(timeout=timeout, limits=limits)</span>
+
+<span class="sd">        If not provided, a default instance of `httpx.AsyncClient` is created.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            If you need to adjust timeouts or limits, using ``HttpClientConfig`` is the recommended approach.</span>
+<span class="sd">            When the ``proxies`` parameter is provided in credentials, ``httpx.Client`` will use these proxies.</span>
+<span class="sd">            However, if you want to create a separate ``httpx.Client``, all parameters must be provided by the user.</span>
+<span class="sd">    :type async_httpx_client: httpx.AsyncClient, HttpClientConfig, optional</span>
 
 <span class="sd">    **Example:**</span>
 
@@ -415,6 +480,10 @@
         <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verify</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">httpx_client</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span> <span class="o">|</span> <span class="n">HttpClientConfig</span> <span class="o">=</span> <span class="n">DEFAULT_HTTP_CLIENT_CONFIG</span><span class="p">,</span>
+        <span class="n">async_httpx_client</span><span class="p">:</span> <span class="p">(</span>
+            <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span> <span class="o">|</span> <span class="n">HttpClientConfig</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">DEFAULT_HTTP_CLIENT_CONFIG</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">wml_credentials</span> <span class="o">:=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;wml_credentials&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -722,6 +791,7 @@
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">shiny</span> <span class="o">=</span> <span class="n">Shiny</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">trashed_assets</span> <span class="o">=</span> <span class="n">TrashedAssets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="n">Script</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model_definitions</span> <span class="o">=</span> <span class="n">ModelDefinition</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -760,6 +830,26 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;client_successfully_initialized&quot;</span><span class="p">)</span>
             <span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">httpx_client</span><span class="p">,</span> <span class="n">HttpClientConfig</span><span class="p">):</span>
+                <span class="n">httpx_client</span> <span class="o">=</span> <span class="n">_get_httpx_client</span><span class="p">(</span>
+                    <span class="n">transport_params</span><span class="o">=</span><span class="n">_httpx_transport_params</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="p">,</span> <span class="n">limits</span><span class="o">=</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">limits</span>
+                    <span class="p">),</span>
+                    <span class="n">timeout</span><span class="o">=</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_httpx_client</span> <span class="o">=</span> <span class="n">httpx_client</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">async_httpx_client</span><span class="p">,</span> <span class="n">HttpClientConfig</span><span class="p">):</span>
+                <span class="n">async_httpx_client</span> <span class="o">=</span> <span class="n">_get_async_client</span><span class="p">(</span>
+                    <span class="n">transport_params</span><span class="o">=</span><span class="n">_httpx_transport_params</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="p">,</span> <span class="n">limits</span><span class="o">=</span><span class="n">async_httpx_client</span><span class="o">.</span><span class="n">limits</span>
+                    <span class="p">),</span>
+                    <span class="n">timeout</span><span class="o">=</span><span class="n">async_httpx_client</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_async_httpx_client</span> <span class="o">=</span> <span class="n">async_httpx_client</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">wml_credentials</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
@@ -836,6 +926,26 @@
             <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_auth_method</span><span class="p">,</span> <span class="n">TokenAuth</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">httpx_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_httpx_client</span>
+
+    <span class="nd">@httpx_client</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">httpx_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_httpx_client</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_httpx_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_httpx_client</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">async_httpx_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_httpx_client</span>
+
+    <span class="nd">@async_httpx_client</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">async_httpx_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_httpx_client</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_async_httpx_client</span><span class="o">.</span><span class="n">aclose</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_async_httpx_client</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get_api_version_param</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>

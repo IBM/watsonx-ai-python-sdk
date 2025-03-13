@@ -1,0 +1,91 @@
+Configuring the HTTP Client
+===========================
+
+What is HTTPX?
+---------------------------
+HTTPX is a fully featured HTTP client for Python 3, which provides synchronous and asynchronous request handling.
+See `here <https://www.python-httpx.org>`_
+
+The ``ibm-watsonx-ai`` client uses ``httpx.Client`` in the following classes:
+**ModelInference, Embeddings and methods related to the deployments management and scoring**.
+
+The ``httpx.Client`` is utilized in the ``ibm-watsonx-ai`` client to enhance performance by:
+    - Reducing latency across requests
+    - Minimizing network congestion
+
+These aspects of the ``ibm-watsonx-ai`` client, which are the most challenging in terms of network usage and reliability, are supported by `httpx.Client`.
+
+Default HTTP Client Configuration
+---------------------------------
+
+By default, the ``ibm-watsonx-ai`` client is configured with the following settings:
+
+- **Timeouts:**
+    - ``read, write and pool``: **1800s**
+    - ``connect``: **10s**
+- **Limits:**
+    - ``max_connections``: **10**
+    - ``max_keepalive_connections``: **10**
+    - ``keepalive_expiry``: **5**
+
+The ``ibm-watsonx-ai`` client automatically handles **proxies** provided in credentials and **verify** settings to create an appropriate transport for ``httpx``.
+
+Customizing the HTTP Client
+---------------------------
+
+Apart from using the default client, there are two ways to configure the HTTP client:
+
+Using ``HttpClientConfig``
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To customize timeouts and limits, use ``HttpClientConfig``:
+
+**Example:**
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient, Credentials
+    from ibm_watsonx_ai.utils.utils import HttpClientConfig
+    import httpx
+
+    credentials = Credentials(
+        url="<url>",
+        api_key="<api_key>"
+    )
+
+    limits = httpx.Limits(
+        max_connections=5
+    )
+    timeout = httpx.Timeout(7)
+    http_config = HttpClientConfig(timeout=timeout, limits=limits)
+
+    client = APIClient(credentials, httpx_client=http_config)
+
+Explicitly providing ``httpx.Client``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can also explicitly pass an ``httpx.Client`` instance:
+
+**Example:**
+
+.. code-block:: python
+
+    import httpx
+    from ibm_watsonx_ai import APIClient, Credentials
+
+    credentials = Credentials(
+        url="<url>",
+        api_key="<api_key>"
+    )
+
+    httpx_client = httpx.Client(proxy="http://localhost:8030", timeout=10.0)
+    client = APIClient(credentials, httpx_client=httpx_client)
+
+.. note::
+
+   When explicitly passing an httpx.Client, users assume full responsibility for configuring all client options correctly. This includes ensuring that any proxy settings provided in credentials are also explicitly defined in the httpx.Client configuration.
+
+Additional Considerations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It is recommended to read the :doc:`rate_limit` section to understand request handling and the retry mechanism.

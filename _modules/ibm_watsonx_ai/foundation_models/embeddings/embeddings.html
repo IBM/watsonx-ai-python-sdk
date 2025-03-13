@@ -206,6 +206,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../setup.html">Setup</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Setup</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../setup_cloud.html">IBM watsonx.ai for IBM Cloud</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../setup_cpd.html">IBM watsonx.ai software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../httpx_configuration.html">Configuring the HTTP Client</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -256,6 +257,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_schema.html">Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_deploy_on_demand.html">Deploy on Demand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../rate_limit.html">Rate Limits</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../save_models.html">Saving external models</a></li>
@@ -308,9 +310,10 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span><span class="p">,</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+<span class="kn">import</span> <span class="nn">requests</span> <span class="k">as</span> <span class="nn">_requests</span>
 <span class="kn">import</span> <span class="nn">httpx</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="p">(</span>
@@ -390,6 +393,16 @@
 <span class="sd">    :param concurrency_limit: number of requests to be sent in parallel when generating embedding vectors, max is 10, defaults to 5</span>
 <span class="sd">    :type concurrency_limit: int, optional</span>
 
+<span class="sd">    :param max_retries: number of retries performed when request was not successful and status code is in retry_status_codes, defaults to 10</span>
+<span class="sd">    :type max_retries: int, optional</span>
+
+<span class="sd">    :param delay_time: delay time to retry request, factor in exponential backoff formula: wx_delay_time * pow(2.0, attempt), defaults to 0.5s</span>
+<span class="sd">    :type delay_time: float, optional</span>
+
+<span class="sd">    :param retry_status_codes: list of status codes which will be considered for retry mechanism, defaults to [429, 503, 504, 520]</span>
+<span class="sd">    :type retry_status_codes: list[int], optional</span>
+
+
 <span class="sd">    .. note::</span>
 <span class="sd">        When the ``credentials`` parameter is passed, one of these parameters is required: [``project_id``, ``space_id``].</span>
 
@@ -436,6 +449,9 @@
         <span class="n">persistent_connection</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">MAX_INPUTS_LENGTH</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_CONCURRENCY_LIMIT</span><span class="p">,</span>
+        <span class="n">max_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">delay_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">retry_status_codes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="o">=</span> <span class="n">model_id</span><span class="o">.</span><span class="n">value</span>
@@ -490,17 +506,43 @@
 
         <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transport_params</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">_httpx_transport_params</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">retry_status_codes</span><span class="o">=</span><span class="n">_RETRY_STATUS_CODES</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transport_params</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">_httpx_transport_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistent_connection</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span> <span class="o">=</span> <span class="n">_get_httpx_client</span><span class="p">(</span>
-                <span class="n">transport_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_transport_params</span><span class="p">,</span>
-                <span class="n">timeout</span><span class="o">=</span><span class="n">EMBEDDINGS_HTTPX_TIMEOUT</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span> <span class="o">=</span> <span class="n">requests</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span> <span class="o">=</span> <span class="n">requests</span>  <span class="c1"># type: ignore[assignment]</span>
+            <span class="n">persistent_connection_warn</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;`persistent_connection` is deprecated and will be removed in future. &quot;</span>
+            <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">persistent_connection_warn</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+        <span class="c1"># Set initially 8 requests per second as it is default for prod instances</span>
+        <span class="c1"># if header &quot;x-requests-limit-rate&quot; is different capacity will be updated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rate_limiter</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">TokenBucket</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retry_status_codes</span> <span class="o">=</span> <span class="n">retry_status_codes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_retries</span> <span class="o">=</span> <span class="n">max_retries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delay_time</span> <span class="o">=</span> <span class="n">delay_time</span>
+
+    <span class="k">def</span> <span class="nf">_generate_raw_response</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">generate_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">ParamsType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">_http_client</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span> <span class="o">|</span> <span class="n">_requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send request with post and return service response.&quot;&quot;&quot;</span>
+
+        <span class="n">payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_payload</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+        <span class="n">post_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">generate_url</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(</span><span class="n">skip_for_create</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_userfs</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_post</span><span class="p">(</span><span class="n">_http_client</span><span class="p">,</span> <span class="o">**</span><span class="n">post_params</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Embeddings.generate">
 <a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.Embeddings.generate">[docs]</a>
@@ -536,61 +578,66 @@
         <span class="c1"># &#39;(concurrency_limit is DEFAULT_CONCURRENCY_LIMIT) == True&#39; =&gt; NO SET</span>
         <span class="k">if</span> <span class="n">concurrency_limit</span> <span class="ow">is</span> <span class="n">DEFAULT_CONCURRENCY_LIMIT</span><span class="p">:</span>
             <span class="n">concurrency_limit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">concurrency_limit</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># For batch of prompts use keep-alive connection even if persistent_connection=False</span>
-            <span class="n">http_client</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">_get_httpx_client</span><span class="p">(</span>
-                    <span class="n">transport_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_transport_params</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistent_connection</span>
-                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">:</span>
-                <span class="n">generated_responses</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="n">inputs_splitted</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">inputs</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">]</span>
-                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
-                <span class="p">]</span>
-                <span class="n">_generate_partial</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_generate</span><span class="p">,</span>
-                    <span class="n">generate_url</span><span class="p">,</span>
+        <span class="c1"># For batch of prompts use keep-alive connection even if persistent_connection=False</span>
+        <span class="n">http_client</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistent_connection</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">:</span>
+            <span class="n">inputs_split</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">inputs</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+            <span class="p">]</span>
+
+            <span class="k">def</span> <span class="nf">make_request</span><span class="p">(</span><span class="n">_inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rate_limiter</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_raw_response</span><span class="p">(</span>
+                    <span class="n">generate_url</span><span class="o">=</span><span class="n">generate_url</span><span class="p">,</span>
+                    <span class="n">inputs</span><span class="o">=</span><span class="n">_inputs</span><span class="p">,</span>
                     <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
                     <span class="n">_http_client</span><span class="o">=</span><span class="n">http_client</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">inputs_length</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs_splitted</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="n">concurrency_limit</span><span class="p">:</span>
-                    <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">inputs_length</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
-                        <span class="n">generated_responses</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-                            <span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">_generate_partial</span><span class="p">,</span> <span class="n">inputs_splitted</span><span class="p">)</span>
-                        <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
-                        <span class="n">generated_responses</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-                            <span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">_generate_partial</span><span class="p">,</span> <span class="n">inputs_splitted</span><span class="p">)</span>
-                        <span class="p">)</span>
+                <span class="n">rate_limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;x-requests-limit-rate&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">rate_limit</span> <span class="ow">and</span> <span class="n">rate_limit</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate_limiter</span><span class="o">.</span><span class="n">capacity</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">rate_limiter</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="n">rate_limit</span>
 
-                <span class="k">def</span> <span class="nf">reduce_response</span><span class="p">(</span><span class="n">left</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">copy</span>
-
-                    <span class="n">left_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">left</span><span class="p">)</span>
-                    <span class="n">left_copy</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">right</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">])</span>
-                    <span class="n">left_copy</span><span class="p">[</span><span class="s2">&quot;input_token_count&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">right</span><span class="p">[</span><span class="s2">&quot;input_token_count&quot;</span><span class="p">]</span>
-                    <span class="k">return</span> <span class="n">left_copy</span>
-
-                <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span>
-                    <span class="n">reduce_response</span><span class="p">,</span> <span class="n">generated_responses</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">generated_responses</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">rate_limit_remaining</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+                    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="s2">&quot;x-requests-limit-remaining&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate_limiter</span><span class="o">.</span><span class="n">capacity</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rate_limiter</span><span class="o">.</span><span class="n">adjust_tokens</span><span class="p">(</span><span class="n">rate_limit_remaining</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                    <span class="mi">200</span><span class="p">,</span>
+                    <span class="s2">&quot;generate&quot;</span><span class="p">,</span>
+                    <span class="n">response</span><span class="p">,</span>
+                    <span class="n">_field_to_hide</span><span class="o">=</span><span class="s2">&quot;embedding&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
 
+            <span class="k">if</span> <span class="p">(</span><span class="n">inputs_length</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs_split</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="n">concurrency_limit</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">inputs_length</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+                    <span class="n">generated_responses</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">make_request</span><span class="p">,</span> <span class="n">inputs_split</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate</span><span class="p">(</span><span class="n">generate_url</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">results</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">http_client</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore[assignment]</span>
-            <span class="k">raise</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistent_connection</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
-                <span class="n">http_client</span><span class="p">,</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span>
-            <span class="p">):</span>
-                <span class="n">http_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+                <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+                    <span class="n">generated_responses</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">make_request</span><span class="p">,</span> <span class="n">inputs_split</span><span class="p">))</span>
+
+            <span class="k">def</span> <span class="nf">reduce_response</span><span class="p">(</span><span class="n">left</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">copy</span>
+
+                <span class="n">left_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">left</span><span class="p">)</span>
+                <span class="n">left_copy</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">right</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">])</span>
+                <span class="n">left_copy</span><span class="p">[</span><span class="s2">&quot;input_token_count&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">right</span><span class="p">[</span><span class="s2">&quot;input_token_count&quot;</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">left_copy</span>
+
+            <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span>
+                <span class="n">reduce_response</span><span class="p">,</span> <span class="n">generated_responses</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">generated_responses</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate</span><span class="p">(</span><span class="n">generate_url</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span></div>
 
 
 <div class="viewcode-block" id="Embeddings.embed_documents">
@@ -686,20 +733,15 @@
         <span class="n">_http_client</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPXClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Send request with post and return service response.&quot;&quot;&quot;</span>
-
-        <span class="n">payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_payload</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-
         <span class="n">http_client</span> <span class="o">=</span> <span class="n">_http_client</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span>
-        <span class="n">post_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="n">generate_url</span><span class="p">,</span>
-            <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
-            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(</span><span class="n">skip_for_create</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_userfs</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">http_client</span><span class="p">,</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">):</span>
-            <span class="n">post_params</span><span class="p">[</span><span class="s2">&quot;_retry_status_codes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_RETRY_STATUS_CODES</span>
 
-        <span class="n">response_scoring</span> <span class="o">=</span> <span class="n">http_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="o">**</span><span class="n">post_params</span><span class="p">)</span>
+        <span class="n">response_scoring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_raw_response</span><span class="p">(</span>
+            <span class="n">generate_url</span><span class="o">=</span><span class="n">generate_url</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">_http_client</span><span class="o">=</span><span class="n">http_client</span><span class="p">,</span>
+        <span class="p">)</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
             <span class="mi">200</span><span class="p">,</span>
             <span class="s2">&quot;generate&quot;</span><span class="p">,</span>
@@ -733,16 +775,28 @@
 <div class="viewcode-block" id="Embeddings.close_persistent_connection">
 <a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.Embeddings.close_persistent_connection">[docs]</a>
     <span class="k">def</span> <span class="nf">close_persistent_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Only applicable if persistent_connection was set to True in Embeddings initialization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Only applicable if persistent_connection was set to True in Embeddings initialization.</span>
+<span class="sd">        Calling this method closes the current `httpx.Client` and recreates a new `httpx.Client` with default values:</span>
+<span class="sd">        timeout: httpx.Timeout(read=30 * 60, write=30 * 60, connect=10, pool=30 * 60)</span>
+<span class="sd">        limit: httpx.Limits(max_connections=10, max_keepalive_connections=10, keepalive_expiry=HTTPX_KEEPALIVE_EXPIRY)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistent_connection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span><span class="p">,</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span>
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span> <span class="o">=</span> <span class="n">_get_httpx_client</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span> <span class="o">=</span> <span class="n">_get_httpx_client</span><span class="p">(</span>
                 <span class="n">transport_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_transport_params</span><span class="p">,</span>
                 <span class="n">timeout</span><span class="o">=</span><span class="n">EMBEDDINGS_HTTPX_TIMEOUT</span><span class="p">,</span>
-            <span class="p">)</span></div>
-</div>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_http_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span></div>
+
+
+    <span class="nd">@requests</span><span class="o">.</span><span class="n">_with_retry</span><span class="p">(</span><span class="n">retry_status_codes</span><span class="o">=</span><span class="n">_RETRY_STATUS_CODES</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_post</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">http_client</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span> <span class="o">|</span> <span class="n">_requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">http_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

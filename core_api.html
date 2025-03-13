@@ -207,6 +207,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="setup.html">Setup</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Setup</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="setup_cloud.html">IBM watsonx.ai for IBM Cloud</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setup_cpd.html">IBM watsonx.ai software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="httpx_configuration.html">Configuring the HTTP Client</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="api.html">API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -257,6 +258,7 @@
 <li class="toctree-l3"><a class="reference internal" href="fm_schema.html">Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_deploy_on_demand.html">Deploy on Demand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rate_limit.html">Rate Limits</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="save_models.html">Saving external models</a></li>
@@ -756,13 +758,15 @@ Supported for IBM Cloud Pak® for Data only, version 4.0.4 and later.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="client.Assets.create">
-<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/assets.html#Assets.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Assets.create" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duplicate_action</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/assets.html#Assets.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Assets.create" title="Link to this definition">¶</a></dt>
 <dd><p>Create a data asset and upload content to it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – name to be given to the data asset</p></li>
 <li><p><strong>file_path</strong> (<em>str</em>) – path to the content file to be uploaded</p></li>
+<li><p><strong>duplicate_action</strong> (<em>AssetDuplicateAction</em><em>, </em><em>optional</em>) – determines behaviour when asset with the same name already exists,
+if not specified, the value from catalogs/projects/spaces will be used</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -780,11 +784,15 @@ Supported for IBM Cloud Pak® for Data only, version 4.0.4 and later.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="client.Assets.delete">
-<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asset_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/assets.html#Assets.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Assets.delete" title="Link to this definition">¶</a></dt>
-<dd><p>Delete a stored data asset.</p>
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asset_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">purge_on_delete</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/assets.html#Assets.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Assets.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Soft delete the stored data asset. The asset will be moved to trashed assets
+and will not be visible in asset list. To permanently delete assets set <cite>purge_on_delete</cite> parameter to True.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>asset_id</strong> (<em>str</em>) – unique ID of the data asset</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>asset_id</strong> (<em>str</em>) – unique ID of the data asset</p></li>
+<li><p><strong>purge_on_delete</strong> (<em>bool</em><em>, </em><em>optional</em>) – if set to True will purge the asset</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>status (“SUCCESS” or “FAILED”) or dictionary, if deleted asynchronously</p>
@@ -1013,9 +1021,162 @@ Supported for IBM Cloud Pak® for Data only, version 4.0.4 and later.</p>
 <td><p>N</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">my_description</span></code></p></td>
 </tr>
+<tr class="row-even"><td><p>DUPLICATE_ACTION</p></td>
+<td><p>str</p></td>
+<td><p>N</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">REJECT</span></code></p></td>
+</tr>
 </tbody>
 </table>
 </div>
+</dd></dl>
+
+</section>
+<section id="trashed-assets">
+<h2>Trashed assets<a class="headerlink" href="#trashed-assets" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="client.TrashedAssets">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">client.</span></span><span class="sig-name descname"><span class="pre">TrashedAssets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/trashed_assets.html#TrashedAssets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.TrashedAssets" title="Link to this definition">¶</a></dt>
+<dd><p>Manage trashed assets.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="client.TrashedAssets.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asset_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/trashed_assets.html#TrashedAssets.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.TrashedAssets.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a trashed asset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>asset_id</strong> (<em>str</em>) – trashed asset ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>status “SUCCESS” if deletion is successful</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Literal[“SUCCESS”]</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">trashed_assets</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">asset_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.TrashedAssets.get_details">
+<span class="sig-name descname"><span class="pre">get_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asset_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/trashed_assets.html#TrashedAssets.get_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.TrashedAssets.get_details" title="Link to this definition">¶</a></dt>
+<dd><p>Get metadata of a given trashed asset. If no <cite>asset_id</cite> is specified, all trashed assets metadata is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>asset_id</strong> (<em>str</em><em>, </em><em>optional</em>) – trashed asset ID</p></li>
+<li><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – limit number of fetched records</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>export metadata</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict (if asset_id is not None) or {“resources”: [dict]} (if asset_id is None)</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">trashed_assets</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">asset_id</span><span class="p">)</span>
+<span class="n">details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">trashed_assets</span><span class="o">.</span><span class="n">get_details</span><span class="p">()</span>
+<span class="n">details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">trashed_assets</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.TrashedAssets.get_id">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trashed_asset_details</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/trashed_assets.html#TrashedAssets.get_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.TrashedAssets.get_id" title="Link to this definition">¶</a></dt>
+<dd><p>Get the ID of a trashed asset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>trashed_asset_details</strong> (<em>dict</em>) – metadata of the trashed asset</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>unique ID of the trashed asset</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">asset_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">trashed_assets</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">trashed_asset_details</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.TrashedAssets.list">
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/trashed_assets.html#TrashedAssets.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.TrashedAssets.list" title="Link to this definition">¶</a></dt>
+<dd><p>List trashed assets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – set the limit for number of listed trashed assets,
+default is <cite>None</cite> (all trashed assets should be fetched)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pandas DataFrame with information about trashed assets</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trashed_assets_list</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">trashed_assets</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">trashed_assets_list</span><span class="p">)</span>
+
+<span class="c1"># Result:</span>
+<span class="c1">#        NAME  ASSET_TYPE                              ASSET_ID</span>
+<span class="c1"># 0  data.csv  data_asset  8e421c27-767d-4824-9aab-dc5c7c19ba87</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.TrashedAssets.purge_all">
+<span class="sig-name descname"><span class="pre">purge_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/trashed_assets.html#TrashedAssets.purge_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.TrashedAssets.purge_all" title="Link to this definition">¶</a></dt>
+<dd><p>Purge all trashed asset.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If there is more than 20 trashed assets, they will be removed asynchronously.
+It may take a few seconds until all trashed assets will disappear from trashed assets list.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>status “SUCCESS” if purge is successful</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Literal[“SUCCESS”]</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">trashed_assets</span><span class="o">.</span><span class="n">purge_all</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.TrashedAssets.restore">
+<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asset_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/trashed_assets.html#TrashedAssets.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.TrashedAssets.restore" title="Link to this definition">¶</a></dt>
+<dd><p>Restore a trashed asset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>asset_id</strong> (<em>str</em>) – trashed asset ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>details of restored asset</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">asset_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">trashed_assets</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="n">asset_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -6225,6 +6386,12 @@ that needs to be changed for the specific model_id</p></li>
 <td></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">{'key1':</span> <span class="pre">'value1'}</span></code></p></td>
 </tr>
+<tr class="row-even"><td><p>TOOLING</p></td>
+<td><p>dict</p></td>
+<td><p>N</p></td>
+<td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{'reference_format':</span> <span class="pre">True,</span> <span class="pre">'t1':</span> <span class="pre">'u1'}</span></code></p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -9871,6 +10038,18 @@ Depending on the POD size, AutoAI can support different data set sizes.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#metanames.AssetsMetaNames"><code class="docutils literal notranslate"><span class="pre">AssetsMetaNames</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#trashed-assets">Trashed assets</a><ul>
+<li><a class="reference internal" href="#client.TrashedAssets"><code class="docutils literal notranslate"><span class="pre">TrashedAssets</span></code></a><ul>
+<li><a class="reference internal" href="#client.TrashedAssets.delete"><code class="docutils literal notranslate"><span class="pre">TrashedAssets.delete()</span></code></a></li>
+<li><a class="reference internal" href="#client.TrashedAssets.get_details"><code class="docutils literal notranslate"><span class="pre">TrashedAssets.get_details()</span></code></a></li>
+<li><a class="reference internal" href="#client.TrashedAssets.get_id"><code class="docutils literal notranslate"><span class="pre">TrashedAssets.get_id()</span></code></a></li>
+<li><a class="reference internal" href="#client.TrashedAssets.list"><code class="docutils literal notranslate"><span class="pre">TrashedAssets.list()</span></code></a></li>
+<li><a class="reference internal" href="#client.TrashedAssets.purge_all"><code class="docutils literal notranslate"><span class="pre">TrashedAssets.purge_all()</span></code></a></li>
+<li><a class="reference internal" href="#client.TrashedAssets.restore"><code class="docutils literal notranslate"><span class="pre">TrashedAssets.restore()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#deployments">Deployments</a><ul>

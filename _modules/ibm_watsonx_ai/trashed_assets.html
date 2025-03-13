@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>ibm_watsonx_ai.service_instance - IBM watsonx.ai</title>
+        <title>ibm_watsonx_ai.trashed_assets - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -299,251 +299,259 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for ibm_watsonx_ai.service_instance</h1><div class="highlight"><pre>
+          <h1>Source code for ibm_watsonx_ai.trashed_assets</h1><div class="highlight"><pre>
 <span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="c1">#  (C) Copyright IBM Corp. 2024-2025.</span>
+<span class="c1">#  (C) Copyright IBM Corp. 2025.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
-
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">base64</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.href_definitions</span> <span class="kn">import</span> <span class="n">HrefDefinitions</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.auth</span> <span class="kn">import</span> <span class="n">get_auth_method</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">WMLClientError</span><span class="p">,</span>
-    <span class="n">ApiRequestFailure</span><span class="p">,</span>
-    <span class="n">NoWMLCredentialsProvided</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
 
 
-<div class="viewcode-block" id="ServiceInstance">
-<a class="viewcode-back" href="../../core_api.html#client.ServiceInstance">[docs]</a>
-<span class="k">class</span> <span class="nc">ServiceInstance</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Connect, get details, and check usage of a Watson Machine Learning service instance.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TrashedAssets">
+<a class="viewcode-back" href="../../core_api.html#client.TrashedAssets">[docs]</a>
+<span class="k">class</span> <span class="nc">TrashedAssets</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Manage trashed assets.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">client</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">credentials</span>
+        <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_instance_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">instance_id</span>
+<div class="viewcode-block" id="TrashedAssets.get_details">
+<a class="viewcode-back" href="../../core_api.html#client.TrashedAssets.get_details">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of a given trashed asset. If no `asset_id` is specified, all trashed assets metadata is returned.</span>
 
-        <span class="c1"># This is used in connections.py</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_href_definitions</span> <span class="o">=</span> <span class="n">HrefDefinitions</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">PLATFORM_URL</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">,</span>
-        <span class="p">)</span>
+<span class="sd">        :param asset_id: trashed asset ID</span>
+<span class="sd">        :type asset_id: str, optional</span>
+<span class="sd">        :param limit: limit number of fetched records</span>
+<span class="sd">        :type limit: int, optional</span>
 
-        <span class="c1"># ml_repository_client is initialized in repo</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_details</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_details</span> <span class="o">=</span> <span class="kc">False</span>
-
-    <span class="k">def</span> <span class="nf">_get_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get token.</span>
-
-<span class="sd">        .. deprecated:: v1.2.3</span>
-<span class="sd">               This protected function is deprecated since v1.2.3. Use ``APIClient.token`` instead.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">get_token_method_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;`APIClient.service_instance._get_token()` is deprecated since v1.2.3. &quot;</span>
-            <span class="s2">&quot;Use ``APIClient.token`` instead.&quot;</span>
-        <span class="p">)</span>
-        <span class="n">warn</span><span class="p">(</span><span class="n">get_token_method_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">token</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">instance_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instance_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="s2">&quot;instance_id for this plan is picked up from the space or project with which &quot;</span>
-                    <span class="s2">&quot;this instance_id is associated with. Set the space or project with associated &quot;</span>
-                    <span class="s2">&quot;instance_id to be able to use this function&quot;</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instance_id</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">details_attribute_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;Attribute `details` is deprecated. &quot;</span>
-            <span class="s2">&quot;Please use method `get_details()` instead.&quot;</span>
-        <span class="p">)</span>
-        <span class="n">warn</span><span class="p">(</span><span class="n">details_attribute_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_details</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_details</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span>
-
-    <span class="nd">@details</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_details</span> <span class="o">=</span> <span class="n">value</span>
-
-<div class="viewcode-block" id="ServiceInstance.get_instance_id">
-<a class="viewcode-back" href="../../core_api.html#client.ServiceInstance.get_instance_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_instance_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the instance ID of a Watson Machine Learning service.</span>
-
-<span class="sd">        :return: ID of the instance</span>
-<span class="sd">        :rtype: str</span>
+<span class="sd">        :return: export metadata</span>
+<span class="sd">        :rtype: dict (if asset_id is not None) or {&quot;resources&quot;: [dict]} (if asset_id is None)</span>
 
 <span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
-<span class="sd">            instance_details = client.service_instance.get_instance_id()</span>
+<span class="sd">            details = client.trashed_assets.get_details(asset_id)</span>
+<span class="sd">            details = client.trashed_assets.get_details()</span>
+<span class="sd">            details = client.trashed_assets.get_details(limit=100)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instance_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                <span class="s2">&quot;instance_id for this plan is picked up from the space or project with which &quot;</span>
-                <span class="s2">&quot;this instance_id is associated with. Set the space or project with associated &quot;</span>
-                <span class="s2">&quot;instance_id to be able to use this function&quot;</span>
+
+        <span class="n">TrashedAssets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">asset_id</span><span class="p">,</span> <span class="s2">&quot;asset_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">TrashedAssets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_trashed_assets_href</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">asset_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_artifact_details</span><span class="p">(</span>
+                <span class="n">href</span><span class="p">,</span>
+                <span class="n">asset_id</span><span class="p">,</span>
+                <span class="n">limit</span><span class="p">,</span>
+                <span class="s2">&quot;trashed assets&quot;</span><span class="p">,</span>
+                <span class="n">query_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+                <span class="n">_async</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">_all</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span></div>
-
-
-<div class="viewcode-block" id="ServiceInstance.get_api_key">
-<a class="viewcode-back" href="../../core_api.html#client.ServiceInstance.get_api_key">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_api_key</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the API key of a Watson Machine Learning service.</span>
-
-<span class="sd">        :return: API key</span>
-<span class="sd">        :rtype: str</span>
-
-<span class="sd">        **Example:**</span>
-
-<span class="sd">        .. code-block:: python</span>
-
-<span class="sd">            instance_details = client.service_instance.get_api_key()</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">api_key</span></div>
-
-
-<div class="viewcode-block" id="ServiceInstance.get_url">
-<a class="viewcode-back" href="../../core_api.html#client.ServiceInstance.get_url">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the instance URL of a Watson Machine Learning service.</span>
-
-<span class="sd">        :return: URL of the instance</span>
-<span class="sd">        :rtype: str</span>
-
-<span class="sd">        **Example:**</span>
-
-<span class="sd">        .. code-block:: python</span>
-
-<span class="sd">            instance_details = client.service_instance.get_url()</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">url</span></div>
-
-
-<div class="viewcode-block" id="ServiceInstance.get_username">
-<a class="viewcode-back" href="../../core_api.html#client.ServiceInstance.get_username">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_username</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the username for the Watson Machine Learning service. Applicable only for IBM Cloud Pak® for Data.</span>
-
-<span class="sd">        :return: username</span>
-<span class="sd">        :rtype: str</span>
-
-<span class="sd">        **Example:**</span>
-
-<span class="sd">        .. code-block:: python</span>
-
-<span class="sd">            instance_details = client.service_instance.get_username()</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">username</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">username</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;`username` missing in credentials.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Not applicable for Cloud&quot;</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_artifact_details</span><span class="p">(</span>
+                <span class="n">href</span><span class="p">,</span>
+                <span class="n">asset_id</span><span class="p">,</span>
+                <span class="n">limit</span><span class="p">,</span>
+                <span class="s2">&quot;trashed assets&quot;</span><span class="p">,</span>
+                <span class="n">query_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+            <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ServiceInstance.get_password">
-<a class="viewcode-back" href="../../core_api.html#client.ServiceInstance.get_password">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_password</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the password for the Watson Machine Learning service. Applicable only for IBM Cloud Pak® for Data.</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_prepare_attachment_list_for_removal</span><span class="p">(</span><span class="n">asset_details</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">attachment_requires_removal</span><span class="p">(</span><span class="n">attachment_details</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">attachment_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_remote&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="n">attachment_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_referenced&quot;</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">attachment_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_object_key_read_only&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
 
-<span class="sd">        :return: password</span>
-<span class="sd">        :rtype: str</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="nb">filter</span><span class="p">(</span><span class="n">attachment_requires_removal</span><span class="p">,</span> <span class="n">asset_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;attachments&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_remove_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attachment_path</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">attachment_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="s2">&quot;deleting attachment&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">json_response</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;SUCCESS&quot;</span>
+
+<div class="viewcode-block" id="TrashedAssets.list">
+<a class="viewcode-back" href="../../core_api.html#client.TrashedAssets.list">[docs]</a>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List trashed assets.</span>
+
+<span class="sd">        :param limit: set the limit for number of listed trashed assets,</span>
+<span class="sd">            default is `None` (all trashed assets should be fetched)</span>
+<span class="sd">        :type limit: int, optional</span>
+
+<span class="sd">        :return: Pandas DataFrame with information about trashed assets</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
 
 <span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
-<span class="sd">            instance_details = client.service_instance.get_password()</span>
+<span class="sd">            trashed_assets_list = client.trashed_assets.list()</span>
+<span class="sd">            print(trashed_assets_list)</span>
+
+<span class="sd">            # Result:</span>
+<span class="sd">            #        NAME  ASSET_TYPE                              ASSET_ID</span>
+<span class="sd">            # 0  data.csv  data_asset  8e421c27-767d-4824-9aab-dc5c7c19ba87</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">password</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span><span class="o">.</span><span class="n">password</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;`password` missing in credentials.&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Not applicable for Cloud&quot;</span><span class="p">)</span></div>
+        <span class="n">trashed_assets_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span>
+        <span class="n">trashed_assets_values</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="n">asset</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                <span class="n">asset</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_type&quot;</span><span class="p">],</span>
+                <span class="n">asset</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">asset</span> <span class="ow">in</span> <span class="n">trashed_assets_details</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
+
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span>
+            <span class="n">trashed_assets_values</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;ASSET_TYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;ASSET_ID&quot;</span><span class="p">],</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">table</span></div>
 
 
-<div class="viewcode-block" id="ServiceInstance.get_details">
-<a class="viewcode-back" href="../../core_api.html#client.ServiceInstance.get_details">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_details</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get information about the Watson Machine Learning instance.</span>
+<div class="viewcode-block" id="TrashedAssets.restore">
+<a class="viewcode-back" href="../../core_api.html#client.TrashedAssets.restore">[docs]</a>
+    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Restore a trashed asset.</span>
 
-<span class="sd">        :return: metadata of the service instance</span>
+<span class="sd">        :param asset_id: trashed asset ID</span>
+<span class="sd">        :type asset_id: str</span>
+
+<span class="sd">        :return: details of restored asset</span>
 <span class="sd">        :rtype: dict</span>
 
 <span class="sd">        **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
 
-<span class="sd">            instance_details = client.service_instance.get_details()</span>
+<span class="sd">            asset_details = client.trashed_assets.restore(asset_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_trashed_asset_restore_href</span><span class="p">(</span>
+                <span class="n">asset_id</span>
+            <span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;restoring trashed asset&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TrashedAssets.purge_all">
+<a class="viewcode-back" href="../../core_api.html#client.TrashedAssets.purge_all">[docs]</a>
+    <span class="k">def</span> <span class="nf">purge_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Purge all trashed asset.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            If there is more than 20 trashed assets, they will be removed asynchronously.</span>
+<span class="sd">            It may take a few seconds until all trashed assets will disappear from trashed assets list.</span>
+
+<span class="sd">        :return: status &quot;SUCCESS&quot; if purge is successful</span>
+<span class="sd">        :rtype: Literal[&quot;SUCCESS&quot;]</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.trashed_assets.purge_all()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_trashed_assets_purge_all_href</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">202</span><span class="p">,</span> <span class="mi">204</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;SUCCESS&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                <span class="mi">204</span><span class="p">,</span> <span class="s2">&quot;purging all trashed assets&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">json_response</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TrashedAssets.delete">
+<a class="viewcode-back" href="../../core_api.html#client.TrashedAssets.delete">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a trashed asset.</span>
+
+<span class="sd">        :param asset_id: trashed asset ID</span>
+<span class="sd">        :type asset_id: str</span>
+
+<span class="sd">        :return: status &quot;SUCCESS&quot; if deletion is successful</span>
+<span class="sd">        :rtype: Literal[&quot;SUCCESS&quot;]</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.trashed_assets.delete(asset_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_trashed_asset_href</span><span class="p">(</span>
+                <span class="n">asset_id</span>
+            <span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+            <span class="mi">204</span><span class="p">,</span> <span class="s2">&quot;deleting trashed asset&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">json_response</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;SUCCESS&quot;</span></div>
+
+
+<div class="viewcode-block" id="TrashedAssets.get_id">
+<a class="viewcode-back" href="../../core_api.html#client.TrashedAssets.get_id">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="n">trashed_asset_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the ID of a trashed asset.</span>
+
+<span class="sd">        :param trashed_asset_details: metadata of the trashed asset</span>
+<span class="sd">        :type trashed_asset_details: dict</span>
+
+<span class="sd">        :return: unique ID of the trashed asset</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            asset_id = client.trashed_assets.get_id(trashed_asset_details)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instance_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                        <span class="s2">&quot;instance_id for this plan is picked up from the space or project with which &quot;</span>
-                        <span class="s2">&quot;this instance_id is associated with. Set the space or project with associated &quot;</span>
-                        <span class="s2">&quot;instance_id to be able to use this function&quot;</span>
-                    <span class="p">)</span>
-
-                    <span class="c1"># /ml/v4/instances will need either space_id or project_id as mandatory params</span>
-                <span class="c1"># We will enable this service instance class only during create space or</span>
-                <span class="c1"># set space/project. So, space_id/project_id would have been populated at this point</span>
-                <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
-
-                <span class="k">del</span> <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">]</span>
-                <span class="k">if</span> <span class="s2">&quot;ML-Instance-ID&quot;</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
-                    <span class="n">headers</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;ML-Instance-ID&quot;</span><span class="p">)</span>
-                <span class="n">response_get_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_v4_instance_id_href</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span><span class="p">),</span>
-                    <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(</span><span class="n">skip_space_project_chk</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-                    <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
-                <span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">response_get_instance</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">response_get_instance</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">ApiRequestFailure</span><span class="p">(</span>
-                        <span class="s2">&quot;Getting instance details failed.&quot;</span><span class="p">,</span> <span class="n">response_get_instance</span>
-                    <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">NoWMLCredentialsProvided</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">{}</span></div>
+        <span class="k">return</span> <span class="n">trashed_asset_details</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">]</span></div>
 </div>
 
 </pre></div>

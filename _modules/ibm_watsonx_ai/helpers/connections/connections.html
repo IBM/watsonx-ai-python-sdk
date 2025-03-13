@@ -206,6 +206,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../setup.html">Setup</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Setup</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../setup_cloud.html">IBM watsonx.ai for IBM Cloud</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../setup_cpd.html">IBM watsonx.ai software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../httpx_configuration.html">Configuring the HTTP Client</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -256,6 +257,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_schema.html">Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_deploy_on_demand.html">Deploy on Demand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../rate_limit.html">Rate Limits</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../save_models.html">Saving external models</a></li>
@@ -325,10 +327,12 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
-<span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">ibm_boto3</span> <span class="kn">import</span> <span class="n">resource</span>
@@ -349,7 +353,7 @@
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.errors</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">MissingAutoPipelinesParameters</span><span class="p">,</span>
     <span class="n">MissingCOSStudioConnection</span><span class="p">,</span>
-    <span class="n">MissingProjectLib</span><span class="p">,</span>
+    <span class="n">MissingIBMWatsonStudioLib</span><span class="p">,</span>
     <span class="n">InvalidCOSCredentials</span><span class="p">,</span>
     <span class="n">InvalidIdType</span><span class="p">,</span>
     <span class="n">NotExistingCOSResource</span><span class="p">,</span>
@@ -582,50 +586,55 @@
 
 <span class="sd">            data_connections = DataConnection.from_studio(path=&#39;iris_dataset.csv&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">from_studio_deprecation_warning</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`DataConnection.from_studio` is deprecated and will be removed in future. &quot;</span>
+            <span class="s2">&quot;Instead, initialize data connections directly or use `DataConnection.from_dict`.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">from_studio_deprecation_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">project_lib</span> <span class="kn">import</span> <span class="n">Project</span>
-
+            <span class="kn">from</span> <span class="nn">ibm_watson_studio_lib.impl.agent</span> <span class="kn">import</span> <span class="n">Agent</span>
         <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MissingProjectLib</span><span class="p">(</span><span class="s2">&quot;Missing project_lib package.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MissingIBMWatsonStudioLib</span><span class="p">(</span><span class="s2">&quot;Missing ibm-watson-studio-lib package.&quot;</span><span class="p">)</span>
 
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">data_connections</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Project</span><span class="p">):</span>
-                    <span class="n">connections</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get_connections</span><span class="p">()</span>
+        <span class="n">data_connections</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Agent</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">connections</span> <span class="o">:=</span> <span class="n">value</span><span class="o">.</span><span class="n">list_connections</span><span class="p">())</span>
+            <span class="p">):</span>
+                <span class="k">continue</span>
 
-                    <span class="k">if</span> <span class="n">connections</span><span class="p">:</span>
-                        <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
-                            <span class="n">asset_id</span> <span class="o">=</span> <span class="n">connection</span><span class="p">[</span><span class="s2">&quot;asset_id&quot;</span><span class="p">]</span>
-                            <span class="n">connection_details</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get_connection</span><span class="p">(</span><span class="n">asset_id</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
+                <span class="n">asset_id</span> <span class="o">=</span> <span class="n">connection</span><span class="p">[</span><span class="s2">&quot;asset_id&quot;</span><span class="p">]</span>
+                <span class="n">connection_details</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">by_id</span><span class="o">.</span><span class="n">get_connection</span><span class="p">(</span><span class="n">asset_id</span><span class="p">)</span>
 
-                            <span class="k">if</span> <span class="p">(</span>
-                                <span class="s2">&quot;url&quot;</span> <span class="ow">in</span> <span class="n">connection_details</span>
-                                <span class="ow">and</span> <span class="s2">&quot;access_key&quot;</span> <span class="ow">in</span> <span class="n">connection_details</span>
-                                <span class="ow">and</span> <span class="s2">&quot;secret_key&quot;</span> <span class="ow">in</span> <span class="n">connection_details</span>
-                                <span class="ow">and</span> <span class="s2">&quot;bucket&quot;</span> <span class="ow">in</span> <span class="n">connection_details</span>
-                            <span class="p">):</span>
-                                <span class="n">data_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                                    <span class="bp">cls</span><span class="p">(</span>
-                                        <span class="n">connection</span><span class="o">=</span><span class="n">ConnectionAsset</span><span class="p">(</span>
-                                            <span class="n">connection_id</span><span class="o">=</span><span class="n">connection_details</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
-                                        <span class="p">),</span>
-                                        <span class="n">location</span><span class="o">=</span><span class="n">ConnectionAssetLocation</span><span class="p">(</span>
-                                            <span class="n">bucket</span><span class="o">=</span><span class="n">connection_details</span><span class="p">[</span><span class="s2">&quot;bucket&quot;</span><span class="p">],</span>
-                                            <span class="n">file_name</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
-                                        <span class="p">),</span>
-                                    <span class="p">)</span>
-                                <span class="p">)</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+                    <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">connection_details</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;access_key&quot;</span><span class="p">,</span> <span class="s2">&quot;secret_key&quot;</span><span class="p">,</span> <span class="s2">&quot;bucket&quot;</span><span class="p">]</span>
+                <span class="p">):</span>
+                    <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="n">data_connections</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">data_connections</span>
+                <span class="n">data_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="bp">cls</span><span class="p">(</span>
+                        <span class="n">connection</span><span class="o">=</span><span class="n">ConnectionAsset</span><span class="p">(</span>
+                            <span class="n">connection_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span>
+                        <span class="p">),</span>
+                        <span class="n">location</span><span class="o">=</span><span class="n">ConnectionAssetLocation</span><span class="p">(</span>
+                            <span class="n">bucket</span><span class="o">=</span><span class="n">connection_details</span><span class="p">[</span><span class="s2">&quot;bucket&quot;</span><span class="p">],</span>
+                            <span class="n">file_name</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
 
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">MissingCOSStudioConnection</span><span class="p">(</span>
-                    <span class="s2">&quot;There is no any COS Studio connection. &quot;</span>
-                    <span class="s2">&quot;Please create a COS connection from the UI and insert &quot;</span>
-                    <span class="s2">&quot;the cell with project API connection (Insert project token)&quot;</span>
-                <span class="p">)</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data_connections</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MissingCOSStudioConnection</span><span class="p">(</span>
+                <span class="s2">&quot;There is no any COS Studio connection. &quot;</span>
+                <span class="s2">&quot;Please create a COS connection from the UI and insert &quot;</span>
+                <span class="s2">&quot;the cell with project API connection (Insert project token)&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data_connections</span></div>
 
 
     <span class="k">def</span> <span class="nf">_prepare_flight_connection_for_discovery</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FlightConnection&quot;</span><span class="p">:</span>
@@ -1415,8 +1424,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">DS</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">CA</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">project_lib</span> <span class="kn">import</span> <span class="n">Project</span>
-
+                    <span class="kn">import</span> <span class="nn">ibm_watson_studio_lib</span>
                 <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span>
                         <span class="s2">&quot;This functionality can be run only on Watson Studio or with api_client passed to connection. &quot;</span>
@@ -2108,7 +2116,28 @@
                 <span class="p">{</span><span class="s2">&quot;datasource_type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;entity&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datasource_type</span><span class="p">}}}</span>
             <span class="p">)</span>
 
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_can_have_headers</span><span class="p">():</span>
+                <span class="n">flight_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">&quot;interaction_properties&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;first_line_header&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}}</span>
+                <span class="p">)</span>
+
         <span class="k">return</span> <span class="n">flight_parameters</span>
+
+    <span class="k">def</span> <span class="nf">_can_have_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks whether data source can be read with `first_line_header` param.</span>
+<span class="sd">        It is supported only for specific kinds of files - csv&#39;s and MS Excel files.</span>
+<span class="sd">        For MS Excel files the path can have the sheet name concatenated at the end,</span>
+<span class="sd">        i.e /path/to/file/file.xls(x)/sheet-name, so also the parent&#39;s extension needs to be checked.</span>
+
+<span class="sd">        :return: True if it&#39;s either a CSV or an Excel file, else False</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_filename</span><span class="p">())</span>
+            <span class="n">extension</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">suffix</span> <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">suffix</span> <span class="k">else</span> <span class="n">filename</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">suffix</span>
+            <span class="k">return</span> <span class="n">extension</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;.xlsx&quot;</span><span class="p">,</span> <span class="s2">&quot;.xls&quot;</span><span class="p">,</span> <span class="s2">&quot;.csv&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">CannotGetFilename</span><span class="p">,</span> <span class="n">DirectoryHasNoFilename</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="DataConnection.download">
 <a class="viewcode-back" href="../../../../dataconnection_modules.html#ibm_watsonx_ai.helpers.connections.connections.DataConnection.download">[docs]</a>
