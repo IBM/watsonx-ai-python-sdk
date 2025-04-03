@@ -258,6 +258,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fm_deploy_on_demand.html">Deploy on Demand</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rate_limit.html">Rate Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fm_toolkit.html">Toolkit</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../save_models.html">Saving external models</a></li>
@@ -1333,7 +1334,7 @@
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">MetaNamesBase</span><span class="p">(</span><span class="n">_meta_props_definitions</span><span class="p">)</span><span class="o">.</span><span class="n">_generate_doc</span><span class="p">(</span><span class="s2">&quot;learning system&quot;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">MemberMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">RepositoryMemberMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
     <span class="n">IDENTITY</span> <span class="o">=</span> <span class="s2">&quot;identity&quot;</span>
     <span class="n">ROLE</span> <span class="o">=</span> <span class="s2">&quot;role&quot;</span>
     <span class="n">IDENTITY_TYPE</span> <span class="o">=</span> <span class="s2">&quot;identity_type&quot;</span>
@@ -2284,9 +2285,82 @@
 
 
 
-<div class="viewcode-block" id="SpacesMemberMetaNames">
-<a class="viewcode-back" href="../core_api.html#metanames.SpacesMemberMetaNames">[docs]</a>
-<span class="k">class</span> <span class="nc">SpacesMemberMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
+<div class="viewcode-block" id="ProjectsMetaNames">
+<a class="viewcode-back" href="../core_api.html#metanames.ProjectsMetaNames">[docs]</a>
+<span class="k">class</span> <span class="nc">ProjectsMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
+
+    <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
+    <span class="n">DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;description&quot;</span>
+    <span class="n">STORAGE</span> <span class="o">=</span> <span class="s2">&quot;storage&quot;</span>
+    <span class="n">COMPUTE</span> <span class="o">=</span> <span class="s2">&quot;compute&quot;</span>
+    <span class="n">TAGS</span> <span class="o">=</span> <span class="s2">&quot;tags&quot;</span>
+    <span class="n">TYPE</span> <span class="o">=</span> <span class="s2">&quot;type&quot;</span>
+    <span class="n">GENERATOR</span> <span class="o">=</span> <span class="s2">&quot;generator&quot;</span>
+    <span class="n">PUBLIC</span> <span class="o">=</span> <span class="s2">&quot;public&quot;</span>
+    <span class="n">TOOLS</span> <span class="o">=</span> <span class="s2">&quot;tools&quot;</span>
+    <span class="n">ENFORCE_MEMBERS</span> <span class="o">=</span> <span class="s2">&quot;enforce_members&quot;</span>
+
+    <span class="n">_meta_props_definitions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="n">NAME</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">example_value</span><span class="o">=</span><span class="s2">&quot;my_project&quot;</span><span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;DESCRIPTION&quot;</span><span class="p">,</span>
+            <span class="n">DESCRIPTION</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">,</span>
+            <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">example_value</span><span class="o">=</span><span class="s2">&quot;my_description&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;STORAGE&quot;</span><span class="p">,</span>
+            <span class="n">STORAGE</span><span class="p">,</span>
+            <span class="nb">dict</span><span class="p">,</span>
+            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">example_value</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;assetfiles&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;COMPUTE&quot;</span><span class="p">,</span>
+            <span class="n">COMPUTE</span><span class="p">,</span>
+            <span class="nb">dict</span><span class="p">,</span>
+            <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">example_value</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;crn&quot;</span><span class="p">:</span> <span class="s2">&quot;crn of the instance&quot;</span><span class="p">},</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;TAGS&quot;</span><span class="p">,</span> <span class="n">TAGS</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">example_value</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sample_tag&quot;</span><span class="p">]),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;TYPE&quot;</span><span class="p">,</span> <span class="n">TYPE</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">example_value</span><span class="o">=</span><span class="s2">&quot;cpd&quot;</span><span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;GENERATOR&quot;</span><span class="p">,</span>
+            <span class="n">GENERATOR</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">,</span>
+            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">example_value</span><span class="o">=</span><span class="s2">&quot;Watsonx-Python-SDK&quot;</span><span class="p">,</span>
+            <span class="n">default_value</span><span class="o">=</span><span class="s2">&quot;Watsonx-Python-SDK&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;PUBLIC&quot;</span><span class="p">,</span> <span class="n">PUBLIC</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">example_value</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;TOOLS&quot;</span><span class="p">,</span>
+            <span class="n">TOOLS</span><span class="p">,</span>
+            <span class="nb">list</span><span class="p">,</span>
+            <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">example_value</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;jupyter_notebooks&quot;</span><span class="p">,</span> <span class="s2">&quot;watson_visual_recognition&quot;</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;ENFORCE_MEMBERS&quot;</span><span class="p">,</span>
+            <span class="n">ENFORCE_MEMBERS</span><span class="p">,</span>
+            <span class="nb">bool</span><span class="p">,</span>
+            <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">example_value</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">MetaNamesBase</span><span class="p">(</span><span class="n">_meta_props_definitions</span><span class="p">)</span><span class="o">.</span><span class="n">_generate_doc</span><span class="p">(</span><span class="s2">&quot;Projects Specs&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">MetaNamesBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta_props_definitions</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MemberMetaNames">
+<a class="viewcode-back" href="../core_api.html#metanames.MemberMetaNames">[docs]</a>
+<span class="k">class</span> <span class="nc">MemberMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
     <span class="n">MEMBERS</span> <span class="o">=</span> <span class="s2">&quot;members&quot;</span>
     <span class="n">MEMBER</span> <span class="o">=</span> <span class="s2">&quot;member&quot;</span>
 
@@ -2319,7 +2393,7 @@
     <span class="p">]</span>
 
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">MetaNamesBase</span><span class="p">(</span><span class="n">_meta_props_definitions</span><span class="p">)</span><span class="o">.</span><span class="n">_generate_doc</span><span class="p">(</span>
-        <span class="s2">&quot;Platform Spaces Member Specs&quot;</span>
+        <span class="s2">&quot;Platform Spaces / Projects Member Specs&quot;</span>
     <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

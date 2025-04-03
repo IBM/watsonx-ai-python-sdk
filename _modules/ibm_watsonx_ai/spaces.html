@@ -258,6 +258,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../fm_deploy_on_demand.html">Deploy on Demand</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../rate_limit.html">Rate Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fm_toolkit.html">Toolkit</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../save_models.html">Saving external models</a></li>
@@ -316,7 +317,7 @@
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">SpacesMetaNames</span><span class="p">,</span>
-    <span class="n">SpacesMemberMetaNames</span><span class="p">,</span>
+    <span class="n">MemberMetaNames</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">print_text_header_h1</span><span class="p">,</span>
@@ -344,7 +345,7 @@
     <span class="n">ConfigurationMetaNames</span> <span class="o">=</span> <span class="n">SpacesMetaNames</span><span class="p">()</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;MetaNames for spaces creation.&quot;&quot;&quot;</span>
 
-    <span class="n">MemberMetaNames</span> <span class="o">=</span> <span class="n">SpacesMemberMetaNames</span><span class="p">()</span>
+    <span class="n">MemberMetaNames</span> <span class="o">=</span> <span class="n">MemberMetaNames</span><span class="p">()</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;MetaNames for space members creation.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">):</span>
@@ -464,10 +465,9 @@
                 <span class="ow">or</span> <span class="s2">&quot;crn&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">]</span>
             <span class="p">):</span>
                 <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;&#39;name&#39; and &#39;crn&#39; is mandatory for &#39;COMPUTE&#39;&quot;</span><span class="p">)</span>
-            <span class="n">temp_meta</span> <span class="o">=</span> <span class="n">meta_props</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">]</span>
-            <span class="n">temp_meta</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;machine_learning&quot;</span><span class="p">})</span>
 
-            <span class="n">meta_props</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_meta</span>
+            <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">]:</span>
+                <span class="n">meta_props</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;machine_learning&quot;</span>
 
         <span class="k">if</span> <span class="s2">&quot;stage&quot;</span> <span class="ow">in</span> <span class="n">meta_props</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">meta_props</span><span class="p">[</span><span class="s2">&quot;stage&quot;</span><span class="p">][</span><span class="s2">&quot;production&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
@@ -751,7 +751,9 @@
 <span class="sd">        :param member: filters the result list, only includes spaces where the user with a matching user ID</span>
 <span class="sd">            is a member</span>
 <span class="sd">        :type member: str, optional</span>
-<span class="sd">        :param roles: limit number of fetched records</span>
+<span class="sd">        :param roles: a list of comma-separated space roles to use to filter the query results,</span>
+<span class="sd">            must be used in conjunction with the &quot;member&quot; query parameter,</span>
+<span class="sd">            available values : `admin`, `editor`, `viewer`</span>
 <span class="sd">        :type roles: str, optional</span>
 <span class="sd">        :param space_type: filter spaces by their type, available types are &#39;wx&#39;, &#39;cpd&#39;, and &#39;wca&#39;</span>
 <span class="sd">        :type space_type: str, optional</span>
@@ -862,13 +864,9 @@
             <span class="n">payload_compute</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">changes</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">])</span>
             <span class="n">changes</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">payload_compute</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;changes in update: &quot;</span><span class="p">,</span> <span class="n">changes</span><span class="p">)</span>
-
         <span class="n">patch_payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">_generate_patch_payload</span><span class="p">(</span>
             <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">],</span> <span class="n">changes</span>
         <span class="p">)</span>
-
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;patch payload: &quot;</span><span class="p">,</span> <span class="n">patch_payload</span><span class="p">)</span>
 
         <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_platform_space_href</span><span class="p">(</span>
             <span class="n">space_id</span>

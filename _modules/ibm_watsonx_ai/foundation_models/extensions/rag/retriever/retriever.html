@@ -258,6 +258,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_deploy_on_demand.html">Deploy on Demand</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../rate_limit.html">Rate Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_toolkit.html">Toolkit</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../save_models.html">Saving external models</a></li>
@@ -305,7 +306,7 @@
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.retriever.base_retriever</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">BaseRetriever</span><span class="p">,</span>
 <span class="p">)</span>
@@ -405,7 +406,11 @@
 <span class="sd">        :rtype: list[langchain_core.documents.Document]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="n">RetrievalMethod</span><span class="o">.</span><span class="n">SIMPLE</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_store</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_chunks</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_store</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+                <span class="n">query</span><span class="p">,</span>
+                <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_chunks</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="n">RetrievalMethod</span><span class="o">.</span><span class="n">WINDOW</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_store</span><span class="o">.</span><span class="n">window_search</span><span class="p">(</span>
                 <span class="n">query</span><span class="p">,</span>

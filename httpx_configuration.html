@@ -5,9 +5,9 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="API" href="api.html" /><link rel="prev" title="IBM watsonx.ai software" href="setup_cpd.html" />
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>Configuring the HTTP Client - IBM watsonx.ai</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
@@ -259,6 +259,7 @@
 <li class="toctree-l3"><a class="reference internal" href="fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_deploy_on_demand.html">Deploy on Demand</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rate_limit.html">Rate Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_toolkit.html">Toolkit</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="save_models.html">Saving external models</a></li>
@@ -318,14 +319,14 @@
 See <a class="reference external" href="https://www.python-httpx.org">here</a></p>
 <p>The <code class="docutils literal notranslate"><span class="pre">ibm-watsonx-ai</span></code> client uses <code class="docutils literal notranslate"><span class="pre">httpx.Client</span></code> in the following classes:
 <strong>ModelInference, Embeddings and methods related to the deployments management and scoring</strong>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ibm-watsonx-ai</span></code> client uses <code class="docutils literal notranslate"><span class="pre">httpx.AsyncClient</span></code> in <strong>ModelInference</strong> class.</p>
 <dl class="simple">
-<dt>The <code class="docutils literal notranslate"><span class="pre">httpx.Client</span></code> is utilized in the <code class="docutils literal notranslate"><span class="pre">ibm-watsonx-ai</span></code> client to enhance performance by:</dt><dd><ul class="simple">
+<dt>The <code class="docutils literal notranslate"><span class="pre">httpx.Client</span></code> and <code class="docutils literal notranslate"><span class="pre">httpx.AsyncClient</span></code> are utilized in the <code class="docutils literal notranslate"><span class="pre">ibm-watsonx-ai</span></code> client to enhance performance by:</dt><dd><ul class="simple">
 <li><p>Reducing latency across requests</p></li>
 <li><p>Minimizing network congestion</p></li>
 </ul>
 </dd>
 </dl>
-<p>These aspects of the <code class="docutils literal notranslate"><span class="pre">ibm-watsonx-ai</span></code> client, which are the most challenging in terms of network usage and reliability, are supported by <cite>httpx.Client</cite>.</p>
 </section>
 <section id="default-http-client-configuration">
 <h2>Default HTTP Client Configuration<a class="headerlink" href="#default-http-client-configuration" title="Link to this heading">¶</a></h2>
@@ -353,14 +354,14 @@ See <a class="reference external" href="https://www.python-httpx.org">here</a></
 </section>
 <section id="customizing-the-http-client">
 <h2>Customizing the HTTP Client<a class="headerlink" href="#customizing-the-http-client" title="Link to this heading">¶</a></h2>
-<p>Apart from using the default client, there are two ways to configure the HTTP client:</p>
+<p>Apart from using the default client, there are two ways to configure the HTTP client (both <code class="docutils literal notranslate"><span class="pre">httpx.Client</span></code>  and <code class="docutils literal notranslate"><span class="pre">httpx.AsyncClient</span></code>):</p>
 <section id="using-httpclientconfig">
 <h3>Using <code class="docutils literal notranslate"><span class="pre">HttpClientConfig</span></code><a class="headerlink" href="#using-httpclientconfig" title="Link to this heading">¶</a></h3>
 <p>To customize timeouts and limits, use <code class="docutils literal notranslate"><span class="pre">HttpClientConfig</span></code>:</p>
 <p><strong>Example:</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpClientConfig</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.utils</span> <span class="kn">import</span> <span class="n">HttpClientConfig</span>
+<span class="kn">import</span> <span class="nn">httpx</span>
 
 <span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span>
     <span class="n">url</span><span class="o">=</span><span class="s2">&quot;&lt;url&gt;&quot;</span><span class="p">,</span>
@@ -372,30 +373,44 @@ See <a class="reference external" href="https://www.python-httpx.org">here</a></
 <span class="p">)</span>
 <span class="n">timeout</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Timeout</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
 <span class="n">http_config</span> <span class="o">=</span> <span class="n">HttpClientConfig</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">limits</span><span class="o">=</span><span class="n">limits</span><span class="p">)</span>
-
-<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">httpx_client</span><span class="o">=</span><span class="n">http_config</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">httpx_client</span><span class="o">=</span><span class="n">http_config</span><span class="p">,</span> <span class="n">async_httpx_client</span><span class="o">=</span><span class="n">http_config</span><span class="p">)</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you provide configuration via <cite>HttpClientConfig</cite>, it must be passed to both <cite>httpx_client</cite> and <cite>async_httpx_client</cite>. These clients operate independently, and the configuration of one does not impact the other.</p>
 </div>
 </section>
 <section id="explicitly-providing-httpx-client">
 <h3>Explicitly providing <code class="docutils literal notranslate"><span class="pre">httpx.Client</span></code><a class="headerlink" href="#explicitly-providing-httpx-client" title="Link to this heading">¶</a></h3>
-<p>You can also explicitly pass an <code class="docutils literal notranslate"><span class="pre">httpx.Client</span></code> instance:</p>
+<p>You can also explicitly pass an <code class="docutils literal notranslate"><span class="pre">httpx.Client</span></code> and/or an <code class="docutils literal notranslate"><span class="pre">httpx.AsyncClient</span></code> instances:</p>
 <p><strong>Example:</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">httpx</span>
+<span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
 
 <span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span>
     <span class="n">url</span><span class="o">=</span><span class="s2">&quot;&lt;url&gt;&quot;</span><span class="p">,</span>
     <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;&lt;api_key&gt;&quot;</span>
 <span class="p">)</span>
+<span class="n">timeout</span> <span class="o">=</span> <span class="mf">10.0</span>
+<span class="n">proxy</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8030&quot;</span>
 
-<span class="n">httpx_client</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">proxy</span><span class="o">=</span><span class="s2">&quot;http://localhost:8030&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
-<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">httpx_client</span><span class="o">=</span><span class="n">httpx_client</span><span class="p">)</span>
+<span class="n">httpx_client</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">proxy</span><span class="o">=</span><span class="n">proxy</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+<span class="n">async_httpx_client</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">(</span><span class="n">proxy</span><span class="o">=</span><span class="n">proxy</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">httpx_client</span><span class="o">=</span><span class="n">httpx_client</span><span class="p">,</span> <span class="n">async_httpx_client</span><span class="o">=</span><span class="n">async_httpx_client</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>When explicitly passing an httpx.Client, users assume full responsibility for configuring all client options correctly. This includes ensuring that any proxy settings provided in credentials are also explicitly defined in the httpx.Client configuration.</p>
+<p>In this example, the <cite>timeout</cite> and <cite>proxy</cite> parameters are explicitly set. As a result, other parameters, such as <cite>limits</cite>, will take their default values from <cite>httpx</cite>. This means that <cite>httpx_client</cite> in the example will have its <cite>limits</cite> set to <cite>Limits(max_connections=100, max_keepalive_connections=20)</cite>. However, if <cite>httpx_client</cite> is not specified, the <cite>limits</cite> parameter defaults to <cite>Limits(max_connections=10, max_keepalive_connections=10, keepalive_expiry=5)</cite>. The same behavior applies to <cite>async_httpx_client</cite>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When explicitly passing an httpx.Client and/or an httpx.AsyncClient, users assume full responsibility for configuring all client options correctly. All unset parameters will be filled with httpx defaults. This includes ensuring that any proxy settings provided in credentials are also explicitly defined in the httpx.Client and/or httpx.AsyncClient configuration.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When providing clients explicitly, keep in mind that they operate independently. If only one type of client (e.g., <code class="docutils literal notranslate"><span class="pre">httpx.AsyncClient</span></code>) is provided, the other type is instantiated with default settings.</p>
 </div>
 </section>
 <section id="additional-considerations">

@@ -259,6 +259,7 @@
 <li class="toctree-l3"><a class="reference internal" href="fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_deploy_on_demand.html">Deploy on Demand</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rate_limit.html">Rate Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_toolkit.html">Toolkit</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="save_models.html">Saving external models</a></li>
@@ -538,6 +539,24 @@ Deploy <code class="docutils literal notranslate"><span class="pre">inference_se
 <span class="n">deployment_details</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">inference_service</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;inference_service deployment&quot;</span><span class="p">,</span>
     <span class="n">space_id</span><span class="o">=</span><span class="s2">&quot;&lt;SPACE_ID&gt;&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>To override vector store <cite>connection_id</cite>, <cite>index_name</cite> or set specific scope id (project_id/space_id) that will be used in deployment, please use below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">deployment_details</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">inference_service</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Example deployment name&quot;</span><span class="p">,</span>
+    <span class="n">store_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;software_spec_id&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;ID of the custom sw spec&gt;&quot;</span><span class="p">},</span>
+    <span class="n">deploy_params</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;online&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s2">&quot;vector_store_settings&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="s2">&quot;connection_id&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;connection_to_vector_store&gt;&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;index_name&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;index_name&gt;&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;project_id&gt;&quot;</span><span class="p">,</span>
+                            <span class="p">}</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
 <span class="p">)</span>
 </pre></div>
 </div>

@@ -259,6 +259,7 @@
 <li class="toctree-l3"><a class="reference internal" href="fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_deploy_on_demand.html">Deploy on Demand</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rate_limit.html">Rate Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_toolkit.html">Toolkit</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="save_models.html">Saving external models</a></li>
@@ -2627,7 +2628,7 @@ RuntimeContext`` initialized for testing purposes before deployment:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.deployments.RuntimeContext.get_headers">
 <span class="sig-name descname"><span class="pre">get_headers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/deployments.html#RuntimeContext.get_headers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.deployments.RuntimeContext.get_headers" title="Link to this definition">¶</a></dt>
-<dd><p>Return headers with refreshed token</p>
+<dd><p>Return headers with refreshed token.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2636,6 +2637,12 @@ RuntimeContext`` initialized for testing purposes before deployment:</p>
 <dd><p>Get payload JSON send in body of API request to the generate or generate_stream method in deployed AIService.
 For testing purposes the payload JSON need to be set in RuntimeContext initialization
 or later as request_payload_json property.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.deployments.RuntimeContext.get_space_id">
+<span class="sig-name descname"><span class="pre">get_space_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/deployments.html#RuntimeContext.get_space_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.deployments.RuntimeContext.get_space_id" title="Link to this definition">¶</a></dt>
+<dd><p>Return default space id.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4898,7 +4905,7 @@ If only model name is specified, metadata of models with the name is returned (i
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>In current implementation setting <cite>spec_state=True</cite> may break set <cite>limit</cite>,
+<p>In current implementation setting <cite>spec_state</cite> may break set <cite>limit</cite>,
 returning less records than stated by set <cite>limit</cite>.</p>
 </div>
 <p><strong>Example:</strong></p>
@@ -5439,8 +5446,8 @@ use <code class="docutils literal notranslate"><span class="pre">client.reposito
     <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">AIServiceMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="s2">&quot;AI service example&quot;</span><span class="p">,</span>
     <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">AIServiceMetaNames</span><span class="o">.</span><span class="n">DESCRIPTION</span><span class="p">:</span> <span class="s2">&quot;This is AI service function&quot;</span><span class="p">,</span>
     <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">AIServiceMetaNames</span><span class="o">.</span><span class="n">SOFTWARE_SPEC_ID</span><span class="p">:</span> <span class="s2">&quot;53dc4cf1-252f-424b-b52d-5cdd9814987f&quot;</span><span class="p">,</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">AIServiceMetaNames</span><span class="o">.</span><span class="n">REQUEST_DOCUMENTATION</span><span class="p">:</span> <span class="n">request_documentation</span><span class="p">,</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">AIServiceMetaNames</span><span class="o">.</span><span class="n">RESPONSE_DOCUMENTATION</span><span class="p">:</span> <span class="n">response_documentation</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">AIServiceMetaNames</span><span class="o">.</span><span class="n">REQUEST_DOCUMENTATION</span><span class="p">:</span> <span class="n">documentation_request</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">AIServiceMetaNames</span><span class="o">.</span><span class="n">RESPONSE_DOCUMENTATION</span><span class="p">:</span> <span class="n">documentation_response</span><span class="p">,</span>
     <span class="p">}</span>
 
 <span class="k">def</span> <span class="nf">deployable_ai_service</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;k1&quot;</span><span class="p">:</span><span class="s2">&quot;v1&quot;</span><span class="p">},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -5579,7 +5586,7 @@ In this situation it is possible to pass some variables:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>model</strong> (<em>str</em><em> (</em><em>for filename</em><em> or </em><em>path</em><em>) or </em><em>object</em><em> (</em><em>corresponding to model type</em><em>)</em>) – <p>Can be one of following:</p>
+<li><p><strong>model</strong> (<em>str</em><em> (</em><em>for filename</em><em>, </em><em>path</em><em>, or </em><em>LLM name</em><em>) or </em><em>object</em><em> (</em><em>corresponding to model type</em><em>)</em>) – <p>Can be one of following:</p>
 <ul>
 <li><p>The train model object:</p>
 <blockquote>
@@ -5612,6 +5619,7 @@ In this situation it is possible to pass some variables:</p>
 </div></blockquote>
 </li>
 <li><p>unique ID of the trained model</p></li>
+<li><p>LLM name</p></li>
 </ul>
 </p></li>
 <li><p><strong>meta_props</strong> (<em>dict</em><em>, </em><em>optional</em>) – <p>metadata of the models configuration. To see available meta names, use:</p>
@@ -5650,6 +5658,7 @@ This is applicable only in the case where the training data is not of type - pan
 <cite>feature_names</cite> are ignored.</p></li>
 <li><p>For INPUT_DATA_SCHEMA meta prop use list even when passing single input data schema. You can provide
 multiple schemas as dictionaries inside a list.</p></li>
+<li><p>More details about Foundation Models you can find <a class="reference internal" href="foundation_models.html#foundation-models"><span class="std std-ref">here</span></a>.</p></li>
 </ul>
 </div>
 <p><strong>Examples</strong></p>
@@ -7402,11 +7411,14 @@ in case of unsupported or deprecated software specs</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="client.SwSpec.list">
-<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/sw_spec.html#SwSpec.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.SwSpec.list" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/sw_spec.html#SwSpec.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.SwSpec.list" title="Link to this definition">¶</a></dt>
 <dd><p>List software specifications in a table format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – limit number of fetched records</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – limit number of fetched records</p></li>
+<li><p><strong>spec_states</strong> (<em>list</em><em>[</em><em>SpecStates</em><em>]</em><em>, </em><em>optional</em>) – specification state filter, by default shows available and supported software specifications</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>pandas.DataFrame with listed software specifications</p>
@@ -7520,7 +7532,7 @@ in case of unsupported or deprecated software specs</p></li>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="client.Spaces.MemberMetaNames">
-<span class="sig-name descname"><span class="pre">MemberMetaNames</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;ibm_watsonx_ai.metanames.SpacesMemberMetaNames</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#client.Spaces.MemberMetaNames" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">MemberMetaNames</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;ibm_watsonx_ai.metanames.MemberMetaNames</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#client.Spaces.MemberMetaNames" title="Link to this definition">¶</a></dt>
 <dd><p>MetaNames for space members creation.</p>
 </dd></dl>
 
@@ -7760,7 +7772,9 @@ in case of unsupported or deprecated software specs</p></li>
 <li><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – limit number of fetched records</p></li>
 <li><p><strong>member</strong> (<em>str</em><em>, </em><em>optional</em>) – filters the result list, only includes spaces where the user with a matching user ID
 is a member</p></li>
-<li><p><strong>roles</strong> (<em>str</em><em>, </em><em>optional</em>) – limit number of fetched records</p></li>
+<li><p><strong>roles</strong> (<em>str</em><em>, </em><em>optional</em>) – a list of comma-separated space roles to use to filter the query results,
+must be used in conjunction with the “member” query parameter,
+available values : <cite>admin</cite>, <cite>editor</cite>, <cite>viewer</cite></p></li>
 <li><p><strong>space_type</strong> (<em>str</em><em>, </em><em>optional</em>) – filter spaces by their type, available types are ‘wx’, ‘cpd’, and ‘wca’</p></li>
 </ul>
 </dd>
@@ -7988,10 +8002,459 @@ STORAGE and COMPUTE are applicable only for cloud.</p>
 </div>
 </dd></dl>
 
+</section>
+<section id="projects">
+<h2>Projects<a class="headerlink" href="#projects" title="Link to this heading">¶</a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="metanames.SpacesMemberMetaNames">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metanames.</span></span><span class="sig-name descname"><span class="pre">SpacesMemberMetaNames</span></span><a class="reference internal" href="_modules/metanames.html#SpacesMemberMetaNames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metanames.SpacesMemberMetaNames" title="Link to this definition">¶</a></dt>
-<dd><p>Set of MetaNames for Platform Spaces Member Specs.</p>
+<dt class="sig sig-object py" id="client.Projects">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">client.</span></span><span class="sig-name descname"><span class="pre">Projects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/projects.html#Projects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Projects" title="Link to this definition">¶</a></dt>
+<dd><p>Store and manage projects.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="client.Projects.ConfigurationMetaNames">
+<span class="sig-name descname"><span class="pre">ConfigurationMetaNames</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;ibm_watsonx_ai.metanames.ProjectsMetaNames</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#client.Projects.ConfigurationMetaNames" title="Link to this definition">¶</a></dt>
+<dd><p>MetaNames for projects creation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="client.Projects.MemberMetaNames">
+<span class="sig-name descname"><span class="pre">MemberMetaNames</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;ibm_watsonx_ai.metanames.MemberMetaNames</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#client.Projects.MemberMetaNames" title="Link to this definition">¶</a></dt>
+<dd><p>MetaNames for project members creation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.Projects.create_member">
+<span class="sig-name descname"><span class="pre">create_member</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_props</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/projects.html#Projects.create_member"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Projects.create_member" title="Link to this definition">¶</a></dt>
+<dd><p>Create a member within a project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>str</em>) – ID of the project with the definition to be updated</p></li>
+<li><p><strong>meta_props</strong> (<em>dict</em>) – <p>metadata of the member configuration. To see available meta names, use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">MemberMetaNames</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</pre></div>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>metadata of the stored member</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><cite>role</cite> can be any one of the following: “viewer”, “editor”, “admin”</p></li>
+<li><p><cite>type</cite> can be any one of the following: “user”, “service”</p></li>
+<li><p><cite>id</cite> can be one of the following: service-ID or IAM-userID</p></li>
+</ul>
+</div>
+<p><strong>Examples</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">MemberMetaNames</span><span class="o">.</span><span class="n">MEMBERS</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;IBMid-100000DK0B&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span> <span class="p">}]</span>
+<span class="p">}</span>
+<span class="n">members_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">create_member</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span> <span class="n">meta_props</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">MemberMetaNames</span><span class="o">.</span><span class="n">MEMBERS</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;iam-ServiceId-5a216e59-6592-43b9-8669-625d341aca71&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;service&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span> <span class="p">}]</span>
+<span class="p">}</span>
+<span class="n">members_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">create_member</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span> <span class="n">meta_props</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.Projects.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/projects.html#Projects.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Projects.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a stored project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_id</strong> (<em>str</em>) – ID of the project</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>status “SUCCESS” if deletion is successful</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Literal[“SUCCESS”]</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.Projects.delete_member">
+<span class="sig-name descname"><span class="pre">delete_member</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/projects.html#Projects.delete_member"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Projects.delete_member" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a member associated with a project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>str</em>) – ID of the project</p></li>
+<li><p><strong>user_name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the member</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>status (“SUCCESS” if succeeded)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">delete_member</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">user_name</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.Projects.get_details">
+<span class="sig-name descname"><span class="pre">get_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/projects.html#Projects.get_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Projects.get_details" title="Link to this definition">¶</a></dt>
+<dd><p>Get metadata of stored project(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the project</p></li>
+<li><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – applicable when <cite>project_id</cite> is not provided, otherwise <cite>limit</cite> will be ignored</p></li>
+<li><p><strong>asynchronous</strong> (<em>bool</em><em>, </em><em>optional</em>) – if <cite>True</cite>, it will work as a generator</p></li>
+<li><p><strong>get_all</strong> (<em>bool</em><em>, </em><em>optional</em>) – if <cite>True</cite>, it will get all entries in ‘limited’ chunks</p></li>
+<li><p><strong>project_name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the stored project, can be used only when <cite>project_id</cite> is None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>metadata of stored project(s)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>dict</strong> - if project_id is not None</p></li>
+<li><p><strong>{“resources”: [dict]}</strong> - if project_id is None</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+<span class="n">project_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">project_name</span><span class="p">)</span>
+<span class="n">project_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">project_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">get_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">project_details</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">get_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">project_details</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.Projects.get_id">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_details</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/projects.html#Projects.get_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Projects.get_id" title="Link to this definition">¶</a></dt>
+<dd><p>Get the project_id from the project details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_details</strong> (<em>dict</em>) – metadata of the stored project</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ID of the stored project</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">meta_props</span><span class="p">)</span>
+<span class="n">project_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">project_details</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.Projects.get_id_by_name">
+<span class="sig-name descname"><span class="pre">get_id_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/projects.html#Projects.get_id_by_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Projects.get_id_by_name" title="Link to this definition">¶</a></dt>
+<dd><p>Get the ID of a stored project by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_name</strong> (<em>str</em>) – name of the stored project</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ID of the stored project</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">get_id_by_name</span><span class="p">(</span><span class="n">project_name</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.Projects.get_member_details">
+<span class="sig-name descname"><span class="pre">get_member_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/projects.html#Projects.get_member_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Projects.get_member_details" title="Link to this definition">¶</a></dt>
+<dd><p>Get metadata of a member associated with a project. If no user_name is passed, all members details will be returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>str</em>) – ID of that project with the definition to be updated</p></li>
+<li><p><strong>user_name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the member</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>metadata of the project member</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">member_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">get_member_details</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="s2">&quot;test@ibm.com&quot;</span><span class="p">)</span>
+<span class="n">members_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">get_member_details</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.Projects.list">
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/projects.html#Projects.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Projects.list" title="Link to this definition">¶</a></dt>
+<dd><p>List stored projects in a table format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – limit number of fetched records</p></li>
+<li><p><strong>member</strong> (<em>str</em><em>, </em><em>optional</em>) – filters the result list, only includes projects where the user with a matching user ID
+is a member</p></li>
+<li><p><strong>roles</strong> (<em>str</em><em>, </em><em>optional</em>) – a list of comma-separated project roles to use to filter the query results,
+must be used in conjunction with the “member” query parameter,
+available values : <cite>admin</cite>, <cite>editor</cite>, <cite>viewer</cite></p></li>
+<li><p><strong>project_type</strong> (<em>str</em><em>, </em><em>optional</em>) – filter projects by their type, available types are ‘cpd’, ‘wx’, ‘wca’, ‘dpx’ and ‘wxbi’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.DataFrame with listed projects</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.Projects.list_members">
+<span class="sig-name descname"><span class="pre">list_members</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/projects.html#Projects.list_members"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Projects.list_members" title="Link to this definition">¶</a></dt>
+<dd><p>Print the stored members of a project in a table format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>str</em>) – ID of the project</p></li>
+<li><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – limit number of fetched records</p></li>
+<li><p><strong>identity_type</strong> (<em>str</em><em>, </em><em>optional</em>) – filter the members by type</p></li>
+<li><p><strong>role</strong> (<em>str</em><em>, </em><em>optional</em>) – filter the members by role</p></li>
+<li><p><strong>state</strong> (<em>str</em><em>, </em><em>optional</em>) – filter the members by state</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.DataFrame with listed members</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">list_members</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.Projects.store">
+<span class="sig-name descname"><span class="pre">store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meta_props</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/projects.html#Projects.store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Projects.store" title="Link to this definition">¶</a></dt>
+<dd><p>Create a project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>meta_props</strong> (<em>dict</em>) – <p>metadata of the project configuration. To see available meta names, use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</pre></div>
+</div>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>metadata of the stored project</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">meta_props</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="s2">&quot;my project&quot;</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DESCRIPTION</span><span class="p">:</span> <span class="s2">&quot;test project&quot;</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">STORAGE</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;assetfiles&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">projects_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">meta_props</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.Projects.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">changes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/projects.html#Projects.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Projects.update" title="Link to this definition">¶</a></dt>
+<dd><p>Update existing project metadata. ‘STORAGE’ cannot be updated. #TODO</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>str</em>) – ID of the project with the definition to be updated</p></li>
+<li><p><strong>changes</strong> (<em>dict</em>) – elements to be changed, where keys are ConfigurationMetaNames</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>metadata of the updated project</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span><span class="s2">&quot;updated_project&quot;</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">COMPUTE</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;test_instance&quot;</span><span class="p">,</span>
+                                                   <span class="s2">&quot;crn&quot;</span><span class="p">:</span> <span class="s2">&quot;v1:staging:public:pm-20-dev:us-south:a/09796a1b4cddfcc9f7fe17824a68a0f8:f1026e4b-77cf-4703-843d-c9984eac7272::&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">project_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">changes</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="client.Projects.update_member">
+<span class="sig-name descname"><span class="pre">update_member</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">changes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/projects.html#Projects.update_member"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#client.Projects.update_member" title="Link to this definition">¶</a></dt>
+<dd><p>Update the metadata of an existing member.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>str</em>) – ID of the project</p></li>
+<li><p><strong>user_name</strong> (<em>str</em>) – name of the member to be updated</p></li>
+<li><p><strong>changes</strong> (<em>dict</em>) – elements to be changed, where keys are ConfigurationMetaNames</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>metadata of the updated member</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">MemberMetaNames</span><span class="o">.</span><span class="n">MEMBER</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;editor&quot;</span><span class="p">}</span>
+<span class="p">}</span>
+<span class="n">member_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">update_member</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">user_name</span><span class="p">,</span> <span class="n">changes</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metanames.ProjectsMetaNames">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metanames.</span></span><span class="sig-name descname"><span class="pre">ProjectsMetaNames</span></span><a class="reference internal" href="_modules/metanames.html#ProjectsMetaNames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metanames.ProjectsMetaNames" title="Link to this definition">¶</a></dt>
+<dd><p>Set of MetaNames for Projects Specs.</p>
+<p>Available MetaNames:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>MetaName</p></td>
+<td><p>Type</p></td>
+<td><p>Required</p></td>
+<td><p>Default value</p></td>
+<td><p>Example value</p></td>
+</tr>
+<tr class="row-even"><td><p>NAME</p></td>
+<td><p>str</p></td>
+<td><p>Y</p></td>
+<td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">my_project</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>DESCRIPTION</p></td>
+<td><p>str</p></td>
+<td><p>N</p></td>
+<td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">my_description</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>STORAGE</p></td>
+<td><p>dict</p></td>
+<td><p>Y</p></td>
+<td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{'type':</span> <span class="pre">'assetfiles'}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>COMPUTE</p></td>
+<td><p>dict</p></td>
+<td><p>N</p></td>
+<td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{'name':</span> <span class="pre">'name',</span> <span class="pre">'crn':</span> <span class="pre">'crn</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">instance'}</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>TAGS</p></td>
+<td><p>list</p></td>
+<td><p>N</p></td>
+<td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">['sample_tag']</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>TYPE</p></td>
+<td><p>str</p></td>
+<td><p>N</p></td>
+<td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cpd</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>GENERATOR</p></td>
+<td><p>str</p></td>
+<td><p>Y</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Watsonx-Python-SDK</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Watsonx-Python-SDK</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>PUBLIC</p></td>
+<td><p>bool</p></td>
+<td><p>N</p></td>
+<td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>TOOLS</p></td>
+<td><p>list</p></td>
+<td><p>N</p></td>
+<td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">['jupyter_notebooks',</span> <span class="pre">'watson_visual_recognition']</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>ENFORCE_MEMBERS</p></td>
+<td><p>bool</p></td>
+<td><p>N</p></td>
+<td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</dd></dl>
+
+</section>
+<section id="platform-spaces-projects-member">
+<h2>Platform Spaces / Projects Member<a class="headerlink" href="#platform-spaces-projects-member" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="metanames.MemberMetaNames">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metanames.</span></span><span class="sig-name descname"><span class="pre">MemberMetaNames</span></span><a class="reference internal" href="_modules/metanames.html#MemberMetaNames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metanames.MemberMetaNames" title="Link to this definition">¶</a></dt>
+<dd><p>Set of MetaNames for Platform Spaces / Projects Member Specs.</p>
 <p>Available MetaNames:</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
@@ -10145,6 +10608,7 @@ Depending on the POD size, AutoAI can support different data set sizes.</p>
 <li><a class="reference internal" href="#ibm_watsonx_ai.deployments.RuntimeContext.generate_token"><code class="docutils literal notranslate"><span class="pre">RuntimeContext.generate_token()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.deployments.RuntimeContext.get_headers"><code class="docutils literal notranslate"><span class="pre">RuntimeContext.get_headers()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.deployments.RuntimeContext.get_json"><code class="docutils literal notranslate"><span class="pre">RuntimeContext.get_json()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.deployments.RuntimeContext.get_space_id"><code class="docutils literal notranslate"><span class="pre">RuntimeContext.get_space_id()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.deployments.RuntimeContext.get_token"><code class="docutils literal notranslate"><span class="pre">RuntimeContext.get_token()</span></code></a></li>
 </ul>
 </li>
@@ -10415,7 +10879,31 @@ Depending on the POD size, AutoAI can support different data set sizes.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#metanames.SpacesMetaNames"><code class="docutils literal notranslate"><span class="pre">SpacesMetaNames</span></code></a></li>
-<li><a class="reference internal" href="#metanames.SpacesMemberMetaNames"><code class="docutils literal notranslate"><span class="pre">SpacesMemberMetaNames</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#projects">Projects</a><ul>
+<li><a class="reference internal" href="#client.Projects"><code class="docutils literal notranslate"><span class="pre">Projects</span></code></a><ul>
+<li><a class="reference internal" href="#client.Projects.ConfigurationMetaNames"><code class="docutils literal notranslate"><span class="pre">Projects.ConfigurationMetaNames</span></code></a></li>
+<li><a class="reference internal" href="#client.Projects.MemberMetaNames"><code class="docutils literal notranslate"><span class="pre">Projects.MemberMetaNames</span></code></a></li>
+<li><a class="reference internal" href="#client.Projects.create_member"><code class="docutils literal notranslate"><span class="pre">Projects.create_member()</span></code></a></li>
+<li><a class="reference internal" href="#client.Projects.delete"><code class="docutils literal notranslate"><span class="pre">Projects.delete()</span></code></a></li>
+<li><a class="reference internal" href="#client.Projects.delete_member"><code class="docutils literal notranslate"><span class="pre">Projects.delete_member()</span></code></a></li>
+<li><a class="reference internal" href="#client.Projects.get_details"><code class="docutils literal notranslate"><span class="pre">Projects.get_details()</span></code></a></li>
+<li><a class="reference internal" href="#client.Projects.get_id"><code class="docutils literal notranslate"><span class="pre">Projects.get_id()</span></code></a></li>
+<li><a class="reference internal" href="#client.Projects.get_id_by_name"><code class="docutils literal notranslate"><span class="pre">Projects.get_id_by_name()</span></code></a></li>
+<li><a class="reference internal" href="#client.Projects.get_member_details"><code class="docutils literal notranslate"><span class="pre">Projects.get_member_details()</span></code></a></li>
+<li><a class="reference internal" href="#client.Projects.list"><code class="docutils literal notranslate"><span class="pre">Projects.list()</span></code></a></li>
+<li><a class="reference internal" href="#client.Projects.list_members"><code class="docutils literal notranslate"><span class="pre">Projects.list_members()</span></code></a></li>
+<li><a class="reference internal" href="#client.Projects.store"><code class="docutils literal notranslate"><span class="pre">Projects.store()</span></code></a></li>
+<li><a class="reference internal" href="#client.Projects.update"><code class="docutils literal notranslate"><span class="pre">Projects.update()</span></code></a></li>
+<li><a class="reference internal" href="#client.Projects.update_member"><code class="docutils literal notranslate"><span class="pre">Projects.update_member()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#metanames.ProjectsMetaNames"><code class="docutils literal notranslate"><span class="pre">ProjectsMetaNames</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#platform-spaces-projects-member">Platform Spaces / Projects Member</a><ul>
+<li><a class="reference internal" href="#metanames.MemberMetaNames"><code class="docutils literal notranslate"><span class="pre">MemberMetaNames</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#task-credentials">Task Credentials</a><ul>

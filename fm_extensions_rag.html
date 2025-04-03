@@ -259,6 +259,7 @@
 <li class="toctree-l3"><a class="reference internal" href="fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_deploy_on_demand.html">Deploy on Demand</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rate_limit.html">Rate Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_toolkit.html">Toolkit</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="save_models.html">Saving external models</a></li>
@@ -624,7 +625,7 @@ For available embeddings, refer to the <code class="docutils literal notranslate
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – WatsonX API client required if connecting by connection_id, defaults to None</p></li>
+<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – api client is required if connecting by connection_id, defaults to None</p></li>
 <li><p><strong>connection_id</strong> (<em>str</em><em>, </em><em>optional</em>) – connection asset ID, defaults to None</p></li>
 <li><p><strong>embeddings</strong> (<a class="reference internal" href="fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings" title="ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings"><em>BaseEmbeddings</em></a><em>, </em><em>optional</em>) – default embeddings to be used, defaults to None</p></li>
 <li><p><strong>index_name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the vector database index, defaults to None</p></li>
@@ -665,7 +666,7 @@ You can use custom embeddings to add and search documents.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Optionally, like in LangChain, it is possible to use a cloud ID and API key parameters to connect to Elastic Cloud.
+<p>Optionally, like in LangChain, it is possible to use direct credentials to connect to Elastic Cloud.
 The keyword arguments can be used as direct params to LangChain’s <code class="docutils literal notranslate"><span class="pre">ElasticsearchStore</span></code> constructor.</p>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
@@ -774,11 +775,14 @@ Removes all documents with all their metadata and embeddings.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.vector_store.VectorStore.from_dict">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/vector_store.html#VectorStore.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.vector_store.VectorStore.from_dict" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/vector_store.html#VectorStore.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.vector_store.VectorStore.from_dict" title="Link to this definition">¶</a></dt>
 <dd><p>Creates <code class="docutils literal notranslate"><span class="pre">VectorStore</span></code> using only a primitive data type dict.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – dict in schema like the <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code> method</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – initialised APIClient used in vector store constructor, defaults to None</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – dict in schema like the <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code> method</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>reconstructed VectorStore</p>
@@ -832,16 +836,7 @@ type: Milvus, Chroma, Elasticsearch, etc.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.vector_store.VectorStore.set_embeddings">
 <span class="sig-name descname"><span class="pre">set_embeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/vector_store.html#VectorStore.set_embeddings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.vector_store.VectorStore.set_embeddings" title="Link to this definition">¶</a></dt>
-<dd><p>If possible, sets a default embedding function.
-To make the function capable for a <code class="docutils literal notranslate"><span class="pre">RAGPattern</span></code> deployment, use types inherited from <code class="docutils literal notranslate"><span class="pre">BaseEmbeddings</span></code>.
-The <code class="docutils literal notranslate"><span class="pre">embedding_fn</span></code> argument can be a LangChain embedding but issues with serialization will occur.</p>
-<p><em>Deprecated:</em> The <cite>set_embeddings</cite> method for the <cite>VectorStore</cite> class is deprecated, because it might cause issues for ‘langchain &gt;= 0.2.0’.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>embedding_fn</strong> (<a class="reference internal" href="fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings" title="ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings"><em>BaseEmbeddings</em></a>) – embedding function</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.vector_store.VectorStore.to_dict">
@@ -1009,20 +1004,6 @@ Removes all documents with all their metadata and embeddings.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore.set_embeddings">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_embeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/base_vector_store.html#BaseVectorStore.set_embeddings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore.set_embeddings" title="Link to this definition">¶</a></dt>
-<dd><p>If possible, sets a default embedding function.
-To make the function capable for a <code class="docutils literal notranslate"><span class="pre">RAGPattern</span></code> deployment, use types inherited from <code class="docutils literal notranslate"><span class="pre">BaseEmbeddings</span></code>.
-The <code class="docutils literal notranslate"><span class="pre">embedding_fn</span></code> argument can be a LangChain embedding but issues with serialization will occur.</p>
-<p><em>Deprecated:</em> The <cite>set_embeddings</cite> method for the <cite>VectorStore</cite> class is deprecated, because it might cause issues for ‘langchain &gt;= 0.2.0’.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>embedding_fn</strong> (<a class="reference internal" href="fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings" title="ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings"><em>BaseEmbeddings</em></a>) – embedding function</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1229,7 +1210,7 @@ Also parses properties extracted from connection assets into one that would fit 
 <dl class="py class">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.</span></span><span class="sig-name descname"><span class="pre">LangChainVectorStoreAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector_store</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/langchain_vector_store_adapter.html#LangChainVectorStoreAdapter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore" title="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseVectorStore</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>], <a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore" title="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseVectorStore</span></code></a></p>
 <p>Adapter for LangChain <code class="docutils literal notranslate"><span class="pre">VectorStore</span></code> base class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1239,15 +1220,13 @@ Also parses properties extracted from connection assets into one that would fit 
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.add_documents">
 <span class="sig-name descname"><span class="pre">add_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/langchain_vector_store_adapter.html#LangChainVectorStoreAdapter.add_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.add_documents" title="Link to this definition">¶</a></dt>
-<dd><p>Adds a list of documents to the RAG’s vector store as an upsert operation.
-IDs are determined by the text content of the document (hash). Duplicates will not be added.</p>
-<p>The list must contain strings, dictionaries with a required <code class="docutils literal notranslate"><span class="pre">content</span></code> field of a string type, or a LangChain <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
+<dd><p>Embed documents and add to the vectorstore.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>content</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>list</em><em>[</em><em>dict</em><em>] </em><em>| </em><em>list</em>) – unstructured list of data to be added</p>
+<dd class="field-odd"><p><strong>content</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>list</em><em>[</em><em>dict</em><em>] </em><em>| </em><em>list</em><em>[</em><em>langchain_core.documents.Document</em><em>]</em>) – Documents to add to the vectorstore.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of IDs</p>
+<dd class="field-even"><p>List of IDs of the added texts.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list[str]</p>
@@ -1258,14 +1237,13 @@ IDs are determined by the text content of the document (hash). Duplicates will n
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.add_documents_async">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_documents_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/langchain_vector_store_adapter.html#LangChainVectorStoreAdapter.add_documents_async"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.add_documents_async" title="Link to this definition">¶</a></dt>
-<dd><p>Add document to the RAG’s vector store asynchronously.
-The list must contain strings, dictionaries with a required <code class="docutils literal notranslate"><span class="pre">content</span></code> field of a string type, or a LangChain <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
+<dd><p>Embed documents and add to the vectorstore in asynchronous manner.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>content</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>list</em><em>[</em><em>dict</em><em>] </em><em>| </em><em>list</em>) – unstructured list of data to be added</p>
+<dd class="field-odd"><p><strong>content</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>list</em><em>[</em><em>dict</em><em>] </em><em>| </em><em>list</em><em>[</em><em>langchain_core.documents.Document</em><em>]</em>) – Documents to add to the vectorstore.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of IDs</p>
+<dd class="field-even"><p>List of IDs of the added texts.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list[str]</p>
@@ -1276,15 +1254,7 @@ The list must contain strings, dictionaries with a required <code class="docutil
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.as_langchain_retriever">
 <span class="sig-name descname"><span class="pre">as_langchain_retriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/langchain_vector_store_adapter.html#LangChainVectorStoreAdapter.as_langchain_retriever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.as_langchain_retriever" title="Link to this definition">¶</a></dt>
-<dd><p>Creates a LangChain retriever from this vector store.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>LangChain retriever that can be used in LangChain pipelines</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>langchain_core.vectorstores.VectorStoreRetriever</p>
-</dd>
-</dl>
+<dd><p>Return Langchain VectorStoreRetriever initialized from this VectorStore.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1311,12 +1281,8 @@ Removes all documents with all their metadata and embeddings.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.delete">
 <span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/langchain_vector_store_adapter.html#LangChainVectorStoreAdapter.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.delete" title="Link to this definition">¶</a></dt>
-<dd><p>Delete documents with provided IDs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – IDs of documents to be deleted</p>
-</dd>
-</dl>
+<dd><p>Delete by vector ID or other criteria. Sor more details see LangChain documentation
+<a class="reference external" href="https://python.langchain.com/api_reference/core/vectorstores/langchain_core.vectorstores.base.VectorStore.html#langchain_core.vectorstores.base.VectorStore">https://python.langchain.com/api_reference/core/vectorstores/langchain_core.vectorstores.base.VectorStore.html#langchain_core.vectorstores.base.VectorStore</a></p>
 </dd></dl>
 
 <dl class="py method">
@@ -1336,14 +1302,17 @@ Removes all documents with all their metadata and embeddings.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.search">
 <span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/langchain_vector_store_adapter.html#LangChainVectorStoreAdapter.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.search" title="Link to this definition">¶</a></dt>
-<dd><p>Get documents that would fit the query.</p>
+<dd><p>Searches for documents most similar to the query.</p>
+<p>The method is designed as a wrapper for respective LangChain VectorStores’ similarity search methods.
+Therefore, additional search parameters passed in <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> should be consistent with those methods,
+and can be found in the LangChain documentation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>query</strong> (<em>str</em>) – question asked by a user</p></li>
-<li><p><strong>k</strong> (<em>int</em>) – maximum number of similar documents</p></li>
-<li><p><strong>include_scores</strong> (<em>bool</em><em>, </em><em>optional</em>) – return scores for documents, defaults to False</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – print formatted response to the output, defaults to False</p></li>
+<li><p><strong>query</strong> (<em>str</em>) – text query</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – number of documents to retrieve</p></li>
+<li><p><strong>include_scores</strong> (<em>bool</em>) – whether similarity scores of found documents should be returned, defaults to False</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – whether to display a table with the found documents, defaults to False</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1356,39 +1325,24 @@ Removes all documents with all their metadata and embeddings.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.set_embeddings">
-<span class="sig-name descname"><span class="pre">set_embeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/langchain_vector_store_adapter.html#LangChainVectorStoreAdapter.set_embeddings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.set_embeddings" title="Link to this definition">¶</a></dt>
-<dd><p>If possible, sets a default embedding function.
-To make the function capable for a <code class="docutils literal notranslate"><span class="pre">RAGPattern</span></code> deployment, use types inherited from <code class="docutils literal notranslate"><span class="pre">BaseEmbeddings</span></code>.
-The <code class="docutils literal notranslate"><span class="pre">embedding_fn</span></code> argument can be a LangChain embedding but issues with serialization will occur.</p>
-<p><em>Deprecated:</em> The <cite>set_embeddings</cite> method for the <cite>VectorStore</cite> class is deprecated, because it might cause issues for ‘langchain &gt;= 0.2.0’.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>embedding_fn</strong> (<a class="reference internal" href="fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings" title="ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings"><em>BaseEmbeddings</em></a>) – embedding function</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.window_search">
 <span class="sig-name descname"><span class="pre">window_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/langchain_vector_store_adapter.html#LangChainVectorStoreAdapter.window_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.window_search" title="Link to this definition">¶</a></dt>
-<dd><p>Similarly to the search method, gets documents (chunks) that would fit the query.
-Each chunk is extended to its adjacent chunks (if they exist) from the same origin document.
-The adjacent chunks are merged into one chunk while keeping their order,
-and any intersecting text between them is merged (if it exists).
-This requires chunks to have “document_id” and “sequence_number” in their metadata.</p>
+<dd><p>Searches for documents most similar to the query and extend a document (a chunk) to its adjacent chunks (if they exist) from the same origin document.</p>
+<p>The method is designed as a wrapper for respective LangChain VectorStores’ similarity search methods.
+Therefore, additional search parameters passed in <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> should be consistent with those methods,
+and can be found in the LangChain documentation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>query</strong> (<em>str</em>) – question asked by a user</p></li>
-<li><p><strong>k</strong> (<em>int</em>) – maximum number of similar documents</p></li>
-<li><p><strong>include_scores</strong> (<em>bool</em><em>, </em><em>optional</em>) – return scores for documents, defaults to False</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – print formatted response to the output, defaults to False</p></li>
-<li><p><strong>window_size</strong> (<em>int</em>) – number of adjacent chunks to retrieve before and after the center, according to the sequence_number.</p></li>
+<li><p><strong>query</strong> (<em>str</em>) – text query</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – number of documents to retrieve</p></li>
+<li><p><strong>include_scores</strong> (<em>bool</em>) – whether similarity scores of found documents should be returned, defaults to False</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – whether to display a table with the found documents, defaults to False</p></li>
+<li><p><strong>window_size</strong> (<em>int</em><em>, </em><em>optional</em>) – number of chunks</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of found documents (extended into windows).</p>
+<dd class="field-even"><p>list of found documents</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
@@ -1529,7 +1483,6 @@ This requires chunks to have “document_id” and “sequence_number” in thei
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore.delete"><code class="docutils literal notranslate"><span class="pre">BaseVectorStore.delete()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore.get_client"><code class="docutils literal notranslate"><span class="pre">BaseVectorStore.get_client()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore.search"><code class="docutils literal notranslate"><span class="pre">BaseVectorStore.search()</span></code></a></li>
-<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore.set_embeddings"><code class="docutils literal notranslate"><span class="pre">BaseVectorStore.set_embeddings()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore.window_search"><code class="docutils literal notranslate"><span class="pre">BaseVectorStore.window_search()</span></code></a></li>
 </ul>
 </li>
@@ -1568,7 +1521,6 @@ This requires chunks to have “document_id” and “sequence_number” in thei
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.delete"><code class="docutils literal notranslate"><span class="pre">LangChainVectorStoreAdapter.delete()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.get_client"><code class="docutils literal notranslate"><span class="pre">LangChainVectorStoreAdapter.get_client()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.search"><code class="docutils literal notranslate"><span class="pre">LangChainVectorStoreAdapter.search()</span></code></a></li>
-<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.set_embeddings"><code class="docutils literal notranslate"><span class="pre">LangChainVectorStoreAdapter.set_embeddings()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.window_search"><code class="docutils literal notranslate"><span class="pre">LangChainVectorStoreAdapter.window_search()</span></code></a></li>
 </ul>
 </li>

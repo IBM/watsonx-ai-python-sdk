@@ -257,3 +257,23 @@ To deploy a ``inference_function``/``inference_service`` please use below method
                 name="inference_service deployment",
                 space_id="<SPACE_ID>",
             )
+
+        To override vector store `connection_id`, `index_name` or set specific scope id (project_id/space_id) that will be used in deployment, please use below:
+
+        .. code-block:: python
+
+            deployment_details = pattern.inference_service.deploy(
+                name="Example deployment name",
+                store_params={"software_spec_id": "<ID of the custom sw spec>"},
+                deploy_params={
+                                "online": {
+                                    "parameters": {
+                                        "vector_store_settings": {
+                                            "connection_id": "<connection_to_vector_store>",
+                                            "index_name": "<index_name>",
+                                            "project_id": "<project_id>",
+                                        }
+                                    }
+                                }
+                            }
+            )

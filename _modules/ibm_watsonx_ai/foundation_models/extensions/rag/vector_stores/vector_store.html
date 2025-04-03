@@ -258,6 +258,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_rerank.html">Rerank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_deploy_on_demand.html">Deploy on Demand</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../rate_limit.html">Rate Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_toolkit.html">Toolkit</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../save_models.html">Saving external models</a></li>
@@ -305,7 +306,6 @@
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">import</span> <span class="nn">contextlib</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
@@ -314,7 +314,6 @@
 <span class="kn">from</span> <span class="nn">langchain_core.documents</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.client</span> <span class="kn">import</span> <span class="n">APIClient</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.embeddings</span> <span class="kn">import</span> <span class="n">BaseEmbeddings</span>
 <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">BaseVectorStore</span><span class="p">,</span>
@@ -346,7 +345,7 @@
 <span class="sd">    You can utilize the custom embedding function. This function can be provided in the constructor or by the ``set_embeddings`` method.</span>
 <span class="sd">    For available embeddings, refer to the ``ibm_watsonx_ai.foundation_models.embeddings`` module.</span>
 
-<span class="sd">    :param api_client: WatsonX API client required if connecting by connection_id, defaults to None</span>
+<span class="sd">    :param api_client: api client is required if connecting by connection_id, defaults to None</span>
 <span class="sd">    :type api_client: APIClient, optional</span>
 
 <span class="sd">    :param connection_id: connection asset ID, defaults to None</span>
@@ -400,7 +399,7 @@
 <span class="sd">        vector_store.search(&#39;one&#39;, k=1)</span>
 
 <span class="sd">    .. note::</span>
-<span class="sd">        Optionally, like in LangChain, it is possible to use a cloud ID and API key parameters to connect to Elastic Cloud.</span>
+<span class="sd">        Optionally, like in LangChain, it is possible to use direct credentials to connect to Elastic Cloud.</span>
 <span class="sd">        The keyword arguments can be used as direct params to LangChain&#39;s ``ElasticsearchStore`` constructor.</span>
 
 <span class="sd">    .. code-block:: python</span>
@@ -467,21 +466,28 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Initializing vector store of type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_datasource_type</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
+                <span class="n">properties</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="o">**</span><span class="n">connection_properties</span><span class="p">,</span>
+                    <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_index_properties</span><span class="p">,</span>
+                <span class="p">}</span>
+
+                <span class="c1"># unify name for Milvus and Elastic</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;embeddings&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;index_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_name</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_metric</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;distance_metric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_metric</span>
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">_vector_store</span> <span class="o">=</span> <span class="n">VectorStoreConnector</span><span class="p">(</span>
-                    <span class="n">properties</span><span class="o">=</span><span class="p">{</span>
-                        <span class="s2">&quot;embeddings&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">,</span>
-                        <span class="s2">&quot;index_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_name</span><span class="p">,</span>
-                        <span class="s2">&quot;distance_metric&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_metric</span><span class="p">,</span>
-                        <span class="o">**</span><span class="n">connection_properties</span><span class="p">,</span>
-                        <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_index_properties</span><span class="p">,</span>
-                    <span class="p">}</span>
+                    <span class="n">properties</span><span class="o">=</span><span class="n">properties</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">get_from_type</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_datasource_type</span>  <span class="c1"># type: ignore[arg-type]</span>
                 <span class="p">)</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Success. Vector store initialized correctly.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Client is required if connecting by connection asset.&quot;</span>
+                    <span class="s2">&quot;`api_client` is required if connecting by connection asset.&quot;</span>
                 <span class="p">)</span>
         <span class="k">elif</span> <span class="n">langchain_vector_store</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connecting by already established LangChain vector store.&quot;</span><span class="p">)</span>
@@ -509,57 +515,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">&quot;To establish connection, please provide &#39;connection_id&#39;, &#39;langchain_vector_store&#39; or &#39;datasource_type&#39;.&quot;</span>
-            <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_get_connection_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine the connection type from the connection details by comparing it to the available list of data source types.</span>
-
-<span class="sd">        :param connection_details: dict containing the connection details</span>
-<span class="sd">        :type connection_details: dict[str, list]</span>
-
-<span class="sd">        :raises KeyError: if the connection data source is invalid</span>
-
-<span class="sd">        :return: name of the data source</span>
-<span class="sd">        :rtype: str</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">redirect_stdout</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
-                <span class="n">datasource_types_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">list_datasource_types</span><span class="p">()</span>
-            <span class="n">datasource_id_to_name_mapping</span> <span class="o">=</span> <span class="n">datasource_types_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span>
-                <span class="s2">&quot;DATASOURCE_ID&quot;</span>
-            <span class="p">)[</span><span class="s2">&quot;NAME&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-            <span class="n">datasource_type</span> <span class="o">=</span> <span class="n">datasource_id_to_name_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="n">connection_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;datasource_type&quot;</span><span class="p">],</span> <span class="kc">None</span>  <span class="c1"># type: ignore[call-overload]</span>
-            <span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">datasource_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Connection type not found or not supported.&quot;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">datasource_type</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                <span class="s2">&quot;Client is required if connecting by connection asset.&quot;</span>
-            <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_connect_by_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the datasource type and the connection properties from the connection ID.</span>
-
-<span class="sd">        :param connection_id: ID of the connection asset</span>
-<span class="sd">        :type connection_id: str</span>
-
-<span class="sd">        :return: string representing the datasource type, connection properties</span>
-<span class="sd">        :rtype: tuple[str, str]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">connection_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">connection_id</span><span class="p">)</span>
-            <span class="n">datasouce_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection_type</span><span class="p">(</span><span class="n">connection_data</span><span class="p">)</span>
-            <span class="n">properties</span> <span class="o">=</span> <span class="n">connection_data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span>
-
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initializing vector store of type: </span><span class="si">{</span><span class="n">datasouce_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">datasouce_type</span><span class="p">,</span> <span class="n">properties</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                <span class="s2">&quot;Client is required if connecting by connection asset.&quot;</span>
             <span class="p">)</span>
 
 <div class="viewcode-block" id="VectorStore.to_dict">
@@ -590,9 +545,15 @@
 <a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.vector_store.VectorStore.from_dict">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VectorStore</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates ``VectorStore`` using only a primitive data type dict.</span>
+
+<span class="sd">        :param api_client: initialised APIClient used in vector store constructor, defaults to None</span>
+<span class="sd">        :type api_client: APIClient, optional</span>
 
 <span class="sd">        :param data: dict in schema like the ``to_dict()`` method</span>
 <span class="sd">        :type data: dict</span>
@@ -600,13 +561,20 @@
 <span class="sd">        :return: reconstructed VectorStore</span>
 <span class="sd">        :rtype: VectorStore</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;client&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">api_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">client_parameter_deprecated_warning</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Parameter `client` is deprecated. Use `api_client` instead.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">client_parameter_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+            <span class="n">api_client</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;client&quot;</span><span class="p">)</span>
+
         <span class="n">d</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
 
         <span class="n">d</span><span class="p">[</span><span class="s2">&quot;embeddings&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseEmbeddings</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;embeddings&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">api_client</span><span class="o">=</span><span class="n">client</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;embeddings&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">api_client</span><span class="o">=</span><span class="n">api_client</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="o">**</span><span class="n">d</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">api_client</span><span class="p">,</span> <span class="o">**</span><span class="n">d</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="VectorStore.get_client">
@@ -621,7 +589,7 @@
         <span class="n">setting_embeddings_deprecation_warning</span> <span class="o">=</span> <span class="s2">&quot;Setting embeddings after VectorStore initialization may cause issues for `langchain&gt;=0.2.0`&quot;</span>
         <span class="n">warn</span><span class="p">(</span><span class="n">setting_embeddings_deprecation_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span> <span class="o">=</span> <span class="n">embedding_fn</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_vector_store</span><span class="o">.</span><span class="n">set_embeddings</span><span class="p">(</span><span class="n">embedding_fn</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vector_store</span><span class="o">.</span><span class="n">_set_embeddings</span><span class="p">(</span><span class="n">embedding_fn</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="VectorStore.add_documents_async">
@@ -686,7 +654,12 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vector_store</span><span class="p">,</span> <span class="n">LangChainVectorStoreAdapter</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vector_store</span><span class="o">.</span><span class="n">window_search</span><span class="p">(</span>
-                <span class="n">query</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">include_scores</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="n">query</span><span class="p">,</span>
+                <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                <span class="n">include_scores</span><span class="o">=</span><span class="n">include_scores</span><span class="p">,</span>
+                <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;window_search is not yet implemented in VectorStore&quot;</span><span class="p">)</span></div>
 
