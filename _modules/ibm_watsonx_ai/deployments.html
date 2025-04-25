@@ -4,9 +4,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>ibm_watsonx_ai.deployments - IBM watsonx.ai</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -306,8 +306,8 @@
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Literal</span><span class="p">,</span>
     <span class="n">Iterable</span><span class="p">,</span>
     <span class="n">Callable</span><span class="p">,</span>
@@ -319,39 +319,39 @@
     <span class="n">TypeAlias</span><span class="p">,</span>
     <span class="n">AsyncGenerator</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">print_text_header_h1</span><span class="p">,</span>
     <span class="n">print_text_header_h2</span><span class="p">,</span>
     <span class="n">StatusLogger</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.utils</span> <span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">WMLClientError</span><span class="p">,</span>
     <span class="n">MissingValue</span><span class="p">,</span>
     <span class="n">InvalidValue</span><span class="p">,</span>
     <span class="n">ApiRequestFailure</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.href_definitions</span> <span class="kn">import</span> <span class="n">is_id</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.messages.messages</span> <span class="kn">import</span> <span class="n">Messages</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.href_definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_id</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLResource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.messages.messages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Messages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.metanames</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ScoringMetaNames</span><span class="p">,</span>
     <span class="n">DecisionOptimizationMetaNames</span><span class="p">,</span>
     <span class="n">DeploymentMetaNames</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.libs.repo.util.library_imports</span> <span class="kn">import</span> <span class="n">LibraryChecker</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.utils</span> <span class="kn">import</span> <span class="n">all_logging_disabled</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.libs.repo.util.library_imports</span><span class="w"> </span><span class="kn">import</span> <span class="n">LibraryChecker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">all_logging_disabled</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
-    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.lifecycle</span> <span class="kn">import</span> <span class="n">SpecStates</span>
-    <span class="kn">import</span> <span class="nn">pandas</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecStates</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span>
 
 <span class="n">lib_checker</span> <span class="o">=</span> <span class="n">LibraryChecker</span><span class="p">()</span>
 
@@ -360,14 +360,14 @@
 
 <div class="viewcode-block" id="Deployments">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments">[docs]</a>
-<span class="k">class</span> <span class="nc">Deployments</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Deployments</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Deploy and score published artifacts (models and functions).&quot;&quot;&quot;</span>
 
     <span class="n">DEFAULT_CONCURRENCY_LIMIT</span> <span class="o">=</span> <span class="mi">8</span>
 
 <div class="viewcode-block" id="Deployments.HardwareRequestSizes">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.HardwareRequestSizes">[docs]</a>
-    <span class="k">class</span> <span class="nc">HardwareRequestSizes</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">HardwareRequestSizes</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        An enum class that represents the different hardware request sizes</span>
 <span class="sd">        available.</span>
@@ -378,13 +378,13 @@
         <span class="n">Large</span> <span class="o">=</span> <span class="s2">&quot;gpu_l&quot;</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">):</span>
         <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span> <span class="o">=</span> <span class="n">DeploymentMetaNames</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ScoringMetaNames</span> <span class="o">=</span> <span class="n">ScoringMetaNames</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">DecisionOptimizationMetaNames</span> <span class="o">=</span> <span class="n">DecisionOptimizationMetaNames</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_deployment_status_errors_handling</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deployment_status_errors_handling</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">operation_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -435,7 +435,7 @@
     <span class="c1"># TODO model_id and artifact_id should be changed to artifact_id only</span>
 <div class="viewcode-block" id="Deployments.create">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.create">[docs]</a>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -498,7 +498,7 @@
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Shiny is not supported in this release&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&gt;=</span> <span class="mf">4.8</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.enums</span> <span class="kn">import</span> <span class="n">ModelTypes</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.utils.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelTypes</span>
 
             <span class="n">base_model_id</span> <span class="o">=</span> <span class="n">meta_props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">BASE_MODEL_ID</span><span class="p">)</span>
 
@@ -544,7 +544,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&gt;=</span> <span class="mf">4.8</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">all_logging_disabled</span><span class="p">():</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.prompts</span> <span class="kn">import</span> <span class="p">(</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.prompts</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                         <span class="n">PromptTemplateManager</span><span class="p">,</span>
                     <span class="p">)</span>
 
@@ -602,7 +602,7 @@
 
                 <span class="n">deployment_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">)</span>
 
-                <span class="kn">import</span> <span class="nn">time</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 
                 <span class="n">print_text_header_h1</span><span class="p">(</span>
                     <span class="s2">&quot;Synchronous deployment creation for id: &#39;</span><span class="si">{}</span><span class="s2">&#39; started&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -649,8 +649,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Deployment creation failed&quot;</span>
             <span class="n">reason</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
             <span class="n">print_text_header_h2</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
                 <span class="n">error_msg</span> <span class="o">+</span> <span class="s2">&quot;. Error: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;. &quot;</span> <span class="o">+</span> <span class="n">reason</span>
             <span class="p">)</span></div>
@@ -659,7 +659,7 @@
 <div class="viewcode-block" id="Deployments.get_uid">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.get_uid">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_uid</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_uid</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get deployment_uid from the deployment details.</span>
 
 <span class="sd">        *Deprecated:* Use ``get_id(deployment_details)`` instead.</span>
@@ -688,7 +688,7 @@
 <div class="viewcode-block" id="Deployments.get_id">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.get_id">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_id</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the deployment ID from the deployment details.</span>
 
 <span class="sd">        :param deployment_details: metadata of the deployment</span>
@@ -725,7 +725,7 @@
 <div class="viewcode-block" id="Deployments.get_href">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.get_href">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_href</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_href</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get deployment_href from the deployment details.</span>
 
 <span class="sd">        :param deployment_details: metadata of the deployment</span>
@@ -761,7 +761,7 @@
         <span class="k">return</span> <span class="n">url</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_get_serving_name_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serving_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_serving_name_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serving_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get info about the serving name</span>
 
 <span class="sd">        :param serving_name: serving name that filters deployments</span>
@@ -797,7 +797,7 @@
 
 <div class="viewcode-block" id="Deployments.is_serving_name_available">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.is_serving_name_available">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_serving_name_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serving_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_serving_name_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serving_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the serving name is available for use.</span>
 
 <span class="sd">        :param serving_name: serving name that filters deployments</span>
@@ -820,7 +820,7 @@
 
 <div class="viewcode-block" id="Deployments.get_details">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.get_details">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_details</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_details</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">serving_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -929,7 +929,7 @@
 <div class="viewcode-block" id="Deployments.get_scoring_href">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.get_scoring_href">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_scoring_href</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_scoring_href</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get scoring URL from deployment details.</span>
 
 <span class="sd">        :param deployment_details: metadata of the deployment</span>
@@ -974,7 +974,7 @@
 <div class="viewcode-block" id="Deployments.get_serving_href">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.get_serving_href">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_serving_href</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_serving_href</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get serving URL from the deployment details.</span>
 
 <span class="sd">        :param deployment_details: metadata of the deployment</span>
@@ -1023,7 +1023,7 @@
 
 <div class="viewcode-block" id="Deployments.delete">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.delete">[docs]</a>
-    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a deployment.</span>
 
 <span class="sd">        :param deployment_id: unique ID of the deployment</span>
@@ -1069,7 +1069,7 @@
 
 <div class="viewcode-block" id="Deployments.score">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.score">[docs]</a>
-    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">score</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">transaction_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Make scoring requests against the deployed artifact.</span>
@@ -1125,7 +1125,7 @@
             <span class="n">score_payload</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">each_score_request</span> <span class="ow">in</span> <span class="n">scoring_data</span><span class="p">:</span>
                 <span class="n">lib_checker</span><span class="o">.</span><span class="n">check_lib</span><span class="p">(</span><span class="n">lib_name</span><span class="o">=</span><span class="s2">&quot;pandas&quot;</span><span class="p">)</span>
-                <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
                 <span class="n">scoring_values</span> <span class="o">=</span> <span class="n">each_score_request</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span>
                 <span class="c1"># Check feature types, currently supporting pandas df, numpy.ndarray, python lists and Dmatrix</span>
@@ -1195,7 +1195,7 @@
 
 <div class="viewcode-block" id="Deployments.get_download_url">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.get_download_url">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_download_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_download_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get deployment_download_url from the deployment details.</span>
 
 <span class="sd">        :param deployment_details: created deployment details</span>
@@ -1247,7 +1247,7 @@
 
 <div class="viewcode-block" id="Deployments.list">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.list">[docs]</a>
-    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">artifact_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns deployments in a table format.</span>
@@ -1278,9 +1278,7 @@
         <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="n">sw_spec_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">software_specifications</span><span class="o">.</span><span class="n">_get_state_info</span><span class="p">()</span>
-
-        <span class="k">def</span> <span class="nf">enrich_asset_with_type</span><span class="p">(</span><span class="n">asset_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">asset_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">enrich_asset_with_type</span><span class="p">(</span><span class="n">asset_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">asset_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">asset_type</span><span class="p">:</span>
                 <span class="n">asset_details</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">asset_type</span>
 
@@ -1302,14 +1300,9 @@
             <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">index</span> <span class="o">==</span> <span class="n">limit</span><span class="p">:</span>
                 <span class="k">break</span>
 
-            <span class="n">spec_id</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">asset_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                    <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;asset&quot;</span><span class="p">,</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prompt_template&quot;</span><span class="p">))[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
-                    <span class="p">{},</span>
-                <span class="p">)</span>
-                <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entity&quot;</span><span class="p">,</span> <span class="p">{})</span>
-                <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;software_spec&quot;</span><span class="p">,</span> <span class="p">{})</span>
-                <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+            <span class="n">asset_details</span> <span class="o">=</span> <span class="n">asset_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;asset&quot;</span><span class="p">,</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prompt_template&quot;</span><span class="p">))[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+                <span class="p">{},</span>
             <span class="p">)</span>
 
             <span class="k">if</span> <span class="p">(</span>
@@ -1329,8 +1322,10 @@
                         <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;state&quot;</span><span class="p">],</span>
                         <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;created_at&quot;</span><span class="p">],</span>
                         <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;deployed_asset_type&quot;</span><span class="p">,</span> <span class="s2">&quot;unknown&quot;</span><span class="p">),</span>
-                        <span class="n">sw_spec_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">spec_id</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">),</span>
-                        <span class="n">sw_spec_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">spec_id</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;replacement&quot;</span><span class="p">),</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">software_specifications</span><span class="o">.</span><span class="n">_get_state</span><span class="p">(</span><span class="n">asset_details</span><span class="p">),</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">software_specifications</span><span class="o">.</span><span class="n">_get_replacement</span><span class="p">(</span>
+                            <span class="n">asset_details</span>
+                        <span class="p">),</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
 
@@ -1355,7 +1350,7 @@
 
 <div class="viewcode-block" id="Deployments.list_jobs">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.list_jobs">[docs]</a>
-    <span class="k">def</span> <span class="nf">list_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the async deployment jobs in a table format.</span>
 
 <span class="sd">        :param limit: limit number of fetched records</span>
@@ -1406,7 +1401,7 @@
         <span class="k">return</span> <span class="n">table</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_get_deployable_asset_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_deployable_asset_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">url</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;asset&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;model&quot;</span> <span class="ow">in</span> <span class="n">url</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;model&quot;</span>
@@ -1417,10 +1412,11 @@
 
 <div class="viewcode-block" id="Deployments.update">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.update">[docs]</a>
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">changes</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">background_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates existing deployment metadata. If ASSET is patched, then &#39;id&#39; field is mandatory</span>
@@ -1434,6 +1430,9 @@
 
 <span class="sd">        :return: metadata of the updated deployment</span>
 <span class="sd">        :rtype: dict or None</span>
+
+<span class="sd">        :param background_mode: indicator whether the update() method will run in the background (async) or not (sync), defaults to False</span>
+<span class="sd">        :type background_mode: bool, optional</span>
 
 <span class="sd">        **Examples**</span>
 
@@ -1458,10 +1457,6 @@
         <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">changes</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;</span> <span class="mf">4.8</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_space_is_set</span><span class="p">()</span>
-
-        <span class="n">ret202</span> <span class="o">=</span> <span class="kc">False</span>
-
-        <span class="c1">## In case of passing &#39;AUTO_ONLINE_DEPLOYMENT&#39; as true, we need to poll for deployment to be either &#39;deploy_success&#39; or &#39;update_success&#39;.</span>
 
         <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;deployment_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
@@ -1502,7 +1497,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="n">deployment_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">)</span>
+        <span class="n">deployment_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="n">_silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">serving_name_change</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">new_serving_name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">SERVING_NAME</span> <span class="ow">in</span> <span class="n">changes</span><span class="p">:</span>
@@ -1525,14 +1520,6 @@
                 <span class="p">}</span>
             <span class="p">)</span>
 
-        <span class="c1">## As auto_online_deployment and auto_redeploy values are passed as &#39;bool&#39; but service needs them in &#39;str&#39; format to patch.</span>
-        <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">patch_payload</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="s2">&quot;auto_online_deployment&quot;</span> <span class="ow">in</span> <span class="n">ele</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
-                <span class="ow">or</span> <span class="s2">&quot;auto_redeploy&quot;</span> <span class="ow">in</span> <span class="n">ele</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
-            <span class="p">):</span>
-                <span class="n">ele</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ele</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployment_href</span><span class="p">(</span>
             <span class="n">deployment_id</span>
         <span class="p">)</span>
@@ -1545,83 +1532,81 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">patch_job</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">202</span><span class="p">:</span>
-            <span class="n">updated_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+            <span class="n">deployment_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
                 <span class="mi">202</span><span class="p">,</span> <span class="s2">&quot;deployment asset patch&quot;</span><span class="p">,</span> <span class="n">response</span>
             <span class="p">)</span>
-
-            <span class="n">ret202</span> <span class="o">=</span> <span class="kc">True</span>
-
             <span class="nb">print</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Since </span><span class="si">{</span><span class="n">patch_job_field</span><span class="si">}</span><span class="s2"> is patched, deployment with new asset id/rev is being started. &quot;</span>
-                <span class="s2">&quot;Monitor the status using deployments.get_details(deployment_id) api&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Since </span><span class="si">{</span><span class="n">patch_job_field</span><span class="si">}</span><span class="s2"> is patched, deployment need to be restarted. &quot;</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="n">background_mode</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;Monitor the status using deployments.get_details(deployment_id) api&quot;</span>
+                <span class="p">)</span>
         <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">202</span><span class="p">:</span>
-            <span class="n">updated_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">202</span><span class="p">,</span> <span class="s2">&quot;deployment scaling&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
-            <span class="n">ret202</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">deployment_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                <span class="mi">202</span><span class="p">,</span> <span class="s2">&quot;deployment scaling&quot;</span><span class="p">,</span> <span class="n">response</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">updated_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;deployment patch&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+            <span class="n">deployment_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;deployment patch&quot;</span><span class="p">,</span> <span class="n">response</span>
+            <span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">&quot;auto_online_deployment&quot;</span> <span class="ow">in</span> <span class="n">changes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">response</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
-                    <span class="n">deployment_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">background_mode</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">deployment_details</span>
 
-                    <span class="kn">import</span> <span class="nn">time</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">202</span><span class="p">):</span>
+            <span class="n">deployment_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="n">_silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-                    <span class="n">print_text_header_h1</span><span class="p">(</span>
-                        <span class="s2">&quot; deployment update for id: &#39;</span><span class="si">{}</span><span class="s2">&#39; started&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">)</span>
-                    <span class="p">)</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 
+            <span class="n">print_text_header_h1</span><span class="p">(</span>
+                <span class="s2">&quot;Deployment update for id: &#39;</span><span class="si">{}</span><span class="s2">&#39; started&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">status</span> <span class="o">=</span> <span class="n">deployment_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;state&quot;</span><span class="p">]</span>
+
+            <span class="k">with</span> <span class="n">StatusLogger</span><span class="p">(</span><span class="n">status</span><span class="p">)</span> <span class="k">as</span> <span class="n">status_logger</span><span class="p">:</span>
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+                    <span class="n">deployment_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="n">_silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="n">status</span> <span class="o">=</span> <span class="n">deployment_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;state&quot;</span><span class="p">]</span>
+                    <span class="n">status_logger</span><span class="o">.</span><span class="n">log_state</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
 
-                    <span class="k">with</span> <span class="n">StatusLogger</span><span class="p">(</span><span class="n">status</span><span class="p">)</span> <span class="k">as</span> <span class="n">status_logger</span><span class="p">:</span>
-                        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-                            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-                            <span class="n">deployment_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">)</span>
-                            <span class="n">status</span> <span class="o">=</span> <span class="n">deployment_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;state&quot;</span><span class="p">]</span>
-                            <span class="n">status_logger</span><span class="o">.</span><span class="n">log_state</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;initializing&quot;</span> <span class="ow">and</span> <span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;updating&quot;</span><span class="p">:</span>
+                        <span class="k">break</span>
 
-                            <span class="k">if</span> <span class="p">(</span>
-                                <span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;DEPLOY_IN_PROGRESS&quot;</span>
-                                <span class="ow">and</span> <span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;UPDATE_IN_PROGRESS&quot;</span>
-                            <span class="p">):</span>
-                                <span class="k">break</span>
-
-                    <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;DEPLOY_SUCCESS&quot;</span> <span class="ow">or</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;UPDATE_SUCCESS&quot;</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-                        <span class="n">print_text_header_h2</span><span class="p">(</span>
-                            <span class="s2">&quot;Successfully finished deployment update, deployment_id=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                                <span class="n">deployment_id</span>
-                            <span class="p">)</span>
-                        <span class="p">)</span>
-                        <span class="k">return</span> <span class="n">deployment_details</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">print_text_header_h2</span><span class="p">(</span><span class="s2">&quot;Deployment update failed&quot;</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">deployment_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_status_errors_handling</span><span class="p">(</span>
-                                <span class="n">deployment_details</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="n">deployment_id</span>
-                            <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Deployment update failed&quot;</span>
-                    <span class="n">reason</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
-                    <span class="n">print_text_header_h2</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
-                    <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                        <span class="n">error_msg</span>
-                        <span class="o">+</span> <span class="s2">&quot;. Error: &quot;</span>
-                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
-                        <span class="o">+</span> <span class="s2">&quot;. &quot;</span>
-                        <span class="o">+</span> <span class="n">reason</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;ready&quot;</span>
+                <span class="ow">and</span> <span class="s2">&quot;failure&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">deployment_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span>
+            <span class="p">):</span>
+                <span class="c1"># from apidocs: If any failures, deployment will be reverted back to the previous id/rev and the failure message will be captured in &#39;failure&#39; field in the response.</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="n">print_text_header_h2</span><span class="p">(</span>
+                    <span class="s2">&quot;Successfully finished deployment update, deployment_id=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">deployment_id</span>
                     <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="n">deployment_details</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">print_text_header_h2</span><span class="p">(</span><span class="s2">&quot;Deployment update failed&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">deployment_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_status_errors_handling</span><span class="p">(</span>
+                        <span class="n">deployment_details</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="n">deployment_id</span>
+                    <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Deployment update failed&quot;</span>
+            <span class="n">reason</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
+            <span class="n">print_text_header_h2</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">error_msg</span> <span class="o">+</span> <span class="s2">&quot;. Error: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;. &quot;</span> <span class="o">+</span> <span class="n">reason</span>
+            <span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">ret202</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">updated_details</span>
-
-        <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="k">return</span> <span class="n">deployment_details</span></div>
 
 
     <span class="c1">## Below functions are for async scoring. They are just dummy functions.</span>
-    <span class="k">def</span> <span class="nf">_score_async</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_score_async</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">scoring_payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
@@ -1656,7 +1641,7 @@
 
 <div class="viewcode-block" id="Deployments.create_job">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.create_job">[docs]</a>
-    <span class="k">def</span> <span class="nf">create_job</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_job</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
@@ -1745,7 +1730,7 @@
             <span class="n">score_payload</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">each_score_request</span> <span class="ow">in</span> <span class="n">scoring_data</span><span class="p">:</span>
                 <span class="n">lib_checker</span><span class="o">.</span><span class="n">check_lib</span><span class="p">(</span><span class="n">lib_name</span><span class="o">=</span><span class="s2">&quot;pandas&quot;</span><span class="p">)</span>
-                <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
                 <span class="k">if</span> <span class="s2">&quot;values&quot;</span> <span class="ow">in</span> <span class="n">each_score_request</span><span class="p">:</span>
                     <span class="n">scoring_values</span> <span class="o">=</span> <span class="n">each_score_request</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span>
@@ -1778,7 +1763,7 @@
             <span class="k">if</span> <span class="n">flag</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;decision_optimization&quot;</span><span class="p">][</span><span class="s2">&quot;input_data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">score_payload</span>
 
-        <span class="kn">import</span> <span class="nn">copy</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 
         <span class="k">if</span> <span class="s2">&quot;input_data_references&quot;</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">:</span>
             <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
@@ -1854,7 +1839,7 @@
         <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;space_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span><span class="p">})</span>
 
         <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">payload</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">uuid</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
 
             <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())})</span>
 
@@ -1865,7 +1850,7 @@
 
 <div class="viewcode-block" id="Deployments.get_job_details">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.get_job_details">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_job_details</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_job_details</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">include</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1920,7 +1905,7 @@
 
 <div class="viewcode-block" id="Deployments.get_job_status">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.get_job_status">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the status of a deployment job.</span>
 
 <span class="sd">        :param job_id: unique ID of the deployment job</span>
@@ -1946,7 +1931,7 @@
 
 <div class="viewcode-block" id="Deployments.get_job_id">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.get_job_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_job_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_job_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the unique ID of a deployment job.</span>
 
 <span class="sd">        :param job_details: metadata of the deployment job</span>
@@ -1968,7 +1953,7 @@
 
 <div class="viewcode-block" id="Deployments.get_job_uid">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.get_job_uid">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_job_uid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_job_uid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the unique ID of a deployment job.</span>
 
 <span class="sd">        *Deprecated:* Use ``get_job_id(job_details)`` instead.</span>
@@ -1997,7 +1982,7 @@
 
 <div class="viewcode-block" id="Deployments.get_job_href">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.get_job_href">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_job_href</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_job_href</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the href of a deployment job.</span>
 
 <span class="sd">        :param job_details: metadata of the deployment job</span>
@@ -2019,7 +2004,7 @@
 
 <div class="viewcode-block" id="Deployments.delete_job">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.delete_job">[docs]</a>
-    <span class="k">def</span> <span class="nf">delete_job</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_job</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a deployment job that is running. This method can also delete metadata</span>
@@ -2055,11 +2040,35 @@
         <span class="k">if</span> <span class="n">job_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_id</span><span class="p">(</span><span class="n">job_id</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;&#39;job_id&#39; is not an id: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">job_id</span><span class="p">))</span>
 
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;=</span> <span class="mf">5.1</span><span class="p">:</span>
+            <span class="c1"># for CPD 5.1 and lower there is need to use the jobs api directly.</span>
+            <span class="c1"># From CPD 5.2.x + and Cloud deployment service will cover the call in DELETE /ml/v4/deployment_jobs</span>
+            <span class="c1"># issue: #48242</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">job_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_job_details</span><span class="p">(</span><span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">)</span>
+                <span class="n">run_id</span> <span class="o">=</span> <span class="n">job_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;platform_job&quot;</span><span class="p">][</span><span class="s2">&quot;run_id&quot;</span><span class="p">]</span>
+
+                <span class="n">jobs_runs_url</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_jobs_runs_href</span><span class="p">(</span>
+                        <span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">,</span> <span class="n">run_id</span><span class="o">=</span><span class="n">run_id</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+                <span class="n">response_delete</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+                    <span class="n">jobs_runs_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
+                <span class="p">)</span>
+
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                    <span class="mi">204</span><span class="p">,</span> <span class="s2">&quot;deployment async job deletion&quot;</span><span class="p">,</span> <span class="n">response_delete</span><span class="p">,</span> <span class="kc">False</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_async_deployment_jobs_href</span><span class="p">(</span>
             <span class="n">job_id</span>
         <span class="p">)</span>
-
-        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">hard_delete</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;hard_delete&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">})</span>
@@ -2073,8 +2082,8 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_get_filter_func_by_spec_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec_state</span><span class="p">:</span> <span class="n">SpecStates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-        <span class="k">def</span> <span class="nf">filter_func</span><span class="p">(</span><span class="n">resources</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_filter_func_by_spec_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec_state</span><span class="p">:</span> <span class="n">SpecStates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">filter_func</span><span class="p">(</span><span class="n">resources</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
             <span class="n">asset_ids</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">i</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">{</span>
@@ -2096,7 +2105,7 @@
 
         <span class="k">return</span> <span class="n">filter_func</span>
 
-    <span class="k">def</span> <span class="nf">_get_model_inference</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_model_inference</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">inference_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;text_stream&quot;</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;chat_stream&quot;</span><span class="p">],</span>
@@ -2106,7 +2115,7 @@
 <span class="sd">        Verify that the deployment with the given deployment_id has generating methods.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Import ModelInference here to avoid circular import error</span>
-        <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.inference</span> <span class="kn">import</span> <span class="n">ModelInference</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.inference</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelInference</span>
 
         <span class="k">match</span> <span class="n">inference_type</span><span class="p">:</span>
             <span class="k">case</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span>
@@ -2168,7 +2177,7 @@
 
 <div class="viewcode-block" id="Deployments.generate">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.generate">[docs]</a>
-    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2229,7 +2238,7 @@
 
 <div class="viewcode-block" id="Deployments.generate_text">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.generate_text">[docs]</a>
-    <span class="k">def</span> <span class="nf">generate_text</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_text</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2300,7 +2309,7 @@
 
 <div class="viewcode-block" id="Deployments.generate_text_stream">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.generate_text_stream">[docs]</a>
-    <span class="k">def</span> <span class="nf">generate_text_stream</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_text_stream</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2364,28 +2373,28 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">chat</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">chat</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">chat_stream</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">chat_stream</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
         <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;chat_stream&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">chat_stream</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">achat</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">achat</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="k">await</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">achat</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">achat_stream</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">achat_stream</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">:</span>
         <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;chat_stream&quot;</span><span class="p">)</span>
@@ -2394,7 +2403,7 @@
 
 <div class="viewcode-block" id="Deployments.run_ai_service">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.run_ai_service">[docs]</a>
-    <span class="k">def</span> <span class="nf">run_ai_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ai_service_payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_ai_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ai_service_payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute an AI service by providing a scoring payload.</span>
 
 <span class="sd">        :param deployment_id: unique ID of the deployment</span>
@@ -2445,7 +2454,7 @@
 
 <div class="viewcode-block" id="Deployments.run_ai_service_stream">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.run_ai_service_stream">[docs]</a>
-    <span class="k">def</span> <span class="nf">run_ai_service_stream</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_ai_service_stream</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ai_service_payload</span><span class="p">:</span> <span class="nb">dict</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute an AI service by providing a scoring payload.</span>
@@ -2482,6 +2491,7 @@
                     <span class="k">if</span> <span class="n">field_name</span> <span class="o">==</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span>
                         <span class="k">yield</span> <span class="n">response</span>
             <span class="k">else</span><span class="p">:</span>
+                <span class="n">resp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
                 <span class="k">raise</span> <span class="n">ApiRequestFailure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failure during AI Service run steam&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span></div>
 </div>
 
@@ -2492,7 +2502,7 @@
 
 <div class="viewcode-block" id="RuntimeContext">
 <a class="viewcode-back" href="../../core_api.html#client.RuntimeContext">[docs]</a>
-<span class="k">class</span> <span class="nc">RuntimeContext</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RuntimeContext</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class included to keep the interface compatible with the Deployment&#39;s RuntimeContext</span>
 <span class="sd">    used in AIServices implementation.</span>
@@ -2541,16 +2551,16 @@
 <span class="sd">        generate_output = generate(context)  # returns {&quot;body&quot;: {&quot;field2&quot;: &quot;value2&quot;}}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">request_payload_json</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">request_payload_json</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="o">=</span> <span class="n">api_client</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">request_payload_json</span> <span class="o">=</span> <span class="n">request_payload_json</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">request_payload_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">request_payload_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_payload_json</span>
 
     <span class="nd">@request_payload_json</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">request_payload_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">request_payload_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">json_value</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -2560,28 +2570,28 @@
 
 <div class="viewcode-block" id="RuntimeContext.get_token">
 <a class="viewcode-back" href="../../core_api.html#client.RuntimeContext.get_token">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return user token.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_token</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="RuntimeContext.generate_token">
 <a class="viewcode-back" href="../../core_api.html#client.RuntimeContext.generate_token">[docs]</a>
-    <span class="k">def</span> <span class="nf">generate_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return refreshed token.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">_get_icptoken</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="RuntimeContext.get_headers">
 <a class="viewcode-back" href="../../core_api.html#client.RuntimeContext.get_headers">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return headers with refreshed token.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="RuntimeContext.get_json">
 <a class="viewcode-back" href="../../core_api.html#client.RuntimeContext.get_json">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get payload JSON send in body of API request to the generate or generate_stream method in deployed AIService.</span>
 <span class="sd">        For testing purposes the payload JSON need to be set in RuntimeContext initialization</span>
 <span class="sd">        or later as request_payload_json property.</span>
@@ -2591,7 +2601,7 @@
 
 <div class="viewcode-block" id="RuntimeContext.get_space_id">
 <a class="viewcode-back" href="../../core_api.html#client.RuntimeContext.get_space_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_space_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_space_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return default space id.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">default_space_id</span></div>
 </div>

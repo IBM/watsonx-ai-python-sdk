@@ -4,9 +4,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>ibm_watsonx_ai.foundation_models.utils.toolkit - IBM watsonx.ai</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -305,21 +305,22 @@
 <span class="c1">#  (C) Copyright IBM Corp. 2025.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">WMLClientError</span><span class="p">,</span>
     <span class="n">ResourceByNameNotFound</span><span class="p">,</span>
     <span class="n">MissingToolRequiredProperties</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai._wrappers</span> <span class="kn">import</span> <span class="n">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLResource</span>
 
 
 <div class="viewcode-block" id="Tool">
 <a class="viewcode-back" href="../../../../fm_toolkit.html#ibm_watsonx_ai.foundation_models.utils.Tool">[docs]</a>
-<span class="k">class</span> <span class="nc">Tool</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Tool</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Instantiate the utility agent tool.</span>
 
 <span class="sd">    :param api_client: initialized APIClient object</span>
@@ -340,9 +341,12 @@
 <span class="sd">    :param config_schema: schema of the config that is provided when running the tool if applicable</span>
 <span class="sd">    :type config_schema: dict, optional</span>
 
+<span class="sd">    :param config: configuration options that can be passed for some tools, must match the config schema for the tool</span>
+<span class="sd">    :type config: dict, optional</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -350,18 +354,21 @@
         <span class="n">agent_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">input_schema</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">config_schema</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">api_client</span>
 
         <span class="n">Tool</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
         <span class="n">Tool</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">input_schema</span><span class="p">,</span> <span class="s2">&quot;input_schema&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="n">Tool</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">config_schema</span><span class="p">,</span> <span class="s2">&quot;config_schema&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">Tool</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">agent_description</span> <span class="o">=</span> <span class="n">agent_description</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_schema</span> <span class="o">=</span> <span class="n">input_schema</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config_schema</span> <span class="o">=</span> <span class="n">config_schema</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">error_msg</span><span class="o">=</span><span class="s2">&quot;Operation is unsupported for this release.&quot;</span><span class="p">)</span>
@@ -373,7 +380,7 @@
 
 <div class="viewcode-block" id="Tool.run">
 <a class="viewcode-back" href="../../../../fm_toolkit.html#ibm_watsonx_ai.foundation_models.utils.Tool.run">[docs]</a>
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -405,7 +412,7 @@
 
 <span class="sd">            toolkit = Toolkit(api_client=api_client)</span>
 <span class="sd">            weather_tool = toolkit.get_tool(tool_name=&#39;Weather&#39;)</span>
-<span class="sd">            tool_input = {&quot;name&quot;: &quot;New York&quot;}</span>
+<span class="sd">            tool_input = {&quot;location&quot;: &quot;New York&quot;}</span>
 <span class="sd">            result = weather_tool.run(input=tool_input)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -413,36 +420,69 @@
             <span class="n">Tool</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">Tool</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_schema_required</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">req</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">input</span> <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_schema_required</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="n">MissingToolRequiredProperties</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_schema_required</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_schema_required</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="n">req</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">input</span> <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_schema_required</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="n">MissingToolRequiredProperties</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_schema_required</span><span class="p">)</span>
 
         <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">,</span>
             <span class="s2">&quot;tool_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="p">}</span>
 
+        <span class="n">config</span> <span class="o">=</span> <span class="n">config</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span>
+
         <span class="k">if</span> <span class="n">config</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_schema</span><span class="p">:</span>
             <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="n">config</span><span class="p">})</span>  <span class="c1"># type: ignore[dict-item]</span>
 
-        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
             <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_utility_agent_tools_run_href</span><span class="p">(),</span>
             <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;run tool&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span></div>
-</div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="c1"># For backward compatibility in Toolkit.get_tools</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+<div class="viewcode-block" id="Tool.get">
+<a class="viewcode-back" href="../../../../fm_toolkit.html#ibm_watsonx_ai.foundation_models.utils.Tool.get">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="c1"># For backward compatibility in Toolkit.get_tools</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">default</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Tool(name=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot;, description=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s1">&quot;, &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;agent_description=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">agent_description</span><span class="si">}</span><span class="s1">&quot;, &#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;input_schema=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_schema</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;config_schema=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config_schema</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;config=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;api_client=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="Toolkit">
 <a class="viewcode-back" href="../../../../fm_toolkit.html#ibm_watsonx_ai.foundation_models.utils.Toolkit">[docs]</a>
-<span class="k">class</span> <span class="nc">Toolkit</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Toolkit</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Toolkit for utility agent tools.</span>
 
 <span class="sd">    :param api_client: initialized APIClient object</span>
 <span class="sd">    :type api_client: APIClient</span>
+
+<span class="sd">    :param params: dict of config parameters for each tool, e.g. {&quot;GoogleSearch&quot;: {&quot;maxResults&quot;: 2}}</span>
+<span class="sd">    :type params: dict[str, dict], optional</span>
 
 <span class="sd">    **Example:**</span>
 
@@ -455,16 +495,20 @@
 <span class="sd">            url = &quot;&lt;url&gt;&quot;,</span>
 <span class="sd">            api_key = IAM_API_KEY</span>
 <span class="sd">        )</span>
+<span class="sd">        tools_params = {</span>
+<span class="sd">            &quot;GoogleSearch&quot;: {&quot;maxResults&quot;: 2}</span>
+<span class="sd">        }</span>
 
 <span class="sd">        api_client = APIClient(credentials)</span>
-<span class="sd">        toolkit = Toolkit(api_client=api_client)</span>
+<span class="sd">        toolkit = Toolkit(api_client=api_client, params=tools_params)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">api_client</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Tool</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">error_msg</span><span class="o">=</span><span class="s2">&quot;Operation is unsupported for this release.&quot;</span><span class="p">)</span>
 
@@ -472,11 +516,11 @@
 
 <div class="viewcode-block" id="Toolkit.get_tools">
 <a class="viewcode-back" href="../../../../fm_toolkit.html#ibm_watsonx_ai.foundation_models.utils.Toolkit.get_tools">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_tools</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get list of available utility agent tools.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tools</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Tool</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get list of available utility agent tools. Cache tools as Tool objects on first call in Toolkit instance.</span>
 
 <span class="sd">        :return: list of available tools</span>
-<span class="sd">        :rtype: list[dict]</span>
+<span class="sd">        :rtype: list[Tool]</span>
 
 <span class="sd">        **Examples**</span>
 
@@ -486,19 +530,33 @@
 <span class="sd">            tools = toolkit.get_tools()</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_utility_agent_tools_href</span><span class="p">(),</span>
-            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_utility_agent_tools_href</span><span class="p">(),</span>
+                <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+            <span class="p">)</span>
+            <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;getting utility agent tools&quot;</span><span class="p">,</span> <span class="n">response</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="p">[])</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;getting utility agent tools&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="p">[]</span>
-        <span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">Tool</span><span class="p">(</span>
+                    <span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                    <span class="n">description</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">],</span>
+                    <span class="n">agent_description</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;agent_description&quot;</span><span class="p">),</span>
+                    <span class="n">input_schema</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;input_schema&quot;</span><span class="p">),</span>
+                    <span class="n">config_schema</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;config_schema&quot;</span><span class="p">),</span>
+                    <span class="n">config</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]),</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">resources</span>
+            <span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span></div>
 
 
 <div class="viewcode-block" id="Toolkit.get_tool">
 <a class="viewcode-back" href="../../../../fm_toolkit.html#ibm_watsonx_ai.foundation_models.utils.Toolkit.get_tool">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a utility agent tool with the given `tool_name`.</span>
 
 <span class="sd">        :param tool_name: name of a specific tool</span>
@@ -517,24 +575,20 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">Toolkit</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">tool_name</span><span class="p">,</span> <span class="s2">&quot;tool_name&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
 
-        <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tools</span><span class="p">()</span>
+        <span class="n">tools</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tools</span><span class="p">()</span>
 
-        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">tool_name</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">Tool</span><span class="p">(</span>
-                    <span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
-                    <span class="n">name</span><span class="o">=</span><span class="n">tool_name</span><span class="p">,</span>
-                    <span class="n">description</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">],</span>
-                    <span class="n">agent_description</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;agent_description&quot;</span><span class="p">),</span>
-                    <span class="n">input_schema</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;input_schema&quot;</span><span class="p">),</span>
-                    <span class="n">config_schema</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;config_schema&quot;</span><span class="p">),</span>
-                <span class="p">)</span>
-        <span class="k">raise</span> <span class="n">ResourceByNameNotFound</span><span class="p">(</span><span class="n">tool_name</span><span class="p">,</span> <span class="s2">&quot;utility agent tool&quot;</span><span class="p">)</span></div>
+        <span class="n">tool</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">el</span><span class="p">:</span> <span class="n">el</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">tool_name</span><span class="p">,</span> <span class="n">tools</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tool</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ResourceByNameNotFound</span><span class="p">(</span><span class="n">tool_name</span><span class="p">,</span> <span class="s2">&quot;utility agent tool&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tool</span></div>
 </div>
 
 
 
-<span class="k">def</span> <span class="nf">convert_to_watsonx_tool</span><span class="p">(</span><span class="n">utility_tool</span><span class="p">:</span> <span class="n">Tool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="convert_to_watsonx_tool">
+<a class="viewcode-back" href="../../../../fm_toolkit.html#ibm_watsonx_ai.foundation_models.utils.convert_to_watsonx_tool">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_to_watsonx_tool</span><span class="p">(</span><span class="n">utility_tool</span><span class="p">:</span> <span class="n">Tool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert utility agent tool to watsonx tool format.</span>
 
 <span class="sd">    :param utility_tool: utility agent tool</span>
@@ -580,7 +634,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">parse_parameters</span><span class="p">(</span><span class="n">input_schema</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_parameters</span><span class="p">(</span><span class="n">input_schema</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">input_schema</span><span class="p">:</span>
             <span class="n">parameters</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">input_schema</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -605,10 +659,13 @@
             <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="n">parse_parameters</span><span class="p">(</span><span class="n">utility_tool</span><span class="o">.</span><span class="n">input_schema</span><span class="p">),</span>
         <span class="p">},</span>
     <span class="p">}</span>
-    <span class="k">return</span> <span class="n">tool</span>
+    <span class="k">return</span> <span class="n">tool</span></div>
 
 
-<span class="k">def</span> <span class="nf">convert_to_utility_tool_call</span><span class="p">(</span><span class="n">tool_call</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+
+<div class="viewcode-block" id="convert_to_utility_tool_call">
+<a class="viewcode-back" href="../../../../fm_toolkit.html#ibm_watsonx_ai.foundation_models.utils.convert_to_utility_tool_call">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_to_utility_tool_call</span><span class="p">(</span><span class="n">tool_call</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert json format tool call to utility tool call format.</span>
 
 <span class="sd">    :param tool_call: watsonx tool call</span>
@@ -645,7 +702,8 @@
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;tool_name&quot;</span><span class="p">:</span> <span class="n">tool_name</span><span class="p">,</span>
         <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">input_data</span><span class="p">,</span>
-    <span class="p">}</span>
+    <span class="p">}</span></div>
+
 </pre></div>
         </article>
       </div>

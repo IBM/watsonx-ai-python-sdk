@@ -4,9 +4,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>ibm_watsonx_ai.sw_spec - IBM watsonx.ai</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -306,40 +306,40 @@
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
-<span class="kn">import</span> <span class="nn">ibm_watsonx_ai._wrappers.requests</span> <span class="k">as</span> <span class="nn">requests</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.lifecycle</span> <span class="kn">import</span> <span class="n">SpecStates</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.metanames</span> <span class="kn">import</span> <span class="n">SwSpecMetaNames</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils</span> <span class="kn">import</span> <span class="n">SW_SPEC_DETAILS_TYPE</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.utils</span> <span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span><span class="p">,</span> <span class="n">ResourceIdByNameNotFound</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_resource</span> <span class="kn">import</span> <span class="n">WMLResource</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ibm_watsonx_ai._wrappers.requests</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecStates</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.metanames</span><span class="w"> </span><span class="kn">import</span> <span class="n">SwSpecMetaNames</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">SW_SPEC_DETAILS_TYPE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLClientError</span><span class="p">,</span> <span class="n">ResourceIdByNameNotFound</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLResource</span>
 
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
-    <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
 
 
 <div class="viewcode-block" id="SwSpec">
 <a class="viewcode-back" href="../../core_api.html#client.SwSpec">[docs]</a>
-<span class="k">class</span> <span class="nc">SwSpec</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SwSpec</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Store and manage software specs.&quot;&quot;&quot;</span>
 
     <span class="n">ConfigurationMetaNames</span> <span class="o">=</span> <span class="n">SwSpecMetaNames</span><span class="p">()</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;MetaNames for Software Specification creation.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">):</span>
         <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">software_spec_list</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="SwSpec.get_details">
 <a class="viewcode-back" href="../../core_api.html#client.SwSpec.get_details">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_details</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_details</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sw_spec_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">state_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get software specification details. If no sw_spec_id is passed, details for all software specifications</span>
@@ -418,7 +418,7 @@
 
 <div class="viewcode-block" id="SwSpec.store">
 <a class="viewcode-back" href="../../core_api.html#client.SwSpec.store">[docs]</a>
-    <span class="k">def</span> <span class="nf">store</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">store</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a software specification.</span>
 
 <span class="sd">        :param meta_props: metadata of the space configuration. To see available meta names, use:</span>
@@ -439,9 +439,9 @@
 <span class="sd">            meta_props = {</span>
 <span class="sd">                client.software_specifications.ConfigurationMetaNames.NAME: &quot;skl_pipeline_heart_problem_prediction&quot;,</span>
 <span class="sd">                client.software_specifications.ConfigurationMetaNames.DESCRIPTION: &quot;description scikit-learn_0.20&quot;,</span>
-<span class="sd">                client.software_specifications.ConfigurationMetaNames.PACKAGE_EXTENSIONS_UID: [],</span>
-<span class="sd">                client.software_specifications.ConfigurationMetaNames.SOFTWARE_CONFIGURATIONS: {},</span>
-<span class="sd">                client.software_specifications.ConfigurationMetaNames.BASE_SOFTWARE_SPECIFICATION_ID: &quot;guid&quot;</span>
+<span class="sd">                client.software_specifications.ConfigurationMetaNames.PACKAGE_EXTENSIONS: [],</span>
+<span class="sd">                client.software_specifications.ConfigurationMetaNames.SOFTWARE_CONFIGURATION: {},</span>
+<span class="sd">                client.software_specifications.ConfigurationMetaNames.BASE_SOFTWARE_SPECIFICATION: {&quot;guid&quot;: &quot;&lt;guid&gt;&quot;}</span>
 <span class="sd">            }</span>
 
 <span class="sd">            sw_spec_details = client.software_specifications.store(meta_props)</span>
@@ -471,7 +471,7 @@
 
 <div class="viewcode-block" id="SwSpec.list">
 <a class="viewcode-back" href="../../core_api.html#client.SwSpec.list">[docs]</a>
-    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">spec_states</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SpecStates</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List software specifications in a table format.</span>
@@ -479,7 +479,7 @@
 <span class="sd">        :param limit: limit number of fetched records</span>
 <span class="sd">        :type limit: int, optional</span>
 
-<span class="sd">        :param spec_states: specification state filter, by default shows available and supported software specifications</span>
+<span class="sd">        :param spec_states: specification state filter, by default shows available, supported and custom software specifications</span>
 <span class="sd">        :type spec_states: list[SpecStates], optional</span>
 
 <span class="sd">        :return: pandas.DataFrame with listed software specifications</span>
@@ -492,7 +492,7 @@
 <span class="sd">            client.software_specifications.list()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">spec_states</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">spec_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">SpecStates</span><span class="o">.</span><span class="n">SUPPORTED</span><span class="p">,</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">AVAILABLE</span><span class="p">]</span>
+            <span class="n">spec_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">SpecStates</span><span class="o">.</span><span class="n">SUPPORTED</span><span class="p">,</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">AVAILABLE</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
 
         <span class="n">spec_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">SpecStates</span><span class="p">)</span> <span class="k">else</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spec_states</span><span class="p">]</span>
 
@@ -521,7 +521,7 @@
 <div class="viewcode-block" id="SwSpec.get_id">
 <a class="viewcode-back" href="../../core_api.html#client.SwSpec.get_id">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="n">sw_spec_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_id</span><span class="p">(</span><span class="n">sw_spec_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the unique ID of a software specification.</span>
 
 <span class="sd">        :param sw_spec_details: metadata of the software specification</span>
@@ -548,7 +548,7 @@
 <div class="viewcode-block" id="SwSpec.get_uid">
 <a class="viewcode-back" href="../../core_api.html#client.SwSpec.get_uid">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_uid</span><span class="p">(</span><span class="n">sw_spec_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_uid</span><span class="p">(</span><span class="n">sw_spec_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the unique ID of a software specification.</span>
 
 <span class="sd">        *Deprecated:* Use ``get_id(sw_spec_details)`` instead.</span>
@@ -575,7 +575,7 @@
 
 <div class="viewcode-block" id="SwSpec.get_id_by_name">
 <a class="viewcode-back" href="../../core_api.html#client.SwSpec.get_id_by_name">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_id_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sw_spec_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_id_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sw_spec_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the unique ID of a software specification.</span>
 
 <span class="sd">        :param sw_spec_name: name of the software specification</span>
@@ -616,7 +616,7 @@
 
 <div class="viewcode-block" id="SwSpec.get_uid_by_name">
 <a class="viewcode-back" href="../../core_api.html#client.SwSpec.get_uid_by_name">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_uid_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sw_spec_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_uid_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sw_spec_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the unique ID of a software specification.</span>
 
 <span class="sd">        *Deprecated:* Use ``get_id_by_name(self, sw_spec_name)`` instead.</span>
@@ -642,7 +642,7 @@
 <div class="viewcode-block" id="SwSpec.get_href">
 <a class="viewcode-back" href="../../core_api.html#client.SwSpec.get_href">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_href</span><span class="p">(</span><span class="n">sw_spec_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_href</span><span class="p">(</span><span class="n">sw_spec_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the URL of a software specification.</span>
 
 <span class="sd">        :param sw_spec_details: details of the software specification</span>
@@ -669,7 +669,7 @@
 
 <div class="viewcode-block" id="SwSpec.delete">
 <a class="viewcode-back" href="../../core_api.html#client.SwSpec.delete">[docs]</a>
-    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sw_spec_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sw_spec_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a software specification.</span>
 
 <span class="sd">        :param sw_spec_id: unique ID of the software specification</span>
@@ -706,7 +706,7 @@
 
 <div class="viewcode-block" id="SwSpec.add_package_extension">
 <a class="viewcode-back" href="../../core_api.html#client.SwSpec.add_package_extension">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_package_extension</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_package_extension</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sw_spec_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">pkg_extn_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -763,7 +763,7 @@
 
 <div class="viewcode-block" id="SwSpec.delete_package_extension">
 <a class="viewcode-back" href="../../core_api.html#client.SwSpec.delete_package_extension">[docs]</a>
-    <span class="k">def</span> <span class="nf">delete_package_extension</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_package_extension</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sw_spec_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">pkg_extn_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -815,19 +815,29 @@
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_spec_state</span><span class="p">(</span><span class="n">asset</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;life_cycle&quot;</span> <span class="ow">in</span> <span class="n">asset</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">RETIRED</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">asset</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;life_cycle&quot;</span><span class="p">]:</span>
-                <span class="k">return</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">RETIRED</span><span class="o">.</span><span class="n">value</span>
-            <span class="k">elif</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">asset</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;life_cycle&quot;</span><span class="p">]:</span>
-                <span class="k">return</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span>
-            <span class="k">elif</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">DEPRECATED</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">asset</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;life_cycle&quot;</span><span class="p">]:</span>
-                <span class="k">return</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">DEPRECATED</span><span class="o">.</span><span class="n">value</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">SUPPORTED</span><span class="o">.</span><span class="n">value</span>
-        <span class="k">return</span> <span class="s2">&quot;not_provided&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_spec_state</span><span class="p">(</span><span class="n">spec_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">spec_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;software_specification&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;base&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;life_cycle&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">spec_details</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="n">SpecStates</span><span class="o">.</span><span class="n">SUPPORTED</span><span class="o">.</span><span class="n">value</span>
+            <span class="p">)</span>  <span class="c1"># if no lifecycle info in the metadata, then we should assume it is supported</span>
+        <span class="k">elif</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">RETIRED</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">spec_details</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;life_cycle&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">RETIRED</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">elif</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">spec_details</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;life_cycle&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">CONSTRICTED</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">elif</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">DEPRECATED</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">spec_details</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;life_cycle&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">SpecStates</span><span class="o">.</span><span class="n">DEPRECATED</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">SpecStates</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">spec_details</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;life_cycle&quot;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span>
 
-    <span class="k">def</span> <span class="nf">_get_required_element_from_response</span><span class="p">(</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="n">SpecStates</span><span class="o">.</span><span class="n">SUPPORTED</span><span class="o">.</span><span class="n">value</span>
+            <span class="p">)</span>  <span class="c1"># when no other info in lifecycle, then we should assume it is supported</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_required_element_from_response</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">response_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 
@@ -857,16 +867,63 @@
                 <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">response_data</span><span class="p">)</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_state_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">{</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_state_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+        <span class="n">spec_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">state_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">state_info_by_id</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">s</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;asset_id&quot;</span><span class="p">):</span> <span class="p">{</span>
                 <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_spec_state</span><span class="p">(</span><span class="n">s</span><span class="p">),</span>
                 <span class="s2">&quot;replacement&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span>
                 <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;life_cycle&quot;</span><span class="p">,</span> <span class="p">{})</span>
                 <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;replacement_name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
             <span class="p">}</span>
-            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">state_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
-        <span class="p">}</span></div>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spec_details</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="n">state_info_by_name</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">s</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">):</span> <span class="p">{</span>
+                <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_spec_state</span><span class="p">(</span><span class="n">s</span><span class="p">),</span>
+                <span class="s2">&quot;replacement&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span>
+                <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;life_cycle&quot;</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;replacement_name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spec_details</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">state_info_by_id</span><span class="p">,</span> <span class="n">state_info_by_name</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset_details</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_spec_info&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spec_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_state_info</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">sw_spec_id</span> <span class="o">:=</span> <span class="n">asset_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entity&quot;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;software_spec&quot;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spec_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sw_spec_id</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">sw_spec_name</span> <span class="o">:=</span> <span class="n">asset_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entity&quot;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;software_spec&quot;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spec_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sw_spec_name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset_details</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">spec_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_info</span><span class="p">(</span><span class="n">asset_details</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">spec_info</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">spec_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;not_provided&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_replacement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset_details</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">spec_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_info</span><span class="p">(</span><span class="n">asset_details</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">spec_info</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">spec_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;replacement&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 </pre></div>
         </article>

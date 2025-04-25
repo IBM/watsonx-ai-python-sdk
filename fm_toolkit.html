@@ -5,9 +5,9 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Saving external models" href="save_models.html" /><link rel="prev" title="Rate Limits" href="rate_limit.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>Toolkit - IBM watsonx.ai</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
@@ -311,25 +311,31 @@
 <span id="fm-toolkit"></span><h1>Toolkit<a class="headerlink" href="#toolkit" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.utils.Toolkit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.utils.</span></span><span class="sig-name descname"><span class="pre">Toolkit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/utils/toolkit.html#Toolkit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.utils.Toolkit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.utils.</span></span><span class="sig-name descname"><span class="pre">Toolkit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/utils/toolkit.html#Toolkit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.utils.Toolkit" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WMLResource</span></code></p>
 <p>Toolkit for utility agent tools.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a>) – initialized APIClient object</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a>) – initialized APIClient object</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>dict</em><em>]</em><em>, </em><em>optional</em>) – dict of config parameters for each tool, e.g. {“GoogleSearch”: {“maxResults”: 2}}</p></li>
+</ul>
 </dd>
 </dl>
 <p><strong>Example:</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils</span> <span class="kn">import</span> <span class="n">Toolkit</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Toolkit</span>
 
 <span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span>
     <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;&lt;url&gt;&quot;</span><span class="p">,</span>
     <span class="n">api_key</span> <span class="o">=</span> <span class="n">IAM_API_KEY</span>
 <span class="p">)</span>
+<span class="n">tools_params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;GoogleSearch&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;maxResults&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+<span class="p">}</span>
 
 <span class="n">api_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
-<span class="n">toolkit</span> <span class="o">=</span> <span class="n">Toolkit</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="n">api_client</span><span class="p">)</span>
+<span class="n">toolkit</span> <span class="o">=</span> <span class="n">Toolkit</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="n">api_client</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">tools_params</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py method">
@@ -357,13 +363,13 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.utils.Toolkit.get_tools">
 <span class="sig-name descname"><span class="pre">get_tools</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/utils/toolkit.html#Toolkit.get_tools"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.utils.Toolkit.get_tools" title="Link to this definition">¶</a></dt>
-<dd><p>Get list of available utility agent tools.</p>
+<dd><p>Get list of available utility agent tools. Cache tools as Tool objects on first call in Toolkit instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of available tools</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list[dict]</p>
+<dd class="field-even"><p>list[<a class="reference internal" href="#ibm_watsonx_ai.foundation_models.utils.Tool" title="ibm_watsonx_ai.foundation_models.utils.Tool">Tool</a>]</p>
 </dd>
 </dl>
 <p><strong>Examples</strong></p>
@@ -379,7 +385,7 @@
 <h2>Tool<a class="headerlink" href="#tool" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.utils.Tool">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.utils.</span></span><span class="sig-name descname"><span class="pre">Tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/utils/toolkit.html#Tool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.utils.Tool" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.utils.</span></span><span class="sig-name descname"><span class="pre">Tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/utils/toolkit.html#Tool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.utils.Tool" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WMLResource</span></code></p>
 <p>Instantiate the utility agent tool.</p>
 <dl class="field-list simple">
@@ -391,9 +397,15 @@
 <li><p><strong>agent_description</strong> (<em>str</em><em>, </em><em>optional</em>) – the precise instruction to agent LLMs and should be treated as part of the system prompt, if not provided, <cite>description</cite> can be used in its place</p></li>
 <li><p><strong>input_schema</strong> (<em>dict</em><em>, </em><em>optional</em>) – schema of the input that is provided when running the tool if applicable</p></li>
 <li><p><strong>config_schema</strong> (<em>dict</em><em>, </em><em>optional</em>) – schema of the config that is provided when running the tool if applicable</p></li>
+<li><p><strong>config</strong> (<em>dict</em><em>, </em><em>optional</em>) – configuration options that can be passed for some tools, must match the config schema for the tool</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.utils.Tool.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/utils/toolkit.html#Tool.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.utils.Tool.get" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.utils.Tool.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/utils/toolkit.html#Tool.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.utils.Tool.run" title="Link to this definition">¶</a></dt>
@@ -421,12 +433,94 @@
 <p><strong>Example for the tool with input schema:</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">toolkit</span> <span class="o">=</span> <span class="n">Toolkit</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="n">api_client</span><span class="p">)</span>
 <span class="n">weather_tool</span> <span class="o">=</span> <span class="n">toolkit</span><span class="o">.</span><span class="n">get_tool</span><span class="p">(</span><span class="n">tool_name</span><span class="o">=</span><span class="s1">&#39;Weather&#39;</span><span class="p">)</span>
-<span class="n">tool_input</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;New York&quot;</span><span class="p">}</span>
+<span class="n">tool_input</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;New York&quot;</span><span class="p">}</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">weather_tool</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">tool_input</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
+</dd></dl>
+
+</section>
+<section id="converters">
+<h2>Converters<a class="headerlink" href="#converters" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.utils.convert_to_watsonx_tool">
+<span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.utils.</span></span><span class="sig-name descname"><span class="pre">convert_to_watsonx_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">utility_tool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/utils/toolkit.html#convert_to_watsonx_tool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.utils.convert_to_watsonx_tool" title="Link to this definition">¶</a></dt>
+<dd><p>Convert utility agent tool to watsonx tool format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>utility_tool</strong> (<a class="reference internal" href="#ibm_watsonx_ai.foundation_models.utils.Tool" title="ibm_watsonx_ai.foundation_models.utils.Tool"><em>Tool</em></a>) – utility agent tool</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>watsonx tool structure</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p><strong>Examples</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Toolkit</span>
+
+<span class="n">toolkit</span> <span class="o">=</span> <span class="n">Toolkit</span><span class="p">(</span><span class="n">api_client</span><span class="p">)</span>
+<span class="n">weather_tool</span> <span class="o">=</span> <span class="n">toolkit</span><span class="o">.</span><span class="n">get_tool</span><span class="p">(</span><span class="s2">&quot;Weather&quot;</span><span class="p">)</span>
+<span class="n">convert_to_watsonx_tool</span><span class="p">(</span><span class="n">weather_tool</span><span class="p">)</span>
+
+<span class="c1"># Return</span>
+<span class="c1"># {</span>
+<span class="c1">#     &quot;type&quot;: &quot;function&quot;,</span>
+<span class="c1">#     &quot;function&quot;: {</span>
+<span class="c1">#         &quot;name&quot;: &quot;Weather&quot;,</span>
+<span class="c1">#         &quot;description&quot;: &quot;Find the weather for a city.&quot;,</span>
+<span class="c1">#         &quot;parameters&quot;: {</span>
+<span class="c1">#             &quot;type&quot;: &quot;object&quot;,</span>
+<span class="c1">#             &quot;properties&quot;: {</span>
+<span class="c1">#                 &quot;location&quot;: {</span>
+<span class="c1">#                     &quot;title&quot;: &quot;location&quot;,</span>
+<span class="c1">#                     &quot;description&quot;: &quot;Name of the location&quot;,</span>
+<span class="c1">#                     &quot;type&quot;: &quot;string&quot;,</span>
+<span class="c1">#                 },</span>
+<span class="c1">#                 &quot;country&quot;: {</span>
+<span class="c1">#                     &quot;title&quot;: &quot;country&quot;,</span>
+<span class="c1">#                     &quot;description&quot;: &quot;Name of the state or country&quot;,</span>
+<span class="c1">#                     &quot;type&quot;: &quot;string&quot;,</span>
+<span class="c1">#                 },</span>
+<span class="c1">#             },</span>
+<span class="c1">#             &quot;required&quot;: [&quot;location&quot;],</span>
+<span class="c1">#         },</span>
+<span class="c1">#     },</span>
+<span class="c1"># }</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.utils.convert_to_utility_tool_call">
+<span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.utils.</span></span><span class="sig-name descname"><span class="pre">convert_to_utility_tool_call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_call</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/utils/toolkit.html#convert_to_utility_tool_call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.utils.convert_to_utility_tool_call" title="Link to this definition">¶</a></dt>
+<dd><p>Convert json format tool call to utility tool call format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tool_call</strong> (<em>dict</em>) – watsonx tool call</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>utility tool call</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p><strong>Examples</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tool_call</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;rcWg61ytv&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;GoogleSearch&quot;</span><span class="p">,</span> <span class="s2">&quot;arguments&quot;</span><span class="p">:</span> <span class="s1">&#39;{&quot;input&quot;: &quot;IBM&quot;}&#39;</span><span class="p">},</span>
+<span class="p">}</span>
+<span class="n">convert_to_utility_tool_call</span><span class="p">(</span><span class="n">tool_call</span><span class="p">)</span>
+
+<span class="c1"># Return</span>
+<span class="c1"># {&quot;input&quot;: &quot;IBM&quot;, &quot;tool_name&quot;: &quot;GoogleSearch&quot;}</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
@@ -495,9 +589,15 @@
 </li>
 <li><a class="reference internal" href="#tool">Tool</a><ul>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.utils.Tool"><code class="docutils literal notranslate"><span class="pre">Tool</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.utils.Tool.get"><code class="docutils literal notranslate"><span class="pre">Tool.get()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.utils.Tool.run"><code class="docutils literal notranslate"><span class="pre">Tool.run()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li><a class="reference internal" href="#converters">Converters</a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.utils.convert_to_watsonx_tool"><code class="docutils literal notranslate"><span class="pre">convert_to_watsonx_tool()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.utils.convert_to_utility_tool_call"><code class="docutils literal notranslate"><span class="pre">convert_to_utility_tool_call()</span></code></a></li>
 </ul>
 </li>
 </ul>

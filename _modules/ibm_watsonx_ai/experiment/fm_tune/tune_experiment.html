@@ -4,9 +4,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>ibm_watsonx_ai.experiment.fm_tune.tune_experiment - IBM watsonx.ai</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -305,40 +305,40 @@
 <span class="c1">#  (C) Copyright IBM Corp. 2023-2025.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">EnumMeta</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">TypeAlias</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">catch_warnings</span><span class="p">,</span> <span class="n">simplefilter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">EnumMeta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">TypeAlias</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">catch_warnings</span><span class="p">,</span> <span class="n">simplefilter</span>
 
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.prompt_tuner</span> <span class="kn">import</span> <span class="n">PromptTuner</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.fine_tuner</span> <span class="kn">import</span> <span class="n">FineTuner</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.ilab_tuner</span> <span class="kn">import</span> <span class="n">ILabTuner</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.enums</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.prompt_tuner</span><span class="w"> </span><span class="kn">import</span> <span class="n">PromptTuner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.fine_tuner</span><span class="w"> </span><span class="kn">import</span> <span class="n">FineTuner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.ilab_tuner</span><span class="w"> </span><span class="kn">import</span> <span class="n">ILabTuner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.utils.enums</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">PromptTuningTypes</span><span class="p">,</span>
     <span class="n">PromptTuningInitMethods</span><span class="p">,</span>
     <span class="n">TuneExperimentTasks</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_check_model_state</span><span class="p">,</span>
     <span class="n">get_model_specs_with_prompt_tuning_support</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.experiment.base_experiment</span> <span class="kn">import</span> <span class="n">BaseExperiment</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">APIClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.experiment.base_experiment</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseExperiment</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLClientError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
 
-<span class="kn">from</span> <span class="nn">.tune_runs</span> <span class="kn">import</span> <span class="n">TuneRuns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tune_runs</span><span class="w"> </span><span class="kn">import</span> <span class="n">TuneRuns</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai</span> <span class="kn">import</span> <span class="n">Credentials</span>
-    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.schema</span> <span class="kn">import</span> <span class="n">PeftParameters</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">Credentials</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">PeftParameters</span>
 
 <span class="n">EnumLike</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">EnumMeta</span> <span class="o">|</span> <span class="n">Enum</span>
 
 
 <div class="viewcode-block" id="TuneExperiment">
 <a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.experiment.fm_tune.TuneExperiment">[docs]</a>
-<span class="k">class</span> <span class="nc">TuneExperiment</span><span class="p">(</span><span class="n">BaseExperiment</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TuneExperiment</span><span class="p">(</span><span class="n">BaseExperiment</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The TuneExperiment class for tuning models with prompts.</span>
 
 <span class="sd">    :param credentials: credentials for the Watson Machine Learning instance</span>
@@ -371,7 +371,7 @@
 <span class="sd">            space_id=&quot;...&quot;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">credentials</span><span class="p">:</span> <span class="n">Credentials</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
         <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -399,7 +399,7 @@
 
 <div class="viewcode-block" id="TuneExperiment.runs">
 <a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.experiment.fm_tune.TuneExperiment.runs">[docs]</a>
-    <span class="k">def</span> <span class="nf">runs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">filter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TuneRuns&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">runs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">filter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TuneRuns&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get historical tuning runs with the name filter.</span>
 
 <span class="sd">        :param filter: filter, choose which runs specifying the tuning name to fetch</span>
@@ -419,7 +419,7 @@
 
 <div class="viewcode-block" id="TuneExperiment.prompt_tuner">
 <a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.experiment.fm_tune.TuneExperiment.prompt_tuner">[docs]</a>
-    <span class="k">def</span> <span class="nf">prompt_tuner</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prompt_tuner</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1"># Note: Rest API does not require name,</span>
         <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -591,7 +591,7 @@
 
 <div class="viewcode-block" id="TuneExperiment.fine_tuner">
 <a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.experiment.fm_tune.TuneExperiment.fine_tuner">[docs]</a>
-    <span class="k">def</span> <span class="nf">fine_tuner</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fine_tuner</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -754,7 +754,7 @@
 
 <div class="viewcode-block" id="TuneExperiment.ilab_tuner">
 <a class="viewcode-back" href="../../../../tune_experiment.html#ibm_watsonx_ai.experiment.fm_tune.TuneExperiment.ilab_tuner">[docs]</a>
-    <span class="k">def</span> <span class="nf">ilab_tuner</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ilab_tuner</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ILabTuner</span><span class="p">:</span>
@@ -779,9 +779,9 @@
         <span class="k">return</span> <span class="n">ilab_tuner</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_get_tasks_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EnumLike</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_tasks_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EnumLike</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.foundation_models.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                 <span class="n">get_all_supported_tasks_dict</span><span class="p">,</span>
             <span class="p">)</span>
 

@@ -16,17 +16,29 @@ For an AutoAI object initialization, you need watsonx.ai credentials (with your 
 .. code-block:: python
 
     from ibm_watsonx_ai.experiment import AutoAI
+    from ibm_watsonx_ai.foundation_models.schema import (
+        AutoAIRAGModelConfig,
+        AutoAIRAGCustomModelConfig,
+    )
 
     experiment = AutoAI(wx_credentials,
         space_id='76g53e0-0b32-4a0e-9152-3d50324855ddb'
     )
+
+    foundation_model = AutoAIRAGModelConfig.get_sample_params()
+
+    custom_foundation_model = AutoAIRAGCustomModelConfig.get_sample_params()
+    custom_foundation_model["deployment_id"] = "<PASTE_DEPLOYMENT_ID_HERE>"
+    custom_foundation_model["space_id"] = "<PASTE_SPACE_ID_HERE>"
+    # OR custom_foundation_model["project_id"] = "<PASTE_PROJECT_ID_HERE>"
 
     rag_optimizer = experiment.rag_optimizer(
         name='AutoAI RAG test',
         description='Sample description',
         foundation_models=[
             "meta-llama/llama-3-70b-instruct",
-            "ibm/granite-13b-chat-v2"
+            foundation_model,
+            custom_foundation_model
             ],
         embedding_models=[
             "ibm/slate-125m-english-rtrvr",

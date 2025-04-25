@@ -4,9 +4,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>ibm_watsonx_ai.data_loaders.datasets.documents - IBM watsonx.ai</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -305,41 +305,41 @@
 <span class="c1">#  (C) Copyright IBM Corp. 2024-2025.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;DocumentsIterableDataset&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers</span> <span class="kn">import</span> <span class="n">ContainerLocation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContainerLocation</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
 
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span>
 
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.wml_client_error</span> <span class="kn">import</span> <span class="n">WMLClientError</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.data_loaders.text_loader</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLClientError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.data_loaders.text_loader</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">TextLoader</span><span class="p">,</span>
     <span class="n">_asynch_download</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers.remote_document</span> <span class="kn">import</span> <span class="n">RemoteDocument</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.enums</span> <span class="kn">import</span> <span class="n">DocumentsSamplingTypes</span><span class="p">,</span> <span class="n">SamplingTypes</span>
-<span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.errors</span> <span class="kn">import</span> <span class="n">InvalidSizeLimit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.helpers.remote_document</span><span class="w"> </span><span class="kn">import</span> <span class="n">RemoteDocument</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocumentsSamplingTypes</span><span class="p">,</span> <span class="n">SamplingTypes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">InvalidSizeLimit</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers.connections</span> <span class="kn">import</span> <span class="n">DataConnection</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.helpers.connections</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataConnection</span>
 
 <span class="c1"># Note: try to import torch lib if available, this fallback is done based on</span>
 <span class="c1"># torch dependency removal request</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">IterableDataset</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">IterableDataset</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">IterableDataset</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="nb">object</span>  <span class="c1"># type: ignore[no-redef]</span>
@@ -354,7 +354,7 @@
 
 <div class="viewcode-block" id="DocumentsIterableDataset">
 <a class="viewcode-back" href="../../../../iterabledatasets_modules.html#ibm_watsonx_ai.data_loaders.datasets.documents.DocumentsIterableDataset">[docs]</a>
-<span class="k">class</span> <span class="nc">DocumentsIterableDataset</span><span class="p">(</span><span class="n">IterableDataset</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DocumentsIterableDataset</span><span class="p">(</span><span class="n">IterableDataset</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This dataset is an Iterable stream of documents using an underneath Flight Service.</span>
 <span class="sd">    It can download documents asynchronously and serve them to you from a generator.</span>
@@ -450,7 +450,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">connections</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DataConnection</span><span class="p">],</span>
@@ -463,7 +463,7 @@
         <span class="n">error_callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.helpers</span> <span class="kn">import</span> <span class="n">S3Location</span><span class="p">,</span> <span class="n">AssetLocation</span><span class="p">,</span> <span class="n">NFSLocation</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Location</span><span class="p">,</span> <span class="n">AssetLocation</span><span class="p">,</span> <span class="n">NFSLocation</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">enable_sampling</span> <span class="o">=</span> <span class="n">enable_sampling</span>
@@ -496,7 +496,7 @@
                         <span class="s2">&quot;metadata&quot;</span>
                     <span class="p">][</span><span class="s2">&quot;resource_key&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-        <span class="k">def</span> <span class="nf">get_document_id</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_document_id</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">AssetLocation</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">conn</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">data_asset_id_name_mapping</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">data_asset_id_name_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
@@ -533,7 +533,7 @@
                 <span class="s2">&quot;Not unique document file names passed in connections.&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_set_size_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size_limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_size_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size_limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;If non-default value of total_size_limit was not passed,</span>
 <span class="sd">        set Sample Size Limit based on T-Shirt size if code is run on training pod:</span>
 <span class="sd">        For memory &lt; 16 (T-Shirts: XS,S) default is 10MB,</span>
@@ -542,7 +542,7 @@
 <span class="sd">        For memory &gt; 32 (T-Shirt XL) or runs outside pod default is 1GB.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">total_size_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
-        <span class="kn">from</span> <span class="nn">ibm_watsonx_ai.utils.autoai.connection</span> <span class="kn">import</span> <span class="n">get_max_sample_size_limit</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_max_sample_size_limit</span>
 
         <span class="n">max_tshirt_size_limit</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">get_max_sample_size_limit</span><span class="p">()</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MEM&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
@@ -566,7 +566,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">total_size_limit</span> <span class="o">=</span> <span class="n">size_limit</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_docs_context_sampling</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_docs_context_sampling</span><span class="p">(</span>
         <span class="n">remote_documents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RemoteDocument</span><span class="p">],</span>
         <span class="n">benchmark_document_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">RemoteDocument</span><span class="p">]:</span>
@@ -597,7 +597,7 @@
         <span class="k">return</span> <span class="n">sampled_documents</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_docs_random_sampling</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_docs_random_sampling</span><span class="p">(</span>
         <span class="n">remote_documents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RemoteDocument</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">RemoteDocument</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Randomly sample documents from `remote_documents` up to `size_upper_bound`.</span>
@@ -608,14 +608,14 @@
 <span class="sd">        :return: list of sampled documents</span>
 <span class="sd">        :rtype: list[RemoteDocument]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">shuffle</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">shuffle</span>
 
         <span class="n">sampling_order</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">remote_documents</span><span class="p">)))</span>
         <span class="n">shuffle</span><span class="p">(</span><span class="n">sampling_order</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">[</span><span class="n">remote_documents</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sampling_order</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterate over documents.&quot;&quot;&quot;</span>
         <span class="n">size_limit</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sample_size_limit</span>
@@ -671,7 +671,7 @@
 
         <span class="k">match</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_strategy</span><span class="p">:</span>
             <span class="k">case</span> <span class="s2">&quot;n_parallel&quot;</span><span class="p">:</span>  <span class="c1"># downloading documents entirely in parallel</span>
-                <span class="kn">import</span> <span class="nn">multiprocessing.dummy</span> <span class="k">as</span> <span class="nn">mp</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing.dummy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
 
                 <span class="n">thread_no</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sampled_docs</span><span class="p">))</span>
 
@@ -683,7 +683,7 @@
                     <span class="n">q_input</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">doc</span><span class="p">))</span>
 
                 <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">thread_no</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Empty</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">queue</span><span class="w"> </span><span class="kn">import</span> <span class="n">Empty</span>
 
                     <span class="n">pool</span><span class="o">.</span><span class="n">map_async</span><span class="p">(</span><span class="n">_asynch_download</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 
