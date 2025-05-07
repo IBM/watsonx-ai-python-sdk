@@ -321,7 +321,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">ibm_watsonx_ai._wrappers.requests</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">requests</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">req</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_module_version</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_module_version</span><span class="p">,</span> <span class="n">_handle_fl_removal</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApiRequestFailure</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLResource</span>
 
@@ -332,8 +332,6 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">CRYPTO_LIBRARY</span> <span class="o">=</span> <span class="s2">&quot;pyhelayers&quot;</span>
-
-<span class="n">FL_DEPRECATED_WARNING</span> <span class="o">=</span> <span class="s2">&quot;Federated Learning is deprecated and will be removed in IBM Cloud Pak for Data 5.2.&quot;</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">is_crypto_supported</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -567,7 +565,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">log_level</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_level&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">_handle_fl_removal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">Party</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
 
@@ -615,7 +613,7 @@
 <span class="sd">            party.run( experiment_id = &quot;2466fa06-1110-4169-a166-01959adec995&quot;, asynchronous = False )</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">_handle_fl_removal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
 
         <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
@@ -842,7 +840,7 @@
 <span class="sd">            party.monitor_logs()</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">_handle_fl_removal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log_level</span> <span class="o">=</span> <span class="n">log_level</span>
 
@@ -871,7 +869,7 @@
 <span class="sd">            party.monitor_metrics()</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">_handle_fl_removal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">metrics_output</span> <span class="o">=</span> <span class="n">metrics_file</span></div>
 
@@ -891,7 +889,7 @@
 <span class="sd">            party.is_running()</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">_handle_fl_removal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">stopped</span>  <span class="c1"># type: ignore[attr-defined]</span></div>
 
@@ -911,7 +909,7 @@
 <span class="sd">            party.get_round()</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">_handle_fl_removal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Party</span><span class="o">.</span><span class="n">proto_handler</span><span class="o">.</span><span class="n">metrics_recorder</span><span class="o">.</span><span class="n">get_round_no</span><span class="p">()</span>  <span class="c1"># type: ignore</span></div>
 
@@ -928,7 +926,7 @@
 <span class="sd">            party.cancel()</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">warn</span><span class="p">(</span><span class="n">FL_DEPRECATED_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">_handle_fl_removal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">Party</span><span class="o">.</span><span class="n">stop_connection</span><span class="p">()</span>  <span class="c1"># type: ignore</span></div>
 </div>

@@ -310,6 +310,227 @@
           <section id="text-extractions">
 <h1>Text Extractions<a class="headerlink" href="#text-extractions" title="Link to this heading">¶</a></h1>
 <dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.extractions.</span></span><span class="sig-name descname"><span class="pre">TextExtractionsV2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extractions/text_extractions_v2.html#TextExtractionsV2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WMLResource</span></code></p>
+<p>Instantiate the Text Extraction service.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>credentials</strong> (<a class="reference internal" href="base.html#credentials.Credentials" title="credentials.Credentials"><em>Credentials</em></a><em>, </em><em>optional</em>) – credentials to the watsonx.ai instance</p></li>
+<li><p><strong>project_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the project, defaults to None</p></li>
+<li><p><strong>space_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the space, defaults to None</p></li>
+<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – initialized APIClient object with a set project ID or space ID. If passed, <code class="docutils literal notranslate"><span class="pre">credentials</span></code> and <code class="docutils literal notranslate"><span class="pre">project_id</span></code>/<code class="docutils literal notranslate"><span class="pre">space_id</span></code> are not required, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>InvalidMultipleArguments</strong> – raised when neither <cite>api_client</cite> nor <cite>credentials</cite> alongside <cite>space_id</cite> or <cite>project_id</cite> are provided</p></li>
+<li><p><strong>WMLClientError</strong> – raised if the CPD version is less than 5.1</p></li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">Credentials</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extractions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextExtractionsV2</span>
+
+<span class="n">extraction</span> <span class="o">=</span> <span class="n">TextExtractionsV2</span><span class="p">(</span>
+    <span class="n">credentials</span><span class="o">=</span><span class="n">Credentials</span><span class="p">(</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="n">IAM_API_KEY</span><span class="p">,</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">),</span>
+    <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;*****&quot;</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.cancel_job">
+<span class="sig-name descname"><span class="pre">cancel_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extraction_job_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extractions/text_extractions_v2.html#TextExtractionsV2.cancel_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.cancel_job" title="Link to this definition">¶</a></dt>
+<dd><p>Cancel a text extraction job.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>extraction_job_id</strong> (<em>str</em>) – ID of text extraction job</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>“SUCCESS” if the cancellation succeeds</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">extraction</span><span class="o">.</span><span class="n">cancel_job</span><span class="p">(</span><span class="n">extraction_job_id</span><span class="o">=</span><span class="s2">&quot;&lt;extraction_job_id&gt;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.delete_job">
+<span class="sig-name descname"><span class="pre">delete_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extraction_job_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extractions/text_extractions_v2.html#TextExtractionsV2.delete_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.delete_job" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a text extraction job.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>extraction_job_id</strong> (<em>str</em>) – ID of text extraction job</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>“SUCCESS” if the deletion succeeds</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">extraction</span><span class="o">.</span><span class="n">delete_job</span><span class="p">(</span><span class="n">extraction_job_id</span><span class="o">=</span><span class="s2">&quot;&lt;extraction_job_id&gt;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.get_job_details">
+<span class="sig-name descname"><span class="pre">get_job_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extraction_job_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extractions/text_extractions_v2.html#TextExtractionsV2.get_job_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.get_job_details" title="Link to this definition">¶</a></dt>
+<dd><p>Return text extraction job details. If <cite>extraction_job_id</cite> is None, return the details of all text extraction jobs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extraction_job_id</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – ID of the text extraction job, defaults to None</p></li>
+<li><p><strong>limit</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – limit number of fetched records, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>details of the text extraction job</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">extraction</span><span class="o">.</span><span class="n">get_job_details</span><span class="p">(</span><span class="n">extraction_job_id</span><span class="o">=</span><span class="s2">&quot;&lt;extraction_job_id&gt;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.get_job_id">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_job_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extraction_details</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extractions/text_extractions_v2.html#TextExtractionsV2.get_job_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.get_job_id" title="Link to this definition">¶</a></dt>
+<dd><p>Get the unique ID of a stored extraction request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>extraction_details</strong> (<em>dict</em>) – metadata of the stored extraction</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>unique ID of the stored extraction request</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">extraction_details</span> <span class="o">=</span> <span class="n">extraction</span><span class="o">.</span><span class="n">run_job</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">extraction_job_id</span> <span class="o">=</span> <span class="n">extraction</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">extraction_details</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.get_results_reference">
+<span class="sig-name descname"><span class="pre">get_results_reference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extraction_job_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extractions/text_extractions_v2.html#TextExtractionsV2.get_results_reference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.get_results_reference" title="Link to this definition">¶</a></dt>
+<dd><p>Get a <cite>DataConnection</cite> instance that is a reference to the results stored on COS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>extraction_job_id</strong> (<em>str</em>) – ID of text extraction job</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>location of the Data Connection to text extraction job results</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dataconnection_modules.html#ibm_watsonx_ai.helpers.connections.connections.DataConnection" title="ibm_watsonx_ai.helpers.connections.connections.DataConnection">DataConnection</a></p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">results_reference</span> <span class="o">=</span> <span class="n">extraction</span><span class="o">.</span><span class="n">get_results_reference</span><span class="p">(</span><span class="n">extraction_job_id</span><span class="o">=</span><span class="s2">&quot;&lt;extraction_job_id&gt;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.list_jobs">
+<span class="sig-name descname"><span class="pre">list_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extractions/text_extractions_v2.html#TextExtractionsV2.list_jobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.list_jobs" title="Link to this definition">¶</a></dt>
+<dd><p>List text extraction jobs. If limit is None, all jobs will be listed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>limit</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – limit number of fetched records, defaults to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>text extraction jobs information as a pandas DataFrame</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">extraction</span><span class="o">.</span><span class="n">list_jobs</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.run_job">
+<span class="sig-name descname"><span class="pre">run_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">document_reference</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_reference</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_formats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extractions/text_extractions_v2.html#TextExtractionsV2.run_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.run_job" title="Link to this definition">¶</a></dt>
+<dd><p>Start a request to extract text and metadata from a document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>document_reference</strong> (<a class="reference internal" href="dataconnection_modules.html#ibm_watsonx_ai.helpers.connections.connections.DataConnection" title="ibm_watsonx_ai.helpers.connections.connections.DataConnection"><em>DataConnection</em></a>) – reference to the document in the bucket from which text will be extracted</p></li>
+<li><p><strong>results_reference</strong> (<a class="reference internal" href="dataconnection_modules.html#ibm_watsonx_ai.helpers.connections.connections.DataConnection" title="ibm_watsonx_ai.helpers.connections.connections.DataConnection"><em>DataConnection</em></a>) – reference to the location in the bucket where results will saved</p></li>
+<li><p><strong>result_formats</strong> (<a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats" title="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats"><em>TextExtractionsV2ResultFormats</em></a><em> | </em><em>list</em><em>[</em><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats" title="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats"><em>TextExtractionsV2ResultFormats</em></a><em>] </em><em>| </em><em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – result formats for the text extraction, can be passed as an enum or list, defaults to None</p></li>
+<li><p><strong>parameters</strong> (<em>dict</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – the parameters for the text extraction, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>raw response from the server with the text extraction job details</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extractions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextExtractionsV2ResultFormats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.metanames</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextExtractionsV2ParametersMetaNames</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataConnection</span><span class="p">,</span> <span class="n">S3Location</span>
+
+<span class="n">document_reference</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="p">(</span>
+    <span class="n">connection_asset_id</span><span class="o">=</span><span class="s2">&quot;&lt;connection_id&gt;&quot;</span><span class="p">,</span>
+    <span class="n">location</span><span class="o">=</span><span class="n">S3Location</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;&lt;bucket_name&gt;&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;path/to/file&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+<span class="n">results_reference</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="p">(</span>
+    <span class="n">connection_asset_id</span><span class="o">=</span><span class="s2">&quot;&lt;connection_id&gt;&quot;</span><span class="p">,</span>
+    <span class="n">location</span><span class="o">=</span><span class="n">S3Location</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;&lt;bucket_name&gt;&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;path/to/directory/&quot;</span><span class="p">),</span>  <span class="c1"># Path must end with /</span>
+    <span class="p">)</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">extraction</span><span class="o">.</span><span class="n">run_job</span><span class="p">(</span>
+    <span class="n">document_reference</span><span class="o">=</span><span class="n">document_reference</span><span class="p">,</span>
+    <span class="n">results_reference</span><span class="o">=</span><span class="n">results_reference</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+        <span class="n">TextExtractionsV2ParametersMetaNames</span><span class="o">.</span><span class="n">MODE</span><span class="p">:</span> <span class="s2">&quot;high_quality&quot;</span><span class="p">,</span>
+        <span class="n">TextExtractionsV2ParametersMetaNames</span><span class="o">.</span><span class="n">OCR_MODE</span><span class="p">:</span> <span class="s2">&quot;enabled&quot;</span><span class="p">,</span>
+        <span class="n">TextExtractionsV2ParametersMetaNames</span><span class="o">.</span><span class="n">LANGUAGES</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="s2">&quot;fr&quot;</span><span class="p">],</span>
+        <span class="n">TextExtractionsV2ParametersMetaNames</span><span class="o">.</span><span class="n">AUTO_ROTATION_CORRECTION</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">TextExtractionsV2ParametersMetaNames</span><span class="o">.</span><span class="n">CREATE_EMBEDDED_IMAGES</span><span class="p">:</span> <span class="s2">&quot;enabled_placeholder&quot;</span><span class="p">,</span>
+        <span class="n">TextExtractionsV2ParametersMetaNames</span><span class="o">.</span><span class="n">OUTPUT_DPI</span><span class="p">:</span> <span class="mi">72</span><span class="p">,</span>
+        <span class="n">TextExtractionsV2ParametersMetaNames</span><span class="o">.</span><span class="n">KVP_MODE</span><span class="p">:</span> <span class="s2">&quot;invoice&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="n">result_formats</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">TextExtractionsV2ResultFormats</span><span class="o">.</span><span class="n">PLAIN_TEXT</span><span class="p">,</span>
+        <span class="n">TextExtractionsV2ResultFormats</span><span class="o">.</span><span class="n">MARKDOWN</span><span class="p">,</span>
+        <span class="n">TextExtractionsV2ResultFormats</span><span class="o">.</span><span class="n">ASSEMBLY_JSON</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractions">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.extractions.</span></span><span class="sig-name descname"><span class="pre">TextExtractions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extractions/text_extractions.html#TextExtractions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractions" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WMLResource</span></code></p>
@@ -517,6 +738,104 @@
 <section id="enums">
 <h2>Enums<a class="headerlink" href="#enums" title="Link to this heading">¶</a></h2>
 <dl class="py class">
+<dt class="sig sig-object py" id="metanames.TextExtractionsV2ParametersMetaNames">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metanames.</span></span><span class="sig-name descname"><span class="pre">TextExtractionsV2ParametersMetaNames</span></span><a class="reference internal" href="_modules/metanames.html#TextExtractionsV2ParametersMetaNames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metanames.TextExtractionsV2ParametersMetaNames" title="Link to this definition">¶</a></dt>
+<dd><p>Set of MetaNames for TextExtractionV2 Parameters.</p>
+<p>Available MetaNames:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>MetaName</p></td>
+<td><p>Type</p></td>
+<td><p>Required</p></td>
+<td><p>Example value</p></td>
+</tr>
+<tr class="row-even"><td><p>MODE</p></td>
+<td><p>str</p></td>
+<td><p>N</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">high_quality</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>OCR_MODE</p></td>
+<td><p>str</p></td>
+<td><p>N</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">enabled</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>LANGUAGES</p></td>
+<td><p>list</p></td>
+<td><p>N</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">['en',</span> <span class="pre">'fr']</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>AUTO_ROTATION_CORRECTION</p></td>
+<td><p>bool</p></td>
+<td><p>N</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>CREATE_EMBEDDED_IMAGES</p></td>
+<td><p>str</p></td>
+<td><p>N</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">enabled_placeholder</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>OUTPUT_DPI</p></td>
+<td><p>int</p></td>
+<td><p>N</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">72</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>KVP_MODE</p></td>
+<td><p>str</p></td>
+<td><p>N</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">invoice</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>OUTPUT_TOKENS_AND_BBOX</p></td>
+<td><p>bool</p></td>
+<td><p>N</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For more details about TextExtractionV2 Parameters, see <a class="reference external" href="https://cloud.ibm.com/apidocs/watsonx-ai">https://cloud.ibm.com/apidocs/watsonx-ai</a></p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.extractions.</span></span><span class="sig-name descname"><span class="pre">TextExtractionsV2ResultFormats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extractions/text_extractions_v2_result_formats.html#TextExtractionsV2ResultFormats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.ASSEMBLY_JSON">
+<span class="sig-name descname"><span class="pre">ASSEMBLY_JSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'assembly'</span></em><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.ASSEMBLY_JSON" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.HTML">
+<span class="sig-name descname"><span class="pre">HTML</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'html'</span></em><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.HTML" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.MARKDOWN">
+<span class="sig-name descname"><span class="pre">MARKDOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'md'</span></em><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.MARKDOWN" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.PAGE_IMAGES">
+<span class="sig-name descname"><span class="pre">PAGE_IMAGES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'page_images'</span></em><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.PAGE_IMAGES" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.PLAIN_TEXT">
+<span class="sig-name descname"><span class="pre">PLAIN_TEXT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'plain_text'</span></em><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.PLAIN_TEXT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.TABLES_JSON">
+<span class="sig-name descname"><span class="pre">TABLES_JSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tables_json'</span></em><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.TABLES_JSON" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="metanames.TextExtractionsMetaNames">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metanames.</span></span><span class="sig-name descname"><span class="pre">TextExtractionsMetaNames</span></span><a class="reference internal" href="_modules/metanames.html#TextExtractionsMetaNames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metanames.TextExtractionsMetaNames" title="Link to this definition">¶</a></dt>
 <dd><p>Set of MetaNames for Text Extraction Steps.</p>
@@ -607,6 +926,16 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Text Extractions</a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.cancel_job"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2.cancel_job()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.delete_job"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2.delete_job()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.get_job_details"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2.get_job_details()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.get_job_id"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2.get_job_id()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.get_results_reference"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2.get_results_reference()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.list_jobs"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2.list_jobs()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2.run_job"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2.run_job()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractions"><code class="docutils literal notranslate"><span class="pre">TextExtractions</span></code></a><ul>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractions.cancel_job"><code class="docutils literal notranslate"><span class="pre">TextExtractions.cancel_job()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractions.delete_job"><code class="docutils literal notranslate"><span class="pre">TextExtractions.delete_job()</span></code></a></li>
@@ -618,6 +947,16 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#enums">Enums</a><ul>
+<li><a class="reference internal" href="#metanames.TextExtractionsV2ParametersMetaNames"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2ParametersMetaNames</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2ResultFormats</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.ASSEMBLY_JSON"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2ResultFormats.ASSEMBLY_JSON</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.HTML"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2ResultFormats.HTML</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.MARKDOWN"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2ResultFormats.MARKDOWN</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.PAGE_IMAGES"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2ResultFormats.PAGE_IMAGES</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.PLAIN_TEXT"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2ResultFormats.PLAIN_TEXT</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extractions.TextExtractionsV2ResultFormats.TABLES_JSON"><code class="docutils literal notranslate"><span class="pre">TextExtractionsV2ResultFormats.TABLES_JSON</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#metanames.TextExtractionsMetaNames"><code class="docutils literal notranslate"><span class="pre">TextExtractionsMetaNames</span></code></a></li>
 </ul>
 </li>

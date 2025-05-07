@@ -305,12 +305,17 @@
 <span class="c1">#  (C) Copyright IBM Corp. 2024-2025.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">get_origin</span><span class="p">,</span> <span class="n">get_args</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">get_origin</span><span class="p">,</span> <span class="n">get_args</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tabulate</span><span class="w"> </span><span class="kn">import</span> <span class="n">tabulate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">is_dataclass</span><span class="p">,</span> <span class="n">fields</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.retriever</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">RetrievalMethod</span><span class="p">,</span>
+    <span class="p">)</span>
 
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;BaseSchema&quot;</span><span class="p">)</span>
@@ -742,6 +747,71 @@
             <span class="s2">&quot;context_template_text&quot;</span><span class="p">:</span> <span class="s2">&quot;My document </span><span class="si">{document}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="s2">&quot;word_to_token_ratio&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
         <span class="p">}</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">HybridRankerStrategy</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+    <span class="n">WEIGHTED</span> <span class="o">=</span> <span class="s2">&quot;weighted&quot;</span>
+    <span class="n">RRF</span> <span class="o">=</span> <span class="s2">&quot;rrf&quot;</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AutoAIRAGHybridRankerParams</span><span class="p">(</span><span class="n">BaseSchema</span><span class="p">):</span>
+    <span class="n">strategy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">HybridRankerStrategy</span>
+    <span class="n">sparse_vectors</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_sample_params</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provide example values for AutoAIRAGHybridRankerParams.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="n">HybridRankerStrategy</span><span class="o">.</span><span class="n">RRF</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s2">&quot;sparse_vectors&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;elser_model_2&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
+            <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="mi">70</span><span class="p">,</span>
+        <span class="p">}</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AutoAIRAGRetrievalConfig</span><span class="p">(</span><span class="n">BaseSchema</span><span class="p">):</span>
+    <span class="n">method</span><span class="p">:</span> <span class="s2">&quot;str | RetrievalMethod&quot;</span>
+    <span class="n">number_of_chunks</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">window_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">hybrid_ranker</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">AutoAIRAGHybridRankerParams</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_sample_params</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provide example values for AutoAIRAGRetrievalConfig.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;number_of_chunks&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s2">&quot;window_size&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;hybrid_ranker&quot;</span><span class="p">:</span> <span class="n">AutoAIRAGHybridRankerParams</span><span class="o">.</span><span class="n">get_sample_params</span><span class="p">(),</span>
+        <span class="p">}</span>
+
+
+<span class="c1">#####################</span>
+<span class="c1">#  Text Detection   #</span>
+<span class="c1">#####################</span>
+
+
+<div class="viewcode-block" id="GuardianDetectors">
+<a class="viewcode-back" href="../../../../fm_schema.html#ibm_watsonx_ai.foundation_models.schema.GuardianDetectors">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GuardianDetectors</span><span class="p">(</span><span class="n">BaseSchema</span><span class="p">):</span>
+    <span class="n">hap</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">pii</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">granite_guardian</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_sample_params</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provide example values for GuardianDetectors.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;hap&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;threshold&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">},</span>
+            <span class="s2">&quot;pii&quot;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s2">&quot;granite_guardian&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;threshold&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">},</span>
+        <span class="p">}</span></div>
+
 </pre></div>
         </article>
       </div>

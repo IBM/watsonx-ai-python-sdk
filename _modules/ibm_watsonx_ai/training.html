@@ -326,7 +326,7 @@
     <span class="n">TRAINING_RUN_DETAILS_TYPE</span><span class="p">,</span>
     <span class="n">StatusLogger</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">,</span> <span class="n">_handle_fl_removal</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLClientError</span><span class="p">,</span> <span class="n">ApiRequestFailure</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLResource</span>
 
@@ -767,8 +767,7 @@
                 <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">FEDERATED_LEARNING</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">:</span>
-            <span class="n">fl_deprecated_warning</span> <span class="o">=</span> <span class="s2">&quot;Federated Learning is deprecated and will be removed in IBM Cloud Pak for Data 5.2.&quot;</span>
-            <span class="n">warn</span><span class="p">(</span><span class="n">fl_deprecated_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+            <span class="n">_handle_fl_removal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
 
             <span class="n">training_configuration_metadata</span><span class="p">[</span><span class="s2">&quot;federated_learning&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta_props</span><span class="p">[</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">FEDERATED_LEARNING</span>

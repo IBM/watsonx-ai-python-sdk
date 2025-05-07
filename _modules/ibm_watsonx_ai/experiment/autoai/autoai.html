@@ -368,7 +368,11 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AutoAI&quot;</span><span class="p">]</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">...credentials</span><span class="w"> </span><span class="kn">import</span> <span class="n">Credentials</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">...foundation_models.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoAIRAGModelConfig</span><span class="p">,</span> <span class="n">AutoAIRAGCustomModelConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...foundation_models.schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AutoAIRAGModelConfig</span><span class="p">,</span>
+    <span class="n">AutoAIRAGCustomModelConfig</span><span class="p">,</span>
+    <span class="n">AutoAIRAGRetrievalConfig</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">RAGOptimizer</span>
@@ -1255,7 +1259,7 @@
         <span class="n">max_number_of_rag_patterns</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">optimization_metrics</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">generation</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">retrieval</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">retrieval</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">AutoAIRAGRetrievalConfig</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RAGOptimizer&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize an AutoAi RAG optimizer.</span>
@@ -1288,7 +1292,7 @@
 <span class="sd">        :type generation: dict[str, Any], optional</span>
 
 <span class="sd">        :param retrieval: Retrieval settings to be used.</span>
-<span class="sd">        :type retrieval: list[dict[str, Any]], optional</span>
+<span class="sd">        :type retrieval: list[dict[str, Any] | AutoAIRAGRetrievalConfig], optional</span>
 
 <span class="sd">        :return: AutoAI RAG optimizer</span>
 <span class="sd">        :rtype: RAGOptimizer</span>
