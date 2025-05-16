@@ -253,6 +253,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_helpers.html">Helpers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_custom_models.html">Custom models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fm_text_detection.html">Text Detection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_text_extraction.html">Text Extractions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_schema.html">Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_rerank.html">Rerank</a></li>
@@ -597,22 +598,48 @@
 <span class="sd">        :return: scoring result containing generated chat content.</span>
 <span class="sd">        :rtype: dict</span>
 
-<span class="sd">        **Example:**</span>
+<span class="sd">        **Examples:**</span>
 
-<span class="sd">        .. code-block:: python</span>
+<span class="sd">        .. tab-set::</span>
 
-<span class="sd">            messages = [</span>
-<span class="sd">                {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful assistant.&quot;},</span>
-<span class="sd">                {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Who won the world series in 2020?&quot;}</span>
-<span class="sd">            ]</span>
-<span class="sd">            generated_response = model.chat(messages=messages)</span>
+<span class="sd">            .. tab-item:: Simple conversation</span>
 
-<span class="sd">            # Print all response</span>
-<span class="sd">            print(generated_response)</span>
+<span class="sd">                .. code-block:: python</span>
 
-<span class="sd">            # Print only content</span>
-<span class="sd">            print(generated_response[&#39;choices&#39;][0][&#39;message&#39;][&#39;content&#39;])</span>
+<span class="sd">                    messages = [</span>
+<span class="sd">                        {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful assistant.&quot;},</span>
+<span class="sd">                        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Who won the world series in 2020?&quot;}</span>
+<span class="sd">                    ]</span>
+<span class="sd">                    generated_response = model.chat(messages=messages)</span>
 
+<span class="sd">                    # Print full response</span>
+<span class="sd">                    print(generated_response)</span>
+
+<span class="sd">                    # Print only content</span>
+<span class="sd">                    print(generated_response[&quot;choices&quot;][0][&quot;message&quot;][&quot;content&quot;])</span>
+
+<span class="sd">            .. tab-item:: Control messages</span>
+
+<span class="sd">                .. note::</span>
+
+<span class="sd">                    Control messages enable inclusion of enhanced reasoning to chat response content.</span>
+<span class="sd">                    They are available only for IBM Granite reasoning models 3.2 and above.</span>
+<span class="sd">                    For more information, visit: https://www.ibm.com/granite/docs/models/granite/</span>
+
+<span class="sd">                .. code-block:: python</span>
+
+<span class="sd">                    messages = [</span>
+<span class="sd">                        {&quot;role&quot;: &quot;control&quot;, &quot;content&quot;: &quot;thinking&quot;},</span>
+<span class="sd">                        {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful assistant.&quot;},</span>
+<span class="sd">                        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Who won the world series in 2020?&quot;}</span>
+<span class="sd">                    ]</span>
+<span class="sd">                    generated_response = model.chat(messages=messages)</span>
+
+<span class="sd">                    # Print full response</span>
+<span class="sd">                    print(generated_response)</span>
+
+<span class="sd">                    # Print only content</span>
+<span class="sd">                    print(generated_response[&quot;choices&quot;][0][&quot;message&quot;][&quot;content&quot;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="s2">&quot;messages&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">TextChatParameters</span><span class="p">],</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>

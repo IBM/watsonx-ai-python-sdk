@@ -254,6 +254,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="fm_helpers.html">Helpers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_custom_models.html">Custom models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_text_detection.html">Text Detection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_text_extraction.html">Text Extractions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_schema.html">Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_rerank.html">Rerank</a></li>
@@ -570,19 +571,49 @@ identified by sentence ‘{{ context }}’. Supported only with <cite>deployment
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
-<p><strong>Example:</strong></p>
+<p><strong>Examples:</strong></p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Simple conversation</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;You are a helpful assistant.&quot;</span><span class="p">},</span>
     <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Who won the world series in 2020?&quot;</span><span class="p">}</span>
 <span class="p">]</span>
 <span class="n">generated_response</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">)</span>
 
-<span class="c1"># Print all response</span>
+<span class="c1"># Print full response</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">generated_response</span><span class="p">)</span>
 
 <span class="c1"># Print only content</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">generated_response</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;message&#39;</span><span class="p">][</span><span class="s1">&#39;content&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">generated_response</span><span class="p">[</span><span class="s2">&quot;choices&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;message&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
 </pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Control messages</label><div class="sd-tab-content docutils">
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Control messages enable inclusion of enhanced reasoning to chat response content.
+They are available only for IBM Granite reasoning models 3.2 and above.
+For more information, visit: <a class="reference external" href="https://www.ibm.com/granite/docs/models/granite/">https://www.ibm.com/granite/docs/models/granite/</a></p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;control&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;thinking&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;You are a helpful assistant.&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Who won the world series in 2020?&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+<span class="n">generated_response</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">)</span>
+
+<span class="c1"># Print full response</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">generated_response</span><span class="p">)</span>
+
+<span class="c1"># Print only content</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">generated_response</span><span class="p">[</span><span class="s2">&quot;choices&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;message&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
 </div>
 </dd></dl>
 

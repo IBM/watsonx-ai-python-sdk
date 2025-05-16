@@ -253,6 +253,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_helpers.html">Helpers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_custom_models.html">Custom models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fm_text_detection.html">Text Detection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_text_extraction.html">Text Extractions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_schema.html">Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_rerank.html">Rerank</a></li>
@@ -328,7 +329,7 @@
 <span class="sd">    Instantiate the time series model interface</span>
 
 <span class="sd">    :param model_id: type of model to use</span>
-<span class="sd">    :type model_id: str</span>
+<span class="sd">    :type model_id: str, optional</span>
 
 <span class="sd">    :param params: parameters to use during request generation</span>
 <span class="sd">    :type params: dict, TSForecastParameters, optional</span>
@@ -352,6 +353,9 @@
 
 <span class="sd">    :param api_client: initialized APIClient object with a set project ID or space ID. If passed, ``credentials`` and ``project_id``/``space_id`` are not required.</span>
 <span class="sd">    :type api_client: APIClient, optional</span>
+
+<span class="sd">    :param deployment_id: ID of tuned model&#39;s deployment</span>
+<span class="sd">    :type deployment_id: str, optional</span>
 
 <span class="sd">    **Example:**</span>
 
@@ -377,17 +381,29 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">TSForecastParameters</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">credentials</span><span class="p">:</span> <span class="n">Credentials</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="o">=</span> <span class="n">model_id</span>
-        <span class="n">TSModelInference</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="s2">&quot;model_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span> <span class="o">=</span> <span class="n">deployment_id</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span>
+                <span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;model_id&quot;</span><span class="p">,</span> <span class="s2">&quot;deployment_id&quot;</span><span class="p">],</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Both arguments were provided.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span>
+                <span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;model_id&quot;</span><span class="p">,</span> <span class="s2">&quot;deployment_id&quot;</span><span class="p">],</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
         <span class="n">TSModelInference</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
@@ -472,15 +488,19 @@
 <span class="sd">            print(response)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;list&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">}</span>
+        <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">}</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span>
+            <span class="k">else</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">}</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">parameters</span> <span class="o">=</span> <span class="n">params</span>
@@ -529,8 +549,16 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span><span class="p">:</span>
             <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;space_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span>
 
+        <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployment_time_series_href</span><span class="p">(</span>
+                <span class="n">deployment_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_time_series_href</span><span class="p">()</span>
+        <span class="p">)</span>
+
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_time_series_href</span><span class="p">(),</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
             <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
             <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(</span><span class="n">skip_for_create</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_userfs</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>

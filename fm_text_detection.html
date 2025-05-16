@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Rate Limits" href="rate_limit.html" /><link rel="prev" title="Rerank" href="fm_rerank.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Text Extractions" href="fm_text_extraction.html" /><link rel="prev" title="Custom models" href="fm_custom_models.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>Deploy on Demand - IBM watsonx.ai</title>
+        <title>Text Detection - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
@@ -254,11 +254,11 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="fm_helpers.html">Helpers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_custom_models.html">Custom models</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fm_text_detection.html">Text Detection</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Text Detection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_text_extraction.html">Text Extractions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_schema.html">Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_rerank.html">Rerank</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Deploy on Demand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_deploy_on_demand.html">Deploy on Demand</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rate_limit.html">Rate Limits</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_toolkit.html">Toolkit</a></li>
 </ul>
@@ -288,7 +288,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/fm_deploy_on_demand.rst.txt" title="View this page">
+  <a class="muted-link" href="_sources/fm_text_detection.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -308,106 +308,63 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="deploy-on-demand">
-<h1>Deploy on Demand<a class="headerlink" href="#deploy-on-demand" title="Link to this heading">¶</a></h1>
-<p>IBM watsonx.ai makes a curated collection of foundation models available for you to deploy on-demand
-on dedicated hardware for the exclusive use of your organization.
-By using this approach, you can access the capabilities of these powerful foundation models without the need
-for extensive computational resources.
-Foundation models that you deploy on-demand are hosted in a dedicated deployment space where you can use these models for inferencing.</p>
-<ul class="simple">
-<li><p><a class="reference external" href="#id1">IBM watsonx.ai for IBM Cloud</a></p></li>
+          <section id="text-detection">
+<h1>Text Detection<a class="headerlink" href="#text-detection" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.moderations.Guardian">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.moderations.</span></span><span class="sig-name descname"><span class="pre">Guardian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/moderations/guardian.html#Guardian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.moderations.Guardian" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WMLResource</span></code></p>
+<p>Guardian is responsible for text detection using configured detectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a>) – The APIClient instance</p></li>
+<li><p><strong>detectors</strong> (<em>dict</em><em>, </em><a class="reference internal" href="fm_schema.html#ibm_watsonx_ai.foundation_models.schema.GuardianDetectors" title="ibm_watsonx_ai.foundation_models.schema.GuardianDetectors"><em>GuardianDetectors</em></a>) – A dict of detector configurations</p></li>
 </ul>
-<section id="id1">
-<h2>IBM watsonx.ai for IBM Cloud<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
-<p>This section shows how to create task credentials, store and deploy a model, and use the ModelInference module with the created deployment on IBM watsonx.ai for IBM Cloud.</p>
-<section id="initialize-an-apiclient-object">
-<h3>Initialize an APIClient object<a class="headerlink" href="#initialize-an-apiclient-object" title="Link to this heading">¶</a></h3>
-<p>Initialize an <code class="docutils literal notranslate"><span class="pre">APIClient</span></code> object if needed. For more details about supported <code class="docutils literal notranslate"><span class="pre">APIClient</span></code> initialization, see <a class="reference internal" href="setup.html"><span class="doc">Setup</span></a>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.moderations</span><span class="w"> </span><span class="kn">import</span> <span class="n">Guardian</span>
 
-<span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">)</span>
-<span class="c1"># or: client = APIClient(credentials, space_id=space_id)</span>
-</pre></div>
-</div>
-</section>
-<section id="add-task-credentials">
-<h3>Add Task Credentials<a class="headerlink" href="#add-task-credentials" title="Link to this heading">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>If not already added, Task Credentials are required on IBM watsonx.ai for IBM Cloud to make a deployment.</p>
-</div>
-<p>With task credentials, you can deploy a curated foundation model and avoid token expiration issues.
-For more details, see <a class="reference external" href="https://www.ibm.com/docs/en/watsonx/saas?topic=projects-adding-task-credentials">Adding task credentials</a>.</p>
-<p>To list available task credentials, use the <code class="docutils literal notranslate"><span class="pre">list</span></code> method:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">task_credentials</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>If the list is empty, you can create new task credentials with the <code class="docutils literal notranslate"><span class="pre">store</span></code> method:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">task_credentials</span><span class="o">.</span><span class="n">store</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>To get details of available task credentials, use the <code class="docutils literal notranslate"><span class="pre">get_details</span></code> method:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">task_credentials</span><span class="o">.</span><span class="n">get_details</span><span class="p">()</span>
-</pre></div>
-</div>
-</section>
-<section id="store-the-model-in-the-service-repository">
-<h3>Store the model in the service repository<a class="headerlink" href="#store-the-model-in-the-service-repository" title="Link to this heading">¶</a></h3>
-<p>To store a model as an asset in the repo, you must first create proper <code class="docutils literal notranslate"><span class="pre">metadata</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">ModelMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="s2">&quot;curated FM asset&quot;</span><span class="p">,</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">ModelMetaNames</span><span class="o">.</span><span class="n">TYPE</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">ModelAssetTypes</span><span class="o">.</span><span class="n">CURATED_FOUNDATION_MODEL_1_0</span><span class="p">,</span>
+<span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;&lt;url&gt;&quot;</span><span class="p">,</span>
+    <span class="n">api_key</span> <span class="o">=</span> <span class="n">IAM_API_KEY</span>
+<span class="p">)</span>
+<span class="n">api_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+
+<span class="n">detectors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;granite_guardian&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;threshold&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">}</span>
 <span class="p">}</span>
+
+<span class="n">guardian</span> <span class="o">=</span> <span class="n">Guardian</span><span class="p">(</span>
+    <span class="n">api_client</span><span class="o">=</span><span class="n">api_client</span><span class="p">,</span>
+    <span class="n">detectors</span><span class="o">=</span><span class="n">detectors</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="store-the-model">
-<h3>Store the model<a class="headerlink" href="#store-the-model" title="Link to this heading">¶</a></h3>
-<p>After creating the proper <code class="docutils literal notranslate"><span class="pre">metadata</span></code>, you can store the model using <code class="docutils literal notranslate"><span class="pre">client.repository.store_model()</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">stored_model_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">store_model</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;ibm/granite-13b-chat-v2-curated&#39;</span><span class="p">,</span> <span class="n">meta_props</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.moderations.Guardian.detect">
+<span class="sig-name descname"><span class="pre">detect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/moderations/guardian.html#Guardian.detect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.moderations.Guardian.detect" title="Link to this definition">¶</a></dt>
+<dd><p>Detects elements in the given text using specified detectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – The input text to analyze</p></li>
+<li><p><strong>detectors</strong> (<em>dict</em><em>, </em><a class="reference internal" href="fm_schema.html#ibm_watsonx_ai.foundation_models.schema.GuardianDetectors" title="ibm_watsonx_ai.foundation_models.schema.GuardianDetectors"><em>GuardianDetectors</em></a><em>, </em><em>optional</em>) – A dict of detector configurations</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;I would like to say some `Indecent words`.&quot;</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">guardian</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>To get the <code class="docutils literal notranslate"><span class="pre">id</span></code> of a stored model asset, use the obtained details.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">stored_model_asset_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_model_id</span><span class="p">(</span><span class="n">stored_model_details</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>List all stored curated foundation models and filter them by framework type.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">framework_filter</span><span class="o">=</span><span class="s1">&#39;curated_foundation_model_1.0&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="deploy-the-curated-foundation-model">
-<h3>Deploy the curated foundation model<a class="headerlink" href="#deploy-the-curated-foundation-model" title="Link to this heading">¶</a></h3>
-<p>To create a new deployment of a curated foundation model, you need to define a dictionary with deployment metadata: <code class="docutils literal notranslate"><span class="pre">meta_props</span></code>.
-Specify the deployment <code class="docutils literal notranslate"><span class="pre">NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">DESCRIPTION</span></code> fields.</p>
-<p>Only online deployments are supported, so the <code class="docutils literal notranslate"><span class="pre">ONLINE</span></code> field is required.</p>
-<p>Optional: At this stage, you can overwrite model parameters. To overwrite them, pass a dictionary with new parameters values in the <code class="docutils literal notranslate"><span class="pre">FOUNDATION_MODEL</span></code> field.</p>
-<p>You also need to provide the <code class="docutils literal notranslate"><span class="pre">stored_model_asset_id</span></code> to create the deployment.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">meta_props</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="s2">&quot;curated_fm_deployment&quot;</span><span class="p">,</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DESCRIPTION</span><span class="p">:</span> <span class="s2">&quot;Testing deployment using curated foundation model&quot;</span><span class="p">,</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">ONLINE</span><span class="p">:</span> <span class="p">{},</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">SERVING_NAME</span><span class="p">:</span> <span class="s2">&quot;test_curated_fm_01&quot;</span>
-<span class="p">}</span>
-<span class="n">deployment_details</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">stored_model_asset_id</span><span class="p">,</span> <span class="n">meta_props</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Once the deployment creation process is done, the <code class="docutils literal notranslate"><span class="pre">create</span></code> method returns a dictionary with the deployment details,
-which can be used to retrieve the <code class="docutils literal notranslate"><span class="pre">deployment_id</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">deployment_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>You can list all existing deployments in the working space or project scope with the <code class="docutils literal notranslate"><span class="pre">list</span></code> method:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
-</pre></div>
-</div>
-</section>
-<section id="work-with-deployments">
-<h3>Work with deployments<a class="headerlink" href="#work-with-deployments" title="Link to this heading">¶</a></h3>
-<p>For information on working with foundation model deployments, see <a class="reference internal" href="fm_deployments.html"><span class="doc">Models/ ModelInference for Deployments</span></a>.</p>
-</section>
-</section>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -415,23 +372,23 @@ which can be used to retrieve the <code class="docutils literal notranslate"><sp
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="rate_limit.html">
+          <a class="next-page" href="fm_text_extraction.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Rate Limits</div>
+                <div class="title">Text Extractions</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="fm_rerank.html">
+          <a class="prev-page" href="fm_custom_models.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Rerank</div>
+                <div class="title">Custom models</div>
                 
               </div>
             </a>
@@ -465,14 +422,9 @@ which can be used to retrieve the <code class="docutils literal notranslate"><sp
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Deploy on Demand</a><ul>
-<li><a class="reference internal" href="#id1">IBM watsonx.ai for IBM Cloud</a><ul>
-<li><a class="reference internal" href="#initialize-an-apiclient-object">Initialize an APIClient object</a></li>
-<li><a class="reference internal" href="#add-task-credentials">Add Task Credentials</a></li>
-<li><a class="reference internal" href="#store-the-model-in-the-service-repository">Store the model in the service repository</a></li>
-<li><a class="reference internal" href="#store-the-model">Store the model</a></li>
-<li><a class="reference internal" href="#deploy-the-curated-foundation-model">Deploy the curated foundation model</a></li>
-<li><a class="reference internal" href="#work-with-deployments">Work with deployments</a></li>
+<li><a class="reference internal" href="#">Text Detection</a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.moderations.Guardian"><code class="docutils literal notranslate"><span class="pre">Guardian</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.moderations.Guardian.detect"><code class="docutils literal notranslate"><span class="pre">Guardian.detect()</span></code></a></li>
 </ul>
 </li>
 </ul>
