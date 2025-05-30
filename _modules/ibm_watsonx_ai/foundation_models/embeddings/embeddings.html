@@ -389,10 +389,10 @@
 <span class="sd">                                  To close the connection, run `embeddings.close_persistent_connection()`, defaults to True. Added in 1.1.2.</span>
 <span class="sd">    :type persistent_connection: bool, optional</span>
 
-<span class="sd">    :param batch_size: Number of elements to be embedded sending in one call, defaults to 1000</span>
+<span class="sd">    :param batch_size: Number of elements to be embedded sending in one call (used only for sync methods), defaults to 1000</span>
 <span class="sd">    :type batch_size: int, optional</span>
 
-<span class="sd">    :param concurrency_limit: number of requests to be sent in parallel when generating embedding vectors, max is 10, defaults to 5</span>
+<span class="sd">    :param concurrency_limit: number of requests to be sent in parallel when generating embedding vectors (used only for sync methods), max is 10, defaults to 5</span>
 <span class="sd">    :type concurrency_limit: int, optional</span>
 
 <span class="sd">    :param max_retries: number of retries performed when request was not successful and status code is in retry_status_codes, defaults to 10</span>
@@ -518,6 +518,7 @@
                 <span class="s2">&quot;`persistent_connection` is deprecated and will be removed in future. &quot;</span>
             <span class="p">)</span>
             <span class="n">warn</span><span class="p">(</span><span class="n">persistent_connection_warn</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_async_http_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">async_httpx_client</span>
 
         <span class="c1"># Set initially 8 requests per second as it is default for prod instances</span>
         <span class="c1"># if header &quot;x-requests-limit-rate&quot; is different capacity will be updated</span>
@@ -546,6 +547,26 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_post</span><span class="p">(</span><span class="n">_http_client</span><span class="p">,</span> <span class="o">**</span><span class="n">post_params</span><span class="p">)</span>
 
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_agenerate_raw_response</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">generate_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">ParamsType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">_async_http_client</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send request with post and return service response in an asynchronous manner.&quot;&quot;&quot;</span>
+
+        <span class="n">payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_payload</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+        <span class="n">post_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">generate_url</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(</span><span class="n">skip_for_create</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_userfs</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apost</span><span class="p">(</span><span class="n">_async_http_client</span><span class="p">,</span> <span class="o">**</span><span class="n">post_params</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Embeddings.generate">
 <a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.Embeddings.generate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span>
@@ -567,9 +588,7 @@
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="n">generate_url</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_embeddings_href</span><span class="p">()</span>
-        <span class="p">)</span>
+        <span class="n">generate_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_embeddings_href</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">concurrency_limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">DEFAULT_CONCURRENCY_LIMIT</span> <span class="ow">and</span> <span class="p">(</span>
             <span class="n">concurrency_limit</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="ow">or</span> <span class="n">concurrency_limit</span> <span class="o">&lt;</span> <span class="mi">1</span>
         <span class="p">):</span>
@@ -653,6 +672,32 @@
         <span class="k">return</span> <span class="n">results</span></div>
 
 
+<div class="viewcode-block" id="Embeddings.agenerate">
+<a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.Embeddings.agenerate">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">agenerate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">ParamsType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate embeddings vectors for the given input with the given</span>
+<span class="sd">        parameters in an asynchronous manner. Returns a REST API response.</span>
+
+<span class="sd">        :param inputs: list of texts for which embedding vectors will be generated, max length is determined by API (for more information, please refer to the documentation: https://cloud.ibm.com/apidocs/watsonx-ai#text-embeddings)</span>
+<span class="sd">        :type inputs: list[str]</span>
+<span class="sd">        :param params: MetaProps for the embedding generation, use ``ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()`` to view the list of MetaNames, defaults to None</span>
+<span class="sd">        :type params: ParamsType | None, optional</span>
+
+<span class="sd">        :return: scoring results containing generated embeddings vectors</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">generate_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_embeddings_href</span><span class="p">()</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agenerate</span><span class="p">(</span><span class="n">generate_url</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">results</span></div>
+
+
 <div class="viewcode-block" id="Embeddings.embed_documents">
 <a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.Embeddings.embed_documents">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">embed_documents</span><span class="p">(</span>
@@ -693,6 +738,40 @@
         <span class="p">]</span></div>
 
 
+<div class="viewcode-block" id="Embeddings.aembed_documents">
+<a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.Embeddings.aembed_documents">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aembed_documents</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">texts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">ParamsType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns list of embedding vectors for provided texts in an asynchronous manner.</span>
+
+<span class="sd">        :param texts: list of texts for which embedding vectors will be generated, max length is determined by API (for more information, please refer to the documentation: https://cloud.ibm.com/apidocs/watsonx-ai#text-embeddings)</span>
+<span class="sd">        :type texts: list[str]</span>
+<span class="sd">        :param params: MetaProps for the embedding generation, use ``ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()`` to view the list of MetaNames, defaults to None</span>
+<span class="sd">        :type params: ParamsType | None, optional</span>
+
+<span class="sd">        :return: list of embedding vectors</span>
+<span class="sd">        :rtype: list[list[float]]</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            q = [</span>
+<span class="sd">                &quot;What is a Generative AI?&quot;,</span>
+<span class="sd">                &quot;Generative AI refers to a type of artificial intelligence that can original content.&quot;</span>
+<span class="sd">                ]</span>
+
+<span class="sd">            embedding_vectors = await embedding.aembed_documents(texts=q)</span>
+<span class="sd">            print(embedding_vectors)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">agenerate</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">texts</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">vector</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;embedding&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">vector</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="p">[{}])]</span></div>
+
+
 <div class="viewcode-block" id="Embeddings.embed_query">
 <a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.Embeddings.embed_query">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">embed_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">ParamsType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
@@ -718,6 +797,33 @@
             <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="p">[{}])[</span><span class="mi">0</span><span class="p">]</span>
             <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;embedding&quot;</span><span class="p">)</span>
         <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Embeddings.aembed_query">
+<a class="viewcode-back" href="../../../../fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.Embeddings.aembed_query">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aembed_query</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">ParamsType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an embedding vector for a provided text in an asynchronous manner.</span>
+
+<span class="sd">        :param text: text for which embedding vector will be generated</span>
+<span class="sd">        :type text: str</span>
+<span class="sd">        :param params: MetaProps for the embedding generation, use ``ibm_watsonx_ai.metanames.EmbedTextParamsMetaNames().show()`` to view the list of MetaNames, defaults to None</span>
+<span class="sd">        :type params: ParamsType | None, optional</span>
+<span class="sd">        :return: embedding vector</span>
+<span class="sd">        :rtype: list[float]</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            q = &quot;What is a Generative AI?&quot;</span>
+<span class="sd">            embedding_vector = await embedding.aembed_query(text=q)</span>
+<span class="sd">            print(embedding_vector)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">agenerate</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">text</span><span class="p">],</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="p">[{}])[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;embedding&quot;</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_payload</span><span class="p">(</span>
@@ -753,6 +859,28 @@
             <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
             <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
             <span class="n">_http_client</span><span class="o">=</span><span class="n">http_client</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+            <span class="mi">200</span><span class="p">,</span>
+            <span class="s2">&quot;generate&quot;</span><span class="p">,</span>
+            <span class="n">response_scoring</span><span class="p">,</span>
+            <span class="n">_field_to_hide</span><span class="o">=</span><span class="s2">&quot;embedding&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_agenerate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">generate_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">ParamsType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send request with post and return service response in an asynchronous manner.&quot;&quot;&quot;</span>
+
+        <span class="n">response_scoring</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agenerate_raw_response</span><span class="p">(</span>
+            <span class="n">generate_url</span><span class="o">=</span><span class="n">generate_url</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">_async_http_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_async_http_client</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
@@ -809,7 +937,13 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_post</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">http_client</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span> <span class="o">|</span> <span class="n">_requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">http_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">http_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@requests</span><span class="o">.</span><span class="n">_with_async_retry</span><span class="p">(</span><span class="n">retry_status_codes</span><span class="o">=</span><span class="n">_RETRY_STATUS_CODES</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_apost</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">async_http_client</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">async_http_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

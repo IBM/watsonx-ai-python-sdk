@@ -349,6 +349,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.libs.repo.util.library_imports</span><span class="w"> </span><span class="kn">import</span> <span class="n">LibraryChecker</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">all_logging_disabled</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlparse</span><span class="p">,</span> <span class="n">parse_qs</span>
+
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecStates</span>
@@ -566,7 +568,7 @@
                         <span class="n">metaProps</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">DeploymentMetaNames</span><span class="o">.</span><span class="n">BASE_MODEL_ID</span><span class="p">:</span> <span class="n">model_id</span><span class="p">})</span>
         <span class="c1"># --- end note</span>
 
-        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployments_href</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployments_href</span><span class="p">()</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
             <span class="n">url</span><span class="p">,</span>
@@ -784,7 +786,7 @@
             <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">version_param</span><span class="p">,</span>
         <span class="p">}</span>
 
-        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployments_href</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployments_href</span><span class="p">()</span>
         <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
         <span class="p">)</span>
@@ -886,7 +888,7 @@
                 <span class="s2">&quot;&#39;deployment_id&#39; is not an id: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployments_href</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployments_href</span><span class="p">()</span>
 
         <span class="n">query_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
 
@@ -1053,10 +1055,8 @@
                 <span class="s2">&quot;&#39;deployment_id&#39; is not an id: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="n">deployment_url</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployment_href</span><span class="p">(</span>
-                <span class="n">deployment_id</span>
-            <span class="p">)</span>
+        <span class="n">deployment_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployment_href</span><span class="p">(</span>
+            <span class="n">deployment_id</span>
         <span class="p">)</span>
 
         <span class="n">response_delete</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
@@ -1521,9 +1521,7 @@
                 <span class="p">}</span>
             <span class="p">)</span>
 
-        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployment_href</span><span class="p">(</span>
-            <span class="n">deployment_id</span>
-        <span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployment_href</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">)</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
             <span class="n">url</span><span class="p">,</span>
@@ -1622,9 +1620,7 @@
         <span class="k">if</span> <span class="n">transaction_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;x-global-transaction-id&quot;</span><span class="p">:</span> <span class="n">transaction_id</span><span class="p">})</span>
         <span class="c1"># making change - connection keep alive</span>
-        <span class="n">scoring_url</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_async_deployment_job_href</span><span class="p">()</span>
-        <span class="p">)</span>
+        <span class="n">scoring_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_async_deployment_job_href</span><span class="p">()</span>
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="ow">and</span> <span class="n">retention</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1887,9 +1883,7 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">job_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="s2">&quot;job_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_async_deployment_job_href</span><span class="p">()</span>
-        <span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_async_deployment_job_href</span><span class="p">()</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">include</span><span class="p">:</span>
@@ -2051,10 +2045,8 @@
                 <span class="n">job_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_job_details</span><span class="p">(</span><span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">)</span>
                 <span class="n">run_id</span> <span class="o">=</span> <span class="n">job_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;platform_job&quot;</span><span class="p">][</span><span class="s2">&quot;run_id&quot;</span><span class="p">]</span>
 
-                <span class="n">jobs_runs_url</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_jobs_runs_href</span><span class="p">(</span>
-                        <span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">,</span> <span class="n">run_id</span><span class="o">=</span><span class="n">run_id</span>
-                    <span class="p">)</span>
+                <span class="n">jobs_runs_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_jobs_runs_href</span><span class="p">(</span>
+                    <span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">,</span> <span class="n">run_id</span><span class="o">=</span><span class="n">run_id</span>
                 <span class="p">)</span>
 
                 <span class="n">response_delete</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
@@ -2067,9 +2059,7 @@
             <span class="k">except</span><span class="p">:</span>
                 <span class="k">pass</span>
 
-        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_async_deployment_jobs_href</span><span class="p">(</span>
-            <span class="n">job_id</span>
-        <span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_async_deployment_jobs_href</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">hard_delete</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;hard_delete&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">})</span>
@@ -2120,25 +2110,31 @@
 
         <span class="k">match</span> <span class="n">inference_type</span><span class="p">:</span>
             <span class="k">case</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span>
-                <span class="n">generated_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_deployment_generation_href</span><span class="p">(</span>
-                    <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="s2">&quot;text&quot;</span>
+                <span class="n">generated_url</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_deployment_generation_href</span><span class="p">(</span>
+                        <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="s2">&quot;text&quot;</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">case</span> <span class="s2">&quot;text_stream&quot;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_use_fm_ga_api</span><span class="p">:</span>
-                    <span class="n">generated_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_deployment_generation_stream_href</span><span class="p">(</span>
+                    <span class="n">generated_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_deployment_generation_stream_href</span><span class="p">(</span>
                         <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>  <span class="c1"># Remove on CPD 5.0 release</span>
-                    <span class="n">generated_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_deployment_generation_href</span><span class="p">(</span>
+                    <span class="n">generated_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_deployment_generation_href</span><span class="p">(</span>
                         <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="s2">&quot;text_stream&quot;</span>
                     <span class="p">)</span>
             <span class="k">case</span> <span class="s2">&quot;chat&quot;</span><span class="p">:</span>
-                <span class="n">generated_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_deployment_chat_href</span><span class="p">(</span>
-                    <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span>
+                <span class="n">generated_url</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_deployment_chat_href</span><span class="p">(</span>
+                        <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">case</span> <span class="s2">&quot;chat_stream&quot;</span><span class="p">:</span>
-                <span class="n">generated_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_deployment_chat_stream_href</span><span class="p">(</span>
-                    <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span>
+                <span class="n">generated_url</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fm_deployment_chat_stream_href</span><span class="p">(</span>
+                        <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">InvalidValue</span><span class="p">(</span>
@@ -2184,11 +2180,12 @@
         <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_CONCURRENCY_LIMIT</span><span class="p">,</span>
         <span class="n">async_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">validate_prompt_variables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">guardrails_granite_guardian_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a raw response with `prompt` for given `deployment_id`.</span>
 
@@ -2221,6 +2218,9 @@
 <span class="sd">                                          This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</span>
 <span class="sd">        :type validate_prompt_variables: bool</span>
 
+<span class="sd">        :param guardrails_granite_guardian_params: parameters for Granite Guardian moderations</span>
+<span class="sd">        :type guardrails_granite_guardian_params: dict, optional</span>
+
 <span class="sd">        :return: scoring result containing generated content</span>
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2234,6 +2234,7 @@
             <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
             <span class="n">async_mode</span><span class="o">=</span><span class="n">async_mode</span><span class="p">,</span>
             <span class="n">validate_prompt_variables</span><span class="o">=</span><span class="n">validate_prompt_variables</span><span class="p">,</span>
+            <span class="n">guardrails_granite_guardian_params</span><span class="o">=</span><span class="n">guardrails_granite_guardian_params</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -2246,10 +2247,11 @@
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">raw_response</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_CONCURRENCY_LIMIT</span><span class="p">,</span>
         <span class="n">validate_prompt_variables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">guardrails_granite_guardian_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Given the selected deployment (deployment_id), a text prompt as input, and the parameters and concurrency_limit,</span>
 <span class="sd">        the selected inference will generate a completion text as generated_text response.</span>
@@ -2281,6 +2283,9 @@
 <span class="sd">                                          This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</span>
 <span class="sd">        :type validate_prompt_variables: bool</span>
 
+<span class="sd">        :param guardrails_granite_guardian_params: parameters for Granite Guardian moderations</span>
+<span class="sd">        :type guardrails_granite_guardian_params: dict, optional</span>
+
 <span class="sd">        :return: generated content</span>
 <span class="sd">        :rtype: str</span>
 
@@ -2305,6 +2310,7 @@
             <span class="n">concurrency_limit</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">,</span>
             <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
             <span class="n">validate_prompt_variables</span><span class="o">=</span><span class="n">validate_prompt_variables</span><span class="p">,</span>
+            <span class="n">guardrails_granite_guardian_params</span><span class="o">=</span><span class="n">guardrails_granite_guardian_params</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -2317,9 +2323,10 @@
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">raw_response</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">validate_prompt_variables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">guardrails_granite_guardian_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Given the selected deployment (deployment_id), a text prompt as input and parameters,</span>
 <span class="sd">        the selected inference will generate a streamed text as generate_text_stream.</span>
@@ -2348,6 +2355,9 @@
 <span class="sd">                                          This parameter is only applicable in a Prompt Template Asset deployment scenario and should not be changed for different cases, defaults to True</span>
 <span class="sd">        :type validate_prompt_variables: bool</span>
 
+<span class="sd">        :param guardrails_granite_guardian_params: parameters for Granite Guardian moderations</span>
+<span class="sd">        :type guardrails_granite_guardian_params: dict, optional</span>
+
 <span class="sd">        :return: generated content</span>
 <span class="sd">        :rtype: str</span>
 
@@ -2371,6 +2381,7 @@
             <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="n">guardrails_hap_params</span><span class="p">,</span>
             <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">,</span>
             <span class="n">validate_prompt_variables</span><span class="o">=</span><span class="n">validate_prompt_variables</span><span class="p">,</span>
+            <span class="n">guardrails_granite_guardian_params</span><span class="o">=</span><span class="n">guardrails_granite_guardian_params</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -2404,7 +2415,12 @@
 
 <div class="viewcode-block" id="Deployments.run_ai_service">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.run_ai_service">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">run_ai_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ai_service_payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_ai_service</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">ai_service_payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">path_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute an AI service by providing a scoring payload.</span>
 
 <span class="sd">        :param deployment_id: unique ID of the deployment</span>
@@ -2412,6 +2428,9 @@
 
 <span class="sd">        :param ai_service_payload: AI service payload to be passed to generate the method</span>
 <span class="sd">        :type ai_service_payload: dict</span>
+
+<span class="sd">        :param path_suffix: path suffix to be appended to the scoring url, defaults to None</span>
+<span class="sd">        :type path_suffix: str, optional</span>
 
 <span class="sd">        :return: response of the AI service</span>
 <span class="sd">        :rtype: Any</span>
@@ -2424,11 +2443,13 @@
         <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">ai_service_payload</span><span class="p">,</span> <span class="s2">&quot;ai_service_payload&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
         <span class="n">scoring_url</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployment_href</span><span class="p">(</span>
-                <span class="n">deployment_id</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployment_href</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">)</span>
             <span class="o">+</span> <span class="s2">&quot;/ai_service&quot;</span>
         <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">path_suffix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scoring_url</span> <span class="o">+=</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">path_suffix</span>
+
         <span class="n">response_scoring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
             <span class="n">url</span><span class="o">=</span><span class="n">scoring_url</span><span class="p">,</span>
             <span class="n">json</span><span class="o">=</span><span class="n">ai_service_payload</span><span class="p">,</span>
@@ -2456,7 +2477,9 @@
 <div class="viewcode-block" id="Deployments.run_ai_service_stream">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.run_ai_service_stream">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run_ai_service_stream</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ai_service_payload</span><span class="p">:</span> <span class="nb">dict</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">ai_service_payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute an AI service by providing a scoring payload.</span>
 
@@ -2473,9 +2496,7 @@
         <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">ai_service_payload</span><span class="p">,</span> <span class="s2">&quot;ai_service_payload&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
         <span class="n">scoring_url</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployment_href</span><span class="p">(</span>
-                <span class="n">deployment_id</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployment_href</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">)</span>
             <span class="o">+</span> <span class="s2">&quot;/ai_service_stream&quot;</span>
         <span class="p">)</span>
 
@@ -2513,6 +2534,12 @@
 
 <span class="sd">    :param request_payload_json: Request payload for testing of generate/ generate_stream call of AI Service.</span>
 <span class="sd">    :type request_payload_json: dict, optional</span>
+
+<span class="sd">    :param method: HTTP request method for testing of generate/ generate_stream call of AI Service.</span>
+<span class="sd">    :type method: str, optional</span>
+
+<span class="sd">    :param path: Request endpoint path for testing of generate/ generate_stream call of AI Service.</span>
+<span class="sd">    :type path: str, optional</span>
 
 <span class="sd">    ``</span>
 <span class="sd">    RuntimeContext`` initialized for testing purposes before deployment:</span>
@@ -2552,9 +2579,17 @@
 <span class="sd">        generate_output = generate(context)  # returns {&quot;body&quot;: {&quot;field2&quot;: &quot;value2&quot;}}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">request_payload_json</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">,</span>
+        <span class="n">request_payload_json</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="o">=</span> <span class="n">api_client</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">request_payload_json</span> <span class="o">=</span> <span class="n">request_payload_json</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">request_payload_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
@@ -2605,6 +2640,52 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_space_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return default space id.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">default_space_id</span></div>
+
+
+<div class="viewcode-block" id="RuntimeContext.get_method">
+<a class="viewcode-back" href="../../core_api.html#client.RuntimeContext.get_method">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the HTTP request method: &#39;GET&#39;, &#39;POST&#39;, etc.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="RuntimeContext.get_path_suffix">
+<a class="viewcode-back" href="../../core_api.html#client.RuntimeContext.get_path_suffix">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_path_suffix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the suffix of ai_service endpoint including the query parameters.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;ai_service&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Couldn&#39;t find the path suffix since endpoint URL is incorrect.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="k">if</span> <span class="n">suffix</span><span class="p">:</span>
+            <span class="n">suffix</span> <span class="o">=</span> <span class="n">suffix</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">suffix</span></div>
+
+
+<div class="viewcode-block" id="RuntimeContext.get_query_parameters">
+<a class="viewcode-back" href="../../core_api.html#client.RuntimeContext.get_query_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_query_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the query parameters from the ai_service endpoint as a dict.&quot;&quot;&quot;</span>
+        <span class="n">parsed_url</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">parsed_url</span><span class="o">.</span><span class="n">query</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">parse_qs</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">params</span><span class="p">:</span>
+            <span class="n">flat_params</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="k">return</span> <span class="n">flat_params</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="RuntimeContext.get_bytes">
+<a class="viewcode-back" href="../../core_api.html#client.RuntimeContext.get_bytes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the request data as bytes.&quot;&quot;&quot;</span>
+        <span class="n">payload_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
+        <span class="n">payload_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload_json</span><span class="p">)</span>
+        <span class="n">bytes_data</span> <span class="o">=</span> <span class="n">payload_str</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bytes_data</span></div>
 </div>
 
 </pre></div>

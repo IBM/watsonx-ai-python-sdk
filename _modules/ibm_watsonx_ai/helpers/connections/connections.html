@@ -659,7 +659,7 @@
             <span class="p">)</span>
         <span class="p">)</span>
 
-        <span class="n">conn</span> <span class="o">=</span> <span class="n">FlightConnection</span><span class="p">(</span>
+        <span class="k">return</span> <span class="n">FlightConnection</span><span class="p">(</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
             <span class="n">sampling_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -673,8 +673,6 @@
             <span class="n">space_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">default_space_id</span><span class="p">,</span>
             <span class="n">_api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="p">,</span>
         <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">conn</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_paths_from_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_folders</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns file and folder (optional) paths (keys) of objects that are stored at a NFS / Storage Volume or bucket location.</span>
@@ -697,22 +695,22 @@
         <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">flight_conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_flight_connection_for_discovery</span><span class="p">()</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_flight_connection_for_discovery</span><span class="p">()</span> <span class="k">as</span> <span class="n">flight_conn</span><span class="p">:</span>
 
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">NFSLocation</span><span class="p">):</span>
-                <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">r</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
-                    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">flight_conn</span><span class="o">.</span><span class="n">discovery</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)[</span><span class="s2">&quot;assets&quot;</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">include_types</span>
-                <span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">r</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">flight_conn</span><span class="o">.</span><span class="n">discovery</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)[</span>
-                        <span class="s2">&quot;assets&quot;</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">NFSLocation</span><span class="p">):</span>
+                    <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
+                        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">flight_conn</span><span class="o">.</span><span class="n">discovery</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)[</span><span class="s2">&quot;assets&quot;</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">include_types</span>
                     <span class="p">]</span>
-                    <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">include_types</span>
-                <span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">flight_conn</span><span class="o">.</span><span class="n">discovery</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)[</span><span class="s2">&quot;assets&quot;</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">include_types</span>
+                    <span class="p">]</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">include_folders</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">NFSLocation</span><span class="p">):</span>
@@ -2181,9 +2179,7 @@
                 <span class="n">error_msg</span><span class="o">=</span><span class="s2">&quot;Can&#39;t list asset files from this DataConnection.&quot;</span><span class="p">,</span>
                 <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Location must be: `FSLocation` or `ContainerLocation`, only on IBM Cloud Pak for Data.&quot;</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
-        <span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">flat</span><span class="p">:</span>
             <span class="n">params</span><span class="p">[</span><span class="s2">&quot;flat&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>
@@ -2570,7 +2566,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># note: try to get file size from remote server</span>
             <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
+                <span class="n">workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
                 <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/assets/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
             <span class="n">path_info_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">head</span><span class="p">(</span>
@@ -2653,9 +2649,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">attachment_id</span> <span class="o">=</span> <span class="n">asset_details</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
 
-        <span class="n">attachment_url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_data_asset_href</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
-        <span class="p">)</span>
+        <span class="n">attachment_url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_data_asset_href</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="n">attachment_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attachment_url</span><span class="si">}</span><span class="s2">/attachments/</span><span class="si">{</span><span class="n">attachment_id</span><span class="si">}</span><span class="s2">&quot;</span>
 
         <span class="k">if</span> <span class="n">client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
@@ -2690,9 +2684,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_file_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workspace</span><span class="p">:</span> <span class="s2">&quot;WorkSpace&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;int&quot;</span><span class="p">:</span>
         <span class="n">asset_info_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_data_asset_href</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
-            <span class="p">),</span>
+            <span class="n">workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_data_asset_href</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
             <span class="n">params</span><span class="o">=</span><span class="n">workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
             <span class="n">headers</span><span class="o">=</span><span class="n">workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
         <span class="p">)</span>
@@ -2747,7 +2739,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__api_client</span> <span class="o">=</span> <span class="n">var</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__api_client</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__api_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_base_asset_href</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__api_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_base_asset_href</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_initial_asset_id</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>

@@ -307,7 +307,8 @@
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.retriever.base_retriever</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">BaseRetriever</span><span class="p">,</span>
 <span class="p">)</span>
@@ -318,8 +319,11 @@
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.tools.simple</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tool</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetrieverInput</span>
+
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="n">MissingExtension</span><span class="p">(</span><span class="s2">&quot;langchain&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">MissingExtension</span><span class="p">(</span><span class="s2">&quot;langchain-core&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="RetrievalMethod">
@@ -445,8 +449,70 @@
         <span class="n">init_parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Retriever&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">vector_store</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="n">init_parameters</span> <span class="ow">or</span> <span class="p">{}))</span></div>
+
+
+<div class="viewcode-block" id="Retriever.to_langchain_tool">
+<a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.retriever.retriever.Retriever.to_langchain_tool">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_langchain_tool</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;retriever&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Retriever tool&quot;</span><span class="p">,</span>
+        <span class="n">document_prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{document}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">document_separator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">retriever_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a LangChain tool to do retrieval of documents.</span>
+
+<span class="sd">        :param name: the name for the tool that will be passed to the language model,</span>
+<span class="sd">                     should be unique and somewhat descriptive, defaults to &quot;retriever&quot;</span>
+<span class="sd">        :type name: str, optional</span>
+
+<span class="sd">        :param description: the description for the tool that will be passed to the language model, defaults to &quot;Retriever tool&quot;</span>
+<span class="sd">        :type description: str, optional</span>
+
+<span class="sd">        :param document_prompt: the prompt to use for the document, defaults to &quot;{document}&quot;</span>
+<span class="sd">        :type document_prompt: str, optional</span>
+
+<span class="sd">        :param document_separator: the separator to use between documents, defaults to &quot;\n\n&quot;</span>
+<span class="sd">        :type document_separator: str, optional</span>
+
+<span class="sd">        :param retriever_kwargs: keyword arguments that will be passed to Retriever.retrieve method, defaults to {}</span>
+<span class="sd">        :type retriever_kwargs: Any, optional</span>
+
+<span class="sd">        :return: instance of Langchain Tool class to pass to an agent.</span>
+<span class="sd">        :rtype: Tool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">func</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+            <span class="n">_get_relevant_documents</span><span class="p">,</span>
+            <span class="n">retriever</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">document_prompt</span><span class="o">=</span><span class="n">document_prompt</span><span class="p">,</span>
+            <span class="n">document_separator</span><span class="o">=</span><span class="n">document_separator</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">retriever_kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">Tool</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+            <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span>
+            <span class="n">args_schema</span><span class="o">=</span><span class="n">RetrieverInput</span><span class="p">,</span>
+        <span class="p">)</span></div>
 </div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_relevant_documents</span><span class="p">(</span>
+    <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">retriever</span><span class="p">:</span> <span class="n">BaseRetriever</span><span class="p">,</span>
+    <span class="n">document_separator</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">document_prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">retriever_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">retriever</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="o">**</span><span class="n">retriever_kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">document_separator</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">document_prompt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">document</span><span class="o">=</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span>
+    <span class="p">)</span>
 </pre></div>
         </article>
       </div>

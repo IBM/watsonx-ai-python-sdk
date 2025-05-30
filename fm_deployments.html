@@ -312,24 +312,49 @@
 <h1><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments<a class="headerlink" href="#modelinference-for-deployments" title="Link to this heading">¶</a></h1>
 <p>This section shows how to use the ModelInference module with a created deployment.</p>
 <dl class="simple">
-<dt>You can infer text in one of two ways:</dt><dd><ul class="simple">
-<li><p>the <a class="reference internal" href="pt_model_inference.html#generate-text-deployments"><span class="std std-ref">deployments</span></a> module</p></li>
-<li><p>the <a class="reference internal" href="pt_model_inference.html#generate-text-modelinference"><span class="std std-ref">ModelInference</span></a> module</p></li>
+<dt>You can infer text or chat with deployed model in one of two ways:</dt><dd><ul class="simple">
+<li><p>the <a class="reference internal" href="#deploy-generate-text-deployments"><span class="std std-ref">deployments</span></a> module</p></li>
+<li><p>the <a class="reference internal" href="#deploy-generate-text-modelinference"><span class="std std-ref">ModelInference</span></a> module</p></li>
 </ul>
 </dd>
 </dl>
 <section id="infer-text-with-deployments">
 <h2>Infer text with deployments<a class="headerlink" href="#infer-text-with-deployments" title="Link to this heading">¶</a></h2>
-<p>You can directly query <code class="docutils literal notranslate"><span class="pre">generate_text</span></code> using the deployments module.</p>
+<p id="deploy-generate-text-deployments">You can directly query <code class="docutils literal notranslate"><span class="pre">generate_text</span></code> or <code class="docutils literal notranslate"><span class="pre">generate_text_stream</span></code> using the deployments module.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">generate_text</span><span class="p">(</span>
     <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Example prompt&quot;</span><span class="p">,</span>
     <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span><span class="p">)</span>
+
+<span class="c1"># OR</span>
+
+<span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">generate_text_stream</span><span class="p">(</span><span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="n">input_prompt</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="chat-with-deployments">
+<h2>Chat with deployments<a class="headerlink" href="#chat-with-deployments" title="Link to this heading">¶</a></h2>
+<p>You can directly call <code class="docutils literal notranslate"><span class="pre">chat</span></code> or <code class="docutils literal notranslate"><span class="pre">chat_stream</span></code> using the deployments module.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;How are you?&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+<span class="n">chat_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">chat_response</span><span class="p">[</span><span class="s2">&quot;choices&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;message&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
+
+<span class="c1"># OR</span>
+
+<span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">chat_stream</span><span class="p">(</span><span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;choices&quot;</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;choices&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;delta&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="creating-modelinference-instance">
 <h2>Creating <code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> instance<a class="headerlink" href="#creating-modelinference-instance" title="Link to this heading">¶</a></h2>
-<p>Start by defining the parameters. They will later be used by the module.</p>
+<p id="deploy-generate-text-modelinference">Start by defining the parameters. They will later be used by the module.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.metanames</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenTextParamsMetaNames</span> <span class="k">as</span> <span class="n">GenParams</span>
 
 <span class="n">generate_params</span> <span class="o">=</span> <span class="p">{</span>
@@ -357,17 +382,27 @@
 <span class="p">)</span>
 </pre></div>
 </div>
-<p id="generate-text-modelinference">You can directly query <code class="docutils literal notranslate"><span class="pre">generate_text</span></code> using the <code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> object.</p>
+<p>A detailed explanation of available methods with exact parameters can be found in the <a class="reference internal" href="fm_model_inference.html#model-inference-class"><span class="std std-ref">ModelInferece class</span></a>.</p>
+<p>You can directly query <code class="docutils literal notranslate"><span class="pre">generate_text</span></code> using the <code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> object.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">deployed_model</span><span class="o">.</span><span class="n">generate_text</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Example prompt&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Also, you can <code class="docutils literal notranslate"><span class="pre">chat</span></code> using the same instance.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;How are you?&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+<span class="n">deployed_model</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="generate-methods">
 <h2>Generate methods<a class="headerlink" href="#generate-methods" title="Link to this heading">¶</a></h2>
-<p>A detailed explanation of available generate methods with exact parameters can be found in the <a class="reference internal" href="fm_model_inference.html#model-inference-class"><span class="std std-ref">ModelInferece class</span></a>.</p>
 <p>With the previously created <code class="docutils literal notranslate"><span class="pre">deployed_model</span></code> object, it is possible to generate a text stream (generator) using a defined inference and the <code class="docutils literal notranslate"><span class="pre">generate_text_stream()</span></code> method.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">deployed_model</span><span class="o">.</span><span class="n">generate_text_stream</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">input_prompt</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">deployed_model</span><span class="o">.</span><span class="n">generate_text_stream</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">input_prompt</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="s1">&#39;$10 Powerchill Leggings&#39;</span>
 </pre></div>
 </div>
@@ -387,6 +422,34 @@
     <span class="p">],</span>
     <span class="s1">&#39;system&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;warnings&#39;</span><span class="p">:</span> <span class="p">[]}</span>
 <span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="chat-methods">
+<h2>Chat methods<a class="headerlink" href="#chat-methods" title="Link to this heading">¶</a></h2>
+<p>You can chat with the previously created <code class="docutils literal notranslate"><span class="pre">deployed_model</span></code> object using <code class="docutils literal notranslate"><span class="pre">chat()</span></code> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;How are you?&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+<span class="n">chat_response</span> <span class="o">=</span> <span class="n">deployed_model</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">chat_response</span><span class="p">[</span><span class="s2">&quot;choices&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;message&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>It is also possible to chat in streaming mode (generator) using a defined instance and the <code class="docutils literal notranslate"><span class="pre">chat_stream()</span></code> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;How are you?&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+<span class="n">chat_stream_response</span> <span class="o">=</span> <span class="n">deployed_model</span><span class="o">.</span><span class="n">chat_stream</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chat_stream_response</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;choices&quot;</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;choices&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;delta&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -449,8 +512,10 @@
             <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a><ul>
 <li><a class="reference internal" href="#infer-text-with-deployments">Infer text with deployments</a></li>
+<li><a class="reference internal" href="#chat-with-deployments">Chat with deployments</a></li>
 <li><a class="reference internal" href="#creating-modelinference-instance">Creating <code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> instance</a></li>
 <li><a class="reference internal" href="#generate-methods">Generate methods</a></li>
+<li><a class="reference internal" href="#chat-methods">Chat methods</a></li>
 </ul>
 </li>
 </ul>

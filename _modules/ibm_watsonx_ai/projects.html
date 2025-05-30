@@ -432,7 +432,7 @@
             <span class="n">project_meta</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">project_meta</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">]]</span>
 
         <span class="n">creation_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_transactional_projects_href</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_transactional_projects_href</span><span class="p">(),</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
             <span class="n">json</span><span class="o">=</span><span class="n">project_meta</span><span class="p">,</span>
         <span class="p">)</span>
@@ -528,8 +528,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">Projects</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">project_endpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_transactional_project_href</span><span class="p">(</span>
-            <span class="n">project_id</span>
+        <span class="n">project_endpoint</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_transactional_project_href</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="n">response_delete</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
@@ -588,9 +588,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">Projects</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
-        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_project_href</span><span class="p">(</span>
-            <span class="n">project_id</span>
-        <span class="p">)</span>
+        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_project_href</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">response_get</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">href</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">())</span>
@@ -601,7 +599,7 @@
             <span class="n">query_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">project_name</span><span class="p">}</span> <span class="k">if</span> <span class="n">project_name</span> <span class="k">else</span> <span class="kc">None</span>
 
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_with_or_without_limit</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_href</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_href</span><span class="p">(),</span>
                 <span class="mi">100</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">limit</span> <span class="ow">or</span> <span class="n">limit</span> <span class="o">&gt;</span> <span class="mi">100</span> <span class="k">else</span> <span class="n">limit</span><span class="p">,</span>
                 <span class="s2">&quot;projects&quot;</span><span class="p">,</span>
                 <span class="n">summary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -647,7 +645,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">Projects</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_href</span><span class="p">()</span>
+        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_href</span><span class="p">()</span>
 
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -759,9 +757,7 @@
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">payload</span><span class="p">:</span>
                 <span class="n">payload</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_project_href</span><span class="p">(</span>
-            <span class="n">project_id</span>
-        <span class="p">)</span>
+        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_project_href</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
             <span class="n">href</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
@@ -842,9 +838,7 @@
         <span class="p">)</span>
 
         <span class="n">creation_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_members_href</span><span class="p">(</span>
-                <span class="n">project_id</span>
-            <span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_members_href</span><span class="p">(</span><span class="n">project_id</span><span class="p">),</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
             <span class="n">json</span><span class="o">=</span><span class="n">project_meta</span><span class="p">,</span>
         <span class="p">)</span>
@@ -882,15 +876,13 @@
         <span class="n">Projects</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">user_name</span><span class="p">,</span> <span class="s2">&quot;member_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">user_name</span><span class="p">:</span>
-            <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_member_href</span><span class="p">(</span>
+            <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_member_href</span><span class="p">(</span>
                 <span class="n">project_id</span><span class="p">,</span> <span class="n">user_name</span>
             <span class="p">)</span>
             <span class="n">response_get</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">href</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">())</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;Get project member&quot;</span><span class="p">,</span> <span class="n">response_get</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_members_href</span><span class="p">(</span>
-                <span class="n">project_id</span>
-            <span class="p">)</span>
+            <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_members_href</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
             <span class="n">response_get</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">href</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">())</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;Get project members&quot;</span><span class="p">,</span> <span class="n">response_get</span><span class="p">)</span></div>
 
@@ -917,10 +909,8 @@
         <span class="n">Projects</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="n">Projects</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">user_name</span><span class="p">,</span> <span class="s2">&quot;user_name&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
-        <span class="n">member_endpoint</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_member_href</span><span class="p">(</span>
-                <span class="n">project_id</span><span class="p">,</span> <span class="n">user_name</span>
-            <span class="p">)</span>
+        <span class="n">member_endpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_member_href</span><span class="p">(</span>
+            <span class="n">project_id</span><span class="p">,</span> <span class="n">user_name</span>
         <span class="p">)</span>
 
         <span class="n">response_delete</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
@@ -973,9 +963,7 @@
 
         <span class="c1"># patching is different here, you just pass updated members but without `state` and `type`</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_members_href</span><span class="p">(</span>
-                <span class="n">project_id</span>
-            <span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_members_href</span><span class="p">(</span><span class="n">project_id</span><span class="p">),</span>
             <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;members&quot;</span><span class="p">:</span> <span class="n">patch_request</span><span class="p">},</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
         <span class="p">)</span>
@@ -1033,11 +1021,7 @@
         <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state</span><span class="p">})</span>
 
-        <span class="n">href</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_members_href</span><span class="p">(</span>
-                <span class="n">project_id</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_members_href</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
 
         <span class="n">member_resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_resources</span><span class="p">(</span><span class="n">href</span><span class="p">,</span> <span class="s2">&quot;project members&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)[</span>
             <span class="s2">&quot;resources&quot;</span>

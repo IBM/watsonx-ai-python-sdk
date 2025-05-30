@@ -315,6 +315,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="n">VectorStoreSerializationError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.embeddings</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEmbeddings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">BaseVectorStore</span><span class="p">,</span>
@@ -458,6 +459,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_vector_store</span><span class="p">:</span> <span class="n">BaseVectorStore</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_index_properties</span> <span class="o">=</span> <span class="n">kwargs</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_serializable</span> <span class="o">=</span> <span class="kc">True</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_id</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connecting by connection asset.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span>
@@ -491,6 +494,7 @@
                     <span class="s2">&quot;`api_client` is required if connecting by connection asset.&quot;</span>
                 <span class="p">)</span>
         <span class="k">elif</span> <span class="n">langchain_vector_store</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_serializable</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connecting by already established LangChain vector store.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">langchain_vector_store</span><span class="p">),</span> <span class="n">LangChainVectorStore</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_vector_store</span> <span class="o">=</span> <span class="n">LangChainVectorStoreAdapter</span><span class="p">(</span><span class="n">langchain_vector_store</span><span class="p">)</span>
@@ -525,7 +529,13 @@
 
 <span class="sd">        :return: dict for the from_dict initialization</span>
 <span class="sd">        :rtype: dict</span>
+
+<span class="sd">        :raises VectorStoreSerializationError: when instance is not serializable</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_serializable</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">VectorStoreSerializationError</span><span class="p">(</span>
+                <span class="s2">&quot;Serialization is not available when passing langchain vector store instance in `VectorStore` constructor.&quot;</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;connection_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_id</span><span class="p">,</span>
             <span class="s2">&quot;embeddings&quot;</span><span class="p">:</span> <span class="p">(</span>

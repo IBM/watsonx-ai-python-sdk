@@ -421,7 +421,7 @@
         <span class="k">if</span> <span class="n">connection_id</span><span class="p">:</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests_retry_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
                 <span class="n">response</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_by_id_href</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_by_id_href</span><span class="p">(</span>
                         <span class="n">connection_id</span>
                     <span class="p">),</span>
                     <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
@@ -439,9 +439,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests_retry_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
                 <span class="n">response</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_asset_search_href</span><span class="p">(</span>
-                        <span class="s2">&quot;connection&quot;</span>
-                    <span class="p">),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_asset_search_href</span><span class="p">(</span><span class="s2">&quot;connection&quot;</span><span class="p">),</span>
                     <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;*:*&quot;</span><span class="p">,</span> <span class="s2">&quot;include&quot;</span><span class="p">:</span> <span class="s2">&quot;entity&quot;</span><span class="p">},</span>
                     <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
                     <span class="n">headers</span><span class="o">=</span><span class="n">header_param</span><span class="p">,</span>
@@ -582,7 +580,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;creating_connections&quot;</span><span class="p">))</span>
 
         <span class="n">creation_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connections_href</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connections_href</span><span class="p">(),</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
             <span class="n">json</span><span class="o">=</span><span class="n">connection_meta</span><span class="p">,</span>
             <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
@@ -646,10 +644,8 @@
 
         <span class="n">Connections</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">connection_id</span><span class="p">,</span> <span class="s2">&quot;connection_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">connection_endpoint</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_by_id_href</span><span class="p">(</span>
-                <span class="n">connection_id</span>
-            <span class="p">)</span>
+        <span class="n">connection_endpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_by_id_href</span><span class="p">(</span>
+            <span class="n">connection_id</span>
         <span class="p">)</span>
         <span class="n">response_delete</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
             <span class="n">connection_endpoint</span><span class="p">,</span>
@@ -741,7 +737,7 @@
             <span class="k">return</span> <span class="n">res</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;href&quot;</span><span class="p">)</span>
 
         <span class="n">res</span><span class="p">,</span> <span class="n">url</span> <span class="o">=</span> <span class="n">get_res</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_data_types_href</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_data_types_href</span><span class="p">()</span>
         <span class="p">)</span>
         <span class="n">datasource_details</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
 
@@ -843,7 +839,7 @@
             <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_uploaded_db_drivers_new_api</span><span class="p">()</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
                 <span class="o">+</span> <span class="s2">&quot;dbdrivers&quot;</span><span class="p">,</span>
                 <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(</span><span class="n">no_content_type</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
                 <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
@@ -878,7 +874,7 @@
             <span class="p">)</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connections_files_href</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connections_files_href</span><span class="p">(),</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(</span><span class="n">no_content_type</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
@@ -935,7 +931,7 @@
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests_retry_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_data_type_by_id_href</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_data_type_by_id_href</span><span class="p">(</span>
                     <span class="n">datasource_type_id</span>
                 <span class="p">),</span>
                 <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
@@ -1017,7 +1013,7 @@
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests_retry_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_data_type_by_id_href</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_data_type_by_id_href</span><span class="p">(</span>
                     <span class="n">datasource_type</span>
                 <span class="p">),</span>
                 <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
@@ -1061,7 +1057,7 @@
 
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fdata</span><span class="p">:</span>
                 <span class="n">content_upload_url</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
                     <span class="o">+</span> <span class="s2">&quot;dbdrivers/&quot;</span>
                     <span class="o">+</span> <span class="n">quote</span><span class="p">(</span><span class="n">driver_file_name</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
                 <span class="p">)</span>
@@ -1108,8 +1104,10 @@
         <span class="n">driver_file_name</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fdata</span><span class="p">:</span>
-            <span class="n">content_upload_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connections_file_href</span><span class="p">(</span>
-                <span class="n">quote</span><span class="p">(</span><span class="n">driver_file_name</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">content_upload_url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connections_file_href</span><span class="p">(</span>
+                    <span class="n">quote</span><span class="p">(</span><span class="n">driver_file_name</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="p">)</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
                 <span class="n">content_upload_url</span><span class="p">,</span>
@@ -1189,7 +1187,7 @@
                 <span class="p">)</span>
 
             <span class="n">signed_url</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
                 <span class="o">+</span> <span class="n">quote</span><span class="p">(</span><span class="s2">&quot;dbdrivers/&quot;</span> <span class="o">+</span> <span class="n">jar_name</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
                 <span class="o">+</span> <span class="s2">&quot;/signed&quot;</span>
             <span class="p">)</span>

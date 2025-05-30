@@ -488,6 +488,7 @@
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
         <span class="n">async_mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+        <span class="n">guardrails_granite_guardian_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span> <span class="o">...</span>
 
     <span class="nd">@overload</span>  <span class="c1"># type: ignore[override]</span>
@@ -500,6 +501,7 @@
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">async_mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">],</span>
+        <span class="n">guardrails_granite_guardian_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@overload</span>  <span class="c1"># type: ignore[override]</span>
@@ -512,6 +514,7 @@
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
         <span class="n">async_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+        <span class="n">guardrails_granite_guardian_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="n">Generator</span><span class="p">:</span> <span class="o">...</span>
 
 <div class="viewcode-block" id="Model.generate">
@@ -525,6 +528,7 @@
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">ModelInference</span><span class="o">.</span><span class="n">DEFAULT_CONCURRENCY_LIMIT</span><span class="p">,</span>
         <span class="n">async_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">guardrails_granite_guardian_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="n">Generator</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a completion text as generated_text after getting</span>
 <span class="sd">        a text prompt as input and parameters for the selected model (model_id).</span>
@@ -551,6 +555,9 @@
 <span class="sd">                           to False</span>
 <span class="sd">        :type async_mode: bool</span>
 
+<span class="sd">        :param guardrails_granite_guardian_params: parameters for Granite Guardian moderations</span>
+<span class="sd">        :type guardrails_granite_guardian_params: dict, optional</span>
+
 <span class="sd">        :return: scoring result that contains the generated content</span>
 <span class="sd">        :rtype: dict</span>
 
@@ -572,6 +579,7 @@
             <span class="n">concurrency_limit</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">,</span>
             <span class="n">async_mode</span><span class="o">=</span><span class="n">async_mode</span><span class="p">,</span>
             <span class="n">validate_prompt_variables</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># keep default value, changing not permitted</span>
+            <span class="n">guardrails_granite_guardian_params</span><span class="o">=</span><span class="n">guardrails_granite_guardian_params</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -585,6 +593,7 @@
         <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+        <span class="n">guardrails_granite_guardian_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@overload</span>  <span class="c1"># type: ignore[override]</span>
@@ -597,6 +606,7 @@
         <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+        <span class="n">guardrails_granite_guardian_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
 
     <span class="nd">@overload</span>  <span class="c1"># type: ignore[override]</span>
@@ -609,6 +619,7 @@
         <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">guardrails_granite_guardian_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@overload</span>  <span class="c1"># type: ignore[override]</span>
@@ -621,6 +632,7 @@
         <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">guardrails_granite_guardian_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span> <span class="o">...</span>
 
 <div class="viewcode-block" id="Model.generate_text">
@@ -634,6 +646,7 @@
         <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">concurrency_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">ModelInference</span><span class="o">.</span><span class="n">DEFAULT_CONCURRENCY_LIMIT</span><span class="p">,</span>
+        <span class="n">guardrails_granite_guardian_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a completion text as generated_text after getting</span>
 <span class="sd">        a text prompt as input and parameters for the selected model (model_id).</span>
@@ -658,6 +671,9 @@
 <span class="sd">                                      to view the list of MetaNames</span>
 <span class="sd">        :type params: dict</span>
 
+<span class="sd">        :param guardrails_granite_guardian_params: parameters for Granite Guardian moderations</span>
+<span class="sd">        :type guardrails_granite_guardian_params: dict, optional</span>
+
 <span class="sd">        :return: generated content</span>
 <span class="sd">        :rtype: str or dict</span>
 
@@ -679,6 +695,7 @@
             <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">,</span>
             <span class="n">concurrency_limit</span><span class="o">=</span><span class="n">concurrency_limit</span><span class="p">,</span>
             <span class="n">validate_prompt_variables</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># keep default value, changing not permitted in this scenario</span>
+            <span class="n">guardrails_granite_guardian_params</span><span class="o">=</span><span class="n">guardrails_granite_guardian_params</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -692,6 +709,7 @@
         <span class="n">guardrails</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">guardrails_hap_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">guardrails_pii_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guardrails_granite_guardian_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a streamed text as generate_text_stream after getting</span>
 <span class="sd">        a text prompt as input and parameters for the selected model (model_id).</span>
@@ -712,6 +730,9 @@
 <span class="sd">        :param guardrails_hap_params: MetaProps for HAP moderations, use ``ibm_watsonx_ai.metanames.GenTextModerationsMetaNames().show()``</span>
 <span class="sd">                                      to view the list of MetaNames</span>
 <span class="sd">        :type params: dict</span>
+
+<span class="sd">        :param guardrails_granite_guardian_params: parameters for Granite Guardian moderations</span>
+<span class="sd">        :type guardrails_granite_guardian_params: dict, optional</span>
 
 <span class="sd">        :return: scoring result that contains the generated content</span>
 <span class="sd">        :rtype: generator</span>
@@ -735,6 +756,7 @@
             <span class="n">guardrails_hap_params</span><span class="o">=</span><span class="n">guardrails_hap_params</span><span class="p">,</span>
             <span class="n">guardrails_pii_params</span><span class="o">=</span><span class="n">guardrails_pii_params</span><span class="p">,</span>
             <span class="n">validate_prompt_variables</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># keep default value, changing not permitted in this scenario</span>
+            <span class="n">guardrails_granite_guardian_params</span><span class="o">=</span><span class="n">guardrails_granite_guardian_params</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 

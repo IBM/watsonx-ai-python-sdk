@@ -524,6 +524,58 @@ create a <cite>VectorStore</cite> and then define a <cite>Retriever</cite>.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.retriever.retriever.Retriever.to_langchain_tool">
+<span class="sig-name descname"><span class="pre">to_langchain_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'retriever'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Retriever</span> <span class="pre">tool'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_prompt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'{document}'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\n\n'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">retriever_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/retriever/retriever.html#Retriever.to_langchain_tool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.retriever.retriever.Retriever.to_langchain_tool" title="Link to this definition">¶</a></dt>
+<dd><p>Create a LangChain tool to do retrieval of documents.</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">param name<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the name for the tool that will be passed to the language model,
+should be unique and somewhat descriptive, defaults to “retriever”</p>
+</dd>
+<dt class="field-even">type name<span class="colon">:</span></dt>
+<dd class="field-even"><p>str, optional</p>
+</dd>
+<dt class="field-odd">param description<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the description for the tool that will be passed to the language model, defaults to “Retriever tool”</p>
+</dd>
+<dt class="field-even">type description<span class="colon">:</span></dt>
+<dd class="field-even"><p>str, optional</p>
+</dd>
+<dt class="field-odd">param document_prompt<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the prompt to use for the document, defaults to “{document}”</p>
+</dd>
+<dt class="field-even">type document_prompt<span class="colon">:</span></dt>
+<dd class="field-even"><p>str, optional</p>
+</dd>
+<dt class="field-odd">param document_separator<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the separator to use between documents, defaults to “</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="simple">
+<dt>“</dt><dd><dl class="field-list simple">
+<dt class="field-odd">type document_separator<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str, optional</p>
+</dd>
+<dt class="field-even">param retriever_kwargs<span class="colon">:</span></dt>
+<dd class="field-even"><p>keyword arguments that will be passed to Retriever.retrieve method, defaults to {}</p>
+</dd>
+<dt class="field-odd">type retriever_kwargs<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any, optional</p>
+</dd>
+<dt class="field-even">return<span class="colon">:</span></dt>
+<dd class="field-even"><p>instance of Langchain Tool class to pass to an agent.</p>
+</dd>
+<dt class="field-odd">rtype<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tool</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -849,6 +901,9 @@ type: Milvus, Chroma, Elasticsearch, etc.</p>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>dict</p>
 </dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>VectorStoreSerializationError</strong> – when instance is not serializable</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -875,6 +930,651 @@ This requires chunks to have “document_id” and “sequence_number” in thei
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="milvusvectorstore">
+<h3>MilvusVectorStore<a class="headerlink" href="#milvusvectorstore" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.</span></span><span class="sig-name descname"><span class="pre">MilvusVectorStore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_store</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/milvus_adapter.html#MilvusVectorStore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter" title="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter"><code class="xref py py-class docutils literal notranslate"><span class="pre">LangChainVectorStoreAdapter</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Milvus</span></code>]</p>
+<p>MilvusVectorStore vector store client for a RAG pattern.</p>
+<p>Instantiates the vector store connection in the watsonx.ai environment and handles the necessary operations.
+The parameters given by the keyword arguments are used to instantiate the vector store client in their
+particular constructor. Those parameters might be parsed differently.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – api client is required if connecting by connection_id, defaults to None</p></li>
+<li><p><strong>connection_id</strong> (<em>str</em><em>, </em><em>optional</em>) – connection asset ID, defaults to None</p></li>
+<li><p><strong>vector_store</strong> (<em>langchain_milvus.Milvus</em><em>, </em><em>optional</em>) – initialized langchain_milvus vector store, defaults to None</p></li>
+<li><p><strong>embedding_function</strong> (<a class="reference internal" href="fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings" title="ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings"><em>BaseEmbeddings</em></a><em> | </em><em>LCEmbeddings</em><em> | </em><em>LCMilvusBaseSparseEmbedding</em><em> | </em><em>list</em><em>[</em><a class="reference internal" href="fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings" title="ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings"><em>BaseEmbeddings</em></a><em> | </em><em>LCEmbeddings</em><em> | </em><em>LCMilvusBaseSparseEmbedding</em><em>]</em><em>, </em><em>optional</em>) – list of dense or sparse embedding function, defaults to None</p></li>
+<li><p><strong>collection_name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the Milvus vector database collection, defaults to None</p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em><em>, </em><em>optional</em>) – keyword arguments that will be directly passed to <cite>langchain_milvus.Milvus</cite> constructor</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For hybrid search (multi-vector search), if no <cite>ranker_type</cite> is specified, a <cite>weighted</cite> reranker with default weights equal to 1 is used.
+For more details, see the <cite>langchain_milvus</cite> documentation <a class="reference external" href="https://python.langchain.com/docs/integrations/vectorstores/milvus/#hybrid-search">https://python.langchain.com/docs/integrations/vectorstores/milvus/#hybrid-search</a>.</p>
+</div>
+<p><strong>Example:</strong></p>
+<p>To connect, provide the connection asset ID.
+You can use custom embeddings to add and search documents.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores</span><span class="w"> </span><span class="kn">import</span> <span class="n">MilvusVectorStore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.embeddings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Embeddings</span>
+
+<span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="n">IAM_API_KEY</span><span class="p">,</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span>
+        <span class="p">)</span>
+
+<span class="n">api_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+
+<span class="n">embedding</span> <span class="o">=</span> <span class="n">Embeddings</span><span class="p">(</span>
+         <span class="n">model_id</span><span class="o">=</span><span class="n">EmbeddingTypes</span><span class="o">.</span><span class="n">IBM_SLATE_30M_ENG</span><span class="p">,</span>
+         <span class="n">api_client</span><span class="o">=</span><span class="n">api_client</span>
+         <span class="p">)</span>
+
+<span class="n">vector_store</span> <span class="o">=</span> <span class="n">MilvusVectorStore</span><span class="p">(</span>
+        <span class="n">api_client</span><span class="p">,</span>
+        <span class="n">connection_id</span><span class="o">=</span><span class="s1">&#39;***&#39;</span><span class="p">,</span>
+        <span class="n">collection_name</span><span class="o">=</span><span class="s1">&#39;my_test_collection&#39;</span><span class="p">,</span>
+        <span class="n">embedding_function</span><span class="o">=</span><span class="n">embedding</span>
+    <span class="p">)</span>
+
+<span class="n">vector_store</span><span class="o">.</span><span class="n">add_documents</span><span class="p">([</span>
+    <span class="p">{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;document one content&#39;</span><span class="p">,</span> <span class="s1">&#39;metadata&#39;</span><span class="p">:{</span><span class="s1">&#39;url&#39;</span><span class="p">:</span><span class="s1">&#39;ibm.com&#39;</span><span class="p">}},</span>
+    <span class="p">{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;document two content&#39;</span><span class="p">,</span> <span class="s1">&#39;metadata&#39;</span><span class="p">:{</span><span class="s1">&#39;url&#39;</span><span class="p">:</span><span class="s1">&#39;ibm.com&#39;</span><span class="p">}}</span>
+<span class="p">])</span>
+
+<span class="n">vector_store</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;one&#39;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To use hybrid search you need to pass several embedding function.</p>
+</div>
+<p>Example with weighted ranker.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">MilvusVectorStore</span><span class="p">,</span>
+    <span class="n">MilvusSpladeEmbeddingFunction</span>
+<span class="p">)</span>
+
+<span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">IAM_API_KEY</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">)</span>
+
+<span class="n">api_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+
+<span class="n">dense_embedding</span> <span class="o">=</span> <span class="n">Embeddings</span><span class="p">(</span>
+         <span class="n">model_id</span><span class="o">=</span><span class="n">EmbeddingTypes</span><span class="o">.</span><span class="n">IBM_SLATE_30M_ENG</span><span class="p">,</span>
+         <span class="n">api_client</span><span class="o">=</span><span class="n">api_client</span>
+         <span class="p">)</span>
+
+<span class="n">splade_func</span> <span class="o">=</span> <span class="n">MilvusSpladeEmbeddingFunction</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;naver/splade-cocondenser-selfdistil&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+<span class="n">vector_store</span> <span class="o">=</span> <span class="n">MilvusVectorStore</span><span class="p">(</span>
+    <span class="n">api_client</span><span class="p">,</span>
+    <span class="n">connection_id</span><span class="o">=</span><span class="n">es_connection_id</span><span class="p">,</span>
+    <span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;my_test_collection&quot;</span><span class="p">,</span>
+    <span class="n">embedding_function</span><span class="o">=</span><span class="p">[</span><span class="n">dense_embedding</span><span class="p">,</span> <span class="n">splade_func</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">vector_store</span><span class="o">.</span><span class="n">add_documents</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;document one content&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;ibm.com&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;document two content&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;ibm.com&quot;</span><span class="p">}},</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># `weighted` ranker</span>
+<span class="n">vector_store</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;one&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ranker_type</span><span class="o">=</span><span class="s2">&quot;weighted&quot;</span><span class="p">,</span> <span class="n">ranker_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;weights&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+
+<span class="c1"># `rrf` ranker</span>
+<span class="n">vector_store</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;one&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ranker_type</span><span class="o">=</span><span class="s2">&quot;rrf&quot;</span><span class="p">,</span> <span class="n">ranker_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please note that since Milvus v2.5 a full-text search can be used <a class="reference external" href="https://milvus.io/blog/introduce-milvus-2-5-full-text-search-powerful-metadata-filtering-and-more.md">https://milvus.io/blog/introduce-milvus-2-5-full-text-search-powerful-metadata-filtering-and-more.md</a></p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">MilvusVectorStore</span><span class="p">,</span>
+    <span class="n">MilvusBM25BuiltinFunction</span><span class="p">(</span>
+<span class="p">)</span>
+
+<span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">IAM_API_KEY</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">)</span>
+
+<span class="n">api_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+
+<span class="n">dense_embedding</span> <span class="o">=</span> <span class="n">Embeddings</span><span class="p">(</span>
+         <span class="n">model_id</span><span class="o">=</span><span class="n">EmbeddingTypes</span><span class="o">.</span><span class="n">IBM_SLATE_30M_ENG</span><span class="p">,</span>
+         <span class="n">api_client</span><span class="o">=</span><span class="n">api_client</span>
+         <span class="p">)</span>
+<span class="n">bm25_builtin_func</span> <span class="o">=</span> <span class="n">MilvusBM25BuiltinFunction</span><span class="p">()</span>
+
+<span class="n">vector_store</span> <span class="o">=</span> <span class="n">MilvusVectorStore</span><span class="p">(</span>
+    <span class="n">api_client</span><span class="p">,</span>
+    <span class="n">connection_id</span><span class="o">=</span><span class="n">es_connection_id</span><span class="p">,</span>
+    <span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;my_test_collection&quot;</span><span class="p">,</span>
+    <span class="n">embedding_function</span><span class="o">=</span><span class="n">dense_embedding</span><span class="p">,</span>
+    <span class="n">builtin_function</span><span class="o">=</span><span class="n">bm25_builtin_func</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">vector_store</span><span class="o">.</span><span class="n">add_documents</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;document one content&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;ibm.com&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;document two content&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;ibm.com&quot;</span><span class="p">}},</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># `weighted` ranker</span>
+<span class="n">vector_store</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;one&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ranker_type</span><span class="o">=</span><span class="s2">&quot;weighted&quot;</span><span class="p">,</span> <span class="n">ranker_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;weights&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+
+<span class="c1"># `rrf` ranker</span>
+<span class="n">vector_store</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;one&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ranker_type</span><span class="o">=</span><span class="s2">&quot;rrf&quot;</span><span class="p">,</span> <span class="n">ranker_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.add_documents">
+<span class="sig-name descname"><span class="pre">add_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/milvus_adapter.html#MilvusVectorStore.add_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.add_documents" title="Link to this definition">¶</a></dt>
+<dd><p>Embed documents and add to the vectorstore.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>content</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>list</em><em>[</em><em>dict</em><em>] </em><em>| </em><em>list</em><em>[</em><em>langchain_core.documents.Document</em><em>]</em>) – Documents to add to the vectorstore.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of IDs of the added texts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.add_documents_async">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_documents_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/milvus_adapter.html#MilvusVectorStore.add_documents_async"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.add_documents_async" title="Link to this definition">¶</a></dt>
+<dd><p>Embed documents and add to the vectorstore in asynchronous manner.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>content</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>list</em><em>[</em><em>dict</em><em>] </em><em>| </em><em>list</em><em>[</em><em>langchain_core.documents.Document</em><em>]</em>) – Documents to add to the vectorstore.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of IDs of the added texts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/milvus_adapter.html#MilvusVectorStore.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Clear collection by removing all records.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/milvus_adapter.html#MilvusVectorStore.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.count" title="Link to this definition">¶</a></dt>
+<dd><p>Count number of records in collection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.from_dict">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/milvus_adapter.html#MilvusVectorStore.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.from_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Creates <code class="docutils literal notranslate"><span class="pre">MilvusVectorStore</span></code> using only a primitive data type dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – initialised APIClient used in vector store constructor, defaults to None</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – dict in schema like the <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code> method</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>reconstructed MilvusVectorStore</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore" title="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore">MilvusVectorStore</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.get_client">
+<span class="sig-name descname"><span class="pre">get_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/milvus_adapter.html#MilvusVectorStore.get_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.get_client" title="Link to this definition">¶</a></dt>
+<dd><p>Get langchain_milvus.Milvus instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/milvus_adapter.html#MilvusVectorStore.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.to_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Serialize <code class="docutils literal notranslate"><span class="pre">MilvusVectorStore</span></code> into a dict that allows reconstruction using the <code class="docutils literal notranslate"><span class="pre">from_dict</span></code> class method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict for the from_dict initialization</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>VectorStoreSerializationError</strong> – when instance is not serializable</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="elasticsearchvectorstore">
+<h3>ElasticsearchVectorStore<a class="headerlink" href="#elasticsearchvectorstore" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.</span></span><span class="sig-name descname"><span class="pre">ElasticsearchVectorStore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_store</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/es_adapter.html#ElasticsearchVectorStore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter" title="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter"><code class="xref py py-class docutils literal notranslate"><span class="pre">LangChainVectorStoreAdapter</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ElasticsearchStore</span></code>]</p>
+<p>Elasticsearch vector store client for a RAG pattern.</p>
+<p>Instantiates the vector store connection in the watsonx.ai environment and handles the necessary operations.
+The parameters given by the keyword arguments are used to instantiate the vector store client in their
+particular constructor. Those parameters might be parsed differently.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – api client is required if connecting by connection_id, defaults to None</p></li>
+<li><p><strong>connection_id</strong> (<em>str</em><em>, </em><em>optional</em>) – connection asset ID, defaults to None</p></li>
+<li><p><strong>vector_store</strong> (<em>langchain_elasticsearch.ElasticsearchStore</em><em>, </em><em>optional</em>) – initialized langchain_elasticsearch vector store, defaults to None</p></li>
+<li><p><strong>embeddings</strong> (<a class="reference internal" href="fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings" title="ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings"><em>BaseEmbeddings</em></a><em>, </em><em>optional</em>) – default dense embeddings to be used, defaults to None</p></li>
+<li><p><strong>index_name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the vector database index, defaults to None</p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em><em>, </em><em>optional</em>) – keyword arguments that will be directly passed to <cite>langchain_elasticsearch.ElasticsearchStore</cite> constructor</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For hybrid search (multi-vector search), if no ranker type is specified in strategy, a <cite>weighted</cite> reranker with default weights equal to 1 is used.
+For more details, see the <a class="reference external" href="https://python.langchain.com/docs/integrations/vectorstores/elasticsearch/">langchain-elasticsearch documentation</a> and
+<a class="reference external" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/knn-search.html#_combine_approximate_knn_with_other_features">Elasticsearch documentation</a>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The default retrieval strategy is the same as in <code class="docutils literal notranslate"><span class="pre">langchain_elasticsearch.ElasticsearchStore</span></code>, i.e. when no strategy is specified the <code class="docutils literal notranslate"><span class="pre">elasticsearch.helpers.vectorstore.DenseVectorStrategy</span></code>
+will be used (see <cite>langchain-elasticsearch</cite> <a class="reference external" href="https://python.langchain.com/api_reference/elasticsearch/vectorstores/langchain_elasticsearch.vectorstores.ElasticsearchStore.html#langchain_elasticsearch.vectorstores.ElasticsearchStore">documentation</a>).</p>
+<p>Please note, that this strategy differ from the default one in <code class="docutils literal notranslate"><span class="pre">ibm_watsonx.ai.foundation_models.extensions.rag.vector_stores.VectorStore</span></code>, where <code class="docutils literal notranslate"><span class="pre">elasticsearch.helpers.vectorstore.DenseVectorScriptScoreStrategy</span></code> is used. To ensure the same functionality
+when migrating from <code class="docutils literal notranslate"><span class="pre">VectorStore</span></code> to <code class="docutils literal notranslate"><span class="pre">ElasticsearchVectorStore</span></code>, you may want to pass <code class="docutils literal notranslate"><span class="pre">DenseVectorScriptScoreStrategy(distance=distance_metric)</span></code> explicitly to <code class="docutils literal notranslate"><span class="pre">ElasticsearchVectorStore</span></code> constructor.</p>
+</div>
+<p><strong>Example:</strong></p>
+<p>To connect, provide the connection asset ID.
+You can use custom embeddings to add and search documents.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores</span><span class="w"> </span><span class="kn">import</span> <span class="n">ElasticsearchVectorStore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.embeddings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Embeddings</span>
+
+<span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="n">IAM_API_KEY</span><span class="p">,</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span>
+        <span class="p">)</span>
+
+<span class="n">api_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+
+<span class="n">embedding</span> <span class="o">=</span> <span class="n">Embeddings</span><span class="p">(</span>
+         <span class="n">model_id</span><span class="o">=</span><span class="n">EmbeddingTypes</span><span class="o">.</span><span class="n">IBM_SLATE_30M_ENG</span><span class="p">,</span>
+         <span class="n">api_client</span><span class="o">=</span><span class="n">api_client</span>
+         <span class="p">)</span>
+
+<span class="n">vector_store</span> <span class="o">=</span> <span class="n">ElasticsearchVectorStore</span><span class="p">(</span>
+        <span class="n">api_client</span><span class="p">,</span>
+        <span class="n">connection_id</span><span class="o">=</span><span class="s1">&#39;***&#39;</span><span class="p">,</span>
+        <span class="n">index_name</span><span class="o">=</span><span class="s1">&#39;my_test_index&#39;</span><span class="p">,</span>
+        <span class="n">embeddings</span><span class="o">=</span><span class="n">embedding</span>
+    <span class="p">)</span>
+
+<span class="n">vector_store</span><span class="o">.</span><span class="n">add_documents</span><span class="p">([</span>
+    <span class="p">{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;document one content&#39;</span><span class="p">,</span> <span class="s1">&#39;metadata&#39;</span><span class="p">:{</span><span class="s1">&#39;url&#39;</span><span class="p">:</span><span class="s1">&#39;ibm.com&#39;</span><span class="p">}},</span>
+    <span class="p">{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;document two content&#39;</span><span class="p">,</span> <span class="s1">&#39;metadata&#39;</span><span class="p">:{</span><span class="s1">&#39;url&#39;</span><span class="p">:</span><span class="s1">&#39;ibm.com&#39;</span><span class="p">}}</span>
+<span class="p">])</span>
+
+<span class="n">vector_store</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;one&#39;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Optionally, like in LangChain, it is possible to use direct credentials to connect to Elastic Cloud.
+The keyword arguments can be used as direct params to LangChain’s <code class="docutils literal notranslate"><span class="pre">ElasticsearchStore</span></code> constructor.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ElasticsearchVectorStore</span><span class="p">,</span>
+    <span class="n">HybridStrategyElasticsearch</span><span class="p">,</span>
+    <span class="n">RetrievalOptions</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">IAM_API_KEY</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">)</span>
+
+<span class="n">api_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+
+<span class="n">vector_store</span> <span class="o">=</span> <span class="n">ElasticsearchVectorStore</span><span class="p">(</span>
+    <span class="n">api_client</span><span class="p">,</span>
+    <span class="n">index_name</span><span class="o">=</span><span class="s2">&quot;my_test_index&quot;</span><span class="p">,</span>
+    <span class="n">strategy</span><span class="o">=</span><span class="n">HybridStrategyElasticsearch</span><span class="p">(</span>
+        <span class="n">retrieval_strategies</span><span class="o">=</span><span class="p">{</span><span class="n">RetrievalOptions</span><span class="o">.</span><span class="n">SPARSE</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;.elser&quot;</span><span class="p">}}</span>
+    <span class="p">),</span>
+    <span class="n">cloud_id</span><span class="o">=</span><span class="s2">&quot;***&quot;</span><span class="p">,</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="n">IAM_API_KEY</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">vector_store</span><span class="o">.</span><span class="n">add_documents</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;document one content&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;ibm.com&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;document two content&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;ibm.com&quot;</span><span class="p">}},</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">vector_store</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;one&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To use hybrid search please specify multiple retrieval strategies in HybridStrategyElasticsearch.</p>
+</div>
+<p>Example with weighted ranker.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ElasticsearchVectorStore</span><span class="p">,</span>
+    <span class="n">HybridStrategyElasticsearch</span><span class="p">,</span>
+    <span class="n">RetrievalOptions</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">IAM_API_KEY</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">)</span>
+
+<span class="n">api_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+
+<span class="n">vector_store</span> <span class="o">=</span> <span class="n">ElasticsearchVectorStore</span><span class="p">(</span>
+    <span class="n">api_client</span><span class="p">,</span>
+    <span class="n">connection_id</span><span class="o">=</span><span class="n">es_connection_id</span><span class="p">,</span>
+    <span class="n">index_name</span><span class="o">=</span><span class="s2">&quot;my_test_index&quot;</span><span class="p">,</span>
+    <span class="n">strategy</span><span class="o">=</span><span class="n">HybridStrategyElasticsearch</span><span class="p">(</span>
+        <span class="n">retrieval_strategies</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">RetrievalOptions</span><span class="o">.</span><span class="n">SPARSE</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;.elser&quot;</span><span class="p">,</span> <span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+            <span class="n">RetrievalOptions</span><span class="o">.</span><span class="n">BM25</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+        <span class="p">}</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">vector_store</span><span class="o">.</span><span class="n">add_documents</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;document one content&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;ibm.com&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;document two content&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;ibm.com&quot;</span><span class="p">}},</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">vector_store</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;one&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Example with rrf ranker:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ElasticsearchVectorStore</span><span class="p">,</span>
+    <span class="n">HybridStrategyElasticsearch</span><span class="p">,</span>
+    <span class="n">RetrievalOptions</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">IAM_API_KEY</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">)</span>
+
+<span class="n">api_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+
+<span class="n">vector_store</span> <span class="o">=</span> <span class="n">ElasticsearchVectorStore</span><span class="p">(</span>
+    <span class="n">api_client</span><span class="p">,</span>
+    <span class="n">connection_id</span><span class="o">=</span><span class="n">es_connection_id</span><span class="p">,</span>
+    <span class="n">index_name</span><span class="o">=</span><span class="s2">&quot;my_test_index&quot;</span><span class="p">,</span>
+    <span class="n">strategy</span><span class="o">=</span><span class="n">HybridStrategyElasticsearch</span><span class="p">(</span>
+        <span class="n">retrieval_strategies</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">RetrievalOptions</span><span class="o">.</span><span class="n">SPARSE</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;.elser&quot;</span><span class="p">},</span>
+            <span class="n">RetrievalOptions</span><span class="o">.</span><span class="n">BM25</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="p">},</span>
+        <span class="n">use_rrf</span><span class="o">=</span><span class="kc">True</span>
+        <span class="n">rrf_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">}</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">vector_store</span><span class="o">.</span><span class="n">add_documents</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;document one content&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;ibm.com&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;document two content&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;ibm.com&quot;</span><span class="p">}},</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">vector_store</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;one&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.add_documents">
+<span class="sig-name descname"><span class="pre">add_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/es_adapter.html#ElasticsearchVectorStore.add_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.add_documents" title="Link to this definition">¶</a></dt>
+<dd><p>Embed documents and add to the vectorstore.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>content</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>list</em><em>[</em><em>dict</em><em>] </em><em>| </em><em>list</em><em>[</em><em>langchain_core.documents.Document</em><em>]</em>) – Documents to add to the vectorstore.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of IDs of the added texts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/es_adapter.html#ElasticsearchVectorStore.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Clear index by removing all records.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/es_adapter.html#ElasticsearchVectorStore.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.count" title="Link to this definition">¶</a></dt>
+<dd><p>Count number of records in index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.from_dict">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/es_adapter.html#ElasticsearchVectorStore.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.from_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Creates <code class="docutils literal notranslate"><span class="pre">ElasticsearchVectorStore</span></code> using only a primitive data type dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – initialised APIClient used in vector store constructor, defaults to None</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – dict in schema like the <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code> method</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>reconstructed VectorStore</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.vector_store.VectorStore" title="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.vector_store.VectorStore">VectorStore</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.get_client">
+<span class="sig-name descname"><span class="pre">get_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/es_adapter.html#ElasticsearchVectorStore.get_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.get_client" title="Link to this definition">¶</a></dt>
+<dd><p>Get langchain_elasticsearch.ElasticsearchStore instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/es_adapter.html#ElasticsearchVectorStore.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.to_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Serialize <code class="docutils literal notranslate"><span class="pre">ElasticsearchVectorStore</span></code> into a dict that allows reconstruction using the <code class="docutils literal notranslate"><span class="pre">from_dict</span></code> class method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict for the <cite>from_dict</cite> initialization</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>VectorStoreSerializationError</strong> – when instance is not serializable</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.</span></span><span class="sig-name descname"><span class="pre">HybridStrategyElasticsearch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">retrieval_strategies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_rrf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rrf_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text_field'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/es_utils.html#HybridStrategyElasticsearch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RetrievalStrategy</span></code></p>
+<p>Hybrid strategy to be used in <cite>ElasticsearchVectorStore</cite> to take advantage of hybrid search.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>retrieval_strategies</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – mapping containing retrieval type and its properties</p></li>
+<li><p><strong>use_rrf</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to use Reciprocal Rank Fusion (rrf) ranker when combining multiple results search in hybrid approach.
+For more details, please visit <a class="reference external" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/rrf.html">https://www.elastic.co/guide/en/elasticsearch/reference/current/rrf.html</a>, defaults to False</p></li>
+<li><p><strong>rrf_params</strong> (<em>dict</em><em>, </em><em>optional</em>) – rrf method’s parameters, default to None</p></li>
+<li><p><strong>text_field</strong> (<em>str</em><em>, </em><em>optional</em>) – text field name, default to <cite>text_field</cite></p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<p>When no ranker method is explicitly specified, the weighted ranker is used with all weights equal to 1.
+To change the weight for particular strategy add <cite>boost</cite> field to retrieval type settings.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">HybridStrategyElasticsearch</span><span class="p">,</span>
+    <span class="n">RetrievalOptions</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">strategy</span><span class="o">=</span><span class="n">HybridStrategyElasticsearch</span><span class="p">(</span>
+    <span class="n">retrieval_strategies</span><span class="o">=</span><span class="p">{</span>
+        <span class="n">RetrievalOptions</span><span class="o">.</span><span class="n">SPARSE</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;.elser&quot;</span><span class="p">,</span> <span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+        <span class="n">RetrievalOptions</span><span class="o">.</span><span class="n">BM25</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Example with rrf ranker:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">HybridStrategyElasticsearch</span><span class="p">,</span>
+    <span class="n">RetrievalOptions</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+
+<span class="n">strategy</span><span class="o">=</span><span class="n">HybridStrategyElasticsearch</span><span class="p">(</span>
+    <span class="n">retrieval_strategies</span><span class="o">=</span><span class="p">{</span>
+        <span class="n">RetrievalOptions</span><span class="o">.</span><span class="n">SPARSE</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;.elser&quot;</span><span class="p">},</span>
+        <span class="n">RetrievalOptions</span><span class="o">.</span><span class="n">BM25</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="p">},</span>
+    <span class="n">use_rrf</span><span class="o">=</span><span class="kc">True</span>
+    <span class="n">rrf_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.before_index_creation">
+<span class="sig-name descname"><span class="pre">before_index_creation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/es_utils.html#HybridStrategyElasticsearch.before_index_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.before_index_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Executes before the index is created. Used for setting up
+any required Elasticsearch resources like a pipeline.
+Defaults to a no-op.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> – The Elasticsearch client.</p></li>
+<li><p><strong>text_field</strong> – The field containing the text data in the index.</p></li>
+<li><p><strong>vector_field</strong> – The field containing the vector representations in the index.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.es_mappings_settings">
+<span class="sig-name descname"><span class="pre">es_mappings_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_dimensions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/es_utils.html#HybridStrategyElasticsearch.es_mappings_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.es_mappings_settings" title="Link to this definition">¶</a></dt>
+<dd><p>Create the required index and do necessary preliminary work, like
+creating inference pipelines or checking if a required model was deployed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> – Elasticsearch client connection.</p></li>
+<li><p><strong>text_field</strong> – The field containing the text data in the index.</p></li>
+<li><p><strong>vector_field</strong> – The field containing the vector representations in the index.</p></li>
+<li><p><strong>num_dimensions</strong> – If vectors are indexed, how many dimensions do they have.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary with field and field type pairs that describe the schema.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.es_query">
+<span class="sig-name descname"><span class="pre">es_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_candidates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/es_utils.html#HybridStrategyElasticsearch.es_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.es_query" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the Elasticsearch query body for the given parameters.
+The store will execute the query.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> – The text query. Can be None if query_vector is given.</p></li>
+<li><p><strong>k</strong> – The total number of results to retrieve.</p></li>
+<li><p><strong>num_candidates</strong> – The number of results to fetch initially in knn search.</p></li>
+<li><p><strong>filter</strong> – List of filter clauses to apply to the query.</p></li>
+<li><p><strong>query_vector</strong> – The query vector. Can be None if a query string is given.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Elasticsearch query body.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.from_dict">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/es_utils.html#HybridStrategyElasticsearch.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.from_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Creates <code class="docutils literal notranslate"><span class="pre">HybridStrategyElasticsearch</span></code> using only a primitive data type dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – dict in schema like the <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code> method</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>reconstructed HybridStrategyElasticsearch</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch" title="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch">HybridStrategyElasticsearch</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.needs_inference">
+<span class="sig-name descname"><span class="pre">needs_inference</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/es_utils.html#HybridStrategyElasticsearch.needs_inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.needs_inference" title="Link to this definition">¶</a></dt>
+<dd><p>Some retrieval strategies index embedding vectors and allow search by embedding
+vector, for example the <cite>DenseVectorStrategy</cite> strategy. Mapping a user input query
+string to an embedding vector is called inference. Inference can be applied
+in Elasticsearch (using a <cite>model_id</cite>) or outside of Elasticsearch (using an
+<cite>EmbeddingService</cite> defined on the <cite>VectorStore</cite>). In the latter case,
+this method has to return True.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/es_utils.html#HybridStrategyElasticsearch.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.to_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Serialize <code class="docutils literal notranslate"><span class="pre">HybridStrategyElasticsearch</span></code> into a dict that allows reconstruction using the <code class="docutils literal notranslate"><span class="pre">from_dict</span></code> class method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict for the from_dict initialization</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1438,6 +2138,7 @@ and can be found in the LangChain documentation.</p>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.retriever.retriever.Retriever.from_vector_store"><code class="docutils literal notranslate"><span class="pre">Retriever.from_vector_store()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.retriever.retriever.Retriever.retrieve"><code class="docutils literal notranslate"><span class="pre">Retriever.retrieve()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.retriever.retriever.Retriever.to_dict"><code class="docutils literal notranslate"><span class="pre">Retriever.to_dict()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.retriever.retriever.Retriever.to_langchain_tool"><code class="docutils literal notranslate"><span class="pre">Retriever.to_langchain_tool()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.retriever.retriever.RetrievalMethod"><code class="docutils literal notranslate"><span class="pre">RetrievalMethod</span></code></a><ul>
@@ -1468,6 +2169,40 @@ and can be found in the LangChain documentation.</p>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.vector_store.VectorStore.set_embeddings"><code class="docutils literal notranslate"><span class="pre">VectorStore.set_embeddings()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.vector_store.VectorStore.to_dict"><code class="docutils literal notranslate"><span class="pre">VectorStore.to_dict()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.vector_store.VectorStore.window_search"><code class="docutils literal notranslate"><span class="pre">VectorStore.window_search()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#milvusvectorstore">MilvusVectorStore</a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore"><code class="docutils literal notranslate"><span class="pre">MilvusVectorStore</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.add_documents"><code class="docutils literal notranslate"><span class="pre">MilvusVectorStore.add_documents()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.add_documents_async"><code class="docutils literal notranslate"><span class="pre">MilvusVectorStore.add_documents_async()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.clear"><code class="docutils literal notranslate"><span class="pre">MilvusVectorStore.clear()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.count"><code class="docutils literal notranslate"><span class="pre">MilvusVectorStore.count()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.from_dict"><code class="docutils literal notranslate"><span class="pre">MilvusVectorStore.from_dict()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.get_client"><code class="docutils literal notranslate"><span class="pre">MilvusVectorStore.get_client()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter.MilvusVectorStore.to_dict"><code class="docutils literal notranslate"><span class="pre">MilvusVectorStore.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#elasticsearchvectorstore">ElasticsearchVectorStore</a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore"><code class="docutils literal notranslate"><span class="pre">ElasticsearchVectorStore</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.add_documents"><code class="docutils literal notranslate"><span class="pre">ElasticsearchVectorStore.add_documents()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.clear"><code class="docutils literal notranslate"><span class="pre">ElasticsearchVectorStore.clear()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.count"><code class="docutils literal notranslate"><span class="pre">ElasticsearchVectorStore.count()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.from_dict"><code class="docutils literal notranslate"><span class="pre">ElasticsearchVectorStore.from_dict()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.get_client"><code class="docutils literal notranslate"><span class="pre">ElasticsearchVectorStore.get_client()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.to_dict"><code class="docutils literal notranslate"><span class="pre">ElasticsearchVectorStore.to_dict()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch"><code class="docutils literal notranslate"><span class="pre">HybridStrategyElasticsearch</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.before_index_creation"><code class="docutils literal notranslate"><span class="pre">HybridStrategyElasticsearch.before_index_creation()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.es_mappings_settings"><code class="docutils literal notranslate"><span class="pre">HybridStrategyElasticsearch.es_mappings_settings()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.es_query"><code class="docutils literal notranslate"><span class="pre">HybridStrategyElasticsearch.es_query()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.from_dict"><code class="docutils literal notranslate"><span class="pre">HybridStrategyElasticsearch.from_dict()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.needs_inference"><code class="docutils literal notranslate"><span class="pre">HybridStrategyElasticsearch.needs_inference()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.to_dict"><code class="docutils literal notranslate"><span class="pre">HybridStrategyElasticsearch.to_dict()</span></code></a></li>
 </ul>
 </li>
 </ul>

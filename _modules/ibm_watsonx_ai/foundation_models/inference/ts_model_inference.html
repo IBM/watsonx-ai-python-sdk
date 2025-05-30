@@ -377,6 +377,23 @@
 <span class="sd">            project_id=project_id</span>
 <span class="sd">        )</span>
 
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from ibm_watsonx_ai import Credentials</span>
+<span class="sd">        from ibm_watsonx_ai.foundation_models import TSModelInference</span>
+
+<span class="sd">        forecasting_params = {</span>
+<span class="sd">            &quot;prediction_length&quot;: 10</span>
+<span class="sd">        }</span>
+
+<span class="sd">        ts_model = TSModelInference(</span>
+<span class="sd">            deployment_id=&quot;&lt;ID of deployed model&gt;&quot;,</span>
+<span class="sd">            params=forecasting_params,</span>
+<span class="sd">            credentials=Credentials(</span>
+<span class="sd">                api_key = IAM_API_KEY,</span>
+<span class="sd">                url = &quot;https://us-south.ml.cloud.ibm.com&quot;),</span>
+<span class="sd">        )</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -422,15 +439,16 @@
                 <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">space_id</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_space</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">project_id</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_project</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">api_client</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span>
-                <span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;space_id&quot;</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">],</span>
-                <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">,</span>
-            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">space_id</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_space</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">project_id</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_project</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">api_client</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span>
+                    <span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;space_id&quot;</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">],</span>
+                    <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
 
         <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
 
@@ -544,17 +562,18 @@
 
                 <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;future_data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">future_data</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span><span class="p">:</span>
-            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;project_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span><span class="p">:</span>
-            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;space_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span><span class="p">:</span>
+                <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;project_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span><span class="p">:</span>
+                <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;space_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span>
 
         <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployment_time_series_href</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_deployment_time_series_href</span><span class="p">(</span>
                 <span class="n">deployment_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span>
-            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">service_instance</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_time_series_href</span><span class="p">()</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_time_series_href</span><span class="p">()</span>
         <span class="p">)</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
