@@ -222,6 +222,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoai_rag_schema.html">AutoAI RAG Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -260,8 +261,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_deploy_on_demand.html">Deploy on Demand</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../rate_limit.html">Rate Limits</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_toolkit.html">Toolkit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fm_vector_index.html">VectorIndexes</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../model_gateway.html">Model Gateway (BETA)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../save_models.html">Saving external models</a></li>
 </ul>
 </li>
@@ -322,8 +325,6 @@
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;BaseSchema&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="BaseSchema">
-<a class="viewcode-back" href="../../../../fm_schema.html#ibm_watsonx_ai.foundation_models.schema.BaseSchema">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseSchema</span><span class="p">:</span>
 
@@ -365,8 +366,6 @@
             <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
         <span class="p">}</span>
 
-<div class="viewcode-block" id="BaseSchema.show">
-<a class="viewcode-back" href="../../../../fm_schema.html#ibm_watsonx_ai.foundation_models.schema.BaseSchema.show">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Displays a table with the parameter name, type, and example value.&quot;&quot;&quot;</span>
@@ -393,17 +392,12 @@
                 <span class="n">headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PARAMETER&quot;</span><span class="p">,</span> <span class="s2">&quot;TYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;EXAMPLE VALUE&quot;</span><span class="p">],</span>
                 <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
-
-<div class="viewcode-block" id="BaseSchema.get_sample_params">
-<a class="viewcode-back" href="../../../../fm_schema.html#ibm_watsonx_ai.foundation_models.schema.BaseSchema.get_sample_params">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_sample_params</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Override this method in subclasses to provide example values for parameters.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{}</span></div>
-</div>
-
+        <span class="k">return</span> <span class="p">{}</span>
 
 
 <span class="c1">##############</span>
@@ -689,6 +683,8 @@
 <span class="c1">#################</span>
 
 
+<div class="viewcode-block" id="AutoAIRAGModelParams">
+<a class="viewcode-back" href="../../../../autoai_rag_schema.html#ibm_watsonx_ai.foundation_models.schema.AutoAIRAGModelParams">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AutoAIRAGModelParams</span><span class="p">(</span><span class="n">BaseSchema</span><span class="p">):</span>
     <span class="n">decoding_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">TextGenDecodingMethod</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -704,9 +700,12 @@
             <span class="s2">&quot;min_new_tokens&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
             <span class="s2">&quot;max_new_tokens&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
             <span class="s2">&quot;max_sequence_length&quot;</span><span class="p">:</span> <span class="mi">4096</span><span class="p">,</span>
-        <span class="p">}</span>
+        <span class="p">}</span></div>
 
 
+
+<div class="viewcode-block" id="AutoAIRAGModelConfig">
+<a class="viewcode-back" href="../../../../autoai_rag_schema.html#ibm_watsonx_ai.foundation_models.schema.AutoAIRAGModelConfig">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AutoAIRAGModelConfig</span><span class="p">(</span><span class="n">BaseSchema</span><span class="p">):</span>
     <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span>
@@ -724,9 +723,12 @@
             <span class="s2">&quot;prompt_template_text&quot;</span><span class="p">:</span> <span class="s2">&quot;My question </span><span class="si">{question}</span><span class="s2"> related to these documents </span><span class="si">{reference_documents}</span><span class="s2">.&quot;</span><span class="p">,</span>
             <span class="s2">&quot;context_template_text&quot;</span><span class="p">:</span> <span class="s2">&quot;My document </span><span class="si">{document}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="s2">&quot;word_to_token_ratio&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
-        <span class="p">}</span>
+        <span class="p">}</span></div>
 
 
+
+<div class="viewcode-block" id="AutoAIRAGCustomModelConfig">
+<a class="viewcode-back" href="../../../../autoai_rag_schema.html#ibm_watsonx_ai.foundation_models.schema.AutoAIRAGCustomModelConfig">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AutoAIRAGCustomModelConfig</span><span class="p">(</span><span class="n">BaseSchema</span><span class="p">):</span>
     <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span>
@@ -747,14 +749,20 @@
             <span class="s2">&quot;prompt_template_text&quot;</span><span class="p">:</span> <span class="s2">&quot;My question </span><span class="si">{question}</span><span class="s2"> related to these documents </span><span class="si">{reference_documents}</span><span class="s2">.&quot;</span><span class="p">,</span>
             <span class="s2">&quot;context_template_text&quot;</span><span class="p">:</span> <span class="s2">&quot;My document </span><span class="si">{document}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="s2">&quot;word_to_token_ratio&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
-        <span class="p">}</span>
+        <span class="p">}</span></div>
 
 
+
+<div class="viewcode-block" id="HybridRankerStrategy">
+<a class="viewcode-back" href="../../../../autoai_rag_schema.html#ibm_watsonx_ai.foundation_models.schema.HybridRankerStrategy">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">HybridRankerStrategy</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
     <span class="n">WEIGHTED</span> <span class="o">=</span> <span class="s2">&quot;weighted&quot;</span>
-    <span class="n">RRF</span> <span class="o">=</span> <span class="s2">&quot;rrf&quot;</span>
+    <span class="n">RRF</span> <span class="o">=</span> <span class="s2">&quot;rrf&quot;</span></div>
 
 
+
+<div class="viewcode-block" id="AutoAIRAGHybridRankerParams">
+<a class="viewcode-back" href="../../../../autoai_rag_schema.html#ibm_watsonx_ai.foundation_models.schema.AutoAIRAGHybridRankerParams">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AutoAIRAGHybridRankerParams</span><span class="p">(</span><span class="n">BaseSchema</span><span class="p">):</span>
     <span class="n">strategy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">HybridRankerStrategy</span>
@@ -770,9 +778,12 @@
             <span class="s2">&quot;sparse_vectors&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;elser_model_2&quot;</span><span class="p">},</span>
             <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
             <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="mi">70</span><span class="p">,</span>
-        <span class="p">}</span>
+        <span class="p">}</span></div>
 
 
+
+<div class="viewcode-block" id="AutoAIRAGRetrievalConfig">
+<a class="viewcode-back" href="../../../../autoai_rag_schema.html#ibm_watsonx_ai.foundation_models.schema.AutoAIRAGRetrievalConfig">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AutoAIRAGRetrievalConfig</span><span class="p">(</span><span class="n">BaseSchema</span><span class="p">):</span>
     <span class="n">method</span><span class="p">:</span> <span class="s2">&quot;str | RetrievalMethod&quot;</span>
@@ -788,7 +799,8 @@
             <span class="s2">&quot;number_of_chunks&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
             <span class="s2">&quot;window_size&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
             <span class="s2">&quot;hybrid_ranker&quot;</span><span class="p">:</span> <span class="n">AutoAIRAGHybridRankerParams</span><span class="o">.</span><span class="n">get_sample_params</span><span class="p">(),</span>
-        <span class="p">}</span>
+        <span class="p">}</span></div>
+
 
 
 <span class="c1">#####################</span>

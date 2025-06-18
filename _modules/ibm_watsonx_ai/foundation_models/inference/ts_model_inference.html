@@ -222,6 +222,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoai_rag_schema.html">AutoAI RAG Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -260,8 +261,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_deploy_on_demand.html">Deploy on Demand</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../rate_limit.html">Rate Limits</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_toolkit.html">Toolkit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fm_vector_index.html">VectorIndexes</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../model_gateway.html">Model Gateway (BETA)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../save_models.html">Saving external models</a></li>
 </ul>
 </li>
@@ -422,7 +425,8 @@
                 <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
         <span class="n">TSModelInference</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span>
             <span class="n">params</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">TSForecastParameters</span><span class="p">],</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span>
         <span class="p">)</span>
@@ -458,7 +462,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">TSForecastParameters</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">future_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates a forecast based on the provided data and model parameters.</span>
@@ -468,6 +472,9 @@
 
 <span class="sd">        :param params: Contains basic metadata about your time series data input. These metadata are used by the server to understand which field represents a time stamp or which are unique identifiers for separating time series from different input channels.</span>
 <span class="sd">        :type params: dict, TSForecastParameters, optional</span>
+
+<span class="sd">        :param future_data: Available only for deployment (BYOM). Exogenous or supporting features that extend into the forecasting horizon (e.g., a weather forecast or calendar of special promotions) which are known in advance. future_data would be in the same format as data except that all timestamps would be in the forecast horizon and it would not include previously specified target_columns.</span>
+<span class="sd">        :type future_data: dict, pd.DataFrame, optional</span>
 
 <span class="sd">        **Example:**</span>
 
@@ -489,6 +496,21 @@
 <span class="sd">                    ]</span>
 <span class="sd">                }</span>
 
+<span class="sd">            future_data = {</span>
+<span class="sd">                    &quot;date&quot;: [</span>
+<span class="sd">                        &quot;2018-10-02T16:00:00&quot;,</span>
+<span class="sd">                        &quot;2018-10-02T17:00:00&quot;,</span>
+<span class="sd">                        &quot;2018-10-02T18:00:00&quot;</span>
+<span class="sd">                        ...</span>
+<span class="sd">                    ],</span>
+<span class="sd">                    &quot;HUFL&quot;: [</span>
+<span class="sd">                        10.10,</span>
+<span class="sd">                        20.20,</span>
+<span class="sd">                        30.30</span>
+<span class="sd">                        ...</span>
+<span class="sd">                    ]</span>
+<span class="sd">                }</span>
+
 <span class="sd">            params =  {</span>
 <span class="sd">                &quot;timestamp_column&quot;: &quot;date&quot;,</span>
 <span class="sd">                &quot;target_columns&quot;: [</span>
@@ -500,7 +522,7 @@
 
 <span class="sd">            # The number of elements in the array for each field must be the prediction length of the model depending on the model; for example 96 for ibm/granite-ttm-512-96-r2,</span>
 
-<span class="sd">            response = ts_model.forecast(data=data, params=params)</span>
+<span class="sd">            response = ts_model.forecast(data=data, params=params, future_data=future_data)</span>
 
 <span class="sd">            # Print all response</span>
 <span class="sd">            print(response)</span>
@@ -521,10 +543,10 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">parameters</span> <span class="o">=</span> <span class="n">params</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">parameters</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">parameters</span> <span class="o">=</span> <span class="kc">None</span>
@@ -545,22 +567,11 @@
 
         <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;schema&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span>
 
-        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">allowed_key</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;future_data&quot;</span><span class="p">}</span>
-            <span class="n">kwargs_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-            <span class="n">diff</span> <span class="o">=</span> <span class="n">kwargs_keys</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">allowed_key</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">diff</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Unsupported argument</span><span class="si">{</span><span class="s1">&#39;s&#39;</span><span class="k">if</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2"> provided: &quot;</span>
-                    <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
-                <span class="p">)</span>
+        <span class="k">if</span> <span class="n">future_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">future_data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+                <span class="n">future_data</span> <span class="o">=</span> <span class="n">future_data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;list&quot;</span><span class="p">)</span>
 
-            <span class="n">future_data</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;future_data&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">future_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">future_data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
-                    <span class="n">future_data</span> <span class="o">=</span> <span class="n">future_data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;list&quot;</span><span class="p">)</span>
-
-                <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;future_data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">future_data</span>
+            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;future_data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">future_data</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span><span class="p">:</span>

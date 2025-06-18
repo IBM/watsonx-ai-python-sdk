@@ -222,6 +222,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../../autoai_rag_schema.html">AutoAI RAG Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../../autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -260,8 +261,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../../fm_deploy_on_demand.html">Deploy on Demand</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../../rate_limit.html">Rate Limits</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../../fm_toolkit.html">Toolkit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../../fm_vector_index.html">VectorIndexes</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../model_gateway.html">Model Gateway (BETA)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../save_models.html">Saving external models</a></li>
 </ul>
 </li>
@@ -410,8 +413,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_retrieval_strategies</span> <span class="o">=</span> <span class="n">retrieval_strategies</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_text_field</span> <span class="o">=</span> <span class="n">text_field</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dense_num_dimensions</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="k">if</span> <span class="n">RetrievalOptions</span><span class="o">.</span><span class="n">DENSE</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retrieval_strategies</span><span class="p">:</span>
             <span class="n">dense_strategy_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retrieval_strategies</span><span class="p">[</span><span class="n">RetrievalOptions</span><span class="o">.</span><span class="n">DENSE</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dense_num_dimensions</span> <span class="o">=</span> <span class="n">dense_strategy_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;num_dimensions&quot;</span><span class="p">)</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_dense_model_id</span> <span class="o">=</span> <span class="n">dense_strategy_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_id&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">vector_field</span> <span class="o">:=</span> <span class="n">dense_strategy_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;vector_field&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_dense_vector_field</span> <span class="o">=</span> <span class="n">vector_field</span>
@@ -447,6 +454,10 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">before_index_creation</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">elasticsearch</span><span class="o">.</span><span class="n">Elasticsearch</span><span class="p">,</span> <span class="n">text_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">RetrievalOptions</span><span class="o">.</span><span class="n">DENSE</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retrieval_strategies</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dense_model_id</span><span class="p">:</span>
+                <span class="n">model_must_be_deployed</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dense_model_id</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">RetrievalOptions</span><span class="o">.</span><span class="n">SPARSE</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retrieval_strategies</span><span class="p">:</span>
             <span class="n">model_must_be_deployed</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sparse_model_id</span><span class="p">)</span>
 
@@ -482,7 +493,7 @@
                 <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_dense_vector_field</span><span class="p">:</span> <span class="p">{</span>
                         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;dense_vector&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;dims&quot;</span><span class="p">:</span> <span class="n">num_dimensions</span><span class="p">,</span>
+                        <span class="s2">&quot;dims&quot;</span><span class="p">:</span> <span class="n">num_dimensions</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dense_num_dimensions</span><span class="p">,</span>
                         <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
                         <span class="s2">&quot;similarity&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retrieval_strategies</span><span class="p">[</span><span class="s2">&quot;dense&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                             <span class="s2">&quot;distance&quot;</span><span class="p">,</span> <span class="s2">&quot;cosine&quot;</span>
@@ -557,8 +568,18 @@
                 <span class="s2">&quot;field&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dense_vector_field</span><span class="p">,</span>
                 <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span>
                 <span class="s2">&quot;num_candidates&quot;</span><span class="p">:</span> <span class="n">num_candidates</span><span class="p">,</span>
-                <span class="s2">&quot;query_vector&quot;</span><span class="p">:</span> <span class="n">query_vector</span><span class="p">,</span>
             <span class="p">}</span>
+
+            <span class="k">if</span> <span class="n">query_vector</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">knn_query</span><span class="p">[</span><span class="s2">&quot;query_vector&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">query_vector</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Inference in Elasticsearch.</span>
+                <span class="n">knn_query</span><span class="p">[</span><span class="s2">&quot;query_vector_builder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;text_embedding&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dense_model_id</span><span class="p">,</span>
+                        <span class="s2">&quot;model_text&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
 
         <span class="k">if</span> <span class="n">RetrievalOptions</span><span class="o">.</span><span class="n">SPARSE</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retrieval_strategies</span><span class="p">:</span>
             <span class="n">sparse_query</span> <span class="o">=</span> <span class="p">{</span>
@@ -664,7 +685,10 @@
 <div class="viewcode-block" id="HybridStrategyElasticsearch.needs_inference">
 <a class="viewcode-back" href="../../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_utils.HybridStrategyElasticsearch.needs_inference">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">needs_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dense_model_id</span></div>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">RetrievalOptions</span><span class="o">.</span><span class="n">DENSE</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retrieval_strategies</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dense_model_id</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="HybridStrategyElasticsearch.to_dict">
