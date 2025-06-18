@@ -11,7 +11,9 @@ Configure rag_optimizer with one data source
 For an AutoAI object initialization, you need watsonx.ai credentials (with your API key and URL) and either the ``project_id`` or ``space_id``.
 
 .. hint::
-        You can copy the project_id from the Project's Manage tab (Project -> Manage -> General -> Details).
+        - You can copy the project_id from the Project's Manage tab (Project -> Manage -> General -> Details).
+
+        - For more information about RAG Optimizer parameters, please refer to :ref:`autoai_rag_parameters`.
 
 .. code-block:: python
 
@@ -19,18 +21,46 @@ For an AutoAI object initialization, you need watsonx.ai credentials (with your 
     from ibm_watsonx_ai.foundation_models.schema import (
         AutoAIRAGModelConfig,
         AutoAIRAGCustomModelConfig,
+        AutoAIRAGModelParams,
+        AutoAIRAGRetrievalConfig,
+        AutoAIRAGHybridRankerParams,
+        HybridRankerStrategy,
     )
 
-    experiment = AutoAI(wx_credentials,
-        space_id='76g53e0-0b32-4a0e-9152-3d50324855ddb'
+    experiment = AutoAI(
+        wx_credentials,
+        space_id="<PASTE_SPACE_ID_HERE>",
     )
 
-    foundation_model = AutoAIRAGModelConfig.get_sample_params()
+    foundation_model = AutoAIRAGModelConfig(
+        model_id='ibm/granite-13b-instruct-v2',
+        parameters=AutoAIRAGModelParams(
+            max_sequence_length=4096,
+        ),
+        prompt_template_text="<PROMPT_TEMPLATE_TEXT>",
+        context_template_text="<CONTEXT_TEMPLATE_TEXT>",
+        word_to_token_ratio=1.5,
+    )
 
     custom_foundation_model = AutoAIRAGCustomModelConfig.get_sample_params()
     custom_foundation_model["deployment_id"] = "<PASTE_DEPLOYMENT_ID_HERE>"
     custom_foundation_model["space_id"] = "<PASTE_SPACE_ID_HERE>"
     # OR custom_foundation_model["project_id"] = "<PASTE_PROJECT_ID_HERE>"
+
+    # Provide `hybrid_ranker` only for hybrid search
+    retrieval_config = AutoAIRAGRetrievalConfig(
+        method="window",
+        number_of_chunks=5,
+        window_size=4,
+        hybrid_ranker=AutoAIRAGHybridRankerParams(
+            strategy=HybridRankerStrategy.RRF,
+            sparse_vectors={"model_id": "bm25"},
+            alpha=0.9,
+            k=70,
+        )
+    )
+
+    chunking_config = {"method": "recursive", "chunk_size": 256, "chunk_overlap": 128}
 
     rag_optimizer = experiment.rag_optimizer(
         name='AutoAI RAG test',
@@ -39,11 +69,13 @@ For an AutoAI object initialization, you need watsonx.ai credentials (with your 
             "meta-llama/llama-3-70b-instruct",
             foundation_model,
             custom_foundation_model
-            ],
+        ],
         embedding_models=[
             "ibm/slate-125m-english-rtrvr",
             "intfloat/multilingual-e5-large"
-            ],
+        ],
+        chunking=[chunking_config],
+        retrieval = [retrieval_config],
         max_number_of_rag_patterns=5,
         optimization_metrics=[AutoAI.RAGMetrics.ANSWER_CORRECTNESS],
     )
@@ -58,18 +90,58 @@ To see the current configuration parameters, call the ``get_params()`` method.
     config_parameters = rag_optimizer.get_params()
     print(config_parameters)
     {
-        'name': 'RAG AutoAi tests without vector_store_references',
-        'description': 'Sample description',
-        'embedding_models': [
-            'ibm/slate-125m-english-rtrvr',
-            'intfloat/multilingual-e5-large'
-            ],
-        'foundation_models': [
-            'meta-llama/llama-3-70b-instruct',
-            'ibm/granite-13b-chat-v2'
-            ],
-        'max_number_of_rag_patterns': 5,
-        'optimization_metrics': ['answer_correctness']
+        "name": "AutoAI RAG test",
+        "description": "Sample description",
+        "chunking": [{"method": "recursive", "chunk_size": 256, "chunk_overlap": 128}],
+        "embedding_models": [
+            "ibm/slate-125m-english-rtrvr",
+            "intfloat/multilingual-e5-large",
+        ],
+        "retrieval": [
+            {
+                "method": "window",
+                "number_of_chunks": 5,
+                "window_size": 4,
+                "hybrid_ranker": {
+                    "strategy": "rrf",
+                    "sparse_vectors": {"model_id": "bm25"},
+                    "alpha": 0.9,
+                    "k": 70,
+                },
+            }
+        ],
+        "generation": {
+            "foundation_models": [
+                {"model_id": "meta-llama/llama-3-70b-instruct"},
+                {
+                    "model_id": "ibm/granite-13b-instruct-v2",
+                    "parameters": {
+                        "decoding_method": "sample",
+                        "min_new_tokens": 5,
+                        "max_new_tokens": 300,
+                        "max_sequence_length": 4096,
+                    },
+                    "prompt_template_text": "My question {question} related to these documents {reference_documents}.",
+                    "context_template_text": "My document {document}",
+                    "word_to_token_ratio": 1.5,
+                },
+                {
+                    "deployment_id": "<PASTE_DEPLOYMENT_ID_HERE>",
+                    "space_id": "<PASTE_SPACE_ID_HERE>",
+                    "parameters": {
+                        "decoding_method": "sample",
+                        "min_new_tokens": 5,
+                        "max_new_tokens": 300,
+                        "max_sequence_length": 4096,
+                    },
+                    "prompt_template_text": "My question {question} related to these documents {reference_documents}.",
+                    "context_template_text": "My document {document}",
+                    "word_to_token_ratio": 1.5,
+                },
+            ]
+        },
+        "max_number_of_rag_patterns": 5,
+        "optimization_metrics": ["answer_correctness"],
     }
 
 Run rag_optimizer
@@ -148,46 +220,122 @@ If you leave ``pattern_name`` empty, the method returns the details of the best 
     pattern_params = rag_optimizer.get_pattern_details(pattern_name='Pattern3')
     print(pattern_params)
     {
-        'composition_steps': [
-            'chunking',
-            'embeddings',
-            'vector_store',
-            'retrieval',
-            'generation'
+        "composition_steps": [
+            "model_selection",
+            "chunking",
+            "embeddings",
+            "retrieval",
+            "generation",
         ],
-        'location': {
-            'evaluation_results': '4r55b555-63a6-4cc9-3d00-3d2y762b4vg/Pattern3/evaluation_results.json',
-            'indexing_notebook': '4r55b555-63a6-4cc9-3d00-3d2y762b4vg/Pattern3/indexing_notebook.ipynb',
-            'inference_notebook': '4r55b555-63a6-4cc9-3d00-3d2y762b4vg/Pattern3/inference_notebook.ipynb'
+        "duration_seconds": 44,
+        "location": {
+            "evaluation_results": "default_autoai_rag_out/a829b2a4-a894-4625-8d00-55b66e1f0dc5/Pattern1/evaluation_results.json",
+            "indexing_notebook": "default_autoai_rag_out/a829b2a4-a894-4625-8d00-55b66e1f0dc5/Pattern1/indexing_notebook.ipynb",
+            "inference_notebook": "default_autoai_rag_out/a829b2a4-a894-4625-8d00-55b66e1f0dc5/Pattern1/inference_notebook.ipynb",
+            "inference_service_code": "default_autoai_rag_out/a829b2a4-a894-4625-8d00-55b66e1f0dc5/Pattern1/inference_ai_service.gz",
+            "inference_service_metadata": "default_autoai_rag_out/a829b2a4-a894-4625-8d00-55b66e1f0dc5/Pattern1/inference_service_metadata.json",
         },
-        'name': 'Pattern3',
-        'settings': {
-            'chunking': {
-                'chunk_size': 512,
-                'method': 'recursive'
+        "name": "Pattern1",
+        "settings": {
+            "chunking": {"chunk_overlap": 128, "chunk_size": 256, "method": "recursive"},
+            "embeddings": {
+                "model_id": "ibm/slate-125m-english-rtrvr",
+                "truncate_input_tokens": 512,
+                "truncate_strategy": "left",
             },
-            'embeddings': {
-                'model_id': 'ibm/slate-125m-english-rtrvr',
-                'truncate_input_tokens': 512,
-                'truncate_strategy': 'left'
-            },
-            'generation': {
-                'context_template_text': '[document]: {document}\n',
-                'model_id': 'meta-llama/llama-3-70b-instruct',
-                'parameters': {
-                    'max_new_tokens': 500
+            "generation": {
+                "context_template_text": "[Document]\n{document}\n[End]",
+                "model_id": "ibm/granite-13b-instruct-v2",
+                "parameters": {
+                    "decoding_method": "greedy",
+                    "max_new_tokens": 1000,
+                    "max_sequence_length": 8192,
+                    "min_new_tokens": 1,
                 },
-            'prompt_template_text': '<|begin_of_text|><|start_header_id|>system<|end_header_id|>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe. Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.\nIf a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don’t know the answer to a question, please don’t share false information.\n<|eot_id|><|start_header_id|>user<|end_header_id|>\n{reference_documents}\n[conversation]: {question}. Answer with no more than 150 words.  If you cannot base your answer on the given document, please state that you do not have an answer.<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>'},
-            'retrieval': {
-                'method': 'simple',
-                'number_of_chunks': 5,
-                'window_size': 0
+                "prompt_template_text": "<|system|>\nYou are Granite Chat, an AI language model developed by IBM. You are a cautious assistant. You carefully follow instructions. You are helpful and harmless and you follow ethical guidelines and promote positive behavior.<|user|>\nYou are an AI language model designed to function as a specialized Retrieval Augmented Generation (RAG) assistant. When generating responses, prioritize correctness, i.e., ensure that your response is grounded in context and user query. Always make sure that your response is relevant to the question. \nAnswer Length: detailed\n{reference_documents}\nRespond exclusively in the language of the question, regardless of any other language used in the provided context. Ensure that your entire response is in the same language as the question.\n{question} \n\n<|assistant|>",
+                "word_to_token_ratio": 2.4473,
             },
-            'vector_store': {
-                'distance_metric': 'cosine',
-                'index_name': 'autoai_rag_20240807124701'
-            }
-        }
+            "retrieval": {
+                "hybrid_ranker": {
+                    "k": 70,
+                    "sparse_vectors": {"model_id": "bm25"},
+                    "strategy": "rrf",
+                },
+                "method": "window",
+                "number_of_chunks": 5,
+                "window_size": 4,
+            },
+            "vector_store": {
+                "datasource_type": "milvus",
+                "distance_metric": "cosine",
+                "index_name": "autoai_rag_a829b2a4_20250530080430",
+                "operation": "upsert",
+                "schema": {
+                    "fields": [
+                        {
+                            "description": "Primary key",
+                            "name": "pk",
+                            "role": "pk",
+                            "type": "string",
+                        },
+                        {
+                            "description": "text field",
+                            "name": "text",
+                            "role": "text",
+                            "type": "string",
+                        },
+                        {
+                            "description": "document name field",
+                            "name": "document_id",
+                            "role": "document_name",
+                            "type": "string",
+                        },
+                        {
+                            "description": "chunk starting token position in the source document",
+                            "name": "start_index",
+                            "role": "start_index",
+                            "type": "number",
+                        },
+                        {
+                            "description": "chunk number per document",
+                            "name": "sequence_number",
+                            "role": "sequence_number",
+                            "type": "number",
+                        },
+                        {
+                            "description": "vector embeddings",
+                            "name": "vector",
+                            "role": "vector_embeddings",
+                            "type": "array",
+                        },
+                        {
+                            "description": "Sparse vectors",
+                            "name": "sparse_embeddings",
+                            "role": "sparse_vector_embeddings",
+                            "type": "array",
+                        },
+                    ],
+                    "id": "autoai_rag_1.1",
+                    "name": "Document schema using open-source loaders",
+                    "type": "struct",
+                },
+            },
+        },
+        "settings_importance": {
+            "chunking": [
+                {"importance": 0.09090909, "parameter": "chunk_size"},
+                {"importance": 0.09090909, "parameter": "chunk_overlap"},
+            ],
+            "embeddings": [{"importance": 0.09090909, "parameter": "embedding_model"}],
+            "generation": [{"importance": 0.09090909, "parameter": "foundation_model"}],
+            "retrieval": [
+                {"importance": 0.09090909, "parameter": "retrieval_method"},
+                {"importance": 0.09090909, "parameter": "window_size"},
+                {"importance": 0.09090909, "parameter": "number_of_chunks"},
+                {"importance": 0.09090909, "parameter": "hybrid_ranker_strategy"},
+                {"importance": 0.09090909, "parameter": "hybrid_ranker_k"},
+            ],
+        },
     }
 
 Get pattern
@@ -241,20 +389,9 @@ If you leave ``pattern_name`` empty, the method download notebook of the best co
 Online deployment
 -----------------
 
-To deploy a ``inference_function``/``inference_service`` please use below methods.
+To deploy a ``inference_service``/``inference_function`` please use below methods.
 
 .. tab-set::
-
-    .. tab-item:: Deploy ``inference_function``
-
-        .. code-block:: python
-
-            pattern = rag_optimizer.get_pattern()
-
-            deployment_details = pattern.inference_function.deploy(
-                name="inference_function deployment",
-                space_id="<SPACE_ID>",
-            )
 
     .. tab-item:: Deploy ``inference_service``
 
@@ -288,4 +425,18 @@ To deploy a ``inference_function``/``inference_service`` please use below method
                                     }
                                 }
                             }
+            )
+
+    .. tab-item:: Deploy ``inference_function``
+
+        .. note::
+            Deprecated since version 1.3.26
+
+        .. code-block:: python
+
+            pattern = rag_optimizer.get_pattern()
+
+            deployment_details = pattern.inference_function.deploy(
+                name="inference_function deployment",
+                space_id="<SPACE_ID>",
             )

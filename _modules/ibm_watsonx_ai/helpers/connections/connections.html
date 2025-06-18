@@ -222,6 +222,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoai_rag_schema.html">AutoAI RAG Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -260,8 +261,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_deploy_on_demand.html">Deploy on Demand</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../rate_limit.html">Rate Limits</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../fm_toolkit.html">Toolkit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fm_vector_index.html">VectorIndexes</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../model_gateway.html">Model Gateway (BETA)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../save_models.html">Saving external models</a></li>
 </ul>
 </li>
@@ -696,7 +699,6 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_flight_connection_for_discovery</span><span class="p">()</span> <span class="k">as</span> <span class="n">flight_conn</span><span class="p">:</span>
-
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">NFSLocation</span><span class="p">):</span>
                     <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span>
                         <span class="n">r</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
@@ -704,11 +706,16 @@
                         <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">include_types</span>
                     <span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="n">bucket</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="s2">&quot;bucket&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="s2">&quot;bucket&quot;</span><span class="p">,</span> <span class="kc">None</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">bucket</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="s2">&quot;Missing `bucket` attribute in DataConnection.location.&quot;</span>
+                        <span class="p">)</span>
                     <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">flight_conn</span><span class="o">.</span><span class="n">discovery</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span>
-                        <span class="p">)[</span><span class="s2">&quot;assets&quot;</span><span class="p">]</span>
+                        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">flight_conn</span><span class="o">.</span><span class="n">discovery</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)[</span><span class="s2">&quot;assets&quot;</span><span class="p">]</span>
                         <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">include_types</span>
                     <span class="p">]</span>
 
@@ -1487,15 +1494,53 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">_iam_id</span> <span class="o">=</span> <span class="n">_iam_id</span>
 
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_if_connection_asset_is_s3</span><span class="p">():</span>
-                        <span class="c1"># note: update flight parameters only if `connection_properties` was not set earlier</span>
-                        <span class="c1">#       (e.x. by wml/autoi)</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">flight_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;connection_properties&quot;</span><span class="p">):</span>
-                            <span class="n">flight_parameters</span> <span class="o">=</span> <span class="p">(</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">_update_flight_parameters_with_connection_details</span><span class="p">(</span>
-                                    <span class="n">flight_parameters</span><span class="p">,</span> <span class="n">binary</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">file_format</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_format</span><span class="p">(</span><span class="n">is_binary</span><span class="o">=</span><span class="n">binary</span><span class="p">)</span>
+                    <span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="c1"># prepare interaction_properties for data asset reading</span>
+                        <span class="n">interaction_properties</span> <span class="o">=</span> <span class="p">{}</span>
+
+                        <span class="k">match</span> <span class="n">file_format</span><span class="p">:</span>
+                            <span class="k">case</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
+                                <span class="n">encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_pipeline_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                    <span class="s2">&quot;encoding&quot;</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span>
                                 <span class="p">)</span>
-                            <span class="p">)</span>
+                                <span class="k">if</span> <span class="n">encoding</span> <span class="o">!=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">:</span>
+                                    <span class="n">interaction_properties</span><span class="p">[</span><span class="s2">&quot;encoding&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">encoding</span>
+
+                                <span class="k">if</span> <span class="p">(</span>
+                                    <span class="n">input_file_separator</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_pipeline_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                        <span class="s2">&quot;csv_separator&quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span>
+                                    <span class="p">)</span>
+                                    <span class="o">!=</span> <span class="s2">&quot;,&quot;</span>
+                                <span class="p">):</span>
+                                    <span class="n">file_format</span> <span class="o">=</span> <span class="s2">&quot;delimited&quot;</span>
+                                    <span class="n">interaction_properties</span><span class="p">[</span><span class="s2">&quot;field_delimiter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                                        <span class="n">input_file_separator</span>
+                                    <span class="p">)</span>
+
+                                    <span class="k">if</span> <span class="n">quote_character</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_pipeline_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                        <span class="s2">&quot;quote_character&quot;</span>
+                                    <span class="p">):</span>
+                                        <span class="n">interaction_properties</span><span class="p">[</span><span class="s2">&quot;quote_character&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                                            <span class="n">quote_character</span>
+                                        <span class="p">)</span>
+
+                            <span class="k">case</span> <span class="s2">&quot;excel&quot;</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_pipeline_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;excel_sheet&quot;</span><span class="p">):</span>
+                                    <span class="n">interaction_properties</span><span class="p">[</span><span class="s2">&quot;sheet_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">auto_pipeline_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;excel_sheet&quot;</span><span class="p">)</span>
+                                    <span class="p">)</span>
+
+                        <span class="n">interaction_properties</span><span class="p">[</span><span class="s2">&quot;file_format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">file_format</span>
+
+                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+                            <span class="n">flight_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;interaction_properties&quot;</span><span class="p">),</span> <span class="nb">dict</span>
+                        <span class="p">):</span>
+                            <span class="n">flight_parameters</span><span class="p">[</span><span class="s2">&quot;interaction_properties&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="n">flight_parameters</span><span class="p">[</span><span class="s2">&quot;interaction_properties&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                            <span class="n">interaction_properties</span>
+                        <span class="p">)</span>
 
                     <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_data_from_flight_service</span><span class="p">(</span>
                         <span class="n">data_location</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
@@ -1692,7 +1737,12 @@
                     <span class="s2">&quot;secret_access_key&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;access_key_id&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;endpoint_url&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;access_key&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;secret_key&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;session_token&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;is_s3&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;bucket&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;region&quot;</span><span class="p">,</span>
                 <span class="p">]</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
             <span class="p">]</span>
@@ -1964,7 +2014,12 @@
                         <span class="s2">&quot;secret_access_key&quot;</span><span class="p">,</span>
                         <span class="s2">&quot;access_key_id&quot;</span><span class="p">,</span>
                         <span class="s2">&quot;endpoint_url&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;access_key&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;secret_key&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;session_token&quot;</span><span class="p">,</span>
                         <span class="s2">&quot;is_s3&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;bucket&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;region&quot;</span><span class="p">,</span>
                     <span class="p">]</span>
                     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
                 <span class="p">]</span>
@@ -2088,20 +2143,29 @@
         <span class="k">with</span> <span class="n">all_logging_disabled</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_check_if_connection_asset_is_s3</span><span class="p">()</span>
 
-        <span class="n">connection_properties</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;bucket&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
-            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">endpoint_url</span><span class="p">,</span>
-        <span class="p">}</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="n">S3Connection</span><span class="p">):</span>
+                <span class="n">connection_properties</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;bucket&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+                    <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">endpoint_url</span><span class="p">,</span>
+                <span class="p">}</span>
 
-        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;auth_endpoint&quot;</span><span class="p">,</span> <span class="s2">&quot;api_key&quot;</span><span class="p">]):</span>
-            <span class="n">connection_properties</span><span class="p">[</span><span class="s2">&quot;iam_url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">auth_endpoint</span>
-            <span class="n">connection_properties</span><span class="p">[</span><span class="s2">&quot;api_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">api_key</span>
-            <span class="n">connection_properties</span><span class="p">[</span><span class="s2">&quot;resource_instance_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">resource_instance_id</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">connection_properties</span><span class="p">[</span><span class="s2">&quot;secret_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">secret_access_key</span>
-            <span class="n">connection_properties</span><span class="p">[</span><span class="s2">&quot;access_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">access_key_id</span>
+                <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
+                    <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;auth_endpoint&quot;</span><span class="p">,</span> <span class="s2">&quot;api_key&quot;</span><span class="p">]</span>
+                <span class="p">):</span>
+                    <span class="n">connection_properties</span><span class="p">[</span><span class="s2">&quot;iam_url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">auth_endpoint</span>
+                    <span class="n">connection_properties</span><span class="p">[</span><span class="s2">&quot;api_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">api_key</span>
+                    <span class="n">connection_properties</span><span class="p">[</span><span class="s2">&quot;resource_instance_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">resource_instance_id</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">connection_properties</span><span class="p">[</span><span class="s2">&quot;secret_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">secret_access_key</span>
+                    <span class="p">)</span>
+                    <span class="n">connection_properties</span><span class="p">[</span><span class="s2">&quot;access_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">access_key_id</span>
+
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># AmazonS3 for containers</span>
+                <span class="n">connection_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 
         <span class="n">flight_parameters</span><span class="p">[</span><span class="s2">&quot;connection_properties&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">connection_properties</span>
         <span class="n">flight_parameters</span><span class="p">[</span><span class="s2">&quot;datasource_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
@@ -2135,6 +2199,8 @@
                 <span class="k">return</span> <span class="s2">&quot;csv&quot;</span>
             <span class="k">case</span> <span class="s2">&quot;.xlsx&quot;</span> <span class="o">|</span> <span class="s2">&quot;.xls&quot;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="s2">&quot;excel&quot;</span>
+            <span class="k">case</span> <span class="s2">&quot;.parquet&quot;</span> <span class="o">|</span> <span class="s2">&quot;.prq&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;parquet&quot;</span>
             <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
 
@@ -2976,6 +3042,48 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a json dictionary representing DatabaseLocation.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span><span class="p">}</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_AmazonS3Connection</span><span class="p">(</span><span class="n">BaseConnection</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Connection class to a AmazonS3 data storage in S3 format.</span>
+<span class="sd">     It&#39;s dedicated to work with temporary credentials retrieved from project or space details.</span>
+
+<span class="sd">    :param access_key: access key ID (username) for authorizing access to AWS</span>
+<span class="sd">    :type access_key: str</span>
+<span class="sd">    :param bucket: name of the bucket that contains the files to access</span>
+<span class="sd">    :type bucket: str</span>
+<span class="sd">    :param region: Amazon Web Services (AWS) region. Region name should match the region that Endpoint URL points to.</span>
+<span class="sd">    :type region: str</span>
+<span class="sd">    :param secret_key: The password associated with the access key ID for authorizing access to AWS</span>
+<span class="sd">    :type secret_key: str</span>
+<span class="sd">    :param session_token: session token associated with access_key and secret_key</span>
+<span class="sd">    :type session_token: str</span>
+<span class="sd">    :param shared_credentials: True if the credentials are for shared S3 bucket, False if the credentials are for dedicated S3 bucket. Default is False.</span>
+<span class="sd">    :type shared_credentials: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">access_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">bucket</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">region</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">secret_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">session_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">shared_credentials</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">access_key</span> <span class="o">=</span> <span class="n">access_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bucket</span> <span class="o">=</span> <span class="n">bucket</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">region</span> <span class="o">=</span> <span class="n">region</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secret_key</span> <span class="o">=</span> <span class="n">secret_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session_token</span> <span class="o">=</span> <span class="n">session_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared_credentials</span> <span class="o">=</span> <span class="n">shared_credentials</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a json dictionary representing _AmazonS3Connection.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
 </pre></div>
         </article>
       </div>

@@ -222,6 +222,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoai_rag_schema.html">AutoAI RAG Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -260,8 +261,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_deploy_on_demand.html">Deploy on Demand</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../rate_limit.html">Rate Limits</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_toolkit.html">Toolkit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_vector_index.html">VectorIndexes</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../model_gateway.html">Model Gateway (BETA)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../save_models.html">Saving external models</a></li>
 </ul>
 </li>
@@ -533,11 +536,11 @@
                 <span class="s2">&quot;`api_client` is required if connecting by connection asset.&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_connection_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_connection_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine the connection type from the connection details by comparing it to the available list of data source types.</span>
 
 <span class="sd">        :param connection_details: dict containing the connection details</span>
-<span class="sd">        :type connection_details: dict[str, list]</span>
+<span class="sd">        :type connection_details: dict[str, dict]</span>
 
 <span class="sd">        :raises KeyError: if the connection data source is invalid</span>
 
@@ -545,14 +548,13 @@
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">redirect_stdout</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
-                <span class="n">datasource_types_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">list_datasource_types</span><span class="p">()</span>
-            <span class="n">datasource_id_to_name_mapping</span> <span class="o">=</span> <span class="n">datasource_types_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span>
-                <span class="s2">&quot;DATASOURCE_ID&quot;</span>
-            <span class="p">)[</span><span class="s2">&quot;NAME&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-            <span class="n">datasource_type</span> <span class="o">=</span> <span class="n">datasource_id_to_name_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="n">connection_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;datasource_type&quot;</span><span class="p">],</span> <span class="kc">None</span>  <span class="c1"># type: ignore[call-overload]</span>
+
+            <span class="n">datasource_type_details</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">get_datasource_type_details_by_id</span><span class="p">(</span>
+                    <span class="n">connection_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;datasource_type&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
             <span class="p">)</span>
+            <span class="n">datasource_type</span> <span class="o">=</span> <span class="n">datasource_type_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">datasource_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;Connection type not found or not supported.&quot;</span><span class="p">)</span>

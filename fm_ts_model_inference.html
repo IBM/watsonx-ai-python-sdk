@@ -223,6 +223,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoai_rag_schema.html">AutoAI RAG Parameter Scheme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoai_experiment.html">AutoAI experiment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
 </ul>
@@ -261,8 +262,10 @@
 <li class="toctree-l3"><a class="reference internal" href="fm_deploy_on_demand.html">Deploy on Demand</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rate_limit.html">Rate Limits</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fm_toolkit.html">Toolkit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_vector_index.html">VectorIndexes</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="model_gateway.html">Model Gateway (BETA)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="save_models.html">Saving external models</a></li>
 </ul>
 </li>
@@ -372,13 +375,14 @@
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.inference.TSModelInference.forecast">
-<span class="sig-name descname"><span class="pre">forecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/ts_model_inference.html#TSModelInference.forecast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.TSModelInference.forecast" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">forecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">future_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/inference/ts_model_inference.html#TSModelInference.forecast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.inference.TSModelInference.forecast" title="Link to this definition">¶</a></dt>
 <dd><p>Generates a forecast based on the provided data and model parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>dict</em><em>, </em><em>pd.DataFrame</em><em>, </em><em>required</em>) – A payload of data matching the schema provided. For more information about the data limitation see the product documentation <a class="reference external" href="https://cloud.ibm.com/apidocs/watsonx-ai">https://cloud.ibm.com/apidocs/watsonx-ai</a>.</p></li>
 <li><p><strong>params</strong> (<em>dict</em><em>, </em><a class="reference internal" href="fm_schema.html#ibm_watsonx_ai.foundation_models.schema.TSForecastParameters" title="ibm_watsonx_ai.foundation_models.schema.TSForecastParameters"><em>TSForecastParameters</em></a><em>, </em><em>optional</em>) – Contains basic metadata about your time series data input. These metadata are used by the server to understand which field represents a time stamp or which are unique identifiers for separating time series from different input channels.</p></li>
+<li><p><strong>future_data</strong> (<em>dict</em><em>, </em><em>pd.DataFrame</em><em>, </em><em>optional</em>) – Available only for deployment (BYOM). Exogenous or supporting features that extend into the forecasting horizon (e.g., a weather forecast or calendar of special promotions) which are known in advance. future_data would be in the same format as data except that all timestamps would be in the forecast horizon and it would not include previously specified target_columns.</p></li>
 </ul>
 </dd>
 </dl>
@@ -399,6 +403,21 @@
         <span class="p">]</span>
     <span class="p">}</span>
 
+<span class="n">future_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;2018-10-02T16:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;2018-10-02T17:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;2018-10-02T18:00:00&quot;</span>
+            <span class="o">...</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;HUFL&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">10.10</span><span class="p">,</span>
+            <span class="mf">20.20</span><span class="p">,</span>
+            <span class="mf">30.30</span>
+            <span class="o">...</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+
 <span class="n">params</span> <span class="o">=</span>  <span class="p">{</span>
     <span class="s2">&quot;timestamp_column&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span>
     <span class="s2">&quot;target_columns&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -410,7 +429,7 @@
 
 <span class="c1"># The number of elements in the array for each field must be the prediction length of the model depending on the model; for example 96 for ibm/granite-ttm-512-96-r2,</span>
 
-<span class="n">response</span> <span class="o">=</span> <span class="n">ts_model</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">ts_model</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">future_data</span><span class="o">=</span><span class="n">future_data</span><span class="p">)</span>
 
 <span class="c1"># Print all response</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
