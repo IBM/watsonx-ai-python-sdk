@@ -691,7 +691,7 @@
 <span class="sd">        :return: list of paths to objects at NFS or bucket location</span>
 <span class="sd">        :rtype: list[str]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">include_types</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;file&quot;</span><span class="p">}</span>
+        <span class="n">include_types</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;file&quot;</span><span class="p">,</span> <span class="s2">&quot;excel&quot;</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">include_folders</span><span class="p">:</span>
             <span class="n">include_types</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;folder&quot;</span><span class="p">)</span>
 
@@ -773,6 +773,13 @@
 
         <span class="k">return</span> <span class="n">get_keys_with_prefix</span><span class="p">(</span><span class="n">bucket_objects</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_has_folder_location</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="p">(</span><span class="n">S3Location</span><span class="p">,</span> <span class="n">ContainerLocation</span><span class="p">,</span> <span class="n">NFSLocation</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">file_extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">get_location</span><span class="p">())[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">file_extension</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_connections_from_folder</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">include_folders</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;DataConnection&quot;</span><span class="p">]:</span>
@@ -792,8 +799,7 @@
                 <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;This DataConnection&#39;s location is not pointing to a S3 bucket.&quot;</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="n">file_extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">get_location</span><span class="p">())[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">file_extension</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_folder_location</span><span class="p">():</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span>
 
         <span class="n">new_data_connections</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2323,6 +2329,12 @@
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
                 <span class="n">error_msg</span><span class="o">=</span><span class="s2">&quot;Can&#39;t download folder from this DataConnection.&quot;</span><span class="p">,</span>
                 <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Location must be one of: `S3Location`, `ContainerLocation`, `NFSLocation`, `FSLocation`.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span>
+                <span class="s2">&quot;API client is missing. Please initialize API client and pass it to &quot;</span>
+                <span class="s2">&quot;`DataConnection.set_client(api_client)` method to be able to use this functionality.&quot;</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">local_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

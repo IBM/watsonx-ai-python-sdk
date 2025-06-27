@@ -316,7 +316,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
@@ -789,7 +789,7 @@
                         <span class="k">yield from</span> <span class="n">connection</span><span class="o">.</span><span class="n">iterable_read</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">connection</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">LocalBatchReader</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_conn</span><span class="p">())</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">batch</span> <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">connection</span><span class="p">)</span></div>
+            <span class="k">yield from</span> <span class="n">connection</span></div>
 
 </pre></div>
         </article>

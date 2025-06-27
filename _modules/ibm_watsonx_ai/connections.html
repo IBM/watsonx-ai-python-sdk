@@ -316,6 +316,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">unquote</span><span class="p">,</span> <span class="n">quote</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cachetools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached</span><span class="p">,</span> <span class="n">TTLCache</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">ibm_watsonx_ai._wrappers.requests</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">requests</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.messages.messages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Messages</span>
@@ -868,7 +869,9 @@
 
 <span class="sd">        **Example:**</span>
 
-<span class="sd">         &gt;&gt;&gt; result = client.connections.get_uploaded_db_drivers()</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            result = client.connections.get_uploaded_db_drivers()</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;</span> <span class="mf">4.6</span><span class="p">:</span>
@@ -905,6 +908,38 @@
         <span class="n">jars</span> <span class="o">=</span> <span class="p">[[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_uploaded_db_drivers</span><span class="p">()]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">(</span><span class="n">jars</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
 
+    <span class="nd">@cached</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="n">TTLCache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_datasource_type_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">datasource_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">connection_properties</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get datasource type details for the given datasource type ID or NAME.</span>
+
+<span class="sd">        :param datasource_type: ID or NAME of the datasource type</span>
+<span class="sd">        :type datasource_type: str</span>
+
+<span class="sd">        :param connection_properties: if True, the connection properties are included in the returned details. defaults to False</span>
+<span class="sd">        :type connection_properties: bool</span>
+
+<span class="sd">        :return: Datasource type details</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Connections</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">datasource_type</span><span class="p">,</span> <span class="s2">&quot;datasource_type&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">header_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;connection_properties&quot;</span><span class="p">:</span> <span class="n">connection_properties</span><span class="p">}</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests_retry_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_data_type_href</span><span class="p">(</span>
+                    <span class="n">datasource_type</span>
+                <span class="p">),</span>
+                <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="n">header_param</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+            <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;get datasource details&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">_silent_response_logging</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
 <div class="viewcode-block" id="Connections.get_datasource_type_details_by_id">
 <a class="viewcode-back" href="../../core_api.html#client.Connections.get_datasource_type_details_by_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_datasource_type_details_by_id</span><span class="p">(</span>
@@ -914,6 +949,7 @@
 
 <span class="sd">        :param datasource_type_id: ID of the datasource type</span>
 <span class="sd">        :type datasource_type_id: str</span>
+
 <span class="sd">        :param connection_properties: if True, the connection properties are included in the returned details. defaults to False</span>
 <span class="sd">        :type connection_properties: bool</span>
 
@@ -927,22 +963,38 @@
 <span class="sd">            client.connections.get_datasource_type_details_by_id(datasource_type_id)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_datasource_type_details</span><span class="p">(</span>
+            <span class="n">datasource_type</span><span class="o">=</span><span class="n">datasource_type_id</span><span class="p">,</span>
+            <span class="n">connection_properties</span><span class="o">=</span><span class="n">connection_properties</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
-        <span class="n">Connections</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">datasource_type_id</span><span class="p">,</span> <span class="s2">&quot;datasource_type&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-        <span class="n">header_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;connection_properties&quot;</span><span class="p">:</span> <span class="n">connection_properties</span><span class="p">}</span>
 
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests_retry_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_data_type_by_id_href</span><span class="p">(</span>
-                    <span class="n">datasource_type_id</span>
-                <span class="p">),</span>
-                <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
-                <span class="n">headers</span><span class="o">=</span><span class="n">header_param</span><span class="p">,</span>
-            <span class="p">)</span>
+<div class="viewcode-block" id="Connections.get_datasource_type_details_by_name">
+<a class="viewcode-back" href="../../core_api.html#client.Connections.get_datasource_type_details_by_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_datasource_type_details_by_name</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">datasource_type_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">connection_properties</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get datasource type details for the given datasource type name.</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
-            <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;get datasource details&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">_silent_response_logging</span><span class="o">=</span><span class="kc">True</span>
+<span class="sd">        :param datasource_type_name: NAME of the datasource type</span>
+<span class="sd">        :type datasource_type_name: str</span>
+
+<span class="sd">        :param connection_properties: if True, the connection properties are included in the returned details. defaults to False</span>
+<span class="sd">        :type connection_properties: bool</span>
+
+<span class="sd">        :return: Datasource type details</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            client.connections.get_datasource_type_details_by_name(datasource_type_name)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_datasource_type_details</span><span class="p">(</span>
+            <span class="n">datasource_type</span><span class="o">=</span><span class="n">datasource_type_name</span><span class="p">,</span>
+            <span class="n">connection_properties</span><span class="o">=</span><span class="n">connection_properties</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -995,12 +1047,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">Connections</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">datasource_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_datasource_details</span><span class="p">()</span>
+        <span class="n">datasource_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_datasource_type_details_by_name</span><span class="p">(</span>
+            <span class="n">datasource_type_name</span><span class="o">=</span><span class="n">name</span>
+        <span class="p">)</span>
+        <span class="n">datasource_id</span> <span class="o">=</span> <span class="n">datasource_details</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">]</span>
 
-        <span class="n">datasource_id</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ds_resource</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datasource_details</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">ds_resource</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
-                <span class="n">datasource_id</span> <span class="o">=</span> <span class="n">ds_resource</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">datasource_id</span></div>
 
 
@@ -1016,7 +1067,7 @@
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests_retry_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_data_type_by_id_href</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_connection_data_type_href</span><span class="p">(</span>
                     <span class="n">datasource_type</span>
                 <span class="p">),</span>
                 <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>

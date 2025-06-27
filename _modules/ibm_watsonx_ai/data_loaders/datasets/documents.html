@@ -318,47 +318,30 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContainerLocation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.data_loaders.datasets.base_documents</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BaseDocumentsIterableDataset</span><span class="p">,</span>
+    <span class="n">DEFAULT_SAMPLE_SIZE_LIMIT</span><span class="p">,</span>
+    <span class="n">DEFAULT_DOCUMENTS_SAMPLING_TYPE</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLClientError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.data_loaders.text_loader</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">TextLoader</span><span class="p">,</span>
-    <span class="n">_asynch_download</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.helpers.remote_document</span><span class="w"> </span><span class="kn">import</span> <span class="n">RemoteDocument</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocumentsSamplingTypes</span><span class="p">,</span> <span class="n">SamplingTypes</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">InvalidSizeLimit</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.helpers.connections</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataConnection</span>
-
-<span class="c1"># Note: try to import torch lib if available, this fallback is done based on</span>
-<span class="c1"># torch dependency removal request</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">IterableDataset</span>
-
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="n">IterableDataset</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="nb">object</span>  <span class="c1"># type: ignore[no-redef]</span>
-<span class="c1"># --- end note</span>
-
-<span class="n">DEFAULT_SAMPLE_SIZE_LIMIT</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="mi">1073741824</span>  <span class="c1"># 1GB in Bytes is verified later by _set_sample_size_limit</span>
-<span class="p">)</span>
-<span class="n">DEFAULT_SAMPLING_TYPE</span> <span class="o">=</span> <span class="n">SamplingTypes</span><span class="o">.</span><span class="n">FIRST_VALUES</span>
-<span class="n">DEFAULT_DOCUMENTS_SAMPLING_TYPE</span> <span class="o">=</span> <span class="n">DocumentsSamplingTypes</span><span class="o">.</span><span class="n">RANDOM</span>
 
 
 <div class="viewcode-block" id="DocumentsIterableDataset">
 <a class="viewcode-back" href="../../../../iterabledatasets_modules.html#ibm_watsonx_ai.data_loaders.datasets.documents.DocumentsIterableDataset">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">DocumentsIterableDataset</span><span class="p">(</span><span class="n">IterableDataset</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DocumentsIterableDataset</span><span class="p">(</span><span class="n">BaseDocumentsIterableDataset</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This dataset is an Iterable stream of documents using an underneath Flight Service.</span>
 <span class="sd">    It can download documents asynchronously and serve them to you from a generator.</span>
@@ -373,6 +356,8 @@
 <span class="sd">        - **json** (&quot;.json&quot; file extension) - standard json file</span>
 <span class="sd">        - **yaml** (&quot;.yaml&quot; file extension) - standard yaml file</span>
 <span class="sd">        - **xml** (&quot;.xml&quot; file extension) - standard xml file</span>
+<span class="sd">        - **csv** (&quot;.csv&quot; file extension) - standard csv file</span>
+<span class="sd">        - **excel** (&quot;.xlsx&quot; file extension) - standard Excel file</span>
 
 <span class="sd">    :param connections: list of connections to the documents</span>
 <span class="sd">    :type connections: list[DataConnection]</span>
@@ -468,273 +453,25 @@
         <span class="n">error_callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Location</span><span class="p">,</span> <span class="n">AssetLocation</span><span class="p">,</span> <span class="n">NFSLocation</span>
-
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">enable_sampling</span> <span class="o">=</span> <span class="n">enable_sampling</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sample_size_limit</span> <span class="o">=</span> <span class="n">sample_size_limit</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sampling_type</span> <span class="o">=</span> <span class="n">sampling_type</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_size_limit</span><span class="p">(</span><span class="n">total_size_limit</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">total_ndocs_limit</span> <span class="o">=</span> <span class="n">total_ndocs_limit</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_dataset</span> <span class="o">=</span> <span class="n">benchmark_dataset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">error_callback</span> <span class="o">=</span> <span class="n">error_callback</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_download_strategy</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="s2">&quot;_download_strategy&quot;</span><span class="p">,</span> <span class="s2">&quot;n_parallel&quot;</span>
-        <span class="p">)</span>  <span class="c1"># expected values: &quot;n_parallel&quot;, &quot;sequential&quot;</span>
-
-        <span class="n">api_client</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;api_client&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_api_client&quot;</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="n">api_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">conn</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">conn</span><span class="o">.</span><span class="n">_api_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">conn</span><span class="o">.</span><span class="n">set_client</span><span class="p">(</span><span class="n">api_client</span><span class="p">)</span>
-
-        <span class="n">set_of_api_clients</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">conn</span><span class="o">.</span><span class="n">_api_client</span> <span class="k">for</span> <span class="n">conn</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">])</span>
-        <span class="n">data_asset_id_name_mapping</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">AssetLocation</span><span class="p">)</span> <span class="k">for</span> <span class="n">conn</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">]):</span>
-
-            <span class="k">for</span> <span class="n">client</span> <span class="ow">in</span> <span class="n">set_of_api_clients</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">data_assets</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">get_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="s2">&quot;resources&quot;</span><span class="p">]:</span>
-                    <span class="n">data_asset_id_name_mapping</span><span class="p">[</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;asset_id&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span>
-                        <span class="s2">&quot;metadata&quot;</span>
-                    <span class="p">][</span><span class="s2">&quot;resource_key&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="nf">get_document_id</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">AssetLocation</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">conn</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">data_asset_id_name_mapping</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">data_asset_id_name_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;The asset with id </span><span class="si">{</span><span class="n">conn</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> could not be found.&quot;</span>
-                    <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">conn</span><span class="o">.</span><span class="n">_get_filename</span><span class="p">()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">remote_documents</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
-                <span class="n">connection</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="p">(</span><span class="n">S3Location</span><span class="p">,</span> <span class="n">ContainerLocation</span><span class="p">,</span> <span class="n">NFSLocation</span><span class="p">)</span>
-            <span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">remote_documents</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                    <span class="p">[</span>
-                        <span class="n">RemoteDocument</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">document_id</span><span class="o">=</span><span class="n">get_document_id</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
-                        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">connection</span><span class="o">.</span><span class="n">_get_connections_from_folder</span><span class="p">()</span>
-                    <span class="p">]</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">remote_documents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">RemoteDocument</span><span class="p">(</span>
-                        <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span> <span class="n">document_id</span><span class="o">=</span><span class="n">get_document_id</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">doc</span><span class="o">.</span><span class="n">document_id</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remote_documents</span><span class="p">]))</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">remote_documents</span>
-        <span class="p">):</span>
-            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                <span class="s2">&quot;Not unique document file names passed in connections.&quot;</span>
-            <span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_size_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size_limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;If non-default value of total_size_limit was not passed,</span>
-<span class="sd">        set Sample Size Limit based on T-Shirt size if code is run on training pod:</span>
-<span class="sd">        For memory &lt; 16 (T-Shirts: XS,S) default is 10MB,</span>
-<span class="sd">        For memory &lt; 32 &amp; &gt;= 16 (T-Shirts: M) default is 100MB,</span>
-<span class="sd">        For memory = 32 (T-Shirt L) default is 0.7GB,</span>
-<span class="sd">        For memory &gt; 32 (T-Shirt XL) or runs outside pod default is 1GB.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">total_size_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_max_sample_size_limit</span>
-
-        <span class="n">max_tshirt_size_limit</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">get_max_sample_size_limit</span><span class="p">()</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MEM&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="p">)</span>  <span class="c1"># limit manual setting of sample size limit on autoai clusters #31527</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_sampling</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">max_tshirt_size_limit</span><span class="p">:</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="n">size_limit</span> <span class="o">&gt;</span> <span class="n">max_tshirt_size_limit</span>
-                    <span class="ow">and</span> <span class="n">size_limit</span> <span class="o">!=</span> <span class="n">DEFAULT_SAMPLE_SIZE_LIMIT</span>
-                <span class="p">):</span>
-                    <span class="k">raise</span> <span class="n">InvalidSizeLimit</span><span class="p">(</span><span class="n">size_limit</span><span class="p">,</span> <span class="n">max_tshirt_size_limit</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">total_size_limit</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">size_limit</span><span class="p">,</span> <span class="n">max_tshirt_size_limit</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">total_size_limit</span> <span class="o">=</span> <span class="n">size_limit</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">size_limit</span> <span class="o">==</span> <span class="n">DEFAULT_SAMPLE_SIZE_LIMIT</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">total_size_limit</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># do not limit reading if sampling is disabled, we want read all data</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">total_size_limit</span> <span class="o">=</span> <span class="n">size_limit</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_docs_context_sampling</span><span class="p">(</span>
-        <span class="n">remote_documents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RemoteDocument</span><span class="p">],</span>
-        <span class="n">benchmark_document_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">RemoteDocument</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Randomly sample documents from the benchmark set, then randomly from the rest up to a `size_upper_bound`.</span>
-
-<span class="sd">        :param remote_documents: documents to sample from</span>
-<span class="sd">        :type remote_documents: list[RemoteDocument]</span>
-
-<span class="sd">        :param benchmark_document_ids: IDs of documents from the benchmark dataset</span>
-<span class="sd">        :type benchmark_document_ids: list[str]</span>
-
-<span class="sd">        :return: list of sampled documents</span>
-<span class="sd">        :rtype: list[RemoteDocument]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sampled_documents</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">benchmark_documents</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">doc</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">remote_documents</span> <span class="k">if</span> <span class="n">doc</span><span class="o">.</span><span class="n">document_id</span> <span class="ow">in</span> <span class="n">benchmark_document_ids</span>
-        <span class="p">]</span>
-        <span class="n">non_benchmark_documents</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">doc</span>
-            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">remote_documents</span>
-            <span class="k">if</span> <span class="n">doc</span><span class="o">.</span><span class="n">document_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">benchmark_document_ids</span>
-        <span class="p">]</span>
-
-        <span class="n">sampled_documents</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">benchmark_documents</span><span class="p">)</span>
-        <span class="n">sampled_documents</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">non_benchmark_documents</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">sampled_documents</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_docs_random_sampling</span><span class="p">(</span>
-        <span class="n">remote_documents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RemoteDocument</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">RemoteDocument</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Randomly sample documents from `remote_documents` up to `size_upper_bound`.</span>
-
-<span class="sd">        :param remote_documents: documents to sample from</span>
-<span class="sd">        :type remote_documents: list[RemoteDocument]</span>
-
-<span class="sd">        :return: list of sampled documents</span>
-<span class="sd">        :rtype: list[RemoteDocument]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">shuffle</span>
-
-        <span class="n">sampling_order</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">remote_documents</span><span class="p">)))</span>
-        <span class="n">shuffle</span><span class="p">(</span><span class="n">sampling_order</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="p">[</span><span class="n">remote_documents</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sampling_order</span><span class="p">]</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterate over documents.&quot;&quot;&quot;</span>
-        <span class="n">size_limit</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sample_size_limit</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_size_limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_sampling</span>
-            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_size_limit</span>
+        <span class="n">BaseDocumentsIterableDataset</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">connections</span><span class="o">=</span><span class="n">connections</span><span class="p">,</span>
+            <span class="n">enable_sampling</span><span class="o">=</span><span class="n">enable_sampling</span><span class="p">,</span>
+            <span class="n">sample_size_limit</span><span class="o">=</span><span class="n">sample_size_limit</span><span class="p">,</span>
+            <span class="n">sampling_type</span><span class="o">=</span><span class="n">sampling_type</span><span class="p">,</span>
+            <span class="n">total_size_limit</span><span class="o">=</span><span class="n">total_size_limit</span><span class="p">,</span>
+            <span class="n">total_ndocs_limit</span><span class="o">=</span><span class="n">total_ndocs_limit</span><span class="p">,</span>
+            <span class="n">benchmark_dataset</span><span class="o">=</span><span class="n">benchmark_dataset</span><span class="p">,</span>
+            <span class="n">error_callback</span><span class="o">=</span><span class="n">error_callback</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_sampling</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_type</span> <span class="o">==</span> <span class="n">DocumentsSamplingTypes</span><span class="o">.</span><span class="n">RANDOM</span><span class="p">:</span>
-                <span class="n">sampled_docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs_random_sampling</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remote_documents</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_type</span> <span class="o">==</span> <span class="n">DocumentsSamplingTypes</span><span class="o">.</span><span class="n">BENCHMARK_DRIVEN</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">benchmark_documents_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-                            <span class="nb">set</span><span class="p">(</span>
-                                <span class="p">[</span>
-                                    <span class="n">y</span>
-                                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_dataset</span><span class="p">[</span>
-                                        <span class="s2">&quot;correct_answer_document_ids&quot;</span>
-                                    <span class="p">]</span><span class="o">.</span><span class="n">values</span>
-                                    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span>
-                                <span class="p">]</span>
-                            <span class="p">)</span>
-                        <span class="p">)</span>
-                    <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                            <span class="s2">&quot;Unable to collect `correct_answer_document_ids` from the benchmark dataset, &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;due to invalid schema provided. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
-                        <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;`benchmark_dataset` is mandatory for sample_type: DocumentsSamplingTypes.BENCHMARK_DRIVEN.&quot;</span>
-                    <span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">RemoteDocument</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">TextLoader</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
 
-                <span class="n">sampled_docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs_context_sampling</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">remote_documents</span><span class="p">,</span> <span class="n">benchmark_documents_ids</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Unsupported documents sampling type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_type</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">sampled_docs</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remote_documents</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_ndocs_limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sampled_docs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_ndocs_limit</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Documents sampled with total_ndocs_limit param, &quot;</span>
-                    <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">sampled_docs</span><span class="p">[:</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">total_ndocs_limit</span><span class="p">])</span><span class="si">}</span><span class="s2"> docs chosen &quot;</span>
-                    <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;from </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">sampled_docs</span><span class="p">)</span><span class="si">}</span><span class="s2"> possible.&quot;</span>
-                <span class="p">)</span>
-            <span class="n">sampled_docs</span> <span class="o">=</span> <span class="n">sampled_docs</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_ndocs_limit</span><span class="p">]</span>
-
-        <span class="k">match</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_strategy</span><span class="p">:</span>
-            <span class="k">case</span> <span class="s2">&quot;n_parallel&quot;</span><span class="p">:</span>  <span class="c1"># downloading documents entirely in parallel</span>
-                <span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing.dummy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
-
-                <span class="n">thread_no</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sampled_docs</span><span class="p">))</span>
-
-                <span class="n">q_input</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
-                <span class="n">qs_output</span> <span class="o">=</span> <span class="p">[</span><span class="n">mp</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sampled_docs</span><span class="p">))]</span>
-                <span class="n">args</span> <span class="o">=</span> <span class="p">[(</span><span class="n">q_input</span><span class="p">,</span> <span class="n">qs_output</span><span class="p">)]</span> <span class="o">*</span> <span class="n">thread_no</span>
-
-                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">doc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sampled_docs</span><span class="p">):</span>
-                    <span class="n">q_input</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">doc</span><span class="p">))</span>
-
-                <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">thread_no</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-                    <span class="kn">from</span><span class="w"> </span><span class="nn">queue</span><span class="w"> </span><span class="kn">import</span> <span class="n">Empty</span>
-
-                    <span class="n">pool</span><span class="o">.</span><span class="n">map_async</span><span class="p">(</span><span class="n">_asynch_download</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-
-                    <span class="n">res_size</span> <span class="o">=</span> <span class="mi">0</span>
-
-                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">qs_output</span><span class="p">)):</span>
-                        <span class="k">try</span><span class="p">:</span>
-                            <span class="n">result</span> <span class="o">=</span> <span class="n">qs_output</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
-                        <span class="k">except</span> <span class="n">Empty</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                            <span class="n">result</span> <span class="o">=</span> <span class="n">e</span>
-
-                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
-                            <span class="n">e</span> <span class="o">=</span> <span class="n">result</span>
-                            <span class="n">doc_id</span> <span class="o">=</span> <span class="n">sampled_docs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">document_id</span>
-                            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to download the file: `</span><span class="si">{</span><span class="n">doc_id</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
-                            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">Empty</span><span class="p">):</span>
-                                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_callback</span><span class="p">:</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">error_callback</span><span class="p">(</span><span class="n">doc_id</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">doc</span> <span class="o">=</span> <span class="n">result</span>
-                            <span class="n">res_size</span> <span class="o">+=</span> <span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span><span class="p">)</span>
-
-                            <span class="k">if</span> <span class="n">size_limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">res_size</span> <span class="o">&gt;</span> <span class="n">size_limit</span><span class="p">:</span>
-                                <span class="k">return</span>
-
-                            <span class="k">yield</span> <span class="n">doc</span>
-
-            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>  <span class="c1"># &quot;sequential&quot; - simple sequential downloading</span>
-                <span class="n">res_size</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">sampled_docs</span><span class="p">:</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">doc</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
-
-                        <span class="n">loaded_doc</span> <span class="o">=</span> <span class="n">TextLoader</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-                        <span class="n">res_size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">loaded_doc</span><span class="o">.</span><span class="n">page_content</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
-
-                        <span class="k">if</span> <span class="n">size_limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">res_size</span> <span class="o">&gt;</span> <span class="n">size_limit</span><span class="p">:</span>
-                            <span class="k">return</span>
-
-                        <span class="k">yield</span> <span class="n">loaded_doc</span>
-                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_callback</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">error_callback</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">document_id</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="k">raise</span> <span class="n">e</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_element_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">el</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">page_content</span><span class="p">)</span></div>
 
 </pre></div>
         </article>
