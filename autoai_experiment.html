@@ -1170,6 +1170,21 @@ cognito phase (applicable to pipelines with feature engineering stage)</p></li>
 </dd>
 </dl>
 <p><strong>Examples</strong></p>
+<ul class="simple">
+<li><p>Rag Optimizer configuration with defaults</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.experiment</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoAI</span>
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">AutoAI</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">rag_optimizer</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;RAG - AutoAI&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Sample description&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Rag Optimizer configuration with example values of parameters</p></li>
+</ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.experiment</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoAI</span>
 <span class="n">experiment</span> <span class="o">=</span> <span class="n">AutoAI</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 
@@ -1177,7 +1192,22 @@ cognito phase (applicable to pipelines with feature engineering stage)</p></li>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;RAG - AutoAI&quot;</span><span class="p">,</span>
     <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Sample description&quot;</span><span class="p">,</span>
     <span class="n">max_number_of_rag_patterns</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">optimization_metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;answer_correctness&quot;</span><span class="p">]</span>
+    <span class="n">chunking</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;recursive&quot;</span><span class="p">,</span> <span class="s2">&quot;chunk_size&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span> <span class="s2">&quot;chunk_overlap&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">}],</span>
+    <span class="n">embedding_models</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ibm/slate-125m-english-rtrvr-v2&quot;</span><span class="p">],</span>
+    <span class="n">foundation_models</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;meta-llama/llama-3-3-70b-instruct&quot;</span><span class="p">],</span>
+    <span class="n">retrieval</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;window&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;number_of_chunks&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;window_size&quot;</span><span class="p">:</span> <span class="mi">2</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;number_of_chunks&quot;</span><span class="p">:</span> <span class="mi">5</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">generation</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;language&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;auto-detect&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}},</span>
+    <span class="n">optimization_metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;answer_correctness&quot;</span><span class="p">],</span>
 <span class="p">)</span>
 </pre></div>
 </div>

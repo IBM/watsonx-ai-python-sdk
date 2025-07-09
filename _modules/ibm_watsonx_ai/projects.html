@@ -448,7 +448,7 @@
             <span class="n">_silent_response_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span>
 
-        <span class="n">project_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_details</span><span class="p">(</span><span class="n">location</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">project_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">location</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="s2">&quot;compute&quot;</span> <span class="ow">in</span> <span class="n">project_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">instance_id</span> <span class="o">=</span> <span class="n">project_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;compute&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;guid&quot;</span><span class="p">]</span>
@@ -554,9 +554,6 @@
 
 <div class="viewcode-block" id="Projects.get_details">
 <a class="viewcode-back" href="../../core_api.html#client.Projects.get_details">[docs]</a>
-    <span class="nd">@cached</span><span class="p">(</span>
-        <span class="n">cache</span><span class="o">=</span><span class="n">TTLCache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="mf">4.5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
-    <span class="p">)</span>  <span class="c1"># Projects API doesn&#39;t refresh credentials until 5 minutes before expiration</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_details</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -566,7 +563,7 @@
         <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of stored project(s). The method uses TTL cache.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of stored project(s).</span>
 
 <span class="sd">        :param project_id: ID of the project</span>
 <span class="sd">        :type project_id: str, optional</span>
@@ -588,36 +585,15 @@
 
 <span class="sd">        .. code-block:: python</span>
 
-<span class="sd">            project_details = client.project.get_details(project_id)</span>
-<span class="sd">            project_details = client.project.get_details(project_name)</span>
-<span class="sd">            project_details = client.project.get_details(limit=100)</span>
-<span class="sd">            project_details = client.project.get_details(limit=100, get_all=True)</span>
+<span class="sd">            project_details = client.projects.get_details(project_id)</span>
+<span class="sd">            project_details = client.projects.get_details(project_name)</span>
+<span class="sd">            project_details = client.projects.get_details(limit=100)</span>
+<span class="sd">            project_details = client.projects.get_details(limit=100, get_all=True)</span>
 <span class="sd">            project_details = []</span>
-<span class="sd">            for entry in client.project.get_details(limit=100, asynchronous=True, get_all=True):</span>
+<span class="sd">            for entry in client.projects.get_details(limit=100, asynchronous=True, get_all=True):</span>
 <span class="sd">                project_details.extend(entry)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_details</span><span class="p">(</span>
-            <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
-            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
-            <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
-            <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
-            <span class="n">project_name</span><span class="o">=</span><span class="n">project_name</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_details</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of stored project(s) without caching. It&#39;s dedicated for internal usage.&quot;&quot;&quot;</span>
         <span class="n">Projects</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_project_href</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
@@ -635,22 +611,45 @@
                 <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;Get project&quot;</span><span class="p">,</span> <span class="n">response_get</span><span class="p">,</span> <span class="n">_silent_response_logging</span><span class="o">=</span><span class="kc">True</span>
             <span class="p">)</span>
 
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">project_name</span><span class="p">:</span>
-                <span class="n">query_params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">project_name</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">project_name</span><span class="p">:</span>
+            <span class="n">query_params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">project_name</span><span class="p">})</span>
 
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_with_or_without_limit</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_href</span><span class="p">(),</span>
-                <span class="mi">100</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">limit</span> <span class="ow">or</span> <span class="n">limit</span> <span class="o">&gt;</span> <span class="mi">100</span> <span class="k">else</span> <span class="n">limit</span><span class="p">,</span>
-                <span class="s2">&quot;projects&quot;</span><span class="p">,</span>
-                <span class="n">summary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="n">pre_defined</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="n">skip_space_project_chk</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">query_params</span><span class="o">=</span><span class="n">query_params</span><span class="p">,</span>
-                <span class="n">_async</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
-                <span class="n">_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
-                <span class="n">_silent_response_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_with_or_without_limit</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_projects_href</span><span class="p">(),</span>
+            <span class="mi">100</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">limit</span> <span class="ow">or</span> <span class="n">limit</span> <span class="o">&gt;</span> <span class="mi">100</span> <span class="k">else</span> <span class="n">limit</span><span class="p">,</span>
+            <span class="s2">&quot;projects&quot;</span><span class="p">,</span>
+            <span class="n">summary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">pre_defined</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">skip_space_project_chk</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">query_params</span><span class="o">=</span><span class="n">query_params</span><span class="p">,</span>
+            <span class="n">_async</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
+            <span class="n">_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+            <span class="n">_silent_response_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="nd">@cached</span><span class="p">(</span>
+        <span class="n">cache</span><span class="o">=</span><span class="n">TTLCache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="mf">4.5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="p">)</span>  <span class="c1"># Projects API doesn&#39;t refresh credentials until 5 minutes before expiration</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of stored project(s) with caching. It&#39;s dedicated for internal usage.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+            <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+            <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
+            <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+            <span class="n">project_name</span><span class="o">=</span><span class="n">project_name</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="Projects.list">
 <a class="viewcode-back" href="../../core_api.html#client.Projects.list">[docs]</a>
@@ -770,7 +769,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">changes</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_details</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;compute&quot;</span> <span class="ow">in</span> <span class="n">changes</span><span class="p">:</span>
             <span class="n">changes</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;machine_learning&quot;</span>

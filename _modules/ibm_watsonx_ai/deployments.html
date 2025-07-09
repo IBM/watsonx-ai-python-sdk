@@ -357,6 +357,7 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecStates</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.inference</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelInference</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span>
 
 <span class="n">lib_checker</span> <span class="o">=</span> <span class="n">LibraryChecker</span><span class="p">()</span>
@@ -2104,7 +2105,7 @@
         <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">inference_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;text_stream&quot;</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;chat_stream&quot;</span><span class="p">],</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModelInference&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Based on provided deployment_id and params get ModelInference object.</span>
 <span class="sd">        Verify that the deployment with the given deployment_id has generating methods.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2157,19 +2158,21 @@
                 <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="p">{})</span>
                 <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;serving_urls&quot;</span><span class="p">,</span> <span class="p">[])</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="n">inference_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;text_stream&quot;</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="n">generated_url</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inference_url_list</span><span class="p">:</span>
 
-                <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
-                    <span class="s2">&quot;/text/generation&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inference_url</span>
-                    <span class="k">for</span> <span class="n">inference_url</span> <span class="ow">in</span> <span class="n">inference_url_list</span>
-                <span class="p">):</span>
-                    <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                        <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
-                            <span class="n">deployment_id</span><span class="p">,</span>
-                            <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_deployment_has_not_inference_for_generation&quot;</span><span class="p">,</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">inference_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;text_stream&quot;</span><span class="p">]</span>
+            <span class="ow">and</span> <span class="n">generated_url</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inference_url_list</span>
+            <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
+                <span class="s2">&quot;/text/generation&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inference_url</span>
+                <span class="k">for</span> <span class="n">inference_url</span> <span class="ow">in</span> <span class="n">inference_url_list</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">deployment_id</span><span class="p">,</span>
+                    <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;fm_deployment_has_not_inference_for_generation&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">ModelInference</span><span class="p">(</span>
             <span class="n">deployment_id</span><span class="o">=</span><span class="n">deployment_id</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span>
@@ -2389,32 +2392,76 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">chat</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+        <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tool_choice</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tool_choice_option</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;auto&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span>
+            <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+            <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
+            <span class="n">tool_choice</span><span class="o">=</span><span class="n">tool_choice</span><span class="p">,</span>
+            <span class="n">tool_choice_option</span><span class="o">=</span><span class="n">tool_choice_option</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">chat_stream</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+        <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tool_choice</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tool_choice_option</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;auto&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
         <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;chat_stream&quot;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">chat_stream</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">chat_stream</span><span class="p">(</span>
+            <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+            <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
+            <span class="n">tool_choice</span><span class="o">=</span><span class="n">tool_choice</span><span class="p">,</span>
+            <span class="n">tool_choice_option</span><span class="o">=</span><span class="n">tool_choice_option</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">achat</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+        <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tool_choice</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tool_choice_option</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;auto&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="k">await</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">achat</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">achat</span><span class="p">(</span>
+            <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+            <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
+            <span class="n">tool_choice</span><span class="o">=</span><span class="n">tool_choice</span><span class="p">,</span>
+            <span class="n">tool_choice_option</span><span class="o">=</span><span class="n">tool_choice_option</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">achat_stream</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">deployment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">messages</span><span class="p">:</span> <span class="n">ListType</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+        <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tool_choice</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tool_choice_option</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;auto&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">:</span>
         <span class="n">d_inference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_inference</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;chat_stream&quot;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="k">await</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">achat_stream</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">d_inference</span><span class="o">.</span><span class="n">achat_stream</span><span class="p">(</span>
+            <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+            <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
+            <span class="n">tool_choice</span><span class="o">=</span><span class="n">tool_choice</span><span class="p">,</span>
+            <span class="n">tool_choice_option</span><span class="o">=</span><span class="n">tool_choice_option</span><span class="p">,</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="Deployments.run_ai_service">
 <a class="viewcode-back" href="../../core_api.html#client.Deployments.run_ai_service">[docs]</a>

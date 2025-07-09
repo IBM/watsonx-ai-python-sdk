@@ -1305,6 +1305,21 @@
 
 <span class="sd">        **Examples**</span>
 
+<span class="sd">        - Rag Optimizer configuration with defaults</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from ibm_watsonx_ai.experiment import AutoAI</span>
+<span class="sd">            experiment = AutoAI(...)</span>
+
+<span class="sd">            optimizer = experiment.rag_optimizer(</span>
+<span class="sd">                name=&quot;RAG - AutoAI&quot;,</span>
+<span class="sd">                description=&quot;Sample description&quot;</span>
+<span class="sd">            )</span>
+
+
+<span class="sd">        - Rag Optimizer configuration with example values of parameters</span>
+
 <span class="sd">        .. code-block:: python</span>
 
 <span class="sd">            from ibm_watsonx_ai.experiment import AutoAI</span>
@@ -1314,9 +1329,23 @@
 <span class="sd">                name=&quot;RAG - AutoAI&quot;,</span>
 <span class="sd">                description=&quot;Sample description&quot;,</span>
 <span class="sd">                max_number_of_rag_patterns=5,</span>
-<span class="sd">                optimization_metrics=[&quot;answer_correctness&quot;]</span>
+<span class="sd">                chunking=[{&quot;method&quot;: &quot;recursive&quot;, &quot;chunk_size&quot;: 256, &quot;chunk_overlap&quot;: 64}],</span>
+<span class="sd">                embedding_models=[&quot;ibm/slate-125m-english-rtrvr-v2&quot;],</span>
+<span class="sd">                foundation_models=[&quot;meta-llama/llama-3-3-70b-instruct&quot;],</span>
+<span class="sd">                retrieval=[</span>
+<span class="sd">                    {</span>
+<span class="sd">                        &quot;method&quot;: &quot;window&quot;,</span>
+<span class="sd">                        &quot;number_of_chunks&quot;: 3,</span>
+<span class="sd">                        &quot;window_size&quot;: 2</span>
+<span class="sd">                    },</span>
+<span class="sd">                    {</span>
+<span class="sd">                        &quot;method&quot;: &quot;simple&quot;,</span>
+<span class="sd">                        &quot;number_of_chunks&quot;: 5</span>
+<span class="sd">                    }</span>
+<span class="sd">                ],</span>
+<span class="sd">                generation={&quot;language&quot;: {&quot;auto-detect&quot;: True}},</span>
+<span class="sd">                optimization_metrics=[&quot;answer_correctness&quot;],</span>
 <span class="sd">            )</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.engines</span><span class="w"> </span><span class="kn">import</span> <span class="n">RAGEngine</span>
 

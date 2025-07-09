@@ -391,6 +391,133 @@ sequence_number, and start_index.</p>
 </dd></dl>
 
 </section>
+<section id="hybridsemanticchunker">
+<h3>HybridSemanticChunker<a class="headerlink" href="#hybridsemanticchunker" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.</span></span><span class="sig-name descname"><span class="pre">HybridSemanticChunker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embeddings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_chunk_size_deviation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/chunker/hybrid_semantic_chunker.html#HybridSemanticChunker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.base_chunker.BaseChunker" title="ibm_watsonx_ai.foundation_models.extensions.rag.chunker.base_chunker.BaseChunker"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseChunker</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code>]</p>
+<p>Chunker which uses similarity between inner segments of text to find optimal breakpoints.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Added in 1.3.25</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>embeddings</strong> (<a class="reference internal" href="fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.Embeddings" title="ibm_watsonx_ai.foundation_models.embeddings.Embeddings"><em>Embeddings</em></a>) – embeddings to be used to generate dense vectors</p></li>
+<li><p><strong>chunk_size</strong> (<em>int</em>) – approximate chunk size</p></li>
+<li><p><strong>allowed_chunk_size_deviation</strong> (<em>float</em>) – specifies the fraction by which each chunk’s size may vary
+from the target chunk_size</p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em>) – additional chunker parameters:
+- tfidf_buffer_size: Number of breakpoint chunks to the left or right of each potential breakpoint
+used to generate TF-IDF vectors for similarity analysis, defaults to 5.
+- embedding_buffer_size: Number of breakpoint chunks to the left or right of each potential breakpoint
+used to generate embeddings for similarity analysis, defaults to 5.
+- tfidf_weight: Weight of tfidf vectors representations in similarity analysis, defaults to 0.5.
+- embedding_weight: Weight of embeddings in similarity analysis, defaults to 0.5.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chunker</span> <span class="o">=</span> <span class="n">HybridSemanticChunker</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">embeddings</span><span class="p">)</span>
+<span class="n">chunker</span><span class="o">.</span><span class="n">split_documents</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>or with vectors precomputing:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chunker</span> <span class="o">=</span> <span class="n">HybridSemanticChunker</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">embeddings</span><span class="p">)</span>
+<span class="n">chunker</span><span class="o">.</span><span class="n">precompute_vectors</span><span class="p">()</span>
+<span class="n">chunker</span><span class="o">.</span><span class="n">get_chunks</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker.from_dict">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/chunker/hybrid_semantic_chunker.html#HybridSemanticChunker.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker.from_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Create an instance from the dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>d</strong> (<a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker" title="ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker"><em>HybridSemanticChunker</em></a>) – dictionary that can be used to create an instance of the HybridSemanticChunker.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker.get_chunks">
+<span class="sig-name descname"><span class="pre">get_chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_chunk_size_deviation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tfidf_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/chunker/hybrid_semantic_chunker.html#HybridSemanticChunker.get_chunks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker.get_chunks" title="Link to this definition">¶</a></dt>
+<dd><p>Performs similarity analysis on vector representations of the texts between potential breakpoints
+and identifies the optimal ones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chunk_size</strong> (<em>int</em><em>, </em><em>optional</em>) – approximate chunk size</p></li>
+<li><p><strong>allowed_chunk_size_deviation</strong> (<em>float</em><em>, </em><em>optional</em>) – specifies the percentage by which each chunk’s size may vary
+from the target chunk_size</p></li>
+<li><p><strong>tfidf_weight</strong> (<em>float</em><em>, </em><em>optional</em>) – weight of tfidf vectors representations in similarity analysis</p></li>
+<li><p><strong>embedding_weight</strong> (<em>float</em><em>, </em><em>optional</em>) – weight of embeddings in similarity analysis</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of chunks</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[Document]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker.precompute_vectors">
+<span class="sig-name descname"><span class="pre">precompute_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">documents</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/chunker/hybrid_semantic_chunker.html#HybridSemanticChunker.precompute_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker.precompute_vectors" title="Link to this definition">¶</a></dt>
+<dd><p>Performs an initial split using sentence_split_regex to identify potential breakpoints,
+then computes  and embedding vector representations of the text segments
+between breakpoints for semantic similarity analysis.
+This function is useful for experimenting with different chunking parameters efficiently,
+allowing to avoid recomputing vectors for the same input documents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>documents</strong> (<em>Sequence</em><em>[</em><em>Document</em><em>]</em>) – sequence of documents to perform chunking on</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker.split_documents">
+<span class="sig-name descname"><span class="pre">split_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">documents</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/chunker/hybrid_semantic_chunker.html#HybridSemanticChunker.split_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker.split_documents" title="Link to this definition">¶</a></dt>
+<dd><p>Executes the full chunking process, including vector computation, similarity analysis,
+and selection of optimal breakpoints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>documents</strong> (<em>Sequence</em><em>[</em><em>Document</em><em>]</em>) – sequence of documents to perform chunking on</p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em>) – chunking parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of chunks</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[Document]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/chunker/hybrid_semantic_chunker.html#HybridSemanticChunker.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker.to_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Return dictionary that can be used to recreate an instance of the HybridSemanticChunker.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dictionary which can be used to recreate an instance of the HybridSemanticChunker.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="basechunker">
 <h3>BaseChunker<a class="headerlink" href="#basechunker" title="Link to this heading">¶</a></h3>
 <dl class="py class">
@@ -2121,6 +2248,17 @@ and can be found in the LangChain documentation.</p>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.langchain_chunker.LangChainChunker.split_documents"><code class="docutils literal notranslate"><span class="pre">LangChainChunker.split_documents()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.langchain_chunker.LangChainChunker.supported_methods"><code class="docutils literal notranslate"><span class="pre">LangChainChunker.supported_methods</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.langchain_chunker.LangChainChunker.to_dict"><code class="docutils literal notranslate"><span class="pre">LangChainChunker.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hybridsemanticchunker">HybridSemanticChunker</a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker"><code class="docutils literal notranslate"><span class="pre">HybridSemanticChunker</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker.from_dict"><code class="docutils literal notranslate"><span class="pre">HybridSemanticChunker.from_dict()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker.get_chunks"><code class="docutils literal notranslate"><span class="pre">HybridSemanticChunker.get_chunks()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker.precompute_vectors"><code class="docutils literal notranslate"><span class="pre">HybridSemanticChunker.precompute_vectors()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker.split_documents"><code class="docutils literal notranslate"><span class="pre">HybridSemanticChunker.split_documents()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.chunker.hybrid_semantic_chunker.HybridSemanticChunker.to_dict"><code class="docutils literal notranslate"><span class="pre">HybridSemanticChunker.to_dict()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -534,7 +534,7 @@
                     <span class="s2">&quot;active&quot;</span><span class="p">,</span>
                 <span class="p">]:</span>
                     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-                    <span class="n">spaces_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_details</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>
+                    <span class="n">spaces_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>
                     <span class="n">status</span> <span class="o">=</span> <span class="n">spaces_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">)</span>
                     <span class="n">status_logger</span><span class="o">.</span><span class="n">log_state</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
             <span class="c1"># --- end note</span>
@@ -670,7 +670,6 @@
 
 <div class="viewcode-block" id="Spaces.get_details">
 <a class="viewcode-back" href="../../core_api.html#client.Spaces.get_details">[docs]</a>
-    <span class="nd">@cached</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="n">TTLCache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="mf">4.5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_details</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -711,26 +710,7 @@
 <span class="sd">                space_details.extend(entry)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_details</span><span class="p">(</span>
-            <span class="n">space_id</span><span class="o">=</span><span class="n">space_id</span><span class="p">,</span>
-            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
-            <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
-            <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
-            <span class="n">space_name</span><span class="o">=</span><span class="n">space_name</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-        <span class="p">)</span></div>
 
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_details</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">space_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of stored space(s) without caching. It&#39;s dedicated for internal usage.&quot;&quot;&quot;</span>
         <span class="n">Spaces</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">space_id</span><span class="p">,</span> <span class="s2">&quot;space_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_platform_space_href</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>
@@ -747,22 +727,42 @@
                 <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;Get space&quot;</span><span class="p">,</span> <span class="n">response_get</span><span class="p">,</span> <span class="n">_silent_response_logging</span><span class="o">=</span><span class="kc">True</span>
             <span class="p">)</span>
 
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">space_name</span><span class="p">:</span>
-                <span class="n">query_params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">space_name</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">space_name</span><span class="p">:</span>
+            <span class="n">query_params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">space_name</span><span class="p">})</span>
 
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_with_or_without_limit</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_platform_spaces_href</span><span class="p">(),</span>
-                <span class="n">limit</span><span class="p">,</span>
-                <span class="s2">&quot;spaces&quot;</span><span class="p">,</span>
-                <span class="n">summary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="n">pre_defined</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="n">skip_space_project_chk</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">query_params</span><span class="o">=</span><span class="n">query_params</span><span class="p">,</span>
-                <span class="n">_async</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
-                <span class="n">_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
-                <span class="n">_silent_response_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_with_or_without_limit</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_platform_spaces_href</span><span class="p">(),</span>
+            <span class="n">limit</span><span class="p">,</span>
+            <span class="s2">&quot;spaces&quot;</span><span class="p">,</span>
+            <span class="n">summary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">pre_defined</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">skip_space_project_chk</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">query_params</span><span class="o">=</span><span class="n">query_params</span><span class="p">,</span>
+            <span class="n">_async</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
+            <span class="n">_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+            <span class="n">_silent_response_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="nd">@cached</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="n">TTLCache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="mf">4.5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">get_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">space_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of stored space(s) with caching. It&#39;s dedicated for internal usage.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
+            <span class="n">space_id</span><span class="o">=</span><span class="n">space_id</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+            <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
+            <span class="n">get_all</span><span class="o">=</span><span class="n">get_all</span><span class="p">,</span>
+            <span class="n">space_name</span><span class="o">=</span><span class="n">space_name</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="Spaces.list">
 <a class="viewcode-back" href="../../core_api.html#client.Spaces.list">[docs]</a>
@@ -883,7 +883,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">space_id</span><span class="p">,</span> <span class="s2">&quot;space_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">changes</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_details</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>
+        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;compute&quot;</span> <span class="ow">in</span> <span class="n">changes</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
             <span class="n">changes</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;machine_learning&quot;</span>
