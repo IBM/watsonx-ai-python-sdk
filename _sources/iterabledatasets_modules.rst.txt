@@ -8,18 +8,48 @@ IterableDatasets Modules
    Deprecated Encryption Algorithms for PDF Files
 
    When working with PDF files using the `ibm_watsonx_ai` package, attempting to use
-   outdated encryption algorithms, such as ARC4, requires explicitly clearing or
-   disabling the environment variable ``CRYPTOGRAPHY_OPENSSL_NO_LEGACY`` before importing
-   the package. To clear the variable, use the following Python code snippet:
+   outdated encryption algorithms, such as ARC4 might fail. This is because
+   old algorithms, considered *weak ciphers* were not loaded. For more information,
+   see `cryptography library <https://cryptography.io/en/latest/openssl/#legacy-provider-in-openssl-3-x>`_.
 
-   .. code-block:: python
 
-      import os
-      del os.environ['CRYPTOGRAPHY_OPENSSL_NO_LEGACY']
+Manually decrypt and encrypt PDF files
+--------------------------------------
 
-   Failure to do so will prevent the usage of these algorithms when reading PDF files.
-   Please be aware that support for these legacy algorithms is being phased out, and their
-   continued usage is at the user's discretion and risk.
+If your PDF file uses an outdated encryption algorithm like ARC4, you need to decrypt it before processing.
+You can later re-encrypt it using a newer algorithm, like AES-256-R5.
+
+1. Clear the CRYPTOGRAPHY_OPENSSL_NO_LEGACY environment variable before importing pypdf.
+This ensures the legacy OpenSSL provider can be loaded and older encryption algorithms are available.
+
+.. code-block:: python
+
+   import os
+   del os.environ['CRYPTOGRAPHY_OPENSSL_NO_LEGACY']
+
+2. Decrypt the PDF file.
+
+.. code-block:: python
+
+   from pypdf import PdfReader, PdfWriter
+
+   reader = PdfReader("example.pdf")
+   if reader.is_encrypted:
+      reader.decrypt("")  # if there was no password
+
+   writer = PdfWriter(clone_from=reader)
+
+   with open("decrypted-pdf.pdf", "wb") as f:
+      writer.write(f)
+
+3. Optional: Encrypt the PDF file again using AES-256-R5.
+
+.. code-block:: python
+
+   writer.encrypt("", algorithm="AES-256-R5")
+
+   with open("example-encrypted.pdf", "wb") as f:
+      writer.write(f)
 
 
 TabularIterableDataset

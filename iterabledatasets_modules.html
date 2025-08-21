@@ -5,12 +5,12 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="AutoAI" href="autoai.html" /><link rel="prev" title="DataConnection Modules" href="dataconnection_modules.html" />
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
         <title>IterableDatasets Modules - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="_static/mystyle2.css?v=4014603e" />
     
     
@@ -26,14 +26,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -193,7 +193,6 @@
       
       <div class="sidebar-sticky"><div class="sidebar-scroll"><a class="sidebar-brand" href="index.html">
   
-  
   <span class="sidebar-brand-text">IBM watsonx.ai</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
@@ -322,17 +321,45 @@
 <p class="admonition-title">Warning</p>
 <p>Deprecated Encryption Algorithms for PDF Files</p>
 <p>When working with PDF files using the <cite>ibm_watsonx_ai</cite> package, attempting to use
-outdated encryption algorithms, such as ARC4, requires explicitly clearing or
-disabling the environment variable <code class="docutils literal notranslate"><span class="pre">CRYPTOGRAPHY_OPENSSL_NO_LEGACY</span></code> before importing
-the package. To clear the variable, use the following Python code snippet:</p>
+outdated encryption algorithms, such as ARC4 might fail. This is because
+old algorithms, considered <em>weak ciphers</em> were not loaded. For more information,
+see <a class="reference external" href="https://cryptography.io/en/latest/openssl/#legacy-provider-in-openssl-3-x">cryptography library</a>.</p>
+</div>
+<section id="manually-decrypt-and-encrypt-pdf-files">
+<h2>Manually decrypt and encrypt PDF files<a class="headerlink" href="#manually-decrypt-and-encrypt-pdf-files" title="Link to this heading">¶</a></h2>
+<p>If your PDF file uses an outdated encryption algorithm like ARC4, you need to decrypt it before processing.
+You can later re-encrypt it using a newer algorithm, like AES-256-R5.</p>
+<p>1. Clear the CRYPTOGRAPHY_OPENSSL_NO_LEGACY environment variable before importing pypdf.
+This ensures the legacy OpenSSL provider can be loaded and older encryption algorithms are available.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;CRYPTOGRAPHY_OPENSSL_NO_LEGACY&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Failure to do so will prevent the usage of these algorithms when reading PDF files.
-Please be aware that support for these legacy algorithms is being phased out, and their
-continued usage is at the user’s discretion and risk.</p>
+<ol class="arabic simple" start="2">
+<li><p>Decrypt the PDF file.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pypdf</span><span class="w"> </span><span class="kn">import</span> <span class="n">PdfReader</span><span class="p">,</span> <span class="n">PdfWriter</span>
+
+<span class="n">reader</span> <span class="o">=</span> <span class="n">PdfReader</span><span class="p">(</span><span class="s2">&quot;example.pdf&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">reader</span><span class="o">.</span><span class="n">is_encrypted</span><span class="p">:</span>
+   <span class="n">reader</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>  <span class="c1"># if there was no password</span>
+
+<span class="n">writer</span> <span class="o">=</span> <span class="n">PdfWriter</span><span class="p">(</span><span class="n">clone_from</span><span class="o">=</span><span class="n">reader</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;decrypted-pdf.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+   <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
 </div>
+<ol class="arabic simple" start="3">
+<li><p>Optional: Encrypt the PDF file again using AES-256-R5.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">writer</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;AES-256-R5&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;example-encrypted.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+   <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="tabulariterabledataset">
 <h2>TabularIterableDataset<a class="headerlink" href="#tabulariterabledataset" title="Link to this heading">¶</a></h2>
 <dl class="py class">
@@ -601,6 +628,7 @@ connections does not have a set API client, then the api_client object is used f
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">IterableDatasets Modules</a><ul>
+<li><a class="reference internal" href="#manually-decrypt-and-encrypt-pdf-files">Manually decrypt and encrypt PDF files</a></li>
 <li><a class="reference internal" href="#tabulariterabledataset">TabularIterableDataset</a><ul>
 <li><a class="reference internal" href="#ibm_watsonx_ai.data_loaders.datasets.tabular.TabularIterableDataset"><code class="docutils literal notranslate"><span class="pre">TabularIterableDataset</span></code></a><ul>
 <li><a class="reference internal" href="#ibm_watsonx_ai.data_loaders.datasets.tabular.TabularIterableDataset.connection"><code class="docutils literal notranslate"><span class="pre">TabularIterableDataset.connection</span></code></a></li>
@@ -627,7 +655,7 @@ connections does not have a set API client, then the api_client object is used f
 </div><script src="_static/documentation_options.js?v=f2a433a1"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
     </body>
 </html>

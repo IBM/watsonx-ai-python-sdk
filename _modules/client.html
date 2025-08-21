@@ -4,12 +4,12 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
         <title>client - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystyle2.css?v=4014603e" />
     
     
@@ -25,14 +25,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -192,7 +192,6 @@
       
       <div class="sidebar-sticky"><div class="sidebar-scroll"><a class="sidebar-brand" href="../index.html">
   
-  
   <span class="sidebar-brand-text">IBM watsonx.ai</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
@@ -325,10 +324,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">MappingProxyType</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">requests.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="ne">ConnectionError</span> <span class="k">as</span> <span class="n">ConnectionErrorRequests</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai._wrappers.requests</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -369,16 +370,20 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.training</span><span class="w"> </span><span class="kn">import</span> <span class="n">Training</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.trashed_assets</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrashedAssets</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">CPDVersion</span><span class="p">,</span> <span class="n">get_user_agent_header</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_auth_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">TokenAuth</span><span class="p">,</span> <span class="n">TrustedProfileAuth</span><span class="p">,</span> <span class="n">get_auth_method</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.auth.base_auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">TokenRemovedDuringClientCopyPlaceholder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DEFAULT_HTTP_CLIENT_CONFIG</span><span class="p">,</span>
     <span class="n">HttpClientConfig</span><span class="p">,</span>
     <span class="n">_APIClientSession</span><span class="p">,</span>
     <span class="n">_create_href_definitions</span><span class="p">,</span>
+    <span class="n">_validate_gov_cloud_env</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.volumes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Volume</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoWMLCredentialsProvided</span><span class="p">,</span> <span class="n">WMLClientError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">NoWMLCredentialsProvided</span><span class="p">,</span>
+    <span class="n">WMLClientError</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="c1"># requests module or requests.Session</span>
 <span class="n">RequestsLikeType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Any</span>
@@ -485,6 +490,66 @@
 
     <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_internal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">PLATFORM_URLS_MAP</span> <span class="o">=</span> <span class="n">MappingProxyType</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="c1"># Dallas</span>
+            <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.us-south.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># Frankfurt</span>
+            <span class="s2">&quot;https://eu-de.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.eu-de.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.eu-de.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.eu-de.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># London</span>
+            <span class="s2">&quot;https://eu-gb.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.eu-gb.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.eu-gb.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.eu-gb.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># Tokio</span>
+            <span class="s2">&quot;https://jp-tok.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.jp-tok.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.jp-tok.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.jp-tok.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># Sydney</span>
+            <span class="s2">&quot;https://au-syd.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.au-syd.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.au-syd.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.au-syd.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># Toronto</span>
+            <span class="s2">&quot;https://ca-tor.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.ca-tor.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.ca-tor.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.ca-tor.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># Mumbai (AWS)</span>
+            <span class="s2">&quot;https://ap-south-1.aws.wxai.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.ap-south-1.aws.data.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.ap-south-1.aws.wxai.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.ap-south-1.aws.data.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># TODO ensure private platform url is correct - changed mapping to private -&gt; public</span>
+            <span class="c1"># AWS GovCloud</span>
+            <span class="s2">&quot;https://wxai.ibmforusgov.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.ibmforusgov.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.wxai.ibmforusgov.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.ibmforusgov.com&quot;</span><span class="p">,</span>
+            <span class="c1"># TODO ensure private platform url is correct - changed mapping to private -&gt; public</span>
+            <span class="c1"># PreProd AWS GovCloud</span>
+            <span class="s2">&quot;https://wxai.prep.ibmforusgov.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.prep.ibmforusgov.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.wxai.prep.ibmforusgov.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.prep.ibmforusgov.com&quot;</span><span class="p">,</span>
+            <span class="c1"># TODO ensure private platform url is correct - changed mapping to private -&gt; public</span>
+            <span class="c1"># YPCR</span>
+            <span class="s2">&quot;https://yp-cr.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.yp-cr.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># MCSP QA</span>
+            <span class="s2">&quot;https://wxai-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.test.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.wxai-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dai.test.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># YPQA</span>
+            <span class="s2">&quot;https://yp-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.yp-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># MCSP DEV</span>
+            <span class="s2">&quot;https://wml-mcsp-dev.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.wml-mcsp-dev.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dai.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># FVT</span>
+            <span class="s2">&quot;https://wml-fvt.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.wml-fvt.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># YS1Prod</span>
+            <span class="s2">&quot;https://us-south.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.us-south.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># AWS DEV</span>
+            <span class="s2">&quot;https://dev.aws.wxai.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dev.aws.data.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.dev.aws.wxai.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dev.aws.data.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># TODO ensure private platform url is correct - changed mapping to private -&gt; public</span>
+            <span class="c1"># AWS TEST</span>
+            <span class="s2">&quot;https://test.aws.wxai.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.test.aws.data.ibm.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://private.test.aws.wxai.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.test.aws.data.ibm.com&quot;</span><span class="p">,</span>
+            <span class="c1"># TODO ensure private platform url is correct - changed mapping to private -&gt; public</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -544,8 +609,9 @@
         <span class="k">elif</span> <span class="n">requests</span><span class="o">.</span><span class="n">additional_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;proxies&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">del</span> <span class="n">requests</span><span class="o">.</span><span class="n">additional_settings</span><span class="p">[</span><span class="s2">&quot;proxies&quot;</span><span class="p">]</span>
 
-        <span class="c1"># At this stage `credentials` has type Dict[str, str]</span>
+        <span class="c1"># At this stage `credentials` has type ibm_watsonx_ai.credentials.Credentials</span>
         <span class="n">credentials</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Credentials</span><span class="p">,</span> <span class="n">credentials</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">default_space_id</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">default_project_id</span> <span class="o">=</span> <span class="kc">None</span>
@@ -562,68 +628,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_user_headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Used in set_headers() method</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__session</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="c1"># Dallas</span>
-            <span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.us-south.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="c1"># Frankfurt</span>
-            <span class="s2">&quot;https://eu-de.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.eu-de.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.eu-de.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.eu-de.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="c1"># London</span>
-            <span class="s2">&quot;https://eu-gb.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.eu-gb.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.eu-gb.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.eu-gb.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="c1"># Tokio</span>
-            <span class="s2">&quot;https://jp-tok.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.jp-tok.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.jp-tok.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.jp-tok.dataplatform.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="c1"># Sydney</span>
-            <span class="s2">&quot;https://au-syd.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.au-syd.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.au-syd.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.au-syd.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="c1"># Toronto</span>
-            <span class="s2">&quot;https://ca-tor.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.ca-tor.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.ca-tor.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.ca-tor.dai.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="c1"># Mumbai (AWS)</span>
-            <span class="s2">&quot;https://ap-south-1.aws.wxai.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.ap-south-1.aws.data.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.ap-south-1.aws.wxai.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.ap-south-1.aws.data.ibm.com&quot;</span><span class="p">,</span>
-            <span class="c1"># TODO ensure private platform url is correct - changed mapping to private -&gt; public</span>
-            <span class="c1"># AWS GovCloud</span>
-            <span class="s2">&quot;https://wxai.ibmforusgov.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.ibmforusgov.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.wxai.ibmforusgov.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.ibmforusgov.com&quot;</span><span class="p">,</span>
-            <span class="c1"># TODO ensure private platform url is correct - changed mapping to private -&gt; public</span>
-            <span class="c1"># PreProd AWS GovCloud</span>
-            <span class="s2">&quot;https://wxai.prep.ibmforusgov.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.prep.ibmforusgov.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.wxai.prep.ibmforusgov.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.prep.ibmforusgov.com&quot;</span><span class="p">,</span>
-            <span class="c1"># TODO ensure private platform url is correct - changed mapping to private -&gt; public</span>
-            <span class="c1"># YPCR</span>
-            <span class="s2">&quot;https://yp-cr.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.yp-cr.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="c1"># MCSP QA</span>
-            <span class="s2">&quot;https://wxai-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.test.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.wxai-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dai.test.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="c1"># YPQA</span>
-            <span class="s2">&quot;https://yp-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.yp-qa.ml.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dataplatform.test.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="c1"># MCSP DEV</span>
-            <span class="s2">&quot;https://wml-mcsp-dev.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dai.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.wml-mcsp-dev.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dai.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="c1"># FVT</span>
-            <span class="s2">&quot;https://wml-fvt.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.wml-fvt.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="c1"># YS1Prod</span>
-            <span class="s2">&quot;https://us-south.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.us-south.ml.test.cloud.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://private.api.dataplatform.dev.cloud.ibm.com&quot;</span><span class="p">,</span>
-            <span class="c1"># AWS DEV</span>
-            <span class="s2">&quot;https://dev.aws.wxai.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dev.aws.data.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.dev.aws.wxai.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.dev.aws.data.ibm.com&quot;</span><span class="p">,</span>
-            <span class="c1"># TODO ensure private platform url is correct - changed mapping to private -&gt; public</span>
-            <span class="c1"># AWS TEST</span>
-            <span class="s2">&quot;https://test.aws.wxai.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.test.aws.data.ibm.com&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;https://private.test.aws.wxai.ibm.com&quot;</span><span class="p">:</span> <span class="s2">&quot;https://api.test.aws.data.ibm.com&quot;</span><span class="p">,</span>
-            <span class="c1"># TODO ensure private platform url is correct - changed mapping to private -&gt; public</span>
-        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">APIClient</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="p">)</span>
 
         <span class="n">requests</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">()</span>  <span class="c1"># type: ignore[attr-defined]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">__predefined_instance_type_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;icp&quot;</span><span class="p">,</span> <span class="s2">&quot;openshift&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">credentials</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NoWMLCredentialsProvided</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -632,159 +640,148 @@
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_url&quot;</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check whether it is Gov Cloud</span>
+        <span class="n">_validate_gov_cloud_env</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span>
+
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">instance_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">instance_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;The `instance_id` parameter is deprecated and will no longer be utilized. &quot;</span>
+                    <span class="s2">&quot;It is not considered in environment detection. &quot;</span>
+                    <span class="s2">&quot;The environment type, whether Cloud or CPD, is now automatically determined from &quot;</span>
+                    <span class="s2">&quot;the `credentials.url` parameter. Please update your configuration accordingly.&quot;</span><span class="p">,</span>
+                    <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="n">is_cloud_url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span>
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">is_cloud_url</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">platform_url</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="o">=</span> <span class="kc">False</span>
 
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_internal</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span>
-
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">platform_url</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">platform_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https://&quot;</span><span class="p">):</span>
-                            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_platform_url&quot;</span><span class="p">)</span>
-                            <span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">platform_url</span>
-                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="p">]</span>
-                    <span class="k">else</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">platform_url</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">platform_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https://&quot;</span><span class="p">):</span>
                         <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
-                                <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_cloud_scenario_url&quot;</span>
-                            <span class="p">)</span>
+                            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_platform_url&quot;</span><span class="p">)</span>
                         <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">platform_url</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                        <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_url_provided&quot;</span><span class="p">)</span>
+                    <span class="p">)</span>
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_IAM</span><span class="p">():</span>
                     <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
                         <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;apikey_not_provided&quot;</span><span class="p">)</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="s2">&quot;icp&quot;</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">instance_id</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-                    <span class="ow">or</span> <span class="s2">&quot;openshift&quot;</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">instance_id</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-                <span class="p">):</span>
-                    <span class="k">if</span> <span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-                        <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-                    <span class="p">):</span>
-                        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_cloud_url&quot;</span><span class="p">)</span>
-                        <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;DEPLOYMENT_PLATFORM&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;private&quot;</span>
 
-                    <span class="bp">self</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;DEPLOYMENT_PLATFORM&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;private&quot;</span>
-
-                    <span class="c1"># Validate the cpd version:</span>
+                <span class="c1"># Validate the cpd version:</span>
+                <span class="k">try</span><span class="p">:</span>
                     <span class="n">response_get_wml_services</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/wml_services/version&quot;</span><span class="p">,</span>
                         <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="n">get_user_agent_header</span><span class="p">()},</span>
                     <span class="p">)</span>
-                    <span class="k">if</span> <span class="p">(</span>
-                        <span class="n">response_get_wml_services</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span>
-                    <span class="p">):</span>  <span class="c1"># retry with endpoint for cpd 4.8 and higher</span>
-                        <span class="n">response_get_wml_services</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/wml_services/v2/version&quot;</span><span class="p">,</span>
-                            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="n">get_user_agent_header</span><span class="p">()},</span>
-                        <span class="p">)</span>
-
-                    <span class="k">if</span> <span class="n">response_get_wml_services</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
-                        <span class="n">wml_full_version</span> <span class="o">=</span> <span class="n">response_get_wml_services</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                            <span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
-                        <span class="p">)</span>
-                        <span class="k">if</span> <span class="n">wml_full_version</span><span class="p">:</span>
-                            <span class="n">wml_version</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">wml_full_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span><span class="mi">2</span><span class="p">])</span>
-                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">wml_version</span>
-                            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="o">!=</span> <span class="n">wml_version</span><span class="p">:</span>
-                                <span class="n">cpd_version_mismatch_warning</span> <span class="o">=</span> <span class="p">(</span>
-                                    <span class="sa">f</span><span class="s2">&quot;The provided version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2"> &quot;</span>
-                                    <span class="sa">f</span><span class="s2">&quot;is different from the current CP4D version: </span><span class="si">{</span><span class="n">wml_version</span><span class="si">}</span><span class="s2">. &quot;</span>
-                                    <span class="sa">f</span><span class="s2">&quot;Correct the credentials with proper CP4D version number.&quot;</span>
-                                <span class="p">)</span>
-                                <span class="n">warn</span><span class="p">(</span><span class="n">cpd_version_mismatch_warning</span><span class="p">)</span>
-
-                            <span class="k">if</span> <span class="p">(</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span>
-                                <span class="ow">not</span> <span class="ow">in</span> <span class="n">CPDVersion</span><span class="o">.</span><span class="n">supported_version_list</span>
-                            <span class="p">):</span>
-                                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                                    <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
-                                        <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
-                                        <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
-                                        <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_version_from_automated_check&quot;</span><span class="p">,</span>
-                                    <span class="p">)</span>
-                                <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;GET /ml/wml_services/version failed with status code: </span><span class="si">{</span><span class="n">response_get_wml_services</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">.&quot;</span>
-                        <span class="p">)</span>
-
-                    <span class="c1"># Condition for CAMS related changes to take effect (Might change)</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">except</span> <span class="n">ConnectionErrorRequests</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">is</span> <span class="n">ConnectionErrorRequests</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
-                                <span class="n">CPDVersion</span><span class="o">.</span><span class="n">supported_version_list</span><span class="p">,</span>
-                                <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;version_not_provided&quot;</span><span class="p">,</span>
+                            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_url_provided&quot;</span><span class="p">)</span>
+                        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+                    <span class="k">raise</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">response_get_wml_services</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span>
+                <span class="p">):</span>  <span class="c1"># retry with endpoint for cpd 4.8 and higher</span>
+                    <span class="n">response_get_wml_services</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2">/ml/wml_services/v2/version&quot;</span><span class="p">,</span>
+                        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="n">get_user_agent_header</span><span class="p">()},</span>
+                    <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">response_get_wml_services</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                    <span class="n">wml_full_version</span> <span class="o">=</span> <span class="n">response_get_wml_services</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">wml_full_version</span><span class="p">:</span>
+                        <span class="n">wml_version</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">wml_full_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span><span class="mi">2</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">wml_version</span>
+                        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="o">!=</span> <span class="n">wml_version</span><span class="p">:</span>
+                            <span class="n">cpd_version_mismatch_warning</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;The provided version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2"> &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;is different from the current CP4D version: </span><span class="si">{</span><span class="n">wml_version</span><span class="si">}</span><span class="s2">. &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;Correct the credentials with proper CP4D version number.&quot;</span>
                             <span class="p">)</span>
-                        <span class="p">)</span>
+                            <span class="n">warn</span><span class="p">(</span><span class="n">cpd_version_mismatch_warning</span><span class="p">)</span>
 
-                    <span class="k">if</span> <span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-                        <span class="ow">in</span> <span class="n">CPDVersion</span><span class="o">.</span><span class="n">supported_version_list</span>
-                    <span class="p">):</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">CPD_version</span><span class="o">.</span><span class="n">cpd_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-                        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;DEPLOYMENT_PRIVATE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;icp4d&quot;</span>
-
-                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">bedrock_url</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">CPD_version</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;</span> <span class="mf">4.7</span><span class="p">:</span>
-                                <span class="n">bedrock_prefix</span> <span class="o">=</span> <span class="s2">&quot;https://cp-console&quot;</span>
-                            <span class="k">else</span><span class="p">:</span>
-                                <span class="n">namespace_from_url</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                                    <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span>
+                            <span class="ow">not</span> <span class="ow">in</span> <span class="n">CPDVersion</span><span class="o">.</span><span class="n">supported_version_list</span>
+                        <span class="p">):</span>
+                            <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                                <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                                    <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_version_from_automated_check&quot;</span><span class="p">,</span>
                                 <span class="p">)</span>
-                                <span class="n">route</span> <span class="o">=</span> <span class="p">(</span>
-                                    <span class="s2">&quot;cpd&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&gt;=</span> <span class="mf">5.1</span> <span class="k">else</span> <span class="s2">&quot;cp-console&quot;</span>
-                                <span class="p">)</span>
-                                <span class="n">bedrock_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://</span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">namespace_from_url</span><span class="si">}</span><span class="s2">&quot;</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">bedrock_url</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                                <span class="p">[</span><span class="n">bedrock_prefix</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
                             <span class="p">)</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_is_bedrock_url_autogenerated</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="s2">&quot;GET /ml/wml_services/version failed with status code: </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span>
+                        <span class="n">response_get_wml_services</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                        <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_url_provided&quot;</span><span class="p">)</span>
+                    <span class="p">)</span>
 
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="o">=</span> <span class="kc">False</span>
-                        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
-                                <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CPDVersion</span><span class="o">.</span><span class="n">supported_version_list</span><span class="p">),</span>
-                                <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_version&quot;</span><span class="p">,</span>
-                            <span class="p">)</span>
+                <span class="c1"># Condition for CAMS related changes to take effect (Might change)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                        <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                            <span class="n">CPDVersion</span><span class="o">.</span><span class="n">supported_version_list</span><span class="p">,</span>
+                            <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;version_not_provided&quot;</span><span class="p">,</span>
                         <span class="p">)</span>
+                    <span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                    <span class="ow">in</span> <span class="n">CPDVersion</span><span class="o">.</span><span class="n">supported_version_list</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">CPD_version</span><span class="o">.</span><span class="n">cpd_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;DEPLOYMENT_PRIVATE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;icp4d&quot;</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">bedrock_url</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">CPD_version</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;</span> <span class="mf">4.7</span><span class="p">:</span>
+                            <span class="n">bedrock_prefix</span> <span class="o">=</span> <span class="s2">&quot;https://cp-console&quot;</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">namespace_from_url</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+                            <span class="p">)</span>
+                            <span class="n">route</span> <span class="o">=</span> <span class="s2">&quot;cpd&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&gt;=</span> <span class="mf">5.1</span> <span class="k">else</span> <span class="s2">&quot;cp-console&quot;</span>
+                            <span class="n">bedrock_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://</span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">namespace_from_url</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">bedrock_url</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                            <span class="p">[</span><span class="n">bedrock_prefix</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_is_bedrock_url_autogenerated</span> <span class="o">=</span> <span class="kc">True</span>
 
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLATFORM_URLS_MAP</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
-                                <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;instance_id_in_cloud_scenario&quot;</span>
-                            <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                        <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+                            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CPDVersion</span><span class="o">.</span><span class="n">supported_version_list</span><span class="p">),</span>
+                            <span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_version&quot;</span><span class="p">,</span>
                         <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_instance_id&quot;</span><span class="p">)</span>
-                        <span class="p">)</span>
+                    <span class="p">)</span>
 
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">instance_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                <span class="ow">and</span> <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">instance_id</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-                    <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__predefined_instance_type_list</span>
-                <span class="p">)</span>
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="p">):</span>
-                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                    <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;provided_credentials_are_invalid&quot;</span><span class="p">)</span>
-                <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_use_fm_ga_api</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="ow">or</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_check_if_fm_ga_api_available</span><span class="p">()</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;=</span> <span class="mf">4.8</span>
@@ -1030,8 +1027,6 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">proceed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">TokenAuth</span>
-
         <span class="n">warn</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="s2">&quot;`APIClient.proceed` is deprecated and will be removed in future. To use `proceed` scenario, &quot;</span>
@@ -1213,8 +1208,11 @@
 <span class="sd">        Method which allows refresh/set new User Authorization Token.</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">            Using this function will cause that token will not be automatically refreshed anymore, if `password` or `apikey` were passed.</span>
-<span class="sd">            The user needs to take care of token refresh using `set_token` function from that point in time until they finish using the client instance.</span>
+<span class="sd">            * Using this function will cause that token will not be automatically refreshed anymore, if `password` or `apikey` were passed.</span>
+<span class="sd">              The user needs to take care of token refresh using `set_token` function from that point in time until they finish using the client instance.</span>
+<span class="sd">            * If ``trusted_profile_id`` and ``token`` were passed in credentials,</span>
+<span class="sd">              the ``trusted_profile_id`` will be used for generating a new trusted profile token based on token passed to this method</span>
+<span class="sd">              until the client lifecycle. The generating process takes place when retrieving a token.</span>
 
 <span class="sd">        :param token: User Authorization Token</span>
 <span class="sd">        :type token: str</span>
@@ -1227,9 +1225,11 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">TokenAuth</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_auth_method</span><span class="p">,</span> <span class="n">TokenAuth</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_auth_method</span><span class="p">,</span> <span class="n">TokenAuth</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_auth_method</span><span class="p">,</span> <span class="n">TrustedProfileAuth</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_auth_method</span><span class="o">.</span><span class="n">_internal_auth_method</span><span class="p">,</span> <span class="n">TokenAuth</span><span class="p">)</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_auth_method</span><span class="o">.</span><span class="n">set_token</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># the auth method type was changed to TokenAuth</span>
@@ -1354,7 +1354,7 @@
 </div><script src="../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     </body>
 </html>
