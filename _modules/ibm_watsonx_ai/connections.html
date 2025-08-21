@@ -232,6 +232,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_model_inference.html">ModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_ts_model_inference.html">TSModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../fm_audio_model_inference.html">AudioModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -311,27 +312,30 @@
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">unquote</span><span class="p">,</span> <span class="n">quote</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">quote</span><span class="p">,</span> <span class="n">unquote</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cachetools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached</span><span class="p">,</span> <span class="n">TTLCache</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">cachetools</span><span class="w"> </span><span class="kn">import</span> <span class="n">TTLCache</span><span class="p">,</span> <span class="n">cached</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">ibm_watsonx_ai._wrappers.requests</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">requests</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.messages.messages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Messages</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.metanames</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConnectionMetaNames</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">WMLClientError</span><span class="p">,</span>
-    <span class="n">UnsupportedOperation</span><span class="p">,</span>
     <span class="n">ApiRequestFailure</span><span class="p">,</span>
+    <span class="n">UnsupportedOperation</span><span class="p">,</span>
+    <span class="n">WMLClientError</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLResource</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
+
     <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
 
 
 <div class="viewcode-block" id="Connections">
@@ -346,7 +350,6 @@
         <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_required_element_from_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-
         <span class="n">WMLResource</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">response_data</span><span class="p">,</span> <span class="s2">&quot;connection_response&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
 
         <span class="n">new_el</span> <span class="o">=</span> <span class="p">{</span>
@@ -376,7 +379,7 @@
             <span class="p">},</span>
         <span class="p">}</span>
 
-        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;origin_country&quot;</span><span class="p">,</span> <span class="s2">&quot;owner_id&quot;</span><span class="p">,</span> <span class="s2">&quot;properties&quot;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;origin_country&quot;</span><span class="p">,</span> <span class="s2">&quot;owner_id&quot;</span><span class="p">,</span> <span class="s2">&quot;properties&quot;</span><span class="p">,</span> <span class="s2">&quot;flags&quot;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]:</span>
                 <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="n">el</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
 
@@ -841,7 +844,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_uploaded_db_drivers</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;List empty for new api&quot;</span><span class="p">)</span>
             <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_uploaded_db_drivers_new_api</span><span class="p">()</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
                 <span class="o">+</span> <span class="s2">&quot;dbdrivers&quot;</span><span class="p">,</span>
@@ -1019,8 +1022,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">get_datasource_type_uid_deprecation_warning</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;This method is deprecated, &quot;</span>
-            <span class="s2">&quot;please use get_datasource_type_id_by_name(name)&quot;</span>
+            <span class="s2">&quot;This method is deprecated, please use get_datasource_type_id_by_name(name)&quot;</span>
         <span class="p">)</span>
         <span class="n">warn</span><span class="p">(</span><span class="n">get_datasource_type_uid_deprecation_warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
@@ -1106,7 +1108,7 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_upload_db_driver_new_api</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">driver_file_name</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fdata</span><span class="p">:</span>
@@ -1208,7 +1210,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_uploaded_db_drivers</span><span class="p">()[</span><span class="n">name</span><span class="p">]</span>
         <span class="k">except</span> <span class="n">WMLClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">e</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Driver jar with name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> not found.&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Connections.sign_db_driver_url">
@@ -1234,7 +1236,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db_driver_url</span><span class="p">(</span><span class="n">jar_name</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">res</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">UnsupportedOperation</span><span class="p">(</span>
                     <span class="s2">&quot;Get signed db driver jar url db driver is supported only  IBM Cloud Pak® for Data only, version 4.0.4 and later.&quot;</span>

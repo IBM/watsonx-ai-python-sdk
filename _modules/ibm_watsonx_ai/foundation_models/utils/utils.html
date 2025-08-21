@@ -232,6 +232,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_model_inference.html">ModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_ts_model_inference.html">TSModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../fm_audio_model_inference.html">AudioModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -311,46 +312,38 @@
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">KW_ONLY</span><span class="p">,</span> <span class="n">asdict</span><span class="p">,</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">json</span><span class="w"> </span><span class="kn">import</span> <span class="n">loads</span> <span class="k">as</span> <span class="n">json_loads</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">string</span><span class="w"> </span><span class="kn">import</span> <span class="n">Formatter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">TYPE_CHECKING</span><span class="p">,</span>
     <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Generator</span><span class="p">,</span>
+    <span class="n">Mapping</span><span class="p">,</span>
     <span class="n">Sequence</span><span class="p">,</span>
     <span class="n">cast</span><span class="p">,</span>
-    <span class="n">Mapping</span><span class="p">,</span>
-    <span class="n">Type</span><span class="p">,</span>
-    <span class="n">Generator</span><span class="p">,</span>
-    <span class="n">Callable</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">KW_ONLY</span><span class="p">,</span> <span class="n">asdict</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">json</span><span class="w"> </span><span class="kn">import</span> <span class="n">loads</span> <span class="k">as</span> <span class="n">json_loads</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">simplefilter</span><span class="p">,</span> <span class="n">catch_warnings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">catch_warnings</span><span class="p">,</span> <span class="n">simplefilter</span><span class="p">,</span> <span class="n">warn</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai._wrappers</span><span class="w"> </span><span class="kn">import</span> <span class="n">requests</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataConnection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecStates</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.messages.messages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Messages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_user_agent_header</span><span class="p">,</span> <span class="n">next_resource_generator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataConnectionTypes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_file_from_file_system_nonautoai</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">WMLClientError</span><span class="p">,</span>
     <span class="n">InvalidMultipleArguments</span><span class="p">,</span>
     <span class="n">InvalidValue</span><span class="p">,</span>
+    <span class="n">WMLClientError</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">next_resource_generator</span><span class="p">,</span> <span class="n">get_user_agent_header</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_file_from_file_system_nonautoai</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataConnectionTypes</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecStates</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">TracebackType</span><span class="p">,</span> <span class="n">FrameType</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractEventLoop</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Future</span>
 
 
 <span class="nd">@dataclass</span>
@@ -1048,7 +1041,6 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_is_fine_tuning_endpoint_available</span><span class="p">(</span><span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-
     <span class="k">try</span><span class="p">:</span>
         <span class="n">url</span> <span class="o">=</span> <span class="n">api_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_fine_tunings_href</span><span class="p">()</span>
 
@@ -1059,7 +1051,7 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">response_fine_tuning_api</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
 
-    <span class="k">except</span><span class="p">:</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
 </pre></div>
         </article>

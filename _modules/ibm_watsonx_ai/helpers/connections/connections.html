@@ -232,6 +232,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_model_inference.html">ModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_ts_model_inference.html">TSModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../fm_audio_model_inference.html">AudioModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -330,13 +331,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -346,26 +346,24 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">ibm_watsonx_ai._wrappers.requests</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">requests</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.data_loaders.datasets.experiment</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">DEFAULT_SAMPLING_TYPE</span><span class="p">,</span>
     <span class="n">DEFAULT_SAMPLE_SIZE_LIMIT</span><span class="p">,</span>
+    <span class="n">DEFAULT_SAMPLING_TYPE</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_filename_from_asset_details</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataConnectionTypes</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.errors</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ContainerTypeNotSupported</span><span class="p">,</span>
+    <span class="n">CannotGetFilename</span><span class="p">,</span>
+    <span class="n">CannotReadSavedRemoteDataBeforeFit</span><span class="p">,</span>
     <span class="n">ConnectionAssetNotSupported</span><span class="p">,</span>
+    <span class="n">DirectoryHasNoFilename</span><span class="p">,</span>
+    <span class="n">InvalidCOSCredentials</span><span class="p">,</span>
+    <span class="n">InvalidIdType</span><span class="p">,</span>
     <span class="n">InvalidLocationInDataConnection</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.errors</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">MissingAutoPipelinesParameters</span><span class="p">,</span>
     <span class="n">MissingCOSStudioConnection</span><span class="p">,</span>
     <span class="n">MissingIBMWatsonStudioLib</span><span class="p">,</span>
-    <span class="n">InvalidCOSCredentials</span><span class="p">,</span>
-    <span class="n">InvalidIdType</span><span class="p">,</span>
-    <span class="n">NotExistingCOSResource</span><span class="p">,</span>
-    <span class="n">CannotReadSavedRemoteDataBeforeFit</span><span class="p">,</span>
     <span class="n">NoAutomatedHoldoutSplit</span><span class="p">,</span>
-    <span class="n">DirectoryHasNoFilename</span><span class="p">,</span>
-    <span class="n">CannotGetFilename</span><span class="p">,</span>
+    <span class="n">NotExistingCOSResource</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">all_logging_disabled</span><span class="p">,</span>
@@ -373,8 +371,8 @@
     <span class="n">try_import_autoai_ts_libs</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">MissingValue</span><span class="p">,</span>
     <span class="n">ApiRequestFailure</span><span class="p">,</span>
+    <span class="n">MissingValue</span><span class="p">,</span>
     <span class="n">WMLClientError</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -384,6 +382,8 @@
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.workspace</span><span class="w"> </span><span class="kn">import</span> <span class="n">WorkSpace</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">.flight_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlightConnection</span>
 
 
@@ -498,9 +498,7 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">GithubLocation</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">GH</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">auto_pipeline_params</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">{}</span>
-        <span class="p">)</span>  <span class="c1"># note: needed parameters for recreation of autoai holdout split</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auto_pipeline_params</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># note: needed parameters for recreation of autoai holdout split</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__api_client</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># only for getter/setter for AssetLocation href</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run_id</span> <span class="o">=</span> <span class="kc">None</span>
@@ -652,6 +650,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.data_loaders.datasets.tabular</span><span class="w"> </span><span class="kn">import</span> <span class="n">TabularIterableDataset</span>
+
         <span class="kn">from</span><span class="w"> </span><span class="nn">.flight_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlightConnection</span>
 
         <span class="n">flight_parameters</span> <span class="o">=</span> <span class="p">(</span>
@@ -796,7 +795,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="p">(</span><span class="n">S3Location</span><span class="p">,</span> <span class="n">ContainerLocation</span><span class="p">,</span> <span class="n">NFSLocation</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                <span class="n">error_msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Can&#39;t create separate connections from this DataConnection.&quot;</span><span class="p">,</span>
+                <span class="n">error_msg</span><span class="o">=</span><span class="s2">&quot;Can&#39;t create separate connections from this DataConnection.&quot;</span><span class="p">,</span>
                 <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;This DataConnection&#39;s location is not pointing to a S3 bucket.&quot;</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -1080,10 +1079,10 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_pipeline_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;feature_columns&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># timeseries anomaly detection</span>
             <span class="n">try_import_autoai_ts_libs</span><span class="p">()</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">autoai_ts_libs.utils.holdout_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_holdout_split</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">autoai_ts_libs.utils.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                 <span class="n">LEARNING_TYPE_TIMESERIES_ANOMALY_PREDICTION</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">autoai_ts_libs.utils.holdout_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_holdout_split</span>
 
             <span class="c1"># Note: imputation is not supported</span>
             <span class="n">X_train</span><span class="p">,</span> <span class="n">X_holdout</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_holdout</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">make_holdout_split</span><span class="p">(</span>
@@ -1335,7 +1334,7 @@
                     <span class="ow">or</span> <span class="s2">&quot;RUNTIME_ENV_ACCESS_TOKEN_FILE&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
                 <span class="p">),</span>
             <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">use_flight</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="n">return_data_as_iterator</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;return_data_as_iterator&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
@@ -1441,7 +1440,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">DS</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">CA</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="kn">import</span><span class="w"> </span><span class="nn">ibm_watson_studio_lib</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">ibm_watson_studio_lib</span>  <span class="c1"># noqa: F401</span>
                 <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span>
                         <span class="s2">&quot;This functionality can be run only on Watson Studio or with api_client passed to connection. &quot;</span>
@@ -1454,8 +1453,8 @@
         <span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_pipeline_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prediction_type&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">MissingAutoPipelinesParameters</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">auto_pipeline_params</span><span class="p">,</span>
-                <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;To be able to recreate an original holdout split, you need to schedule a training job or &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;if you are using historical runs, just call historical_optimizer.get_data_connections()&quot;</span><span class="p">,</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;To be able to recreate an original holdout split, you need to schedule a training job or &quot;</span>
+                <span class="s2">&quot;if you are using historical runs, just call historical_optimizer.get_data_connections()&quot;</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="c1"># note: allow to read data at any time</span>
@@ -1492,7 +1491,7 @@
             <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;impersonate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">impersonate_header</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">S3</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;S3 DataConnection is not supported! Please use data_asset_id instead.&quot;</span>
+                <span class="s2">&quot;S3 DataConnection is not supported! Please use data_asset_id instead.&quot;</span>
             <span class="p">)</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DataConnectionTypes</span><span class="o">.</span><span class="n">DS</span><span class="p">:</span>
@@ -1527,7 +1526,8 @@
                                     <span class="n">interaction_properties</span><span class="p">[</span><span class="s2">&quot;encoding&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">encoding</span>
 
                                 <span class="k">if</span> <span class="p">(</span>
-                                    <span class="n">input_file_separator</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_pipeline_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                    <span class="n">input_file_separator</span>
+                                    <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_pipeline_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                                         <span class="s2">&quot;csv_separator&quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span>
                                     <span class="p">)</span>
                                     <span class="o">!=</span> <span class="s2">&quot;,&quot;</span>
@@ -1596,6 +1596,9 @@
                             <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">download_data_error</span><span class="p">)</span>
                         <span class="p">)</span>
                     <span class="p">):</span>
+                        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;skip_fallback&quot;</span><span class="p">):</span>
+                            <span class="k">raise</span> <span class="n">download_data_error</span>
+
                         <span class="n">warn</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">download_data_error</span><span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="ne">Warning</span><span class="p">)</span>
 
                         <span class="k">try</span><span class="p">:</span>
@@ -1605,7 +1608,7 @@
                                 <span class="n">read_to_file</span><span class="o">=</span><span class="n">read_to_file</span><span class="p">,</span>
                             <span class="p">)</span>
 
-                        <span class="k">except</span><span class="p">:</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="n">download_data_error</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="n">download_data_error</span>
@@ -1642,6 +1645,9 @@
                         <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RUNTIME_ENV_ACCESS_TOKEN_FILE&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
                     <span class="p">):</span>
                         <span class="k">raise</span> <span class="n">CannotReadSavedRemoteDataBeforeFit</span><span class="p">()</span>
+
+                    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;skip_fallback&quot;</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="n">e</span>
 
                     <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_data_from_flight_service</span><span class="p">(</span>
                         <span class="n">data_location</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
@@ -1733,6 +1739,9 @@
                     <span class="p">):</span>
                         <span class="k">raise</span> <span class="n">CannotReadSavedRemoteDataBeforeFit</span><span class="p">()</span>
 
+                    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;skip_fallback&quot;</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="n">e</span>
+
                     <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_data_from_flight_service</span><span class="p">(</span>
                         <span class="n">data_location</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                         <span class="n">binary</span><span class="o">=</span><span class="n">binary</span><span class="p">,</span>
@@ -1748,13 +1757,13 @@
                         <span class="n">total_percentage_limit</span><span class="o">=</span><span class="n">total_percentage_limit</span><span class="p">,</span>
                     <span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="p">,</span> <span class="s2">&quot;_internal&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-            <span class="k">pass</span>  <span class="c1"># don&#39;t remove additional params if client is used internally</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># note: remove additional params and inline credentials added by _check_if_connection_asset_is_s3:</span>
-            <span class="p">[</span>
-                <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="c1"># Remove additional params and inline credentials added by</span>
+        <span class="c1"># `_check_if_connection_asset_is_s3`. Don&#39;t remove additional</span>
+        <span class="c1"># params if client is used internally.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="p">,</span> <span class="s2">&quot;_internal&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
+                <span class="p">[</span>
                     <span class="s2">&quot;secret_access_key&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;access_key_id&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;endpoint_url&quot;</span><span class="p">,</span>
@@ -1764,10 +1773,9 @@
                     <span class="s2">&quot;is_s3&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;bucket&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;region&quot;</span><span class="p">,</span>
-                <span class="p">]</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-            <span class="p">]</span>
-            <span class="c1"># end note</span>
+                <span class="p">],</span>
+            <span class="p">):</span>
+                <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
 
         <span class="c1"># create data statistics if data were not downloaded with flight:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_return_subsampling_stats</span><span class="p">:</span>
@@ -2121,11 +2129,22 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_botocore.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
 
         <span class="c1"># Make sure endpoint_url startswith &#39;https://&#39; prefix</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">endpoint_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https://&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="s2">&quot;endpoint_url&quot;</span>
+        <span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">endpoint_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https://&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">endpoint_url</span> <span class="o">=</span> <span class="s2">&quot;https://&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">endpoint_url</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="s2">&quot;auth_endpoint&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="n">_AmazonS3Connection</span><span class="p">):</span>
+                <span class="n">cos_client</span> <span class="o">=</span> <span class="n">resource</span><span class="p">(</span>
+                    <span class="n">service_name</span><span class="o">=</span><span class="s2">&quot;s3&quot;</span><span class="p">,</span>
+                    <span class="n">endpoint_url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;https://s3.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">region</span><span class="si">}</span><span class="s2">.amazonaws.com&quot;</span><span class="p">,</span>
+                    <span class="n">aws_access_key_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">access_key</span><span class="p">,</span>
+                    <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">secret_key</span><span class="p">,</span>
+                    <span class="n">aws_session_token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">session_token</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="s2">&quot;auth_endpoint&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="s2">&quot;api_key&quot;</span>
             <span class="p">):</span>
                 <span class="n">cos_client</span> <span class="o">=</span> <span class="n">resource</span><span class="p">(</span>
@@ -2145,7 +2164,7 @@
                 <span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                <span class="s2">&quot;Error occurred during COS client initialisation </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="s2">&quot;Error occurred during COS client initialisation </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">cos_client</span>
@@ -2155,7 +2174,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">files</span> <span class="o">=</span> <span class="n">cos_client</span><span class="o">.</span><span class="n">Bucket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="p">)</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="nb">next</span><span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">files</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotExistingCOSResource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_flight_parameters_with_connection_details</span><span class="p">(</span>
@@ -2417,7 +2436,8 @@
                     <span class="s2">&quot;DataConnection._api_client property to be able to use this functionality.&quot;</span>
                 <span class="p">)</span>
             <span class="n">asset_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_client</span><span class="o">.</span><span class="n">data_assets</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">asset_details</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;resource_key&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">filename</span> <span class="o">:=</span> <span class="n">get_filename_from_asset_details</span><span class="p">(</span><span class="n">asset_details</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">filename</span>
         <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="s2">&quot;file_name&quot;</span><span class="p">):</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">file_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">or</span> <span class="n">filename</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span>
@@ -2428,8 +2448,17 @@
             <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">or</span> <span class="n">filename</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">DirectoryHasNoFilename</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">filename</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">CannotGetFilename</span><span class="p">()</span></div>
+        <span class="k">raise</span> <span class="n">CannotGetFilename</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_location_path_with_container_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_client</span><span class="p">:</span> <span class="s2">&quot;APIClient&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_client</span><span class="p">(</span><span class="n">api_client</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">ContainerLocation</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_shared_bucket</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">container_id</span> <span class="o">:=</span> <span class="n">api_client</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">or</span> <span class="n">api_client</span><span class="o">.</span><span class="n">default_space_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">prepend_container_id_to_path</span><span class="p">(</span><span class="n">container_id</span><span class="p">)</span></div>
 
 
 
@@ -2467,7 +2496,6 @@
         <span class="n">resource_instance_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">_internal_use</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_internal_use</span><span class="p">:</span>
             <span class="n">s3_dataconnection_not_supported_warning</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="s2">&quot;S3 DataConnection is not supported. Please use data_asset_id instead.&quot;</span>
@@ -2620,6 +2648,27 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span></div>
+
+
+<div class="viewcode-block" id="ContainerLocation.prepend_container_id_to_path">
+<a class="viewcode-back" href="../../../../dataconnection_modules.html#ibm_watsonx_ai.helpers.connections.connections.ContainerLocation.prepend_container_id_to_path">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepend_container_id_to_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">container_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepend project / space ID to path.</span>
+<span class="sd">        For projects and spaces stored in shared buckets, their ID must be prepended to the path.</span>
+<span class="sd">        The assignment is skipped if the path already starts with ``container_id``.</span>
+
+<span class="sd">        :param container_id: id of project / space</span>
+<span class="sd">        :type container_id: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">container_id</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Avoids double slash (//) for absolute paths</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">container_id</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">container_id</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span></div>
 </div>
 
 
@@ -2643,7 +2692,6 @@
         <span class="k">return</span> <span class="n">location</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_save_file_as_data_asset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workspace</span><span class="p">:</span> <span class="s2">&quot;WorkSpace&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;str&quot;</span><span class="p">:</span>
-
         <span class="n">asset_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
             <span class="n">data_asset_details</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">data_assets</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
@@ -2661,7 +2709,7 @@
             <span class="c1"># note: try to get file size from remote server</span>
             <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_wsd_model_attachment_href</span><span class="p">()</span>
-                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/assets/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/assets/&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
             <span class="n">path_info_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">head</span><span class="p">(</span>
                 <span class="n">url</span><span class="p">,</span>
@@ -2763,7 +2811,7 @@
 
         <span class="k">return</span> <span class="n">attachment</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_connection_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_connection_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">attachment_content</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_attachment_details</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">attachment_content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;connection_id&quot;</span><span class="p">)</span>
@@ -2967,7 +3015,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_file_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workspace</span><span class="p">:</span> <span class="s2">&quot;Workspace&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;int&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_file_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workspace</span><span class="p">:</span> <span class="s2">&quot;WorkSpace&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;int&quot;</span><span class="p">:</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">params</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span>
         <span class="n">params</span><span class="p">[</span><span class="s2">&quot;detail&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>

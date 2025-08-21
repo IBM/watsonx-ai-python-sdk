@@ -232,6 +232,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_model_inference.html">ModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_ts_model_inference.html">TSModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../fm_audio_model_inference.html">AudioModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -313,7 +314,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai._wrappers</span><span class="w"> </span><span class="kn">import</span> <span class="n">requests</span>
@@ -322,11 +323,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">DATA_ASSETS_DETAILS_TYPE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">AssetDuplicateAction</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLClientError</span><span class="p">,</span> <span class="n">ApiRequestFailure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApiRequestFailure</span><span class="p">,</span> <span class="n">WMLClientError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLResource</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
 
 
@@ -651,7 +653,7 @@
                         <span class="k">else</span><span class="p">:</span>
                             <span class="k">try</span><span class="p">:</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">asset_id</span><span class="p">)</span>
-                            <span class="k">except</span><span class="p">:</span>
+                            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                                 <span class="k">pass</span>
                             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
                                 <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
@@ -661,7 +663,7 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">try</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">asset_id</span><span class="p">)</span>
-                        <span class="k">except</span><span class="p">:</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                             <span class="k">pass</span>
                         <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
                             <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
@@ -674,7 +676,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">asset_id</span><span class="p">)</span>
-                <span class="k">except</span><span class="p">:</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                     <span class="k">pass</span>
                 <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
                     <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
@@ -782,8 +784,6 @@
 
         <span class="n">Assets</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">asset_id</span><span class="p">,</span> <span class="s2">&quot;asset_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="kn">import</span><span class="w"> </span><span class="nn">urllib</span>
-
         <span class="n">asset_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_data_asset_href</span><span class="p">(</span><span class="n">asset_id</span><span class="p">),</span>
             <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">(),</span>
@@ -803,7 +803,6 @@
                 <span class="s2">&quot;connection_id&quot;</span> <span class="ow">in</span> <span class="n">asset_details</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
                 <span class="ow">and</span> <span class="n">asset_details</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;connection_id&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="p">):</span>
-
                 <span class="n">conn_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span>
                     <span class="n">asset_details</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;connection_id&quot;</span><span class="p">]</span>
                 <span class="p">)</span>
@@ -939,7 +938,6 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_required_element_from_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-
         <span class="n">WMLResource</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">response_data</span><span class="p">,</span> <span class="s2">&quot;data assets response&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
 
         <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
@@ -968,8 +966,15 @@
                 <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="s2">&quot;attachments&quot;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">]:</span>
+                <span class="n">req_attachment_props</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">}</span>
+                <span class="n">attachment_details</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
                 <span class="n">new_el</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                    <span class="p">{</span><span class="s2">&quot;attachment_id&quot;</span><span class="p">:</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]}</span>
+                    <span class="p">{</span>
+                        <span class="sa">f</span><span class="s2">&quot;attachment_</span><span class="si">{</span><span class="n">prop</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">attachment_details</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span>
+                        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">req_attachment_props</span>
+                        <span class="k">if</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">attachment_details</span>
+                    <span class="p">}</span>
                 <span class="p">)</span>
 
             <span class="n">href_without_host</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.com&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>

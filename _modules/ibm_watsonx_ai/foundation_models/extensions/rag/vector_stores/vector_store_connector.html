@@ -232,6 +232,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_model_inference.html">ModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_ts_model_inference.html">TSModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_audio_model_inference.html">AudioModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -310,25 +311,24 @@
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">BaseVectorStore</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">LangChainVectorStoreAdapter</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.vectorstores</span><span class="w"> </span><span class="kn">import</span> <span class="n">VectorStore</span> <span class="k">as</span> <span class="n">LangChainVectorStore</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">save_ssl_certificate_as_file</span><span class="p">,</span>
 <span class="p">)</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.vectorstores</span><span class="w"> </span><span class="kn">import</span> <span class="n">VectorStore</span> <span class="k">as</span> <span class="n">LangChainVectorStore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BaseVectorStore</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">LangChainVectorStoreAdapter</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="n">MissingExtension</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -341,6 +341,7 @@
     <span class="n">CHROMA</span> <span class="o">=</span> <span class="s2">&quot;chroma&quot;</span>
     <span class="n">MILVUS</span> <span class="o">=</span> <span class="s2">&quot;milvus&quot;</span>
     <span class="n">MILVUS_WXD</span> <span class="o">=</span> <span class="s2">&quot;milvuswxd&quot;</span>  <span class="c1"># IBM watsonx.data Milvus</span>
+    <span class="n">DB2</span> <span class="o">=</span> <span class="s2">&quot;db2&quot;</span>
     <span class="n">UNDEFINED</span> <span class="o">=</span> <span class="s2">&quot;undefined&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -404,6 +405,8 @@
                 <span class="k">return</span> <span class="n">VectorStoreDataSourceType</span><span class="o">.</span><span class="n">CHROMA</span>
             <span class="k">case</span> <span class="s2">&quot;Milvus&quot;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">VectorStoreDataSourceType</span><span class="o">.</span><span class="n">MILVUS</span>
+            <span class="k">case</span> <span class="s2">&quot;DB2VS&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">VectorStoreDataSourceType</span><span class="o">.</span><span class="n">DB2</span>
             <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">VectorStoreDataSourceType</span><span class="o">.</span><span class="n">UNDEFINED</span></div>
 
@@ -429,6 +432,8 @@
                 <span class="n">VectorStoreDataSourceType</span><span class="o">.</span><span class="n">MILVUS</span> <span class="o">|</span> <span class="n">VectorStoreDataSourceType</span><span class="o">.</span><span class="n">MILVUS_WXD</span>
             <span class="p">):</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_milvus</span><span class="p">()</span>
+            <span class="k">case</span> <span class="n">VectorStoreDataSourceType</span><span class="o">.</span><span class="n">DB2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db2</span><span class="p">()</span>
             <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Data source type not supported.&quot;</span><span class="p">)</span></div>
 
@@ -463,6 +468,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_chroma</span><span class="w"> </span><span class="kn">import</span> <span class="n">Chroma</span>
+
             <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.chroma_adapter</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                 <span class="n">ChromaVectorStore</span><span class="p">,</span>
             <span class="p">)</span>
@@ -514,13 +520,14 @@
 <span class="sd">        :rtype: LangChainVectorStoreAdapter</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_milvus</span><span class="w"> </span><span class="kn">import</span> <span class="n">Milvus</span>
+
         <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_adapter</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">MilvusVectorStore</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.milvus_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">DEFAULT_INDEX_PARAM</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_milvus</span><span class="w"> </span><span class="kn">import</span> <span class="n">Milvus</span>
 
         <span class="n">parsed_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_milvus_connection_params</span><span class="p">()</span>
         <span class="n">parsed_params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;datasource_type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -619,12 +626,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_elasticsearch</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-                <span class="n">ElasticsearchStore</span><span class="p">,</span>
-                <span class="n">SparseVectorStrategy</span><span class="p">,</span>
                 <span class="n">DenseVectorScriptScoreStrategy</span><span class="p">,</span>
-                <span class="n">RetrievalStrategy</span><span class="p">,</span>
                 <span class="n">DistanceMetric</span><span class="p">,</span>
+                <span class="n">ElasticsearchStore</span><span class="p">,</span>
+                <span class="n">RetrievalStrategy</span><span class="p">,</span>
+                <span class="n">SparseVectorStrategy</span><span class="p">,</span>
             <span class="p">)</span>
+
             <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                 <span class="n">ElasticsearchVectorStore</span><span class="p">,</span>
             <span class="p">)</span>
@@ -752,6 +760,96 @@
             <span class="n">parsed_params</span><span class="p">[</span><span class="s2">&quot;es_params&quot;</span><span class="p">][</span><span class="s2">&quot;ca_certs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">save_ssl_certificate_as_file</span><span class="p">(</span>
                 <span class="n">ssl_certificate_content</span>
             <span class="p">)</span>
+        <span class="k">return</span> <span class="n">parsed_params</span>
+
+<div class="viewcode-block" id="VectorStoreConnector.get_db2">
+<a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.vector_store_connector.VectorStoreConnector.get_db2">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_db2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LangChainVectorStoreAdapter</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a DV2 vector store.</span>
+
+<span class="sd">        :raises ImportError: langchain-db2 required</span>
+<span class="sd">        :return: vector store adapter for LangChain&#39;s DB2</span>
+<span class="sd">        :rtype: LangChainVectorStoreAdapter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_db2</span><span class="w"> </span><span class="kn">import</span> <span class="n">DB2VS</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_db2.db2vs</span><span class="w"> </span><span class="kn">import</span> <span class="n">DistanceStrategy</span>
+
+            <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+                <span class="n">DB2VectorStore</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MissingExtension</span><span class="p">(</span><span class="s2">&quot;langchain_db2&quot;</span><span class="p">)</span>
+
+        <span class="n">parsed_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_db2_connection_params</span><span class="p">()</span>
+        <span class="n">parsed_params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;datasource_type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># Connection &#39;index_name&#39; is &#39;table_name&#39; in DB2</span>
+        <span class="k">if</span> <span class="n">index_name</span> <span class="o">:=</span> <span class="n">parsed_params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;index_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">parsed_params</span><span class="p">[</span><span class="s2">&quot;table_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index_name</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">parsed_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;table_name&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provide &#39;index_name&#39; or &#39;table_name&#39;.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Parse distance_metric</span>
+        <span class="c1"># Match with DB2 DistanceStrategy.</span>
+        <span class="n">distance_metric</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DistanceStrategy</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">match</span> <span class="n">parsed_params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;distance_metric&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">case</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">:</span>
+                <span class="n">distance_metric</span> <span class="o">=</span> <span class="n">DistanceStrategy</span><span class="o">.</span><span class="n">EUCLIDEAN_DISTANCE</span>
+            <span class="k">case</span> <span class="s2">&quot;max_inner_product&quot;</span><span class="p">:</span>
+                <span class="n">distance_metric</span> <span class="o">=</span> <span class="n">DistanceStrategy</span><span class="o">.</span><span class="n">MAX_INNER_PRODUCT</span>
+            <span class="k">case</span> <span class="s2">&quot;dot&quot;</span><span class="p">:</span>
+                <span class="n">distance_metric</span> <span class="o">=</span> <span class="n">DistanceStrategy</span><span class="o">.</span><span class="n">DOT_PRODUCT</span>
+            <span class="k">case</span> <span class="s2">&quot;jaccard&quot;</span><span class="p">:</span>
+                <span class="n">distance_metric</span> <span class="o">=</span> <span class="n">DistanceStrategy</span><span class="o">.</span><span class="n">JACCARD</span>
+            <span class="k">case</span> <span class="s2">&quot;cosine&quot;</span><span class="p">:</span>
+                <span class="n">distance_metric</span> <span class="o">=</span> <span class="n">DistanceStrategy</span><span class="o">.</span><span class="n">COSINE</span>
+            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="n">distance_strategy</span> <span class="o">=</span> <span class="n">parsed_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;distance_strategy&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">distance_strategy</span> <span class="ow">or</span> <span class="n">distance_metric</span><span class="p">:</span>
+            <span class="n">parsed_params</span><span class="p">[</span><span class="s2">&quot;distance_strategy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">distance_strategy</span> <span class="ow">or</span> <span class="n">distance_metric</span>
+
+        <span class="c1"># Set embedding_function</span>
+        <span class="k">if</span> <span class="s2">&quot;embedding_function&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parsed_params</span><span class="p">:</span>
+            <span class="n">parsed_params</span><span class="p">[</span><span class="s2">&quot;embedding_function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parsed_params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;embeddings&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s2">&quot;embeddings&quot;</span> <span class="ow">in</span> <span class="n">parsed_params</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Either `embeddings` or `embedding_function` must be specified, but not both.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">DB2VectorStore</span><span class="p">(</span><span class="n">vector_store</span><span class="o">=</span><span class="n">DB2VS</span><span class="p">(</span><span class="o">**</span><span class="n">parsed_params</span><span class="p">))</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_db2_connection_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">parsed_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span>
+
+        <span class="c1"># Prepare connection_args (if not present)</span>
+        <span class="k">if</span> <span class="s2">&quot;connection_args&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parsed_params</span><span class="p">:</span>
+            <span class="n">parsed_params</span><span class="p">[</span><span class="s2">&quot;connection_args&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Connection &#39;ssl&#39; is &#39;security&#39; in DB2</span>
+        <span class="n">ssl_flag</span> <span class="o">=</span> <span class="n">parsed_params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;ssl&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ssl_flag</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">ssl_flag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ssl_flag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
+        <span class="p">):</span>
+            <span class="n">parsed_params</span><span class="p">[</span><span class="s2">&quot;security&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ssl&quot;</span>
+
+        <span class="c1"># Move each param that was in parsed_params to connection_args if we expect it here</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">&quot;database&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;host&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;username&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;password&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;security&quot;</span><span class="p">,</span>
+        <span class="p">]:</span>
+            <span class="k">if</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">parsed_params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">parsed_params</span><span class="p">[</span><span class="s2">&quot;connection_args&quot;</span><span class="p">][</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">parsed_params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">parsed_params</span></div>
 
 </pre></div>

@@ -232,6 +232,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_model_inference.html">ModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_ts_model_inference.html">TSModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../fm_audio_model_inference.html">AudioModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -311,74 +312,76 @@
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.enums</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">TShirtSize</span><span class="p">,</span>
     <span class="n">ClassificationAlgorithms</span><span class="p">,</span>
-    <span class="n">RegressionAlgorithms</span><span class="p">,</span>
-    <span class="n">ForecastingAlgorithms</span><span class="p">,</span>
-    <span class="n">PredictionType</span><span class="p">,</span>
-    <span class="n">Metrics</span><span class="p">,</span>
-    <span class="n">Transformers</span><span class="p">,</span>
+    <span class="n">ClassificationAlgorithmsCP4D</span><span class="p">,</span>
     <span class="n">DataConnectionTypes</span><span class="p">,</span>
+    <span class="n">ForecastingAlgorithms</span><span class="p">,</span>
+    <span class="n">ForecastingAlgorithmsCP4D</span><span class="p">,</span>
+    <span class="n">ForecastingPipelineTypes</span><span class="p">,</span>
+    <span class="n">ImputationStrategy</span><span class="p">,</span>
+    <span class="n">Metrics</span><span class="p">,</span>
     <span class="n">PipelineTypes</span><span class="p">,</span>
     <span class="n">PositiveLabelClass</span><span class="p">,</span>
-    <span class="n">ClassificationAlgorithmsCP4D</span><span class="p">,</span>
-    <span class="n">RegressionAlgorithmsCP4D</span><span class="p">,</span>
-    <span class="n">ForecastingAlgorithmsCP4D</span><span class="p">,</span>
-    <span class="n">SamplingTypes</span><span class="p">,</span>
-    <span class="n">ImputationStrategy</span><span class="p">,</span>
-    <span class="n">ForecastingPipelineTypes</span><span class="p">,</span>
-    <span class="n">TimeseriesAnomalyPredictionPipelineTypes</span><span class="p">,</span>
-    <span class="n">TimeseriesAnomalyPredictionAlgorithms</span><span class="p">,</span>
+    <span class="n">PredictionType</span><span class="p">,</span>
     <span class="n">RAGMetrics</span><span class="p">,</span>
+    <span class="n">RegressionAlgorithms</span><span class="p">,</span>
+    <span class="n">RegressionAlgorithmsCP4D</span><span class="p">,</span>
+    <span class="n">SamplingTypes</span><span class="p">,</span>
+    <span class="n">TimeseriesAnomalyPredictionAlgorithms</span><span class="p">,</span>
+    <span class="n">TimeseriesAnomalyPredictionPipelineTypes</span><span class="p">,</span>
+    <span class="n">Transformers</span><span class="p">,</span>
+    <span class="n">TShirtSize</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.errors</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ForecastingCannotBeRunAsLocalScenario</span><span class="p">,</span>
+    <span class="n">ForecastPredictionColumnsMissing</span><span class="p">,</span>
+    <span class="n">ImputationListNotSupported</span><span class="p">,</span>
     <span class="n">LocalInstanceButRemoteParameter</span><span class="p">,</span>
+    <span class="n">MissingEstimatorForExistingBatchedEstimator</span><span class="p">,</span>
     <span class="n">MissingPositiveLabel</span><span class="p">,</span>
     <span class="n">NonForecastPredictionColumnMissing</span><span class="p">,</span>
-    <span class="n">ForecastPredictionColumnsMissing</span><span class="p">,</span>
-    <span class="n">ForecastingCannotBeRunAsLocalScenario</span><span class="p">,</span>
-    <span class="n">TSNotSupported</span><span class="p">,</span>
-    <span class="n">TSADNotSupported</span><span class="p">,</span>
-    <span class="n">ImputationListNotSupported</span><span class="p">,</span>
-    <span class="n">MissingEstimatorForExistingBatchedEstimator</span><span class="p">,</span>
-    <span class="n">TimeseriesAnomalyPredictionFeatureColumnsMissing</span><span class="p">,</span>
     <span class="n">TimeseriesAnomalyPredictionCannotBeRunAsLocalScenario</span><span class="p">,</span>
+    <span class="n">TimeseriesAnomalyPredictionFeatureColumnsMissing</span><span class="p">,</span>
     <span class="n">TimeseriesAnomalyPredictionUnsupportedMetric</span><span class="p">,</span>
+    <span class="n">TSADNotSupported</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">check_dependencies_versions</span><span class="p">,</span>
+    <span class="n">translate_batched_estimator_string_to_enum</span><span class="p">,</span>
+    <span class="n">translate_estimator_string_to_enum</span><span class="p">,</span>
+    <span class="n">translate_imputation_string_strategy_to_enum</span><span class="p">,</span>
     <span class="n">validate_additional_params_for_optimizer</span><span class="p">,</span>
     <span class="n">validate_optimizer_enum_values</span><span class="p">,</span>
-    <span class="n">translate_imputation_string_strategy_to_enum</span><span class="p">,</span>
-    <span class="n">translate_estimator_string_to_enum</span><span class="p">,</span>
-    <span class="n">translate_batched_estimator_string_to_enum</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.workspace</span><span class="w"> </span><span class="kn">import</span> <span class="n">WorkSpace</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ForbiddenActionForGitBasedProject</span><span class="p">,</span>
-    <span class="n">WMLClientError</span><span class="p">,</span>
     <span class="n">ParamOutOfRange</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.messages.messages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Messages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.workspace</span><span class="w"> </span><span class="kn">import</span> <span class="n">WorkSpace</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..base_experiment.base_experiment</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseExperiment</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.engines</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServiceEngine</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalAutoPipelines</span><span class="p">,</span> <span class="n">RemoteAutoPipelines</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.runs</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoPipelinesRuns</span><span class="p">,</span> <span class="n">LocalAutoPipelinesRuns</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..base_experiment.base_experiment</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseExperiment</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AutoAI&quot;</span><span class="p">]</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">...credentials</span><span class="w"> </span><span class="kn">import</span> <span class="n">Credentials</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">...foundation_models.schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">AutoAIRAGModelConfig</span><span class="p">,</span>
     <span class="n">AutoAIRAGCustomModelConfig</span><span class="p">,</span>
+    <span class="n">AutoAIRAGModelConfig</span><span class="p">,</span>
     <span class="n">AutoAIRAGRetrievalConfig</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.enums</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">BatchedClassificationAlgorithms</span><span class="p">,</span>
+        <span class="n">BatchedRegressionAlgorithms</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">RAGOptimizer</span>
 
 
@@ -1000,10 +1003,10 @@
                 <span class="n">train_sample_rows_test_size</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">translate_str_imputation_param</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="ow">and</span> <span class="n">prediction_type</span> <span class="o">!=</span> <span class="n">PredictionType</span><span class="o">.</span><span class="n">FORECASTING</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">prediction_type</span> <span class="o">!=</span> <span class="n">PredictionType</span><span class="o">.</span><span class="n">FORECASTING</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">ImputationListNotSupported</span><span class="p">()</span>
 
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">)):</span>
                 <span class="k">return</span> <span class="n">translate_imputation_string_strategy_to_enum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">prediction_type</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">x</span>
@@ -1305,7 +1308,7 @@
 
 <span class="sd">        **Examples**</span>
 
-<span class="sd">        - Rag Optimizer configuration with defaults</span>
+<span class="sd">        - RAG Optimizer configuration with defaults</span>
 
 <span class="sd">        .. code-block:: python</span>
 
@@ -1318,30 +1321,27 @@
 <span class="sd">            )</span>
 
 
-<span class="sd">        - Rag Optimizer configuration with example values of parameters</span>
+<span class="sd">        - RAG Optimizer configuration with example values of parameters</span>
 
 <span class="sd">        .. code-block:: python</span>
 
 <span class="sd">            from ibm_watsonx_ai.experiment import AutoAI</span>
+
 <span class="sd">            experiment = AutoAI(...)</span>
 
 <span class="sd">            optimizer = experiment.rag_optimizer(</span>
 <span class="sd">                name=&quot;RAG - AutoAI&quot;,</span>
 <span class="sd">                description=&quot;Sample description&quot;,</span>
 <span class="sd">                max_number_of_rag_patterns=5,</span>
-<span class="sd">                chunking=[{&quot;method&quot;: &quot;recursive&quot;, &quot;chunk_size&quot;: 256, &quot;chunk_overlap&quot;: 64}],</span>
+<span class="sd">                chunking=[</span>
+<span class="sd">                    {&quot;method&quot;: &quot;recursive&quot;, &quot;chunk_size&quot;: 1024, &quot;chunk_overlap&quot;: 64},</span>
+<span class="sd">                    {&quot;method&quot;: &quot;semantic&quot;, &quot;chunk_size&quot;: 1024},</span>
+<span class="sd">                ],</span>
 <span class="sd">                embedding_models=[&quot;ibm/slate-125m-english-rtrvr-v2&quot;],</span>
 <span class="sd">                foundation_models=[&quot;meta-llama/llama-3-3-70b-instruct&quot;],</span>
 <span class="sd">                retrieval=[</span>
-<span class="sd">                    {</span>
-<span class="sd">                        &quot;method&quot;: &quot;window&quot;,</span>
-<span class="sd">                        &quot;number_of_chunks&quot;: 3,</span>
-<span class="sd">                        &quot;window_size&quot;: 2</span>
-<span class="sd">                    },</span>
-<span class="sd">                    {</span>
-<span class="sd">                        &quot;method&quot;: &quot;simple&quot;,</span>
-<span class="sd">                        &quot;number_of_chunks&quot;: 5</span>
-<span class="sd">                    }</span>
+<span class="sd">                    {&quot;method&quot;: &quot;window&quot;, &quot;number_of_chunks&quot;: 3, &quot;window_size&quot;: 2},</span>
+<span class="sd">                    {&quot;method&quot;: &quot;simple&quot;, &quot;number_of_chunks&quot;: 5},</span>
 <span class="sd">                ],</span>
 <span class="sd">                generation={&quot;language&quot;: {&quot;auto-detect&quot;: True}},</span>
 <span class="sd">                optimization_metrics=[&quot;answer_correctness&quot;],</span>

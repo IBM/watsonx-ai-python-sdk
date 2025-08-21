@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../../genindex.html" /><link rel="search" title="Search" href="../../../../../../../search.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter - IBM watsonx.ai</title>
+        <title>ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -305,17 +305,17 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter</h1><div class="highlight"><pre>
+          <h1>Source code for ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter</h1><div class="highlight"><pre>
 <span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
-<span class="c1">#  (C) Copyright IBM Corp. 2024-2025.</span>
+<span class="c1">#  (C) Copyright IBM Corp. 2025.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">cast</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.embeddings</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEmbeddings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">LangChainVectorStoreAdapter</span><span class="p">,</span>
@@ -326,28 +326,30 @@
 <span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">elasticsearch</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_elasticsearch.vectorstores</span><span class="w"> </span><span class="kn">import</span> <span class="n">ElasticsearchStore</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.embeddings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Embeddings</span> <span class="k">as</span> <span class="n">LCEmbeddings</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_db2</span><span class="w"> </span><span class="kn">import</span> <span class="n">DB2VS</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_db2.db2vs</span><span class="w"> </span><span class="kn">import</span> <span class="n">clear_table</span>
 
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="n">MissingExtension</span><span class="p">(</span><span class="s2">&quot;langchain_elasticsearch&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">MissingExtension</span><span class="p">(</span>
+        <span class="s2">&quot;langchain_db2&quot;</span><span class="p">,</span>
+        <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Please install `ibm-watsonx-ai` with flag `rag`: </span><span class="se">\n</span><span class="s2"> `pip install -U &#39;ibm-watsonx-ai[rag]&#39;`&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">elastic_transport</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConnectionTimeout</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">import</span> <span class="n">logging</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.es_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">HybridStrategyElasticsearch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+<span class="c1"># Type Alias</span>
+<span class="n">EmbeddingType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">BaseEmbeddings</span> <span class="o">|</span> <span class="n">LCEmbeddings</span>
 
-<div class="viewcode-block" id="ElasticsearchVectorStore">
-<a class="viewcode-back" href="../../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ElasticsearchVectorStore</span><span class="p">(</span><span class="n">LangChainVectorStoreAdapter</span><span class="p">[</span><span class="n">ElasticsearchStore</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Elasticsearch vector store client for a RAG pattern.</span>
 
-<span class="sd">    Instantiates the vector store connection in the watsonx.ai environment and handles the necessary operations.</span>
-<span class="sd">    The parameters given by the keyword arguments are used to instantiate the vector store client in their</span>
-<span class="sd">    particular constructor. Those parameters might be parsed differently.</span>
+<div class="viewcode-block" id="DB2VectorStore">
+<a class="viewcode-back" href="../../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DB2VectorStore</span><span class="p">(</span><span class="n">LangChainVectorStoreAdapter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;DB2VectorStore vector store client for a RAG pattern.</span>
 
 <span class="sd">    :param api_client: api client is required if connecting by connection_id, defaults to None</span>
 <span class="sd">    :type api_client: APIClient, optional</span>
@@ -355,32 +357,17 @@
 <span class="sd">    :param connection_id: connection asset ID, defaults to None</span>
 <span class="sd">    :type connection_id: str, optional</span>
 
-<span class="sd">    :param vector_store: initialized langchain_elasticsearch vector store, defaults to None</span>
-<span class="sd">    :type vector_store: langchain_elasticsearch.ElasticsearchStore, optional</span>
+<span class="sd">    :param vector_store: initialized langchain_db2 vector store, defaults to None</span>
+<span class="sd">    :type vector_store: langchain_db2.DB2VS, optional</span>
 
-<span class="sd">    :param embeddings: default dense embeddings to be used, defaults to None</span>
-<span class="sd">    :type embeddings: BaseEmbeddings, optional</span>
+<span class="sd">    :param embedding_function: dense embedding function, defaults to None</span>
+<span class="sd">    :type embedding_function: BaseEmbeddings | LCEmbeddings, optional</span>
 
-<span class="sd">    :param index_name: name of the vector database index, defaults to None</span>
-<span class="sd">    :type index_name: str, optional</span>
+<span class="sd">    :param table_name: name of the DB2 table name, defaults to None</span>
+<span class="sd">    :type table_name: str, optional</span>
 
-<span class="sd">    :param kwargs: keyword arguments that will be directly passed to `langchain_elasticsearch.ElasticsearchStore` constructor</span>
+<span class="sd">    :param kwargs: keyword arguments that will be directly passed to `langchain_db2.DB2VS` constructor</span>
 <span class="sd">    :type kwargs: Any, optional</span>
-
-<span class="sd">    .. note::</span>
-
-<span class="sd">        For hybrid search (multi-vector search), if no ranker type is specified in strategy, a `weighted` reranker with default weights equal to 1 is used.</span>
-<span class="sd">        For more details, see the `langchain-elasticsearch documentation &lt;https://python.langchain.com/docs/integrations/vectorstores/elasticsearch/&gt;`_ and</span>
-<span class="sd">        `Elasticsearch documentation &lt;https://www.elastic.co/guide/en/elasticsearch/reference/current/knn-search.html#_combine_approximate_knn_with_other_features&gt;`_.</span>
-
-<span class="sd">    .. warning::</span>
-
-<span class="sd">        The default retrieval strategy is the same as in ``langchain_elasticsearch.ElasticsearchStore``, i.e. when no strategy is specified the ``elasticsearch.helpers.vectorstore.DenseVectorStrategy``</span>
-<span class="sd">        will be used (see `langchain-elasticsearch` `documentation &lt;https://python.langchain.com/api_reference/elasticsearch/vectorstores/langchain_elasticsearch.vectorstores.ElasticsearchStore.html#langchain_elasticsearch.vectorstores.ElasticsearchStore&gt;`_).</span>
-
-<span class="sd">        Please note, that this strategy differ from the default one in ``ibm_watsonx.ai.foundation_models.extensions.rag.vector_stores.VectorStore``, where ``elasticsearch.helpers.vectorstore.DenseVectorScriptScoreStrategy`` is used. To ensure the same functionality</span>
-<span class="sd">        when migrating from ``VectorStore`` to ``ElasticsearchVectorStore``, you may want to pass ``DenseVectorScriptScoreStrategy(distance=distance_metric)`` explicitly to ``ElasticsearchVectorStore`` constructor.</span>
-
 
 <span class="sd">    **Example:**</span>
 
@@ -390,149 +377,36 @@
 <span class="sd">    .. code-block:: python</span>
 
 <span class="sd">        from ibm_watsonx_ai import APIClient, Credentials</span>
-<span class="sd">        from ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores import ElasticsearchVectorStore</span>
+<span class="sd">        from ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores import DB2VectorStore</span>
 <span class="sd">        from ibm_watsonx_ai.foundation_models.embeddings import Embeddings</span>
 
 <span class="sd">        credentials = Credentials(</span>
-<span class="sd">                api_key = IAM_API_KEY,</span>
-<span class="sd">                url = &quot;https://us-south.ml.cloud.ibm.com&quot;</span>
-<span class="sd">                )</span>
+<span class="sd">            api_key = IAM_API_KEY,</span>
+<span class="sd">            url = &quot;https://us-south.ml.cloud.ibm.com&quot;</span>
+<span class="sd">        )</span>
 
-<span class="sd">        api_client = APIClient(credentials)</span>
+<span class="sd">        api_client = APIClient(credentials, project_id=&quot;&lt;PROJECT_ID&gt;&quot;)</span>
 
 <span class="sd">        embedding = Embeddings(</span>
-<span class="sd">                 model_id=EmbeddingTypes.IBM_SLATE_30M_ENG,</span>
-<span class="sd">                 api_client=api_client</span>
-<span class="sd">                 )</span>
+<span class="sd">            model_id=EmbeddingTypes.IBM_SLATE_30M_ENG,</span>
+<span class="sd">            api_client=api_client</span>
+<span class="sd">        )</span>
 
-<span class="sd">        vector_store = ElasticsearchVectorStore(</span>
-<span class="sd">                api_client,</span>
-<span class="sd">                connection_id=&#39;***&#39;,</span>
-<span class="sd">                index_name=&#39;my_test_index&#39;,</span>
-<span class="sd">                embeddings=embedding</span>
-<span class="sd">            )</span>
+<span class="sd">        vector_store = DB2VectorStore(</span>
+<span class="sd">            api_client,</span>
+<span class="sd">            connection_id=&#39;***&#39;,</span>
+<span class="sd">            collection_name=&#39;my_test_collection&#39;,</span>
+<span class="sd">            embedding_function=embedding</span>
+<span class="sd">        )</span>
 
 <span class="sd">        vector_store.add_documents([</span>
 <span class="sd">            {&#39;content&#39;: &#39;document one content&#39;, &#39;metadata&#39;:{&#39;url&#39;:&#39;ibm.com&#39;}},</span>
 <span class="sd">            {&#39;content&#39;: &#39;document two content&#39;, &#39;metadata&#39;:{&#39;url&#39;:&#39;ibm.com&#39;}}</span>
 <span class="sd">        ])</span>
+<span class="sd">        # [&#39;4CDDAF00329B3DF9&#39;, &#39;B8AE97421A8857E7&#39;]</span>
 
 <span class="sd">        vector_store.search(&#39;one&#39;, k=1)</span>
-
-<span class="sd">    .. note::</span>
-<span class="sd">        Optionally, like in LangChain, it is possible to use direct credentials to connect to Elastic Cloud.</span>
-<span class="sd">        The keyword arguments can be used as direct params to LangChain&#39;s ``ElasticsearchStore`` constructor.</span>
-
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        from ibm_watsonx_ai import APIClient, Credentials</span>
-<span class="sd">        from ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores import (</span>
-<span class="sd">            ElasticsearchVectorStore,</span>
-<span class="sd">            HybridStrategyElasticsearch,</span>
-<span class="sd">            RetrievalOptions,</span>
-<span class="sd">        )</span>
-
-<span class="sd">        credentials = Credentials(api_key=IAM_API_KEY, url=&quot;https://us-south.ml.cloud.ibm.com&quot;)</span>
-
-<span class="sd">        api_client = APIClient(credentials)</span>
-
-<span class="sd">        vector_store = ElasticsearchVectorStore(</span>
-<span class="sd">            api_client,</span>
-<span class="sd">            index_name=&quot;my_test_index&quot;,</span>
-<span class="sd">            strategy=HybridStrategyElasticsearch(</span>
-<span class="sd">                retrieval_strategies={RetrievalOptions.SPARSE: {&quot;model_id&quot;: &quot;.elser&quot;}}</span>
-<span class="sd">            ),</span>
-<span class="sd">            cloud_id=&quot;***&quot;,</span>
-<span class="sd">            api_key=IAM_API_KEY,</span>
-<span class="sd">        )</span>
-
-<span class="sd">        vector_store.add_documents(</span>
-<span class="sd">            [</span>
-<span class="sd">                {&quot;content&quot;: &quot;document one content&quot;, &quot;metadata&quot;: {&quot;url&quot;: &quot;ibm.com&quot;}},</span>
-<span class="sd">                {&quot;content&quot;: &quot;document two content&quot;, &quot;metadata&quot;: {&quot;url&quot;: &quot;ibm.com&quot;}},</span>
-<span class="sd">            ]</span>
-<span class="sd">        )</span>
-
-<span class="sd">        vector_store.search(&quot;one&quot;, k=1)</span>
-
-<span class="sd">    .. note::</span>
-<span class="sd">        To use hybrid search please specify multiple retrieval strategies in HybridStrategyElasticsearch.</span>
-
-<span class="sd">    Example with weighted ranker.</span>
-
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        from ibm_watsonx_ai import APIClient, Credentials</span>
-<span class="sd">        from ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores import (</span>
-<span class="sd">            ElasticsearchVectorStore,</span>
-<span class="sd">            HybridStrategyElasticsearch,</span>
-<span class="sd">            RetrievalOptions,</span>
-<span class="sd">        )</span>
-
-<span class="sd">        credentials = Credentials(api_key=IAM_API_KEY, url=&quot;https://us-south.ml.cloud.ibm.com&quot;)</span>
-
-<span class="sd">        api_client = APIClient(credentials)</span>
-
-<span class="sd">        vector_store = ElasticsearchVectorStore(</span>
-<span class="sd">            api_client,</span>
-<span class="sd">            connection_id=es_connection_id,</span>
-<span class="sd">            index_name=&quot;my_test_index&quot;,</span>
-<span class="sd">            strategy=HybridStrategyElasticsearch(</span>
-<span class="sd">                retrieval_strategies={</span>
-<span class="sd">                    RetrievalOptions.SPARSE: {&quot;model_id&quot;: &quot;.elser&quot;, &quot;boost&quot;: 0.5},</span>
-<span class="sd">                    RetrievalOptions.BM25: {&quot;boost&quot;: 1},</span>
-<span class="sd">                }</span>
-<span class="sd">            ),</span>
-<span class="sd">        )</span>
-
-<span class="sd">        vector_store.add_documents(</span>
-<span class="sd">            [</span>
-<span class="sd">                {&quot;content&quot;: &quot;document one content&quot;, &quot;metadata&quot;: {&quot;url&quot;: &quot;ibm.com&quot;}},</span>
-<span class="sd">                {&quot;content&quot;: &quot;document two content&quot;, &quot;metadata&quot;: {&quot;url&quot;: &quot;ibm.com&quot;}},</span>
-<span class="sd">            ]</span>
-<span class="sd">        )</span>
-
-<span class="sd">        vector_store.search(&quot;one&quot;, k=1)</span>
-
-
-<span class="sd">    Example with rrf ranker:</span>
-
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        from ibm_watsonx_ai import APIClient, Credentials</span>
-<span class="sd">        from ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores import (</span>
-<span class="sd">            ElasticsearchVectorStore,</span>
-<span class="sd">            HybridStrategyElasticsearch,</span>
-<span class="sd">            RetrievalOptions,</span>
-<span class="sd">        )</span>
-
-<span class="sd">        credentials = Credentials(api_key=IAM_API_KEY, url=&quot;https://us-south.ml.cloud.ibm.com&quot;)</span>
-
-<span class="sd">        api_client = APIClient(credentials)</span>
-
-<span class="sd">        vector_store = ElasticsearchVectorStore(</span>
-<span class="sd">            api_client,</span>
-<span class="sd">            connection_id=es_connection_id,</span>
-<span class="sd">            index_name=&quot;my_test_index&quot;,</span>
-<span class="sd">            strategy=HybridStrategyElasticsearch(</span>
-<span class="sd">                retrieval_strategies={</span>
-<span class="sd">                    RetrievalOptions.SPARSE: {&quot;model_id&quot;: &quot;.elser&quot;},</span>
-<span class="sd">                    RetrievalOptions.BM25: {},</span>
-<span class="sd">                },</span>
-<span class="sd">                use_rrf=True</span>
-<span class="sd">                rrf_params={&quot;k&quot;: 50}</span>
-<span class="sd">            ),</span>
-<span class="sd">        )</span>
-
-<span class="sd">        vector_store.add_documents(</span>
-<span class="sd">            [</span>
-<span class="sd">                {&quot;content&quot;: &quot;document one content&quot;, &quot;metadata&quot;: {&quot;url&quot;: &quot;ibm.com&quot;}},</span>
-<span class="sd">                {&quot;content&quot;: &quot;document two content&quot;, &quot;metadata&quot;: {&quot;url&quot;: &quot;ibm.com&quot;}},</span>
-<span class="sd">            ]</span>
-<span class="sd">        )</span>
-
-<span class="sd">        vector_store.search(&quot;one&quot;, k=1)</span>
-
+<span class="sd">        # [Document(metadata={&#39;url&#39;: &#39;ibm.com&#39;}, page_content=&#39;document one content&#39;)]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -541,21 +415,18 @@
         <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">connection_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">vector_store</span><span class="p">:</span> <span class="n">ElasticsearchStore</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">index_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">embedding</span><span class="p">:</span> <span class="n">BaseEmbeddings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">vector_store</span><span class="p">:</span> <span class="n">DB2VS</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">embedding_function</span><span class="p">:</span> <span class="n">EmbeddingType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection_id</span> <span class="o">=</span> <span class="n">connection_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">api_client</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_serializable</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">vector_store</span><span class="p">)</span>
-
-        <span class="c1"># used in .to_dict method</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_embedding</span> <span class="o">=</span> <span class="n">embedding</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_index_name</span> <span class="o">=</span> <span class="n">index_name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_index_properties</span> <span class="o">=</span> <span class="n">kwargs</span>
-        <span class="c1">###</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_embedding_function</span> <span class="o">=</span> <span class="n">embedding_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_table_name</span> <span class="o">=</span> <span class="n">table_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_additional_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.vector_store_connector</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">VectorStoreConnector</span><span class="p">,</span>
@@ -567,75 +438,62 @@
                     <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_id</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_datasource_type</span><span class="p">,</span> <span class="n">connection_properties</span> <span class="o">=</span> <span class="s2">&quot;elasticsearch&quot;</span><span class="p">,</span> <span class="p">{}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_datasource_type</span><span class="p">,</span> <span class="n">connection_properties</span> <span class="o">=</span> <span class="s2">&quot;db2&quot;</span><span class="p">,</span> <span class="p">{}</span>
 
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initializing vector store of type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_datasource_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="c1"># overwrite text and vector field names set in langchain_elasticsearch</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">strategy</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;strategy&quot;</span><span class="p">)),</span>
-                <span class="n">HybridStrategyElasticsearch</span><span class="p">,</span>
-            <span class="p">):</span>
-                <span class="k">if</span> <span class="s2">&quot;query_field&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_properties</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_index_properties</span><span class="p">[</span><span class="s2">&quot;query_field&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">_text_field</span>
-                <span class="k">if</span> <span class="s2">&quot;vector_query_field&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_properties</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_index_properties</span><span class="p">[</span><span class="s2">&quot;vector_query_field&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="n">strategy</span><span class="o">.</span><span class="n">_dense_vector_field</span>
-                    <span class="p">)</span>
-
             <span class="bp">self</span><span class="o">.</span><span class="n">_properties</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="o">**</span><span class="n">connection_properties</span><span class="p">,</span>
-                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_index_properties</span><span class="p">,</span>
-                <span class="s2">&quot;embedding&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embedding</span><span class="p">,</span>
-                <span class="s2">&quot;index_name&quot;</span><span class="p">:</span> <span class="n">index_name</span><span class="p">,</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_additional_kwargs</span><span class="p">,</span>
+                <span class="s2">&quot;embedding_function&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embedding_function</span><span class="p">,</span>
+                <span class="s2">&quot;table_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table_name</span><span class="p">,</span>
             <span class="p">}</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_properties</span> <span class="o">=</span> <span class="n">VectorStoreConnector</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_properties</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">_get_elasticsearch_connection_params</span><span class="p">()</span>
-            <span class="n">vector_store</span> <span class="o">=</span> <span class="n">ElasticsearchStore</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_properties</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">_get_db2_connection_params</span><span class="p">()</span>
+
+            <span class="n">vector_store</span> <span class="o">=</span> <span class="n">DB2VS</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_properties</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_datasource_type</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">VectorStoreConnector</span><span class="o">.</span><span class="n">get_type_from_langchain_vector_store</span><span class="p">(</span><span class="n">vector_store</span><span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">vector_store</span><span class="o">=</span><span class="n">vector_store</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">vector_store</span><span class="o">=</span><span class="n">vector_store</span><span class="p">,</span>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="ElasticsearchVectorStore.get_client">
-<a class="viewcode-back" href="../../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.get_client">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElasticsearchStore</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get langchain_elasticsearch.ElasticsearchStore instance.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DB2VectorStore.get_client">
+<a class="viewcode-back" href="../../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.get_client">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DB2VS</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get langchain_db2.DB2VS instance.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="ElasticsearchVectorStore.clear">
-<a class="viewcode-back" href="../../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.clear">[docs]</a>
+<div class="viewcode-block" id="DB2VectorStore.clear">
+<a class="viewcode-back" href="../../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.clear">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Clear index by removing all records.</span>
+<span class="sd">        Clear table by removing all records.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">es_vs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span><span class="o">.</span><span class="n">_store</span>
-        <span class="n">es</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span><span class="o">.</span><span class="n">client</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">es</span><span class="o">.</span><span class="n">delete_by_query</span><span class="p">(</span>
-                <span class="n">index</span><span class="o">=</span><span class="n">es_vs</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;match_all&quot;</span><span class="p">:</span> <span class="p">{}}},</span> <span class="n">refresh</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)</span>
-        <span class="k">except</span> <span class="n">elasticsearch</span><span class="o">.</span><span class="n">NotFoundError</span><span class="p">:</span>
-            <span class="k">pass</span></div>
+        <span class="n">db2_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span>
+
+        <span class="n">clear_table</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">db2_client</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="n">table_name</span><span class="o">=</span><span class="n">db2_client</span><span class="o">.</span><span class="n">table_name</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ElasticsearchVectorStore.count">
-<a class="viewcode-back" href="../../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.count">[docs]</a>
+<div class="viewcode-block" id="DB2VectorStore.count">
+<a class="viewcode-back" href="../../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.count">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Count number of records in index.</span>
+<span class="sd">        Count number of records in table.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">es</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span><span class="o">.</span><span class="n">client</span>
-        <span class="k">return</span> <span class="n">es</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">index</span><span class="p">)[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span></div>
+        <span class="n">ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span><span class="o">.</span><span class="n">get_pks</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="k">if</span> <span class="n">ids</span> <span class="k">else</span> <span class="mi">0</span></div>
 
 
-<div class="viewcode-block" id="ElasticsearchVectorStore.add_documents">
-<a class="viewcode-back" href="../../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.add_documents">[docs]</a>
+<div class="viewcode-block" id="DB2VectorStore.add_documents">
+<a class="viewcode-back" href="../../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.add_documents">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -655,117 +513,62 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">texts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_add_documents</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">texts</span><span class="p">,</span> <span class="n">metadatas</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="n">db2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">db2</span><span class="o">.</span><span class="n">add_texts</span><span class="p">(</span><span class="n">texts</span><span class="o">=</span><span class="n">texts</span><span class="p">,</span> <span class="n">metadatas</span><span class="o">=</span><span class="n">metadatas</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="n">ids</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_fallback_add_documents</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">docs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">],</span>
-        <span class="n">texts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">metadatas</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
-        <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>  <span class="c1"># default set to 500</span>
-        <span class="n">text_embeddings</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="n">stop_fallback</span> <span class="o">=</span> <span class="kc">False</span>
-
-        <span class="n">bulk_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;bulk_kwargs&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">bulk_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">bulk_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;chunk_size&quot;</span><span class="p">:</span> <span class="n">chunk_size</span><span class="p">}</span>
-        <span class="k">elif</span> <span class="n">bulk_kwargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bulk_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;chunk_size&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">bulk_kwargs</span><span class="p">[</span><span class="s2">&quot;chunk_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chunk_size</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">stop_fallback</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embedding</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">text_embeddings</span><span class="p">:</span>
-            <span class="n">vectors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embedding</span><span class="o">.</span><span class="n">embed_documents</span><span class="p">(</span><span class="n">texts</span><span class="p">)</span>  <span class="c1"># type: ignore[union-attr]</span>
-            <span class="n">text_embeddings</span> <span class="o">=</span> <span class="p">[(</span><span class="n">text</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span> <span class="k">for</span> <span class="n">text</span><span class="p">,</span> <span class="n">vector</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="n">vectors</span><span class="p">)]</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">text_embeddings</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">add_embeddings</span><span class="p">(</span>
-                    <span class="n">text_embeddings</span><span class="o">=</span><span class="n">text_embeddings</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
-                    <span class="n">metadatas</span><span class="o">=</span><span class="n">metadatas</span><span class="p">,</span>
-                    <span class="n">ids</span><span class="o">=</span><span class="n">ids</span><span class="p">,</span>
-                    <span class="n">bulk_kwargs</span><span class="o">=</span><span class="n">bulk_kwargs</span><span class="p">,</span>
-                    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">add_texts</span><span class="p">(</span>
-                    <span class="n">texts</span><span class="o">=</span><span class="n">texts</span><span class="p">,</span>
-                    <span class="n">metadatas</span><span class="o">=</span><span class="n">metadatas</span><span class="p">,</span>
-                    <span class="n">ids</span><span class="o">=</span><span class="n">ids</span><span class="p">,</span>
-                    <span class="n">bulk_kwargs</span><span class="o">=</span><span class="n">bulk_kwargs</span><span class="p">,</span>
-                    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-                <span class="p">)</span>
-        <span class="k">except</span> <span class="n">ConnectionTimeout</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">chunk_size</span> <span class="o">&lt;=</span> <span class="mi">50</span> <span class="ow">or</span> <span class="n">stop_fallback</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">e</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_add_documents</span><span class="p">(</span>
-                <span class="n">ids</span><span class="o">=</span><span class="n">ids</span><span class="p">,</span>
-                <span class="n">docs</span><span class="o">=</span><span class="n">docs</span><span class="p">,</span>
-                <span class="n">texts</span><span class="o">=</span><span class="n">texts</span><span class="p">,</span>
-                <span class="n">metadatas</span><span class="o">=</span><span class="n">metadatas</span><span class="p">,</span>
-                <span class="n">chunk_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-                <span class="n">text_embeddings</span><span class="o">=</span><span class="n">text_embeddings</span><span class="p">,</span>
-                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-            <span class="p">)</span>
-
-<div class="viewcode-block" id="ElasticsearchVectorStore.to_dict">
-<a class="viewcode-back" href="../../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.to_dict">[docs]</a>
+<div class="viewcode-block" id="DB2VectorStore.to_dict">
+<a class="viewcode-back" href="../../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.to_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize ``ElasticsearchVectorStore`` into a dict that allows reconstruction using the ``from_dict`` class method.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize ``DB2VectorStore`` into a dict that allows reconstruction using the ``from_dict`` class method.</span>
 
-<span class="sd">        :return: dict for the `from_dict` initialization</span>
+<span class="sd">        :return: dict for the from_dict initialization</span>
 <span class="sd">        :rtype: dict</span>
 
 <span class="sd">        :raises VectorStoreSerializationError: when instance is not serializable</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_serializable</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">VectorStoreSerializationError</span><span class="p">(</span>
-                <span class="s2">&quot;Serialization is not available when passing vector store instance in `ElasticsearchVectorStore` constructor.&quot;</span>
+                <span class="s2">&quot;Serialization is not available when passing vector store instance in `DB2VectorStore` constructor.&quot;</span>
             <span class="p">)</span>
-
-        <span class="n">strategy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;strategy&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">strategy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-                <span class="n">strategy</span><span class="p">,</span>
-                <span class="n">HybridStrategyElasticsearch</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_embedding</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_embedding</span><span class="p">,</span> <span class="n">BaseEmbeddings</span><span class="p">)</span>
-        <span class="p">):</span>
-            <span class="k">raise</span> <span class="n">VectorStoreSerializationError</span><span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="s2">&quot;Serialization is allowed only for `HybridStrategyElasticsearch` strategy or when no strategy is provided and &quot;</span>
-                    <span class="s2">&quot;dense embeddings is an instance of `ibm_watsonx_ai.foundation_models.embeddings.BaseEmbeddings`.&quot;</span>
+        <span class="n">embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embedding_function</span>
+        <span class="k">if</span> <span class="n">embedding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">embedding_f</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">watsonx</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="s2">&quot;watsonx_embed&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">to_dict_method</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">watsonx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">to_dict_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">watsonx</span><span class="p">,</span> <span class="s2">&quot;to_dict&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">to_dict_method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">to_dict_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="s2">&quot;to_dict&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">to_dict_method</span><span class="p">):</span>
+                <span class="n">embedding_f</span> <span class="o">=</span> <span class="n">to_dict_method</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">VectorStoreSerializationError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Cannot serialize embedding-function of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">embedding</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">; &quot;</span>
+                    <span class="s2">&quot;expected `.watsonx_embed.to_dict()` or `.to_dict()`.&quot;</span>
                 <span class="p">)</span>
-            <span class="p">)</span>
+
         <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;connection_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_id</span><span class="p">,</span>
-            <span class="s2">&quot;embedding&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_embedding</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embedding</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
-            <span class="p">),</span>
-            <span class="s2">&quot;index_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_name</span><span class="p">,</span>
-            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_index_properties</span><span class="p">,</span>
+            <span class="s2">&quot;embedding_function&quot;</span><span class="p">:</span> <span class="n">embedding_f</span><span class="p">,</span>
+            <span class="s2">&quot;table_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table_name</span><span class="p">,</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_additional_kwargs</span><span class="p">,</span>
             <span class="s2">&quot;datasource_type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datasource_type</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="k">if</span> <span class="n">strategy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">data_dict</span><span class="p">[</span><span class="s2">&quot;strategy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">data_dict</span></div>
 
 
-<div class="viewcode-block" id="ElasticsearchVectorStore.from_dict">
-<a class="viewcode-back" href="../../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.es_adapter.ElasticsearchVectorStore.from_dict">[docs]</a>
+<div class="viewcode-block" id="DB2VectorStore.from_dict">
+<a class="viewcode-back" href="../../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.from_dict">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ElasticsearchVectorStore&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates ``ElasticsearchVectorStore`` using only a primitive data type dict.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DB2VectorStore&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates ``DB2VectorStore`` using only a primitive data type dict.</span>
 
 <span class="sd">        :param api_client: initialised APIClient used in vector store constructor, defaults to None</span>
 <span class="sd">        :type api_client: APIClient, optional</span>
@@ -773,21 +576,26 @@
 <span class="sd">        :param data: dict in schema like the ``to_dict()`` method</span>
 <span class="sd">        :type data: dict</span>
 
-<span class="sd">        :return: reconstructed VectorStore</span>
-<span class="sd">        :rtype: VectorStore</span>
+<span class="sd">        :return: reconstructed DB2VectorStore</span>
+<span class="sd">        :rtype: DB2VectorStore</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
 
         <span class="c1"># Remove `datasource_type` if present</span>
         <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;datasource_type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;embedding&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseEmbeddings</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;embedding&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">api_client</span><span class="o">=</span><span class="n">api_client</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;embeddings&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;embedding_function&quot;</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;embeddings&quot;</span><span class="p">))</span>
 
-        <span class="n">strategy_dict</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;strategy&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">strategy_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;strategy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">HybridStrategyElasticsearch</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">strategy_dict</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;index_name&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;table_name&quot;</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;index_name&quot;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="s2">&quot;distance_metric&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;distance_strategy&quot;</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;distance_metric&quot;</span><span class="p">))</span>
+
+        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;embedding_function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseEmbeddings</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;embedding_function&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">api_client</span><span class="o">=</span><span class="n">api_client</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">api_client</span><span class="p">,</span> <span class="o">**</span><span class="n">d</span><span class="p">)</span></div>
 </div>

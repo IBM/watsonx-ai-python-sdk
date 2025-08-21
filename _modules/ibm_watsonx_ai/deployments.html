@@ -232,6 +232,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_model_inference.html">ModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_ts_model_inference.html">TSModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../fm_audio_model_inference.html">AudioModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -311,54 +312,55 @@
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Literal</span><span class="p">,</span>
-    <span class="n">Iterable</span><span class="p">,</span>
-    <span class="n">Callable</span><span class="p">,</span>
-    <span class="n">Any</span><span class="p">,</span>
-    <span class="n">cast</span><span class="p">,</span>
-    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
-    <span class="n">NoReturn</span><span class="p">,</span>
-    <span class="n">Generator</span><span class="p">,</span>
-    <span class="n">TypeAlias</span><span class="p">,</span>
-    <span class="n">AsyncGenerator</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">print_text_header_h1</span><span class="p">,</span>
-    <span class="n">print_text_header_h2</span><span class="p">,</span>
-    <span class="n">StatusLogger</span><span class="p">,</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">AsyncGenerator</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Generator</span><span class="p">,</span>
+    <span class="n">Iterable</span><span class="p">,</span>
+    <span class="n">Literal</span><span class="p">,</span>
+    <span class="n">NoReturn</span><span class="p">,</span>
+    <span class="n">TypeAlias</span><span class="p">,</span>
+    <span class="n">cast</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">WMLClientError</span><span class="p">,</span>
-    <span class="n">MissingValue</span><span class="p">,</span>
-    <span class="n">InvalidValue</span><span class="p">,</span>
-    <span class="n">ApiRequestFailure</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_qs</span><span class="p">,</span> <span class="n">urlparse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.href_definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_id</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLResource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.libs.repo.util.library_imports</span><span class="w"> </span><span class="kn">import</span> <span class="n">LibraryChecker</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.messages.messages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Messages</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.metanames</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ScoringMetaNames</span><span class="p">,</span>
     <span class="n">DecisionOptimizationMetaNames</span><span class="p">,</span>
     <span class="n">DeploymentMetaNames</span><span class="p">,</span>
+    <span class="n">ScoringMetaNames</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.libs.repo.util.library_imports</span><span class="w"> </span><span class="kn">import</span> <span class="n">LibraryChecker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">StatusLogger</span><span class="p">,</span>
+    <span class="n">print_text_header_h1</span><span class="p">,</span>
+    <span class="n">print_text_header_h2</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">all_logging_disabled</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlparse</span><span class="p">,</span> <span class="n">parse_qs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ApiRequestFailure</span><span class="p">,</span>
+    <span class="n">InvalidValue</span><span class="p">,</span>
+    <span class="n">MissingValue</span><span class="p">,</span>
+    <span class="n">WMLClientError</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLResource</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecStates</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.inference</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelInference</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.inference</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelInference</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecStates</span>
 
 <span class="n">lib_checker</span> <span class="o">=</span> <span class="n">LibraryChecker</span><span class="p">()</span>
 
@@ -398,13 +400,13 @@
             <span class="k">if</span> <span class="s2">&quot;failure&quot;</span> <span class="ow">in</span> <span class="n">deployment_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]:</span>
                 <span class="n">errors</span> <span class="o">=</span> <span class="n">deployment_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;failure&quot;</span><span class="p">][</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                         <span class="k">try</span><span class="p">:</span>
                             <span class="n">error_obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
                             <span class="nb">print</span><span class="p">(</span><span class="n">error_obj</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">])</span>
-                        <span class="k">except</span><span class="p">:</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                             <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                         <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">])</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
@@ -593,7 +595,6 @@
                 <span class="n">warn</span><span class="p">(</span><span class="n">background_mode_turned_on_warning</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">deployment_details</span>
             <span class="k">else</span><span class="p">:</span>
-
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">ICP_PLATFORM_SPACES</span><span class="p">:</span>
                     <span class="k">if</span> <span class="s2">&quot;online_url&quot;</span> <span class="ow">in</span> <span class="n">deployment_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]:</span>
                         <span class="n">scoringUrl</span> <span class="o">=</span> <span class="p">(</span>
@@ -603,9 +604,9 @@
                             <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">)</span>
                             <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;https://ibm-nginx-svc:443&quot;</span><span class="p">,</span> <span class="n">predictionUrl</span><span class="p">)</span>
                         <span class="p">)</span>
-                        <span class="n">deployment_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;online_url&quot;</span><span class="p">][</span>
-                            <span class="s2">&quot;url&quot;</span>
-                        <span class="p">]</span> <span class="o">=</span> <span class="n">scoringUrl</span>
+                        <span class="n">deployment_details</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;online_url&quot;</span><span class="p">][</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">scoringUrl</span>
+                        <span class="p">)</span>
 
                 <span class="n">deployment_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">deployment_details</span><span class="p">)</span>
 
@@ -1155,7 +1156,6 @@
                 <span class="c1">## If payload is a numpy dataframe</span>
 
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scoring_values</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-
                     <span class="n">values</span> <span class="o">=</span> <span class="n">scoring_values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
                     <span class="n">each_score_request</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
 
@@ -1323,7 +1323,7 @@
                             <span class="k">if</span> <span class="s2">&quot;guid&quot;</span> <span class="ow">in</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span>
                             <span class="k">else</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
                         <span class="p">),</span>
-                        <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                        <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
                         <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;state&quot;</span><span class="p">],</span>
                         <span class="n">m</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;created_at&quot;</span><span class="p">],</span>
                         <span class="n">m</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;deployed_asset_type&quot;</span><span class="p">,</span> <span class="s2">&quot;unknown&quot;</span><span class="p">),</span>
@@ -1616,7 +1616,6 @@
         <span class="n">transaction_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">retention</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
-
         <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;deployment_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">scoring_payload</span><span class="p">,</span> <span class="s2">&quot;scoring_payload&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
@@ -2060,7 +2059,7 @@
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
                     <span class="mi">204</span><span class="p">,</span> <span class="s2">&quot;deployment async job deletion&quot;</span><span class="p">,</span> <span class="n">response_delete</span><span class="p">,</span> <span class="kc">False</span>
                 <span class="p">)</span>
-            <span class="k">except</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="k">pass</span>
 
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_async_deployment_jobs_href</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
@@ -2564,7 +2563,7 @@
                         <span class="k">yield</span> <span class="n">response</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">resp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-                <span class="k">raise</span> <span class="n">ApiRequestFailure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failure during AI Service run steam&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span></div>
+                <span class="k">raise</span> <span class="n">ApiRequestFailure</span><span class="p">(</span><span class="s2">&quot;Failure during AI Service run stream&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span></div>
 </div>
 
 

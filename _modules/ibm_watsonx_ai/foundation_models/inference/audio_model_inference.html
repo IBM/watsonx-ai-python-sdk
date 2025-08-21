@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>ibm_watsonx_ai.foundation_models.prompts.chat_prompt - IBM watsonx.ai</title>
+        <title>ibm_watsonx_ai.foundation_models.inference.audio_model_inference - IBM watsonx.ai</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -305,105 +305,159 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for ibm_watsonx_ai.foundation_models.prompts.chat_prompt</h1><div class="highlight"><pre>
+          <h1>Source code for ibm_watsonx_ai.foundation_models.inference.audio_model_inference</h1><div class="highlight"><pre>
 <span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="c1">#  (C) Copyright IBM Corp. 2025.</span>
 <span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.prompts.base_prompt</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePrompt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.utils.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelTypes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="n">InvalidMultipleArguments</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLResource</span>
 
-<div class="viewcode-block" id="ChatPrompt">
-<a class="viewcode-back" href="../../../../prompt_template_manager.html#ibm_watsonx_ai.foundation_models.prompts.ChatPrompt">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ChatPrompt</span><span class="p">(</span><span class="n">BasePrompt</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Storage for chat prompt parameters.</span>
-
-<span class="sd">    :param prompt_id: ID of the prompt, defaults to None.</span>
-<span class="sd">    :type prompt_id: str, attribute setting not allowed</span>
-
-<span class="sd">    :param created_at: time that the prompt was created (UTC), defaults to None.</span>
-<span class="sd">    :type created_at: str, attribute setting not allowed</span>
-
-<span class="sd">    :param lock: locked state of the asset, defaults to None.</span>
-<span class="sd">    :type lock: PromptTemplateLock | None, attribute setting not allowed</span>
-
-<span class="sd">    :param is_template: True if the prompt is a template, False otherwise; defaults to None.</span>
-<span class="sd">    :type is_template: bool | None, attribute setting not allowed</span>
-
-<span class="sd">    :param name: name of the prompt, defaults to None.</span>
-<span class="sd">    :type name: str, optional</span>
-
-<span class="sd">    :param model_id: ID of the foundation model, defaults to None.</span>
-<span class="sd">    :type model_id: ModelTypes | str | None, optional</span>
-
-<span class="sd">    :param model_params: parameters of the model, defaults to None.</span>
-<span class="sd">    :type model_params: dict, optional</span>
-
-<span class="sd">    :param prompt_version: semantic version for tracking in IBM AI Factsheets, defaults to None.</span>
-<span class="sd">    :type prompt_version: str, optional</span>
-
-<span class="sd">    :param task_ids: list of task IDs, defaults to None.</span>
-<span class="sd">    :type task_ids: list[str] | None, optional</span>
-
-<span class="sd">    :param description: description of the prompt asset, defaults to None.</span>
-<span class="sd">    :type description: str, optional</span>
-
-<span class="sd">    :param chat_items: chat items, defaults to None.</span>
-<span class="sd">    :type chat_items: list[dict], optional</span>
-
-<span class="sd">    :param system_prompt: system prompt used by model, defaults to None.</span>
-<span class="sd">    :type system_prompt: str, optional</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
 
 
-<span class="sd">    **Examples**</span>
+<div class="viewcode-block" id="AudioModelInference">
+<a class="viewcode-back" href="../../../../fm_audio_model_inference.html#ibm_watsonx_ai.foundation_models.inference.AudioModelInference">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AudioModelInference</span><span class="p">(</span><span class="n">WMLResource</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Instantiate the audio model interface</span>
 
-<span class="sd">    Example of a valid chat prompt:</span>
+<span class="sd">    :param model: type of model to use</span>
+<span class="sd">    :type model: str, optional</span>
+
+<span class="sd">    :param credentials: credentials for the Watson Machine Learning instance</span>
+<span class="sd">    :type credentials: Credentials or dict, optional</span>
+
+<span class="sd">    :param project_id: ID of the Watson Studio project</span>
+<span class="sd">    :type project_id: str, optional</span>
+
+<span class="sd">    :param space_id: ID of the Watson Studio space</span>
+<span class="sd">    :type space_id: str, optional</span>
+
+<span class="sd">    :param verify: You can pass one of the following as verify:</span>
+
+<span class="sd">        * the path to a CA_BUNDLE file</span>
+<span class="sd">        * the path of directory with certificates of trusted CAs</span>
+<span class="sd">        * `True` - default path to truststore will be taken</span>
+<span class="sd">        * `False` - no verification will be made</span>
+<span class="sd">    :type verify: bool or str, optional</span>
+
+<span class="sd">    :param api_client: initialized APIClient object with a set project ID or space ID. If passed, ``credentials`` and ``project_id``/``space_id`` are not required.</span>
+<span class="sd">    :type api_client: APIClient, optional</span>
+
+<span class="sd">    **Example:**</span>
 
 <span class="sd">    .. code-block:: python</span>
 
-<span class="sd">        prompt = ChatPrompt(</span>
-<span class="sd">            name=&quot;My chat prompt&quot;,</span>
-<span class="sd">            model_id=&quot;&lt;some model&gt;&quot;,</span>
-<span class="sd">            system_prompt=&quot;system prompt&quot;</span>
+<span class="sd">        from ibm_watsonx_ai import Credentials</span>
+<span class="sd">        from ibm_watsonx_ai.foundation_models import AudioModelInference</span>
+
+<span class="sd">        audio_model = AudioModelInference(</span>
+<span class="sd">            model=&quot;&lt;AUDIO MODEL&gt;&quot;,</span>
+<span class="sd">            credentials=Credentials(</span>
+<span class="sd">                api_key = IAM_API_KEY,</span>
+<span class="sd">                url = &quot;https://us-south.ml.cloud.ibm.com&quot;</span>
+<span class="sd">            ),</span>
+<span class="sd">            project_id=project_id</span>
 <span class="sd">        )</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_input_mode</span> <span class="o">=</span> <span class="s2">&quot;chat&quot;</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">model_id</span><span class="p">:</span> <span class="n">ModelTypes</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">model_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">prompt_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">task_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">chat_items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">system_prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">credentials</span><span class="p">:</span> <span class="n">Credentials</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">space_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">input_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_mode</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
-            <span class="n">model_params</span><span class="o">=</span><span class="n">model_params</span><span class="p">,</span>
-            <span class="n">prompt_version</span><span class="o">=</span><span class="n">prompt_version</span><span class="p">,</span>
-            <span class="n">task_ids</span><span class="o">=</span><span class="n">task_ids</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">chat_items</span> <span class="o">=</span> <span class="n">chat_items</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">system_prompt</span> <span class="o">=</span> <span class="n">system_prompt</span>
+        <span class="k">if</span> <span class="n">credentials</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">prompt_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prompt_version</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">api_client</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">api_client</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span>
+                <span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;credentials&quot;</span><span class="p">,</span> <span class="s2">&quot;api_client&quot;</span><span class="p">],</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
 
-    <span class="nd">@prompt_version</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">prompt_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_prompt_version</span> <span class="o">=</span> <span class="n">value</span></div>
+        <span class="k">if</span> <span class="n">space_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_space</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">project_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_project</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">api_client</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidMultipleArguments</span><span class="p">(</span>
+                <span class="n">params_names_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;space_id&quot;</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">],</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;None of the arguments were provided.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AudioModelInference.transcribe">
+<a class="viewcode-back" href="../../../../fm_audio_model_inference.html#ibm_watsonx_ai.foundation_models.inference.AudioModelInference.transcribe">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transcribe</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transcribe audio into text.</span>
+
+<span class="sd">        :param file_path: The path to the audio file to transcribe</span>
+<span class="sd">        :type file_path: str, Path, required</span>
+
+<span class="sd">        :param language: Target language to which to transcribe, e.g. &#39;fr&#39; for French. Default is English.</span>
+<span class="sd">        :type language: str, optional</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            file_path = &quot;sample_audio.mp3&quot;</span>
+
+<span class="sd">            response = audio_model.transcribe(file_path=file_path)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_either_is_set</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">()</span>
+        <span class="n">headers</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span><span class="p">:</span>
+            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Authorization&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;;space_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span><span class="p">:</span>
+            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Authorization&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;;project_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">language</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;language&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">language</span>
+
+        <span class="k">with</span> <span class="n">file_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="s2">&quot;multipart/form-data&quot;</span><span class="p">)}</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_audio_transcriptions_href</span><span class="p">(),</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+                <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;transcribe&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span></div>
+</div>
 
 </pre></div>
         </article>

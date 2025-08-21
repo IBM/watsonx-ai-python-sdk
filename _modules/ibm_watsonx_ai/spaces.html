@@ -232,6 +232,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_model_inference.html">ModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_ts_model_inference.html">TSModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../fm_audio_model_inference.html">AudioModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -314,32 +315,33 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cachetools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached</span><span class="p">,</span> <span class="n">TTLCache</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">cachetools</span><span class="w"> </span><span class="kn">import</span> <span class="n">TTLCache</span><span class="p">,</span> <span class="n">cached</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai._wrappers</span><span class="w"> </span><span class="kn">import</span> <span class="n">requests</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.service_instance</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServiceInstance</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.messages.messages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Messages</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.metanames</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">SpacesMetaNames</span><span class="p">,</span>
     <span class="n">MemberMetaNames</span><span class="p">,</span>
+    <span class="n">SpacesMetaNames</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.service_instance</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServiceInstance</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">print_text_header_h1</span><span class="p">,</span>
     <span class="n">StatusLogger</span><span class="p">,</span>
+    <span class="n">print_text_header_h1</span><span class="p">,</span>
     <span class="n">print_text_header_h2</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.deployment.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">PromotionFailed</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">WMLClientError</span><span class="p">,</span>
-    <span class="n">ResourceIdByNameNotFound</span><span class="p">,</span>
     <span class="n">MultipleResourceIdByNameFound</span><span class="p">,</span>
+    <span class="n">ResourceIdByNameNotFound</span><span class="p">,</span>
+    <span class="n">WMLClientError</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLResource</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
 
 
 <div class="viewcode-block" id="Spaces">
@@ -357,9 +359,6 @@
         <span class="n">WMLResource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">client</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_project_id</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">default_space_id</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_connection_validation</span><span class="p">()</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_resources</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">op_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -376,7 +375,6 @@
 
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">op_name</span><span class="p">,</span> <span class="n">response_get</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-
             <span class="n">resources</span> <span class="o">=</span> <span class="p">[]</span>
 
             <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
@@ -473,7 +471,7 @@
                 <span class="n">meta_props</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;machine_learning&quot;</span>
 
         <span class="k">if</span> <span class="s2">&quot;stage&quot;</span> <span class="ow">in</span> <span class="n">meta_props</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">meta_props</span><span class="p">[</span><span class="s2">&quot;stage&quot;</span><span class="p">][</span><span class="s2">&quot;production&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meta_props</span><span class="p">[</span><span class="s2">&quot;stage&quot;</span><span class="p">][</span><span class="s2">&quot;production&quot;</span><span class="p">],</span> <span class="nb">bool</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span><span class="s2">&quot;&#39;production&#39; for &#39;STAGE&#39; must be boolean&quot;</span><span class="p">)</span>
 
         <span class="n">space_meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">_generate_resource_metadata</span><span class="p">(</span>
@@ -1254,7 +1252,7 @@
             <span class="n">promote_href</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span> <span class="n">json</span><span class="o">=</span><span class="n">promote_payload</span>
         <span class="p">)</span>
         <span class="n">promotion_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
-            <span class="mi">200</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;promote asset&quot;</span><span class="p">,</span> <span class="n">response</span>
+            <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;promote asset&quot;</span><span class="p">,</span> <span class="n">response</span>
         <span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>

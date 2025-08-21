@@ -232,6 +232,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_model_inference.html">ModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_ts_model_inference.html">TSModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../fm_audio_model_inference.html">AudioModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -314,21 +315,22 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;TabularIterableDataset&quot;</span><span class="p">]</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.helpers.connections.local</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalBatchReader</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamplingTypes</span><span class="p">,</span> <span class="n">DocumentsSamplingTypes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocumentsSamplingTypes</span><span class="p">,</span> <span class="n">SamplingTypes</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.autoai.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">InvalidSizeLimit</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.helpers.connections</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataConnection</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.helpers.connections</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataConnection</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.helpers.connections.flight_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlightConnection</span>
 
 <span class="c1"># Note: try to import torch lib if available, this fallback is done based on</span>
@@ -404,6 +406,9 @@
 <span class="sd">    :param apply_literal_eval: when True then ast.literal_eval will be applied to all string columns.</span>
 <span class="sd">    :type apply_literal_eval: bool, optional</span>
 
+<span class="sd">    :param cast_strings: when True then all string columns are cast to float or bool if applicable</span>
+<span class="sd">    :type cast_strings: bool, optional</span>
+
 <span class="sd">    **Example:**</span>
 
 <span class="sd">        .. code-block:: python</span>
@@ -462,6 +467,7 @@
         <span class="n">total_nrows_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">total_percentage_limit</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">apply_literal_eval</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">cast_strings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -483,6 +489,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">total_nrows_limit</span> <span class="o">=</span> <span class="n">total_nrows_limit</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">total_percentage_limit</span> <span class="o">=</span> <span class="n">total_percentage_limit</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">apply_literal_eval</span> <span class="o">=</span> <span class="n">apply_literal_eval</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cast_strings</span> <span class="o">=</span> <span class="n">cast_strings</span>
 
         <span class="c1"># Note: convert to dictionary if we have object from API client</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -588,6 +595,7 @@
                     <span class="n">total_nrows_limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">total_nrows_limit</span><span class="p">,</span>
                     <span class="n">total_percentage_limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">total_percentage_limit</span><span class="p">,</span>
                     <span class="n">apply_literal_eval</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">apply_literal_eval</span><span class="p">,</span>
+                    <span class="n">cast_strings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cast_strings</span><span class="p">,</span>
                 <span class="p">)</span>
 
                 <span class="k">if</span> <span class="s2">&quot;infer_as_varchar&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
@@ -596,29 +604,52 @@
                 <span class="k">return</span> <span class="n">conn</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_conn</span> <span class="o">=</span> <span class="n">get_flight_conn</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">dict_connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;fs&quot;</span>
+            <span class="ow">and</span> <span class="s2">&quot;location&quot;</span> <span class="ow">in</span> <span class="n">dict_connection</span>
+            <span class="ow">and</span> <span class="s2">&quot;path&quot;</span> <span class="ow">in</span> <span class="n">dict_connection</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span>
+        <span class="p">):</span>
 
-        <span class="k">else</span><span class="p">:</span>
-
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="n">dict_connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;fs&quot;</span>
-                <span class="ow">and</span> <span class="s2">&quot;location&quot;</span> <span class="ow">in</span> <span class="n">dict_connection</span>
-                <span class="ow">and</span> <span class="s2">&quot;path&quot;</span> <span class="ow">in</span> <span class="n">dict_connection</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span>
-            <span class="p">):</span>
-
-                <span class="k">def</span><span class="w"> </span><span class="nf">get_local_conn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">LocalBatchReader</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">LocalBatchReader</span><span class="p">(</span>
-                        <span class="n">file_path</span><span class="o">=</span><span class="n">dict_connection</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">][</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
-                        <span class="n">batch_size</span><span class="o">=</span><span class="n">sample_size_limit</span><span class="p">,</span>
-                    <span class="p">)</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">_get_conn</span> <span class="o">=</span> <span class="n">get_local_conn</span>
-
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                    <span class="s2">&quot;For local data read please use &#39;fs&#39; (file system) connection type. &quot;</span>
-                    <span class="o">+</span> <span class="s2">&quot;For remote data read enrich DataConnection with authorization data using &quot;</span>
-                    <span class="o">+</span> <span class="s2">&quot;`connection.set_client(api_client)` function or providing &#39;experiment_metadata&#39;.&quot;</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">get_local_conn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">LocalBatchReader</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">LocalBatchReader</span><span class="p">(</span>
+                    <span class="n">file_path</span><span class="o">=</span><span class="n">dict_connection</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">][</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
+                    <span class="n">batch_size</span><span class="o">=</span><span class="n">sample_size_limit</span><span class="p">,</span>
                 <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_conn</span> <span class="o">=</span> <span class="n">get_local_conn</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;For local data read please use &#39;fs&#39; (file system) connection type. &quot;</span>
+                <span class="s2">&quot;For remote data read enrich DataConnection with authorization data using &quot;</span>
+                <span class="s2">&quot;`connection.set_client(api_client)` function or providing &#39;experiment_metadata&#39;.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">connection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FlightConnection | LocalBatchReader&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get data connection.</span>
+
+<span class="sd">        :returns: connection used in data operations</span>
+<span class="sd">        :rtype: FlightConnection | LocalBatchReader</span>
+
+<span class="sd">        **Example:**</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            dataset = TabularIterableDataset(...)</span>
+<span class="sd">            conn = dataset.connection</span>
+
+<span class="sd">            # Your code here...</span>
+
+<span class="sd">            conn.close() # FlightConnection instances must be closed after use</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.helpers.connections.flight_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlightConnection</span>
+
+        <span class="n">conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_conn</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">FlightConnection</span><span class="p">):</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">_set_flight_client</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">conn</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_wml_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">APIClient</span><span class="p">:</span>
@@ -709,7 +740,6 @@
         <span class="n">flight_parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">api_client</span><span class="p">:</span> <span class="n">APIClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-
         <span class="k">if</span> <span class="p">(</span>
             <span class="ow">not</span> <span class="n">flight_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;connection_properties&quot;</span><span class="p">)</span>
             <span class="ow">and</span> <span class="n">connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;container&quot;</span>

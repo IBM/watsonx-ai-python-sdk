@@ -232,6 +232,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_model_inference.html">ModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_ts_model_inference.html">TSModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../fm_audio_model_inference.html">AudioModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -312,42 +313,40 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">cast</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">requests</span><span class="w"> </span><span class="kn">import</span> <span class="n">Response</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai._wrappers</span><span class="w"> </span><span class="kn">import</span> <span class="n">requests</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.ai_services</span><span class="w"> </span><span class="kn">import</span> <span class="n">AIServices</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.experiments</span><span class="w"> </span><span class="kn">import</span> <span class="n">Experiments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Functions</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.ai_services</span><span class="w"> </span><span class="kn">import</span> <span class="n">AIServices</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.libs.repo.mlrepositoryclient</span><span class="w"> </span><span class="kn">import</span> <span class="n">MLRepositoryClient</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecStates</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.messages.messages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Messages</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.metanames</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AIServiceMetaNames</span><span class="p">,</span>
     <span class="n">ExperimentMetaNames</span><span class="p">,</span>
     <span class="n">FunctionMetaNames</span><span class="p">,</span>
-    <span class="n">PipelineMetanames</span><span class="p">,</span>
-    <span class="n">SpacesMetaNames</span><span class="p">,</span>
     <span class="n">ModelMetaNames</span><span class="p">,</span>
+    <span class="n">PipelineMetanames</span><span class="p">,</span>
     <span class="n">RepositoryMemberMetaNames</span><span class="p">,</span>
-    <span class="n">AIServiceMetaNames</span><span class="p">,</span>
+    <span class="n">SpacesMetaNames</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Models</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.pipelines</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipelines</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">inherited_docstring</span><span class="p">,</span> <span class="n">get_url</span><span class="p">,</span> <span class="n">get_user_agent_header</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_url</span><span class="p">,</span> <span class="n">get_user_agent_header</span><span class="p">,</span> <span class="n">inherited_docstring</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_id_from_deprecated_uid</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLClientError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLResource</span>
 
-
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">pyspark</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
 
     <span class="n">LabelColumnNamesType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">str_</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
@@ -703,12 +702,15 @@
 <div class="viewcode-block" id="Repository.delete">
 <a class="viewcode-back" href="../../core_api.html#client.Repository.delete">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a model, experiment, pipeline, function, or AI service from the repository.</span>
 
 <span class="sd">        :param artifact_id: unique ID of the stored model, experiment, function, pipeline, or AI service</span>
 <span class="sd">        :type artifact_id: str</span>
+
+<span class="sd">        :param force: if True, the delete operation will proceed even when the artifact deployment exists, defaults to False</span>
+<span class="sd">        :type force: bool, optional</span>
 
 <span class="sd">        :return: status &quot;SUCCESS&quot; if deletion is successful</span>
 <span class="sd">        :rtype: Literal[&quot;SUCCESS&quot;]</span>
@@ -721,14 +723,15 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">artifact_id</span> <span class="o">=</span> <span class="n">_get_id_from_deprecated_uid</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact&quot;</span><span class="p">)</span>
-
         <span class="n">Repository</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">,</span> <span class="s2">&quot;artifact_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_if_deployment_exist_for_asset</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_if_deployment_exist_for_asset</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
                 <span class="s2">&quot;Cannot delete artifact that has existing deployments. Please delete all associated deployments and try again&quot;</span>
             <span class="p">)</span>
+
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_params</span><span class="p">()</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;purge_on_delete&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">})</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;purge_on_delete&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_asset_href</span><span class="p">(</span><span class="n">artifact_id</span><span class="p">),</span>
@@ -736,21 +739,16 @@
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>
         <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span> <span class="ow">or</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">204</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
-                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;delete assets&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">response</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="s2">&quot;delete assets&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">response</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                    <span class="s2">&quot;Artifact with artifact_id: &#39;</span><span class="si">{}</span><span class="s2">&#39; does not exist.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="n">artifact_id</span>
-                    <span class="p">)</span>
+        <span class="k">match</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">:</span>
+            <span class="k">case</span> <span class="mi">200</span> <span class="o">|</span> <span class="mi">204</span> <span class="k">as</span> <span class="n">success_status_code</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span>
+                    <span class="n">success_status_code</span><span class="p">,</span> <span class="s2">&quot;delete assets&quot;</span><span class="p">,</span> <span class="n">response</span>
                 <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
+            <span class="k">case</span> <span class="mi">404</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Artifact with artifact_id: &#39;</span><span class="si">{</span><span class="n">artifact_id</span><span class="si">}</span><span class="s2">&#39; does not exist.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
                     <span class="s2">&quot;Deletion error for the given id : &quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span>
                 <span class="p">)</span></div>

@@ -232,6 +232,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../fm_model_inference.html">ModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../fm_ts_model_inference.html">TSModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fm_audio_model_inference.html">AudioModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -312,18 +313,15 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Literal</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">tabulate</span><span class="w"> </span><span class="kn">import</span> <span class="n">tabulate</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">tabulate</span><span class="w"> </span><span class="kn">import</span> <span class="n">tabulate</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.href_definitions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">API_VERSION</span><span class="p">,</span>
-    <span class="n">PIPELINES</span><span class="p">,</span>
-    <span class="n">EXPERIMENTS</span><span class="p">,</span>
     <span class="n">SPACES</span><span class="p">,</span>
-    <span class="n">RUNTIMES</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLClientError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLResource</span>
@@ -437,7 +435,6 @@
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">note</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-
         <span class="n">docstring_description</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Set of MetaNames for </span><span class="si">{</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">.</span>
 
@@ -465,7 +462,6 @@
         <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;simple&quot;</span><span class="p">,</span>
         <span class="n">values_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-
         <span class="n">show_defaults</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
             <span class="n">meta_prop</span><span class="o">.</span><span class="n">default_value</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span>
             <span class="k">for</span> <span class="n">meta_prop</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span>
@@ -579,7 +575,6 @@
             <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta_props_definitions</span>
         <span class="p">):</span>
             <span class="k">if</span> <span class="n">meta_prop_def</span><span class="o">.</span><span class="n">key</span> <span class="ow">in</span> <span class="n">meta_props</span><span class="p">:</span>
-
                 <span class="n">path</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="n">p</span>
                     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">meta_prop_def</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
@@ -667,7 +662,6 @@
                 <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta_props_definitions</span>
             <span class="p">):</span>
                 <span class="k">if</span> <span class="n">meta_prop_def</span><span class="o">.</span><span class="n">key</span> <span class="ow">in</span> <span class="n">meta_props_</span><span class="p">:</span>
-
                     <span class="n">path</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
                         <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="n">p</span>
                         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">meta_prop_def</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
@@ -2243,7 +2237,6 @@
 <div class="viewcode-block" id="SpacesMetaNames">
 <a class="viewcode-back" href="../core_api.html#metanames.SpacesMetaNames">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpacesMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
-
     <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
     <span class="n">DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;description&quot;</span>
     <span class="n">STORAGE</span> <span class="o">=</span> <span class="s2">&quot;storage&quot;</span>
@@ -2301,7 +2294,6 @@
 <div class="viewcode-block" id="ProjectsMetaNames">
 <a class="viewcode-back" href="../core_api.html#metanames.ProjectsMetaNames">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProjectsMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
-
     <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
     <span class="n">DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;description&quot;</span>
     <span class="n">STORAGE</span> <span class="o">=</span> <span class="s2">&quot;storage&quot;</span>
@@ -2970,7 +2962,6 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ExportMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
-
     <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
     <span class="n">DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;description&quot;</span>
     <span class="n">ALL_ASSETS</span> <span class="o">=</span> <span class="s2">&quot;all_assets&quot;</span>
@@ -3005,7 +2996,6 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">VolumeMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
-
     <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
     <span class="n">NAMESPACE</span> <span class="o">=</span> <span class="s2">&quot;namespace&quot;</span>
     <span class="n">STORAGE_CLASS</span> <span class="o">=</span> <span class="s2">&quot;storageClass&quot;</span>
@@ -3045,7 +3035,6 @@
 <div class="viewcode-block" id="FactsheetsMetaNames">
 <a class="viewcode-back" href="../core_api.html#metanames.FactsheetsMetaNames">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FactsheetsMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
-
     <span class="n">ASSET_ID</span> <span class="o">=</span> <span class="s2">&quot;model_entry_asset_id&quot;</span>
     <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;model_entry_name&quot;</span>
     <span class="n">DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;model_entry_description&quot;</span>
@@ -3078,7 +3067,6 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">GenChatParamsMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
-
     <span class="n">FREQUENCY_PENALTY</span> <span class="o">=</span> <span class="s2">&quot;frequency_penalty&quot;</span>
     <span class="n">PRESENCE_PENALTY</span> <span class="o">=</span> <span class="s2">&quot;presence_penalty&quot;</span>
     <span class="n">TEMPERATURE</span> <span class="o">=</span> <span class="s2">&quot;temperature&quot;</span>
@@ -3089,6 +3077,10 @@
     <span class="n">LOGPROBS</span> <span class="o">=</span> <span class="s2">&quot;logprobs&quot;</span>
     <span class="n">TOP_LOGPROBS</span> <span class="o">=</span> <span class="s2">&quot;top_logprobs&quot;</span>
     <span class="n">RESPONSE_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;response_format&quot;</span>
+    <span class="n">MAX_COMPLETION_TOKENS</span> <span class="o">=</span> <span class="s2">&quot;max_completion_tokens&quot;</span>
+    <span class="n">LOGIT_BIAS</span> <span class="o">=</span> <span class="s2">&quot;logit_bias&quot;</span>
+    <span class="n">SEED</span> <span class="o">=</span> <span class="s2">&quot;seed&quot;</span>
+    <span class="n">STOP</span> <span class="o">=</span> <span class="s2">&quot;stop&quot;</span>
 
     <span class="n">_meta_props_definitions</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;FREQUENCY_PENALTY&quot;</span><span class="p">,</span> <span class="n">FREQUENCY_PENALTY</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
@@ -3103,6 +3095,10 @@
         <span class="n">MetaProp</span><span class="p">(</span>
             <span class="s2">&quot;RESPONSE_FORMAT&quot;</span><span class="p">,</span> <span class="n">RESPONSE_FORMAT</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;json_object&quot;</span><span class="p">}</span>
         <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;MAX_COMPLETION_TOKENS&quot;</span><span class="p">,</span> <span class="n">MAX_COMPLETION_TOKENS</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;LOGIT_BIAS&quot;</span><span class="p">,</span> <span class="n">LOGIT_BIAS</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;1003&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;1004&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">100</span><span class="p">}),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;SEED&quot;</span><span class="p">,</span> <span class="n">SEED</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">41</span><span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;STOP&quot;</span><span class="p">,</span> <span class="n">STOP</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;this&quot;</span><span class="p">,</span> <span class="s2">&quot;the&quot;</span><span class="p">]),</span>
     <span class="p">]</span>
 
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">MetaNamesBase</span><span class="p">(</span><span class="n">_meta_props_definitions</span><span class="p">)</span><span class="o">.</span><span class="n">_generate_doc</span><span class="p">(</span>
@@ -3311,6 +3307,7 @@
     <span class="n">OUTPUT_DPI</span> <span class="o">=</span> <span class="s2">&quot;output_dpi&quot;</span>
     <span class="n">KVP_MODE</span> <span class="o">=</span> <span class="s2">&quot;kvp_mode&quot;</span>
     <span class="n">OUTPUT_TOKENS_AND_BBOX</span> <span class="o">=</span> <span class="s2">&quot;output_tokens_and_bbox&quot;</span>
+    <span class="n">SEMANTIC_CONFIG</span> <span class="o">=</span> <span class="s2">&quot;semantic_config&quot;</span>
 
     <span class="n">_meta_props_definitions</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;MODE&quot;</span><span class="p">,</span> <span class="n">MODE</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;high_quality&quot;</span><span class="p">),</span>
@@ -3329,6 +3326,36 @@
         <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;OUTPUT_DPI&quot;</span><span class="p">,</span> <span class="n">OUTPUT_DPI</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">72</span><span class="p">),</span>
         <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;KVP_MODE&quot;</span><span class="p">,</span> <span class="n">KVP_MODE</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;invoice&quot;</span><span class="p">),</span>
         <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;OUTPUT_TOKENS_AND_BBOX&quot;</span><span class="p">,</span> <span class="n">OUTPUT_TOKENS_AND_BBOX</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;SEMANTIC_CONFIG&quot;</span><span class="p">,</span>
+            <span class="n">SEMANTIC_CONFIG</span><span class="p">,</span>
+            <span class="nb">dict</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;target_image_width&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+                <span class="s2">&quot;enable_text_hints&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;enable_generic_kvp&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;schemas&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;document_type&quot;</span><span class="p">:</span> <span class="s2">&quot;Property lease agreement&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;document_description&quot;</span><span class="p">:</span> <span class="s2">&quot;Legally binding contract between a property owner (lessor) and a tenant (lessee), outlining the terms and conditions for the tenant&#39;s use of the property in exchange for rent payments.&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;target_image_width&quot;</span><span class="p">:</span> <span class="mi">800</span><span class="p">,</span>
+                        <span class="s2">&quot;enable_text_hints&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                        <span class="s2">&quot;enable_generic_kvp&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                        <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s2">&quot;first_name&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;example&quot;</span><span class="p">:</span> <span class="s2">&quot;Jacob&quot;</span><span class="p">,</span>
+                            <span class="p">},</span>
+                            <span class="s2">&quot;last_name&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;example&quot;</span><span class="p">:</span> <span class="s2">&quot;Smith&quot;</span><span class="p">,</span>
+                            <span class="p">},</span>
+                        <span class="p">},</span>
+                    <span class="p">}</span>
+                <span class="p">],</span>
+            <span class="p">},</span>
+        <span class="p">),</span>
     <span class="p">]</span>
 
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">MetaNamesBase</span><span class="p">(</span><span class="n">_meta_props_definitions</span><span class="p">)</span><span class="o">.</span><span class="n">_generate_doc</span><span class="p">(</span>
@@ -3547,7 +3574,7 @@
                     <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;data_asset&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="p">{},</span>
                     <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="s2">&quot;href&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;/v2/assets/cbc89dee-a087-420c-9b62-a19931fe3950?project_id=h67df788-73f2-46d0-a787-7453085782ht&quot;</span>
+                        <span class="s2">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;/v2/assets/cbc89dee-a087-420c-9b62-a19931fe3950?project_id=h67df788-73f2-46d0-a787-7453085782ht&quot;</span>
                     <span class="p">},</span>
                 <span class="p">}</span>
             <span class="p">],</span>
@@ -3564,7 +3591,7 @@
                     <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;data_asset&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="p">{},</span>
                     <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="s2">&quot;href&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;/v2/assets/cbc89dee-a087-420c-9b62-a19931fe3950?project_id=h67df788-73f2-46d0-a787-7453085782ht&quot;</span>
+                        <span class="s2">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;/v2/assets/cbc89dee-a087-420c-9b62-a19931fe3950?project_id=h67df788-73f2-46d0-a787-7453085782ht&quot;</span>
                     <span class="p">},</span>
                 <span class="p">}</span>
             <span class="p">],</span>
@@ -3604,6 +3631,52 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">MetaNamesBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta_props_definitions</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="RuntimeDefinitionsMetaNames">
+<a class="viewcode-back" href="../core_api.html#metanames.RuntimeDefinitionsMetaNames">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RuntimeDefinitionsMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
+    <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
+    <span class="n">DISPLAY_NAME</span> <span class="o">=</span> <span class="s2">&quot;display_name&quot;</span>
+    <span class="n">LAUNCH_CONFIGURATION</span> <span class="o">=</span> <span class="s2">&quot;launch_configuration&quot;</span>
+    <span class="n">SOFTWARE_CONFIGURATION</span> <span class="o">=</span> <span class="s2">&quot;software_configuration&quot;</span>
+    <span class="n">DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;description&quot;</span>
+    <span class="n">AUTHOR</span> <span class="o">=</span> <span class="s2">&quot;author&quot;</span>
+    <span class="n">TESTED</span> <span class="o">=</span> <span class="s2">&quot;tested&quot;</span>
+    <span class="n">IS_SERVICE</span> <span class="o">=</span> <span class="s2">&quot;is_service&quot;</span>
+    <span class="n">BUILT_IN</span> <span class="o">=</span> <span class="s2">&quot;built_in&quot;</span>
+    <span class="n">FEATURES</span> <span class="o">=</span> <span class="s2">&quot;features&quot;</span>
+    <span class="n">RUNTIME_TYPE</span> <span class="o">=</span> <span class="s2">&quot;runtime_type&quot;</span>
+
+    <span class="n">_meta_props_definitions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="n">NAME</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;my_runtime_definition_name&quot;</span><span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;DISPLAY_NAME&quot;</span><span class="p">,</span>
+            <span class="n">DISPLAY_NAME</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">,</span>
+            <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;Runtime Definition Display Name&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;LAUNCH_CONFIGURATION&quot;</span><span class="p">,</span> <span class="n">LAUNCH_CONFIGURATION</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">{}),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;SOFTWARE_CONFIGURATION&quot;</span><span class="p">,</span> <span class="n">SOFTWARE_CONFIGURATION</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">{}),</span>
+        <span class="n">MetaProp</span><span class="p">(</span>
+            <span class="s2">&quot;DESCRIPTION&quot;</span><span class="p">,</span> <span class="n">DESCRIPTION</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Runtime Definition Description&quot;</span>
+        <span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;AUTHOR&quot;</span><span class="p">,</span> <span class="n">AUTHOR</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;IBM&quot;</span><span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;TESTED&quot;</span><span class="p">,</span> <span class="n">TESTED</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;IS_SERVICE&quot;</span><span class="p">,</span> <span class="n">IS_SERVICE</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;BUILT_IN&quot;</span><span class="p">,</span> <span class="n">BUILT_IN</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;FEATURES&quot;</span><span class="p">,</span> <span class="n">FEATURES</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;wml&quot;</span><span class="p">]),</span>
+        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;RUNTIME_TYPE&quot;</span><span class="p">,</span> <span class="n">RUNTIME_TYPE</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;wml&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">MetaNamesBase</span><span class="p">(</span><span class="n">_meta_props_definitions</span><span class="p">)</span><span class="o">.</span><span class="n">_generate_doc</span><span class="p">(</span>
+        <span class="s2">&quot;runtime_definitions&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">MetaNamesBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta_props_definitions</span><span class="p">)</span></div>
+
 </pre></div>
         </article>
       </div>

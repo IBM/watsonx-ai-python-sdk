@@ -233,6 +233,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="fm_model_inference.html">ModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="fm_ts_model_inference.html">TSModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fm_audio_model_inference.html">AudioModelInference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="fm_model.html">Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
 </ul>
@@ -317,11 +318,26 @@
 <p class="admonition-title">Note</p>
 <p>Added in 1.1.x release</p>
 </div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Deprecated Encryption Algorithms for PDF Files</p>
+<p>When working with PDF files using the <cite>ibm_watsonx_ai</cite> package, attempting to use
+outdated encryption algorithms, such as ARC4, requires explicitly clearing or
+disabling the environment variable <code class="docutils literal notranslate"><span class="pre">CRYPTOGRAPHY_OPENSSL_NO_LEGACY</span></code> before importing
+the package. To clear the variable, use the following Python code snippet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;CRYPTOGRAPHY_OPENSSL_NO_LEGACY&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Failure to do so will prevent the usage of these algorithms when reading PDF files.
+Please be aware that support for these legacy algorithms is being phased out, and their
+continued usage is at the user’s discretion and risk.</p>
+</div>
 <section id="tabulariterabledataset">
 <h2>TabularIterableDataset<a class="headerlink" href="#tabulariterabledataset" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.data_loaders.datasets.tabular.TabularIterableDataset">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.data_loaders.datasets.tabular.</span></span><span class="sig-name descname"><span class="pre">TabularIterableDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1073741824</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'first_n_records'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_batch_rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_after_first_batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_size_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1073741824</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_nrows_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_percentage_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_literal_eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/data_loaders/datasets/tabular.html#TabularIterableDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.data_loaders.datasets.tabular.TabularIterableDataset" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.data_loaders.datasets.tabular.</span></span><span class="sig-name descname"><span class="pre">TabularIterableDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1073741824</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'first_n_records'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_batch_rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_after_first_batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_size_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1073741824</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_nrows_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_percentage_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_literal_eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast_strings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/data_loaders/datasets/tabular.html#TabularIterableDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.data_loaders.datasets.tabular.TabularIterableDataset" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Iterable class downloading data in batches.</p>
 <dl class="field-list simple">
@@ -347,6 +363,7 @@ then data are limited to the lower threshold</p></li>
 must be a float number between 0 and 1, if more than one of: <cite>total_size_limit</cite>, <cite>total_nrows_limit</cite>,
 <cite>total_percentage_limit</cite> are set, then data are limited to the lower threshold</p></li>
 <li><p><strong>apply_literal_eval</strong> (<em>bool</em><em>, </em><em>optional</em>) – when True then ast.literal_eval will be applied to all string columns.</p></li>
+<li><p><strong>cast_strings</strong> (<em>bool</em><em>, </em><em>optional</em>) – when True then all string columns are cast to float or bool if applicable</p></li>
 </ul>
 </dd>
 </dl>
@@ -391,6 +408,29 @@ must be a float number between 0 and 1, if more than one of: <cite>total_size_li
 </pre></div>
 </div>
 </div></blockquote>
+<dl class="py property">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.data_loaders.datasets.tabular.TabularIterableDataset.connection">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connection</span></span><a class="headerlink" href="#ibm_watsonx_ai.data_loaders.datasets.tabular.TabularIterableDataset.connection" title="Link to this definition">¶</a></dt>
+<dd><p>Get data connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>connection used in data operations</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>FlightConnection | LocalBatchReader</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">TabularIterableDataset</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">connection</span>
+
+<span class="c1"># Your code here...</span>
+
+<span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> <span class="c1"># FlightConnection instances must be closed after use</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.data_loaders.datasets.tabular.TabularIterableDataset.write">
 <span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/data_loaders/datasets/tabular.html#TabularIterableDataset.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.data_loaders.datasets.tabular.TabularIterableDataset.write" title="Link to this definition">¶</a></dt>
@@ -563,6 +603,7 @@ connections does not have a set API client, then the api_client object is used f
 <li><a class="reference internal" href="#">IterableDatasets Modules</a><ul>
 <li><a class="reference internal" href="#tabulariterabledataset">TabularIterableDataset</a><ul>
 <li><a class="reference internal" href="#ibm_watsonx_ai.data_loaders.datasets.tabular.TabularIterableDataset"><code class="docutils literal notranslate"><span class="pre">TabularIterableDataset</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.data_loaders.datasets.tabular.TabularIterableDataset.connection"><code class="docutils literal notranslate"><span class="pre">TabularIterableDataset.connection</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.data_loaders.datasets.tabular.TabularIterableDataset.write"><code class="docutils literal notranslate"><span class="pre">TabularIterableDataset.write()</span></code></a></li>
 </ul>
 </li>
