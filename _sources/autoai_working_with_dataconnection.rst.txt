@@ -156,6 +156,34 @@ Before establishing a connection, you need to create and start a `volume` where 
             connection_asset_id=connection_id,
             location = NFSLocation(path=f'/{filename}'))
 
+Connection Asset - RemoteFileStorageLocation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.helpers import DataConnection, RemoteFileStorageLocation
+
+    connection_details = client.connections.create({
+        client.connections.ConfigurationMetaNames.NAME: "Connection to MS Azure Blob Storage",
+        client.connections.ConfigurationMetaNames.DATASOURCE_TYPE: client.connections.get_datasource_type_id_by_name(
+            "azureblobstorage"
+        ),
+        client.connections.ConfigurationMetaNames.PROPERTIES: {
+            "container": container_name,
+            "connection_string": connection_string,
+        },
+    })
+
+    connection_id = client.connections.get_id(connection_details)
+
+    training_data_references = DataConnection(
+        connection_asset_id=connection_id,
+        location=RemoteFileStorageLocation(
+            path=filename, container=container_name
+        ),
+    )
+
+
 Data Asset
 ~~~~~~~~~~~
 

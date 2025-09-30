@@ -25,6 +25,8 @@ For an AutoAI object initialization, you need watsonx.ai credentials (with your 
         AutoAIRAGRetrievalConfig,
         AutoAIRAGHybridRankerParams,
         HybridRankerStrategy,
+        AutoAIRAGLanguageConfig,
+        AutoAIRAGGenerationConfig,
     )
 
     experiment = AutoAI(
@@ -47,6 +49,21 @@ For an AutoAI object initialization, you need watsonx.ai credentials (with your 
     custom_foundation_model["space_id"] = "<PASTE_SPACE_ID_HERE>"
     # OR custom_foundation_model["project_id"] = "<PASTE_PROJECT_ID_HERE>"
 
+    fms = [
+        "meta-llama/llama-3-70b-instruct",
+        foundation_model,
+        custom_foundation_model
+    ]
+
+    language_config = AutoAIRAGLanguageConfig(
+        auto_detect=True,
+    )
+
+    generation_config = AutoAIRAGGenerationConfig(
+        language=language_config,
+        foundation_models=fms,
+    )
+
     # Provide `hybrid_ranker` only for hybrid search
     retrieval_config = AutoAIRAGRetrievalConfig(
         method="window",
@@ -65,17 +82,13 @@ For an AutoAI object initialization, you need watsonx.ai credentials (with your 
     rag_optimizer = experiment.rag_optimizer(
         name='AutoAI RAG test',
         description='Sample description',
-        foundation_models=[
-            "meta-llama/llama-3-70b-instruct",
-            foundation_model,
-            custom_foundation_model
-        ],
         embedding_models=[
             "ibm/slate-125m-english-rtrvr",
             "intfloat/multilingual-e5-large"
         ],
         chunking=[chunking_config],
-        retrieval = [retrieval_config],
+        generation=generation_config,
+        retrieval=[retrieval_config],
         max_number_of_rag_patterns=5,
         optimization_metrics=[AutoAI.RAGMetrics.ANSWER_CORRECTNESS],
     )
