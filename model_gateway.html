@@ -205,7 +205,6 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="api.html">API</a><input aria-label="Toggle navigation of API" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core_api.html">Core</a></li>
-<li class="toctree-l2"><a class="reference internal" href="federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="dataconnection.html">Data Connections</a><input aria-label="Toggle navigation of Data Connections" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="autoai_working_with_dataconnection.html">Working with DataConnection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dataconnection_modules.html">DataConnection Modules</a></li>
@@ -354,14 +353,15 @@
 <dd><p>Model Gateway providers class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.gateway.providers.Providers.create">
-<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/gateway/providers.html#Providers.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.gateway.providers.Providers.create" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret_crn_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/gateway/providers.html#Providers.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.gateway.providers.Providers.create" title="Link to this definition">¶</a></dt>
 <dd><p>Create provider in Model Gateway.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>provider</strong> (<em>str</em>) – provider name</p></li>
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of provider for display</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – name of provider for display</p></li>
 <li><p><strong>data</strong> (<em>dict</em><em>, </em><em>optional</em>) – data required to connect to provider api</p></li>
+<li><p><strong>secret_crn_id</strong> (<em>str</em><em>, </em><em>optional</em>) – crn of secret for given provider in the Secrets Manager</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -615,16 +615,11 @@ embeddings or text/chat completions calls</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ibm_watsonx_ai.gateway.policies.Policies.delete">
-<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">effect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/gateway/policies.html#Policies.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.gateway.policies.Policies.delete" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">policy_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/gateway/policies.html#Policies.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.gateway.policies.Policies.delete" title="Link to this definition">¶</a></dt>
 <dd><p>Delete policy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>action</strong> (<em>str</em>) – action for policy</p></li>
-<li><p><strong>resource</strong> (<em>str</em>) – resource for policy</p></li>
-<li><p><strong>subject</strong> (<em>str</em>) – subject for policy</p></li>
-<li><p><strong>effect</strong> (<em>str</em><em>, </em><em>optional</em>) – effect for policy</p></li>
-</ul>
+<dd class="field-odd"><p><strong>policy_id</strong> (<em>str</em>) – ID of policy</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>status (“SUCCESS” if succeeded)</p>
@@ -645,6 +640,23 @@ embeddings or text/chat completions calls</p></li>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.gateway.policies.Policies.get_id">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">policy_details</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/gateway/policies.html#Policies.get_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.gateway.policies.Policies.get_id" title="Link to this definition">¶</a></dt>
+<dd><p>Get policy ID from policy details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>policy_details</strong> (<em>dict</em>) – details of the policy for asset registered in Model Gateway</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>unique policy ID</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -761,6 +773,7 @@ embeddings or text/chat completions calls</p></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.gateway.policies.Policies.create"><code class="docutils literal notranslate"><span class="pre">Policies.create()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.gateway.policies.Policies.delete"><code class="docutils literal notranslate"><span class="pre">Policies.delete()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.gateway.policies.Policies.get_details"><code class="docutils literal notranslate"><span class="pre">Policies.get_details()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.gateway.policies.Policies.get_id"><code class="docutils literal notranslate"><span class="pre">Policies.get_id()</span></code></a></li>
 <li><a class="reference internal" href="#ibm_watsonx_ai.gateway.policies.Policies.list"><code class="docutils literal notranslate"><span class="pre">Policies.list()</span></code></a></li>
 </ul>
 </li>

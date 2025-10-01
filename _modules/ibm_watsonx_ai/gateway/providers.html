@@ -204,7 +204,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api.html">API</a><input aria-label="Toggle navigation of API" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../core_api.html">Core</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../dataconnection.html">Data Connections</a><input aria-label="Toggle navigation of Data Connections" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoai_working_with_dataconnection.html">Working with DataConnection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dataconnection_modules.html">DataConnection Modules</a></li>
@@ -319,7 +318,11 @@
 <div class="viewcode-block" id="Providers.create">
 <a class="viewcode-back" href="../../../model_gateway.html#ibm_watsonx_ai.gateway.providers.Providers.create">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">provider</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">provider</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">secret_crn_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create provider in Model Gateway.</span>
 
@@ -327,22 +330,25 @@
 <span class="sd">        :type provider: str</span>
 
 <span class="sd">        :param name: name of provider for display</span>
-<span class="sd">        :type name: str, optional</span>
+<span class="sd">        :type name: str</span>
 
 <span class="sd">        :param data: data required to connect to provider api</span>
 <span class="sd">        :type data: dict, optional</span>
+
+<span class="sd">        :param secret_crn_id: crn of secret for given provider in the Secrets Manager</span>
+<span class="sd">        :type secret_crn_id: str, optional</span>
 
 <span class="sd">        :returns: provider details</span>
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">request_json</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
-            <span class="n">request_json</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="n">request_json</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
 
         <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">request_json</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="k">if</span> <span class="n">secret_crn_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">request_json</span><span class="p">[</span><span class="s2">&quot;data_reference&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;resource&quot;</span><span class="p">:</span> <span class="n">secret_crn_id</span><span class="p">}</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_gateway_provider_href</span><span class="p">(</span><span class="n">provider</span><span class="p">),</span>

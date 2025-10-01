@@ -204,7 +204,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api.html">API</a><input aria-label="Toggle navigation of API" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../core_api.html">Core</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../dataconnection.html">Data Connections</a><input aria-label="Toggle navigation of Data Connections" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoai_working_with_dataconnection.html">Working with DataConnection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dataconnection_modules.html">DataConnection Modules</a></li>
@@ -302,6 +301,7 @@
 <span class="c1">#  -----------------------------------------------------------------------------------------</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Iterator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">ibm_watsonx_ai._wrappers.requests</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">requests</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
@@ -656,6 +656,11 @@
 <span class="sd">        :param name: Model Gateway configuration name</span>
 <span class="sd">        :type name: str, optional</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">set_secret_manager_warning</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;`set_secrets_manager` is not required anymore during Model Gateway init.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">set_secret_manager_warning</span><span class="p">)</span>
+
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">httpx_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_href_definitions</span><span class="o">.</span><span class="n">get_gateway_tenant_href</span><span class="p">(),</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_get_headers</span><span class="p">(),</span>

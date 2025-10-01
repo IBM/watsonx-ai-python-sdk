@@ -204,7 +204,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../api.html">API</a><input aria-label="Toggle navigation of API" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../core_api.html">Core</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../dataconnection.html">Data Connections</a><input aria-label="Toggle navigation of Data Connections" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../autoai_working_with_dataconnection.html">Working with DataConnection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dataconnection_modules.html">DataConnection Modules</a></li>
@@ -324,9 +323,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_qs</span><span class="p">,</span> <span class="n">urlparse</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.href_definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_id</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.libs.repo.util.library_imports</span><span class="w"> </span><span class="kn">import</span> <span class="n">LibraryChecker</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.messages.messages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Messages</span>
@@ -352,6 +348,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLResource</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
@@ -1386,6 +1383,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_convert_scoring_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scoring_values</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
         <span class="n">lib_checker</span><span class="o">.</span><span class="n">check_lib</span><span class="p">(</span><span class="n">lib_name</span><span class="o">=</span><span class="s2">&quot;pandas&quot;</span><span class="p">)</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
 
         <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1474,6 +1472,7 @@
 <span class="sd">            predictions = client.deployments.score(deployment_id, scoring_payload)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CLOUD_PLATFORM_SPACES</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">CPD_version</span> <span class="o">&lt;</span> <span class="mf">4.8</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_check_if_space_is_set</span><span class="p">()</span>
 
@@ -2348,6 +2347,7 @@
 <span class="sd">            async_job = client.deployments.create_job(deployment_id, scoring_payload)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">,</span> <span class="s2">&quot;deployment_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="n">Deployments</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">meta_props</span><span class="p">,</span> <span class="s2">&quot;meta_props&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 

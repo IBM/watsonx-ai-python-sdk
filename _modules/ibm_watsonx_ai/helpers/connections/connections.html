@@ -204,7 +204,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api.html">API</a><input aria-label="Toggle navigation of API" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../core_api.html">Core</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../dataconnection.html">Data Connections</a><input aria-label="Toggle navigation of Data Connections" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoai_working_with_dataconnection.html">Working with DataConnection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../dataconnection_modules.html">DataConnection Modules</a></li>
@@ -330,13 +329,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_boto3</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_botocore.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientError</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">ibm_watsonx_ai._wrappers.requests</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">requests</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.data_loaders.datasets.experiment</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.data_loaders.datasets.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DEFAULT_SAMPLE_SIZE_LIMIT</span><span class="p">,</span>
     <span class="n">DEFAULT_SAMPLING_TYPE</span><span class="p">,</span>
 <span class="p">)</span>
@@ -373,6 +367,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.base_location</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseLocation</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_boto3</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.workspace</span><span class="w"> </span><span class="kn">import</span> <span class="n">WorkSpace</span>
 
@@ -1060,7 +1057,10 @@
         <span class="n">Tuple</span><span class="p">[</span><span class="s2">&quot;DataFrame&quot;</span><span class="p">,</span> <span class="s2">&quot;DataFrame&quot;</span><span class="p">],</span>
         <span class="n">Tuple</span><span class="p">[</span><span class="s2">&quot;DataFrame&quot;</span><span class="p">,</span> <span class="s2">&quot;DataFrame&quot;</span><span class="p">,</span> <span class="s2">&quot;DataFrame&quot;</span><span class="p">,</span> <span class="s2">&quot;DataFrame&quot;</span><span class="p">],</span>
     <span class="p">]:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
+
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This method tries to recreate holdout data.&quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_pipeline_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prediction_columns&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># timeseries</span>
@@ -1365,6 +1365,8 @@
 <span class="sd">            train_data_connections = optimizer.get_data_connections()</span>
 <span class="sd">            data = train_connections[0].read() # only train data</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
+
         <span class="c1"># enables flight automatically for CP4D 4.0.x, 4.5.x</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">use_flight</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -1927,6 +1929,8 @@
 <span class="sd">        :param remote_name: name of dataset to be stored in the remote data storage</span>
 <span class="sd">        :type remote_name: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
+
         <span class="c1"># enables flight automatically for CP4D 4.0.x</span>
         <span class="n">use_flight</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="s2">&quot;use_flight&quot;</span><span class="p">,</span>
@@ -2176,6 +2180,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_init_cos_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;resource&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initiate COS client for further usage.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_boto3</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_botocore.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
 
         <span class="c1"># Make sure endpoint_url startswith &#39;https://&#39; prefix</span>
@@ -2640,6 +2645,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">file_format</span> <span class="o">=</span> <span class="s2">&quot;xls&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_file_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cos_resource_client</span><span class="p">:</span> <span class="s2">&quot;resource&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_botocore.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientError</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="n">size</span> <span class="o">=</span> <span class="n">cos_resource_client</span><span class="o">.</span><span class="n">Object</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;file_name&quot;</span><span class="p">))</span>
@@ -3008,6 +3015,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_training_status</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;training_status&quot;</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_file_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cos_resource_client</span><span class="p">:</span> <span class="s2">&quot;resource&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;int&quot;</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_botocore.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientError</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="n">size</span> <span class="o">=</span> <span class="n">cos_resource_client</span><span class="o">.</span><span class="n">Object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">content_length</span>
         <span class="k">except</span> <span class="n">ClientError</span><span class="p">:</span>

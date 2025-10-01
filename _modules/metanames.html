@@ -204,7 +204,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API</a><input aria-label="Toggle navigation of API" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core_api.html">Core</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../dataconnection.html">Data Connections</a><input aria-label="Toggle navigation of Data Connections" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../autoai_working_with_dataconnection.html">Working with DataConnection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dataconnection_modules.html">DataConnection Modules</a></li>
@@ -709,7 +708,6 @@
     <span class="n">PROMPT_TUNING</span> <span class="o">=</span> <span class="s2">&quot;prompt_tuning&quot;</span>
     <span class="n">FINE_TUNING</span> <span class="o">=</span> <span class="s2">&quot;fine_tuning&quot;</span>
     <span class="n">AUTO_UPDATE_MODEL</span> <span class="o">=</span> <span class="s2">&quot;auto_update_model&quot;</span>
-    <span class="n">FEDERATED_LEARNING</span> <span class="o">=</span> <span class="s2">&quot;federated_learning&quot;</span>
     <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
     <span class="n">DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;description&quot;</span>
     <span class="n">SPACE_UID</span> <span class="o">=</span> <span class="s2">&quot;space_uid&quot;</span>
@@ -940,14 +938,6 @@
         <span class="p">),</span>
         <span class="n">MetaProp</span><span class="p">(</span>
             <span class="s2">&quot;AUTO_UPDATE_MODEL&quot;</span><span class="p">,</span> <span class="n">AUTO_UPDATE_MODEL</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">example_value</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">),</span>
-        <span class="n">MetaProp</span><span class="p">(</span>
-            <span class="s2">&quot;FEDERATED_LEARNING&quot;</span><span class="p">,</span>
-            <span class="n">FEDERATED_LEARNING</span><span class="p">,</span>
-            <span class="nb">dict</span><span class="p">,</span>
-            <span class="kc">False</span><span class="p">,</span>
-            <span class="n">example_value</span><span class="o">=</span><span class="s2">&quot;3c1ce536-20dc-426e-aac7-7284cf3befc6&quot;</span><span class="p">,</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/federated_learning&quot;</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">MetaProp</span><span class="p">(</span>
             <span class="s2">&quot;SPACE_UID&quot;</span><span class="p">,</span>
@@ -2857,98 +2847,6 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">MetaNamesBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta_props_definitions</span><span class="p">)</span></div>
 
-
-
-<span class="k">class</span><span class="w"> </span><span class="nc">RemoteTrainingSystemMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>
-    <span class="n">TAGS</span> <span class="o">=</span> <span class="s2">&quot;tags&quot;</span>
-    <span class="c1"># SPACE_ID = &quot;space_id&quot;</span>
-    <span class="c1"># PROJECT_ID = &quot;project_id&quot;</span>
-    <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
-    <span class="n">DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;description&quot;</span>
-    <span class="n">CUSTOM</span> <span class="o">=</span> <span class="s2">&quot;custom&quot;</span>
-    <span class="n">ORGANIZATION</span> <span class="o">=</span> <span class="s2">&quot;organization&quot;</span>
-    <span class="n">ALLOWED_IDENTITIES</span> <span class="o">=</span> <span class="s2">&quot;allowed_identities&quot;</span>
-    <span class="n">REMOTE_ADMIN</span> <span class="o">=</span> <span class="s2">&quot;remote_admin&quot;</span>
-    <span class="n">DATA_HANDLER</span> <span class="o">=</span> <span class="s2">&quot;data_handler&quot;</span>
-    <span class="n">LOCAL_TRAINING</span> <span class="o">=</span> <span class="s2">&quot;local_training&quot;</span>
-    <span class="n">HYPERPARAMS</span> <span class="o">=</span> <span class="s2">&quot;hyperparams&quot;</span>
-    <span class="n">MODEL</span> <span class="o">=</span> <span class="s2">&quot;model&quot;</span>
-
-    <span class="n">_meta_props_definitions</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;TAGS&quot;</span><span class="p">,</span> <span class="n">TAGS</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;string1&quot;</span><span class="p">,</span> <span class="s2">&quot;string2&quot;</span><span class="p">],</span> <span class="n">schema</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;string&quot;</span><span class="p">]),</span>
-        <span class="c1"># MetaProp(&#39;SPACE_ID&#39;, SPACE_ID, str, False, &#39;3fc54cf1-252f-424b-b52d-5cdd9814987f&#39;, schema=u&#39;string&#39;),</span>
-        <span class="c1"># MetaProp(&#39;PROJECT_ID&#39;, PROJECT_ID, str, False, &#39;4fc54cf1-252f-424b-b52d-5cdd9814987f&#39;, schema=u&#39;string&#39;),</span>
-        <span class="n">MetaProp</span><span class="p">(</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="n">NAME</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;my-resource&quot;</span><span class="p">),</span>
-        <span class="n">MetaProp</span><span class="p">(</span>
-            <span class="s2">&quot;DESCRIPTION&quot;</span><span class="p">,</span> <span class="n">DESCRIPTION</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;my-resource&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;string&quot;</span>
-        <span class="p">),</span>
-        <span class="n">MetaProp</span><span class="p">(</span>
-            <span class="s2">&quot;CUSTOM&quot;</span><span class="p">,</span> <span class="n">CUSTOM</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">example_value</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;custom_data&quot;</span><span class="p">:</span> <span class="s2">&quot;custome_data&quot;</span><span class="p">}</span>
-        <span class="p">),</span>
-        <span class="n">MetaProp</span><span class="p">(</span>
-            <span class="s2">&quot;ORGANIZATION&quot;</span><span class="p">,</span>
-            <span class="n">ORGANIZATION</span><span class="p">,</span>
-            <span class="nb">dict</span><span class="p">,</span>
-            <span class="kc">False</span><span class="p">,</span>
-            <span class="n">example_value</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;region&quot;</span><span class="p">:</span> <span class="s2">&quot;EU&quot;</span><span class="p">},</span>
-        <span class="p">),</span>
-        <span class="n">MetaProp</span><span class="p">(</span>
-            <span class="s2">&quot;ALLOWED_IDENTITIES&quot;</span><span class="p">,</span>
-            <span class="n">ALLOWED_IDENTITIES</span><span class="p">,</span>
-            <span class="nb">list</span><span class="p">,</span>
-            <span class="kc">False</span><span class="p">,</span>
-            <span class="n">example_value</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;43689024&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">}],</span>
-        <span class="p">),</span>
-        <span class="n">MetaProp</span><span class="p">(</span>
-            <span class="s2">&quot;REMOTE_ADMIN&quot;</span><span class="p">,</span>
-            <span class="n">REMOTE_ADMIN</span><span class="p">,</span>
-            <span class="nb">dict</span><span class="p">,</span>
-            <span class="kc">False</span><span class="p">,</span>
-            <span class="n">example_value</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">},</span>
-        <span class="p">),</span>
-        <span class="n">MetaProp</span><span class="p">(</span>
-            <span class="s2">&quot;DATA_HANDLER&quot;</span><span class="p">,</span>
-            <span class="n">DATA_HANDLER</span><span class="p">,</span>
-            <span class="nb">dict</span><span class="p">,</span>
-            <span class="kc">False</span><span class="p">,</span>
-            <span class="n">example_value</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;info&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;npz_file&quot;</span><span class="p">:</span> <span class="s2">&quot;./data_party0.npz&quot;</span><span class="p">},</span>
-                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;MnistTFDataHandler&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;mnist_keras_data_handler&quot;</span><span class="p">,</span>
-            <span class="p">},</span>
-        <span class="p">),</span>
-        <span class="n">MetaProp</span><span class="p">(</span>
-            <span class="s2">&quot;LOCAL_TRAINING&quot;</span><span class="p">,</span>
-            <span class="n">LOCAL_TRAINING</span><span class="p">,</span>
-            <span class="nb">dict</span><span class="p">,</span>
-            <span class="kc">False</span><span class="p">,</span>
-            <span class="n">example_value</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;LocalTrainingHandler&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;ibmfl.party.training.local_training_handler&quot;</span><span class="p">,</span>
-            <span class="p">},</span>
-        <span class="p">),</span>
-        <span class="n">MetaProp</span><span class="p">(</span>
-            <span class="s2">&quot;HYPERPARAMS&quot;</span><span class="p">,</span>
-            <span class="n">HYPERPARAMS</span><span class="p">,</span>
-            <span class="nb">dict</span><span class="p">,</span>
-            <span class="kc">False</span><span class="p">,</span>
-            <span class="n">example_value</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;epochs&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">},</span>
-        <span class="p">),</span>
-        <span class="n">MetaProp</span><span class="p">(</span>
-            <span class="s2">&quot;MODEL&quot;</span><span class="p">,</span>
-            <span class="n">MODEL</span><span class="p">,</span>
-            <span class="nb">dict</span><span class="p">,</span>
-            <span class="kc">False</span><span class="p">,</span>
-            <span class="n">example_value</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;info&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gpu&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;selection&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">}}},</span>
-        <span class="p">),</span>
-    <span class="p">]</span>
-
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">MetaNamesBase</span><span class="p">(</span><span class="n">_meta_props_definitions</span><span class="p">)</span><span class="o">.</span><span class="n">_generate_doc</span><span class="p">(</span>
-        <span class="s2">&quot;Remote Training System&quot;</span>
-    <span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">MetaNamesBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta_props_definitions</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ExportMetaNames</span><span class="p">(</span><span class="n">MetaNamesBase</span><span class="p">):</span>

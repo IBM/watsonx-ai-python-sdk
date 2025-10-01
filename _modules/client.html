@@ -204,7 +204,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API</a><input aria-label="Toggle navigation of API" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../base.html">Base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core_api.html">Core</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../federated_learning.html">Federated Learning</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../dataconnection.html">Data Connections</a><input aria-label="Toggle navigation of Data Connections" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../autoai_working_with_dataconnection.html">Working with DataConnection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dataconnection_modules.html">DataConnection Modules</a></li>
@@ -316,10 +315,9 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">MappingProxyType</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">requests.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="ne">ConnectionError</span> <span class="k">as</span> <span class="n">ConnectionErrorRequests</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.utils</span>
@@ -348,7 +346,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.pipelines</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipelines</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.pkg_extn</span><span class="w"> </span><span class="kn">import</span> <span class="n">PkgExtn</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.projects</span><span class="w"> </span><span class="kn">import</span> <span class="n">Projects</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.remote_training_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">RemoteTrainingSystem</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">Repository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.runtime_definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">RuntimeDefinitions</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.script</span><span class="w"> </span><span class="kn">import</span> <span class="n">Script</span>
@@ -375,6 +372,9 @@
     <span class="n">NoWMLCredentialsProvided</span><span class="p">,</span>
     <span class="n">WMLClientError</span><span class="p">,</span>
 <span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
 
 <span class="c1"># requests module or requests.Session</span>
 <span class="n">RequestsLikeType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Any</span>
@@ -730,9 +730,12 @@
                         <span class="s2">&quot;GET /ml/wml_services/version failed with status code: </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span>
                         <span class="n">response_get_wml_services</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
                     <span class="p">)</span>
-                    <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
-                        <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_url_provided&quot;</span><span class="p">)</span>
-                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">response_get_wml_services</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;=</span> <span class="mi">500</span>
+                    <span class="p">):</span>  <span class="c1"># raise the error only if hostname is not reachable</span>
+                        <span class="k">raise</span> <span class="n">WMLClientError</span><span class="p">(</span>
+                            <span class="n">Messages</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="s2">&quot;invalid_url_provided&quot;</span><span class="p">)</span>
+                        <span class="p">)</span>
 
                 <span class="c1"># Condition for CAMS related changes to take effect (Might change)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials</span><span class="o">.</span><span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -841,8 +844,6 @@
                 <span class="k">pass</span>  <span class="c1"># AI services available only on CLOUD and CPD 5.1.1 or higher</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__ai_services</span> <span class="o">=</span> <span class="n">AIServices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">remote_training_systems</span> <span class="o">=</span> <span class="n">RemoteTrainingSystem</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">repository</span> <span class="o">=</span> <span class="n">Repository</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_models</span> <span class="o">=</span> <span class="n">Models</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
