@@ -1,0 +1,1036 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex.html" /><link rel="search" title="Search" href="../../../../../../search.html" />
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+        <title>ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter - IBM watsonx.ai</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/mystyle2.css?v=4014603e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --font-stack: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif;
+  --font-stack--monospace: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, Lucida Console, monospace;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../../../../index.html"><div class="brand">IBM watsonx.ai</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><div class="sidebar-scroll"><a class="sidebar-brand" href="../../../../../../index.html">
+  
+  <span class="sidebar-brand-text">IBM watsonx.ai</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../install.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../setup.html">Setup</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Setup</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../setup_cloud.html">IBM watsonx.ai for IBM Cloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../setup_cpd.html">IBM watsonx.ai software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../httpx_configuration.html">Configuring the HTTP Client</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../base.html">Base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../core_api.html">Core</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../dataconnection.html">Data Connections</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Data Connections</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoai_working_with_dataconnection.html">Working with DataConnection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../dataconnection_modules.html">DataConnection Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../iterabledatasets_modules.html">IterableDatasets Modules</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../autoai.html">AutoAI</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of AutoAI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoai_rag_schema.html">AutoAI RAG Parameter Scheme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoai_experiment.html">AutoAI experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../foundation_models.html">Foundation Models</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Foundation Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_embeddings.html">Embeddings</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../fm_models.html">Models</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Models</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_model_inference.html">ModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_ts_model_inference.html">TSModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_audio_model_inference.html">AudioModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_model.html">Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../prompt_tuner.html">Tuning</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Tuning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../pt_tune_experiment_run.html">Working with TuneExperiment and PromptTuner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../ft_tune_experiment_run.html">Working with TuneExperiment and FineTuner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../it_tune_experiment_run.html">Working with TuneExperiment and ILabTuner (BETA)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../pt_model_inference.html">Tuned Model Inference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../tune_experiment.html">Tune Experiment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../ilab_tuner.html">InstructLab Experiment (BETA)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../prompt_template_manager.html">Prompt Template Manager</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../fm_extensions.html">Extensions</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Extensions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_extensions_langchain.html">LangChain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_extensions_llamaindex.html">LlamaIndex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../fm_extensions_rag.html">RAG</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_custom_models.html">Custom models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_text_detection.html">Text Detection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_text_extraction.html">Text Extractions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_schema.html">Parameter Scheme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_rerank.html">Rerank</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_deploy_on_demand.html">Deploy on Demand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../rate_limit.html">Rate Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_toolkit.html">Toolkit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../fm_vector_index.html">VectorIndexes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../model_gateway.html">Model Gateway (BETA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../save_models.html">Saving external models</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../samples.html">Samples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../migration_v1.html">V1 Migration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../changelog.html">Changelog</a></li>
+</ul>
+
+</div></div>
+
+  <h3>Tags</h3>
+  <ul>
+    
+      
+      
+      <li><a href="../../../../../../../v1.1.26/index.html">v1.1</a></li>
+    
+      
+      
+      <li><a href="../../../../../../../v1.2.10/index.html">v1.2</a></li>
+    
+      
+      
+      <li><a href="../../../../../../../v1.3.42/index.html">v1.3</a></li>
+    
+      
+      
+      <li><a href="langchain_vector_store_adapter.html">v1.4</a></li>
+    
+  </ul>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter</h1><div class="highlight"><pre>
+<span></span><span class="c1">#  -----------------------------------------------------------------------------------------</span>
+<span class="c1">#  (C) Copyright IBM Corp. 2024-2025.</span>
+<span class="c1">#  https://opensource.org/licenses/BSD-3-Clause</span>
+<span class="c1">#  -----------------------------------------------------------------------------------------</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_client_error</span><span class="w"> </span><span class="kn">import</span> <span class="n">MissingExtension</span><span class="p">,</span> <span class="n">MissingMetadata</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.wml_resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMLResource</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.vectorstores</span><span class="w"> </span><span class="kn">import</span> <span class="n">VectorStore</span> <span class="k">as</span> <span class="n">LangChainVectorStore</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.vectorstores</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">VectorStoreRetriever</span> <span class="k">as</span> <span class="n">LangChainVectorStoreRetriever</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">MissingExtension</span><span class="p">(</span><span class="s2">&quot;langchain&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.embeddings</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEmbeddings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">verbose_search</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BaseVectorStore</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">LangChainVectorStore</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">merge_window_into_a_document</span><span class="p">(</span><span class="n">window</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Merges a list of chunks into a single document.</span>
+<span class="sd">    If consecutive chunks have intersecting merged_text, the merged_text is merged to avoid duplications.</span>
+
+<span class="sd">    :param window: ordered list of documents for merging</span>
+<span class="sd">    :type window: list[langchain_core.documents.Document]</span>
+
+<span class="sd">    :return: document that contains the merged merged_text of the window documents</span>
+<span class="sd">    :rtype: langchain_core.documents.Document</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">merge_metadata</span><span class="p">(</span><span class="n">metadatas</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merges a list of dictionaries (metadata) into one metadata</span>
+<span class="sd">        The keys remain the same but the values are changed into lists of values from all metadata</span>
+
+<span class="sd">        :param metadatas: list of metadata dictionaries to be merged</span>
+<span class="sd">        :type metadatas: list[dict]</span>
+
+<span class="sd">        :return: single merged dictionary (metadata) with unique values in lists for each key</span>
+<span class="sd">        :rtype: Tuple[str, bool]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">metadatas</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">metadatas</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">merged_metadata</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">metadata</span> <span class="ow">in</span> <span class="n">metadatas</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">merged_metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">merged_metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value_set</span> <span class="ow">in</span> <span class="n">merged_metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">value_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">value_set</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_list</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_str2_without_intersecting_text</span><span class="p">(</span><span class="n">str1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">str2</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds the intersecting merged_text between the suffix of str1 and the prefix of str2.</span>
+
+<span class="sd">        :param str1: the first string</span>
+<span class="sd">        :type str1: str</span>
+
+<span class="sd">        :param str2: the second string</span>
+<span class="sd">        :type str2: str</span>
+
+<span class="sd">        :return: a tuple of:</span>
+<span class="sd">            1. str2 without its intersection to str1</span>
+<span class="sd">            2. whether there was an intersection or not</span>
+<span class="sd">        :rtype: Tuple[str, bool]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Start checking from the longest possible overlap to the shortest</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">str1</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">str2</span><span class="p">)),</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">str1</span><span class="p">[</span><span class="o">-</span><span class="n">i</span><span class="p">:]</span> <span class="o">==</span> <span class="n">str2</span><span class="p">[:</span><span class="n">i</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="n">str2</span><span class="p">[</span><span class="n">i</span><span class="p">:],</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">str2</span><span class="p">,</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">merge_texts</span><span class="p">(</span><span class="n">texts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merges a list of texts into a single text string.</span>
+<span class="sd">        If consecutive texts have intersecting parts, the text is merged to avoid duplications.</span>
+
+<span class="sd">        :param texts: ordered list of text strings to be merged</span>
+<span class="sd">        :type texts: List[str]</span>
+
+<span class="sd">        :return: single string that contains the merged text</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">merged_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">:</span>
+            <span class="n">text_to_add</span><span class="p">,</span> <span class="n">has_intersection</span> <span class="o">=</span> <span class="n">get_str2_without_intersecting_text</span><span class="p">(</span>
+                <span class="n">merged_text</span><span class="p">,</span> <span class="n">text</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">merged_text</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_intersection</span><span class="p">:</span>
+                <span class="n">merged_text</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span>  <span class="c1"># Add a space between non-overlapping texts (chunks)</span>
+            <span class="n">merged_text</span> <span class="o">+=</span> <span class="n">text_to_add</span>
+        <span class="k">return</span> <span class="n">merged_text</span>
+
+    <span class="n">texts</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">window</span><span class="p">]</span>
+    <span class="n">merged_text</span> <span class="o">=</span> <span class="n">merge_texts</span><span class="p">(</span><span class="n">texts</span><span class="p">)</span>
+
+    <span class="n">metadata</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">metadata</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">window</span><span class="p">]</span>
+    <span class="n">merged_metadata</span> <span class="o">=</span> <span class="n">merge_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Document</span><span class="p">(</span><span class="n">page_content</span><span class="o">=</span><span class="n">merged_text</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">merged_metadata</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="LangChainVectorStoreAdapter">
+<a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LangChainVectorStoreAdapter</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">BaseVectorStore</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Adapter for LangChain ``VectorStore`` base class.</span>
+
+<span class="sd">    :param vector_store: concrete LangChain vector store object</span>
+<span class="sd">    :type vector_store: langchain_core.vectorstore.VectorStore</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector_store</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">vector_store</span>
+
+<div class="viewcode-block" id="LangChainVectorStoreAdapter.get_client">
+<a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.get_client">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embedding_fn</span><span class="p">:</span> <span class="n">BaseEmbeddings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="p">,</span> <span class="s2">&quot;embedding&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">embedding_fn</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="p">,</span> <span class="s2">&quot;_embedding&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">_embedding</span> <span class="o">=</span> <span class="n">embedding_fn</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="p">,</span> <span class="s2">&quot;_embedding_function&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">_embedding_function</span> <span class="o">=</span> <span class="n">embedding_fn</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="p">,</span> <span class="s2">&quot;embedding_function&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">embedding_function</span> <span class="o">=</span> <span class="n">embedding_fn</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                <span class="s2">&quot;Could not set an embedding function for this vector store.&quot;</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="LangChainVectorStoreAdapter.add_documents">
+<a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.add_documents">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_documents</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Embed documents and add to the vectorstore.</span>
+
+<span class="sd">        :param content: Documents to add to the vectorstore.</span>
+<span class="sd">        :type content: list[str] | list[dict] | list[langchain_core.documents.Document]</span>
+
+<span class="sd">        :return: List of IDs of the added texts.</span>
+<span class="sd">        :rtype: list[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ids</span><span class="p">,</span> <span class="n">docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_documents</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">add_documents</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="n">ids</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LangChainVectorStoreAdapter.add_documents_async">
+<a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.add_documents_async">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_documents_async</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Embed documents and add to the vectorstore in asynchronous manner.</span>
+
+<span class="sd">        :param content: Documents to add to the vectorstore.</span>
+<span class="sd">        :type content: list[str] | list[dict] | list[langchain_core.documents.Document]</span>
+
+<span class="sd">        :return: List of IDs of the added texts.</span>
+<span class="sd">        :rtype: list[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ids</span><span class="p">,</span> <span class="n">docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_documents</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">aadd_documents</span><span class="p">(</span>
+            <span class="n">docs</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="n">ids</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LangChainVectorStoreAdapter.search">
+<a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.search">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">include_scores</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Document</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Searches for documents most similar to the query.</span>
+
+<span class="sd">        The method is designed as a wrapper for respective LangChain VectorStores&#39; similarity search methods.</span>
+<span class="sd">        Therefore, additional search parameters passed in ``kwargs`` should be consistent with those methods,</span>
+<span class="sd">        and can be found in the LangChain documentation.</span>
+
+<span class="sd">        :param query: text query</span>
+<span class="sd">        :type query: str</span>
+
+<span class="sd">        :param k: number of documents to retrieve</span>
+<span class="sd">        :type k: int</span>
+
+<span class="sd">        :param include_scores: whether similarity scores of found documents should be returned, defaults to False</span>
+<span class="sd">        :type include_scores: bool</span>
+
+<span class="sd">        :param verbose: whether to display a table with the found documents, defaults to False</span>
+<span class="sd">        :type verbose: bool</span>
+
+<span class="sd">        :return: list of found documents</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Document</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">include_scores</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">similarity_search_with_score</span><span class="p">(</span>
+                <span class="n">query</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">similarity_search</span><span class="p">(</span>
+                <span class="n">query</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">verbose_search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="LangChainVectorStoreAdapter.window_search">
+<a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.window_search">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">window_search</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">include_scores</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">window_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Searches for documents most similar to the query and extend a document (a chunk) to its adjacent chunks (if they exist) from the same origin document.</span>
+
+<span class="sd">        The method is designed as a wrapper for respective LangChain VectorStores&#39; similarity search methods.</span>
+<span class="sd">        Therefore, additional search parameters passed in ``kwargs`` should be consistent with those methods,</span>
+<span class="sd">        and can be found in the LangChain documentation.</span>
+
+<span class="sd">        :param query: text query</span>
+<span class="sd">        :type query: str</span>
+
+<span class="sd">        :param k: number of documents to retrieve</span>
+<span class="sd">        :type k: int</span>
+
+<span class="sd">        :param include_scores: whether similarity scores of found documents should be returned, defaults to False</span>
+<span class="sd">        :type include_scores: bool</span>
+
+<span class="sd">        :param verbose: whether to display a table with the found documents, defaults to False</span>
+<span class="sd">        :type verbose: bool</span>
+
+<span class="sd">        :param window_size: number of chunks</span>
+<span class="sd">        :type window_size: int, optional</span>
+
+<span class="sd">        :return: list of found documents</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">documents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">include_scores</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">window_size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">documents</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">include_scores</span><span class="p">:</span>
+            <span class="n">documents</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">],</span> <span class="n">documents</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_window_extend_and_merge</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">window_size</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">document</span> <span class="ow">in</span> <span class="n">documents</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">documents_and_scores</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Document</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span> <span class="n">documents</span><span class="p">)</span>
+            <span class="n">documents</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">documents_and_scores</span><span class="p">]</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">documents_and_scores</span><span class="p">]</span>
+            <span class="n">extended_documents</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_window_extend_and_merge</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">window_size</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">document</span> <span class="ow">in</span> <span class="n">documents</span>
+            <span class="p">]</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">extended_documents</span><span class="p">,</span> <span class="n">scores</span><span class="p">))</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_window_documents_chroma</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">doc_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">seq_nums_window</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Receives a document ID and a list of chunks&#39; sequence_numbers,</span>
+<span class="sd">        and searches the vector store according to the metadata.</span>
+
+<span class="sd">        :param doc_id: ID of document</span>
+<span class="sd">        :type doc_id: str</span>
+
+<span class="sd">        :param seq_nums_window: list of sequence numbers</span>
+<span class="sd">        :type seq_nums_window: list[int]</span>
+
+<span class="sd">        :return: list of documents from that document with these sequence_numbers</span>
+<span class="sd">        :rtype: list[Document]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expr</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;$and&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;document_id&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$eq&quot;</span><span class="p">:</span> <span class="n">doc_id</span><span class="p">}},</span>
+                <span class="p">{</span><span class="s2">&quot;sequence_number&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$gte&quot;</span><span class="p">:</span> <span class="n">seq_nums_window</span><span class="p">[</span><span class="mi">0</span><span class="p">]}},</span>
+                <span class="p">{</span><span class="s2">&quot;sequence_number&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$lte&quot;</span><span class="p">:</span> <span class="n">seq_nums_window</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]}},</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="n">expr</span><span class="p">)</span>  <span class="c1"># type: ignore[attr-defined]</span>
+        <span class="n">texts</span><span class="p">,</span> <span class="n">metadatas</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;documents&quot;</span><span class="p">],</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;metadatas&quot;</span><span class="p">]</span>
+        <span class="n">window_documents</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Document</span><span class="p">(</span>
+                <span class="n">page_content</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;sequence_number&quot;</span><span class="p">:</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;sequence_number&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;document_id&quot;</span><span class="p">:</span> <span class="n">doc_id</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">text</span><span class="p">,</span> <span class="n">metadata</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="n">metadatas</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">window_documents</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_window_documents_milvus</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">doc_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">seq_nums_window</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Receives a document ID and a list of chunks&#39; sequence_numbers,</span>
+<span class="sd">        and searches the vector store according to the metadata.</span>
+
+<span class="sd">        :param doc_id: ID of document</span>
+<span class="sd">        :type doc_id: str</span>
+
+<span class="sd">        :param seq_nums_window: list of sequence numbers</span>
+<span class="sd">        :type seq_nums_window: list[int]</span>
+
+<span class="sd">        :return: list of documents from that document with these sequence_numbers</span>
+<span class="sd">        :rtype: list[Document]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;document_id LIKE &#39;</span><span class="si">{</span><span class="n">doc_id</span><span class="si">}</span><span class="s2">&#39; &amp;&amp; sequence_number in </span><span class="si">{</span><span class="n">seq_nums_window</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">col</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>  <span class="c1"># type: ignore[attr-defined]</span>
+            <span class="n">expr</span><span class="o">=</span><span class="n">expr</span><span class="p">,</span>
+            <span class="n">output_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sequence_number&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">],</span>
+            <span class="n">limit</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">seq_nums_window</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">window_documents</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Document</span><span class="p">(</span>
+                <span class="n">page_content</span><span class="o">=</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;sequence_number&quot;</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sequence_number&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;document_id&quot;</span><span class="p">:</span> <span class="n">doc_id</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">window_documents</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_window_documents_elasticsearch</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">doc_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">seq_nums_window</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Receives a document ID and a list of chunks&#39; sequence_numbers,</span>
+<span class="sd">        and searches the vector store according to the metadata.</span>
+
+<span class="sd">        :param doc_id: ID of document</span>
+<span class="sd">        :type doc_id: str</span>
+
+<span class="sd">        :param seq_nums_window: list of sequence numbers</span>
+<span class="sd">        :type seq_nums_window: list[int]</span>
+
+<span class="sd">        :return: list of documents from that document with these sequence_numbers</span>
+<span class="sd">        :rtype: list[Document]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;bool&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;must&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;term&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;metadata.document_id.keyword&quot;</span><span class="p">:</span> <span class="n">doc_id</span><span class="p">}}],</span>
+                <span class="s2">&quot;filter&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;range&quot;</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s2">&quot;metadata.sequence_number&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="s2">&quot;gte&quot;</span><span class="p">:</span> <span class="n">seq_nums_window</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="s2">&quot;lte&quot;</span><span class="p">:</span> <span class="n">seq_nums_window</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                            <span class="p">}</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                <span class="p">],</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+            <span class="n">query</span><span class="o">=</span><span class="s2">&quot;*:*&quot;</span><span class="p">,</span> <span class="n">search_type</span><span class="o">=</span><span class="s2">&quot;similarity&quot;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">seq_nums_window</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">window_documents</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Document</span><span class="p">(</span>
+                <span class="n">page_content</span><span class="o">=</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span><span class="p">,</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;sequence_number&quot;</span><span class="p">:</span> <span class="n">doc</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;sequence_number&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;document_id&quot;</span><span class="p">:</span> <span class="n">doc</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;document_id&quot;</span><span class="p">],</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">response</span>
+        <span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">window_documents</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_window_documents_db2</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">doc_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">seq_nums_window</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Receives a document ID and a list of chunks&#39; sequence_numbers,</span>
+<span class="sd">        and searches the vector store according to the metadata.</span>
+
+<span class="sd">        :param doc_id: ID of document</span>
+<span class="sd">        :type doc_id: str</span>
+
+<span class="sd">        :param seq_nums_window: list of sequence numbers</span>
+<span class="sd">        :type seq_nums_window: list[int]</span>
+
+<span class="sd">        :return: list of documents from that document with these sequence_numbers</span>
+<span class="sd">        :rtype: list[Document]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">table_name</span>  <span class="c1"># type: ignore[attr-defined]</span>
+
+        <span class="n">placeholders</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;?&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">seq_nums_window</span><span class="p">)</span>
+
+        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            WITH extracted AS (</span>
+<span class="s2">              SELECT</span>
+<span class="s2">                JSON_VALUE(metadata, &#39;$.sequence_number&#39; RETURNING INTEGER) AS seq_num,</span>
+<span class="s2">                JSON_VALUE(metadata, &#39;$.document_id&#39;) AS doc_id,</span>
+<span class="s2">                text AS page_content</span>
+<span class="s2">              FROM </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span>
+<span class="s2">            )</span>
+<span class="s2">            SELECT</span>
+<span class="s2">              seq_num,</span>
+<span class="s2">              doc_id,</span>
+<span class="s2">              page_content</span>
+<span class="s2">            FROM extracted</span>
+<span class="s2">            WHERE doc_id = ?</span>
+<span class="s2">              AND seq_num IN (</span><span class="si">{</span><span class="n">placeholders</span><span class="si">}</span><span class="s2">)</span>
+<span class="s2">            ORDER BY seq_num;</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc_id</span><span class="p">]</span> <span class="o">+</span> <span class="n">seq_nums_window</span>
+
+        <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>  <span class="c1"># type: ignore[attr-defined]</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+        <span class="n">window_documents</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Document</span><span class="p">(</span>
+                <span class="n">page_content</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;sequence_number&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="s2">&quot;document_id&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">window_documents</span>
+
+<div class="viewcode-block" id="LangChainVectorStoreAdapter.delete">
+<a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.delete">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete by vector ID or other criteria. Sor more details see LangChain documentation</span>
+<span class="sd">        https://python.langchain.com/api_reference/core/vectorstores/langchain_core.vectorstores.base.VectorStore.html#langchain_core.vectorstores.base.VectorStore</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LangChainVectorStoreAdapter.clear">
+<a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.clear">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Use concrete wrapper if you need to use this functionality.&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LangChainVectorStoreAdapter.count">
+<a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.count">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Use concrete wrapper if you need to use this functionality.&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LangChainVectorStoreAdapter.as_langchain_retriever">
+<a class="viewcode-back" href="../../../../../../fm_extensions_rag.html#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter.as_langchain_retriever">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_langchain_retriever</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return Langchain VectorStoreRetriever initialized from this VectorStore.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">LangChainVectorStoreRetriever</span><span class="p">(</span>
+            <span class="n">vectorstore</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process_documents</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Processes arbitrary list of data to produce two lists: one with unique IDs, and one with LangChain documents.</span>
+
+<span class="sd">        Handles duplicate documents.</span>
+
+<span class="sd">        :param content: arbitrary data</span>
+<span class="sd">        :type content: list[str] | list[dict] | list</span>
+
+<span class="sd">        :return: lists with IDs and docs</span>
+<span class="sd">        :rtype: tuple[list[str], list[langchain_core.documents.Document]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">WMLResource</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_as_langchain_documents</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="c1"># Take only unique ID document. Get two lists, one with ids, one with documents</span>
+            <span class="c1"># For some documents, not all chars can be encoded properly.</span>
+            <span class="c1"># In such cases, replace invalid chars by question marks, i.e. setting errors=&quot;replace&quot;</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+                <span class="nb">map</span><span class="p">(</span>  <span class="c1"># type: ignore[return-value]</span>
+                    <span class="nb">list</span><span class="p">,</span>
+                    <span class="nb">zip</span><span class="p">(</span>
+                        <span class="o">*</span><span class="p">{</span>
+                            <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span>
+                                <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">errors</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">)</span>
+                            <span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">():</span> <span class="n">doc</span>
+                            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span>
+                        <span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[],</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_as_langchain_documents</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a LangChain ``Document`` list from a list of potentially unstructured data.</span>
+
+<span class="sd">        :param content: list of unstructured data to be parsed</span>
+<span class="sd">        :type content: list[str] | list[dict] | list</span>
+
+<span class="sd">        :raises AttributeError: raised when data does not fit the required schema</span>
+<span class="sd">        :return: list of LangChain Documents</span>
+<span class="sd">        :rtype: list[langchain_core.documents.Document]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">page_content</span><span class="o">=</span><span class="n">doc</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">content_str</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">metadata</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="p">{})</span>
+
+                <span class="k">if</span> <span class="n">content_str</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">Document</span><span class="p">(</span><span class="n">page_content</span><span class="o">=</span><span class="n">content_str</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Document: </span><span class="si">{</span><span class="n">doc</span><span class="si">}</span><span class="s2"> is incorrect. Metadata needs to be given with &#39;metadata&#39; attribute and it needs to be a serializable dict. Skipping.&quot;</span>
+                        <span class="p">)</span>
+                        <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Document: </span><span class="si">{</span><span class="n">doc</span><span class="si">}</span><span class="s2"> is incorrect. Field &#39;content&#39; is required&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">Document</span><span class="p">(</span><span class="n">page_content</span><span class="o">=</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">doc</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Document: </span><span class="si">{</span><span class="n">doc</span><span class="si">}</span><span class="s2"> is not a dict, nor string, nor LangChain Document-like object. Skipping.&quot;</span>
+                    <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_window_extend_and_merge</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> <span class="n">window_size</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extends a document (a chunk) to its adjacent chunks (if they exist) from the same origin document.</span>
+<span class="sd">        Then merges the adjacent chunks into one chunk while keeping their order,</span>
+<span class="sd">        and merges intersecting text between them (if it exists).</span>
+<span class="sd">        This requires chunks to have &quot;document_id&quot; and &quot;sequence_number&quot; in their metadata.</span>
+
+<span class="sd">        :param document: document (chunk) to be extended to its window and merged</span>
+<span class="sd">        :type document: Document</span>
+
+<span class="sd">        :param window_size: number of adjacent chunks to retrieve before and after the center, according to the sequence_number</span>
+<span class="sd">        :type window_size: int</span>
+
+<span class="sd">        :return: merged window</span>
+<span class="sd">        :rtype: Document</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;document_id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">document</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MissingMetadata</span><span class="p">(</span><span class="s1">&#39;document must have &quot;document_id&quot; in its metadata&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;sequence_number&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">document</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MissingMetadata</span><span class="p">(</span>
+                <span class="s1">&#39;document must have &quot;sequence_number&quot; in its metadata&#39;</span>
+            <span class="p">)</span>
+        <span class="n">doc_id</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;document_id&quot;</span><span class="p">]</span>
+        <span class="n">seq_num</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;sequence_number&quot;</span><span class="p">]</span>
+        <span class="n">seq_nums_window</span> <span class="o">=</span> <span class="p">[</span><span class="n">seq_num</span> <span class="o">+</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">window_size</span><span class="p">,</span> <span class="n">window_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+
+        <span class="n">vs_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+
+        <span class="k">match</span> <span class="n">vs_type</span><span class="p">:</span>
+            <span class="k">case</span> <span class="s2">&quot;Milvus&quot;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_milvus.vectorstores</span><span class="w"> </span><span class="kn">import</span> <span class="n">Milvus</span>  <span class="c1"># noqa: F401</span>
+                <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MissingExtension</span><span class="p">(</span><span class="s2">&quot;langchain_milvus&quot;</span><span class="p">)</span>
+
+                <span class="n">window_documents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_window_documents_milvus</span><span class="p">(</span>
+                    <span class="n">doc_id</span><span class="p">,</span> <span class="n">seq_nums_window</span>
+                <span class="p">)</span>
+            <span class="k">case</span> <span class="s2">&quot;Chroma&quot;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_chroma</span><span class="w"> </span><span class="kn">import</span> <span class="n">Chroma</span>  <span class="c1"># noqa: F401</span>
+                <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MissingExtension</span><span class="p">(</span><span class="s2">&quot;langchain_chroma&quot;</span><span class="p">)</span>
+
+                <span class="n">window_documents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_window_documents_chroma</span><span class="p">(</span>
+                    <span class="n">doc_id</span><span class="p">,</span> <span class="n">seq_nums_window</span>
+                <span class="p">)</span>
+            <span class="k">case</span> <span class="s2">&quot;ElasticsearchStore&quot;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_elasticsearch.vectorstores</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+                        <span class="n">ElasticsearchStore</span><span class="p">,</span>  <span class="c1"># noqa: F401</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MissingExtension</span><span class="p">(</span><span class="s2">&quot;langchain_elasticsearch&quot;</span><span class="p">)</span>
+                <span class="n">window_documents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_window_documents_elasticsearch</span><span class="p">(</span>
+                    <span class="n">doc_id</span><span class="p">,</span> <span class="n">seq_nums_window</span>
+                <span class="p">)</span>
+            <span class="k">case</span> <span class="s2">&quot;DB2VS&quot;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_db2</span><span class="w"> </span><span class="kn">import</span> <span class="n">DB2VS</span>  <span class="c1"># noqa: F401</span>
+                <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MissingExtension</span><span class="p">(</span><span class="s2">&quot;langchain_db2&quot;</span><span class="p">)</span>
+                <span class="n">window_documents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_window_documents_db2</span><span class="p">(</span>
+                    <span class="n">doc_id</span><span class="p">,</span> <span class="n">seq_nums_window</span>
+                <span class="p">)</span>
+            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Currently we only support Milvus, Chroma, Elasticsearch and DB2VS. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Received </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_langchain_vector_store</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="n">window_documents</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;sequence_number&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">merge_window_into_a_document</span><span class="p">(</span><span class="n">window_documents</span><span class="p">)</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023-2025, IBM
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../../../../_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    </body>
+</html>

@@ -1,0 +1,178 @@
+Working with TuneExperiment and FineTuner
+=========================================
+
+The :ref:`TuneExperiment class<tune-experiment-class>` is responsible for creating experiments and scheduling tunings.
+All experiment results are stored automatically in your chosen Cloud Object Storage (COS) for SaaS or
+in the cluster's file system for Cloud Pak for Data. Then the TuneExperiment feature can fetch the results and
+provide them directly to you for further use.
+
+Configure FineTuner
+-------------------
+
+For an TuneExperiment object initialization, you need authentication credentials (for examples, see :doc:`setup`) and the ``project_id`` or the ``space_id``.
+
+.. hint::
+        You can copy the project_id from the Project's Manage tab (Project -> Manage -> General -> Details).
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.foundation_models.utils.enums import ModelTypes
+    from ibm_watsonx_ai.experiment import TuneExperiment
+
+    experiment = TuneExperiment(credentials,
+        project_id="7ac03029-8bdd-4d5f-a561-2c4fd1e40705"
+    )
+
+    fine_tuner = experiment.fine_tuner(
+        name='Fine Tuning name',
+        description='Fine Tuning description',
+        base_model='meta-llama/Meta-Llama-3-8B',
+        task_id="generation,
+        num_epochs=5,
+        learning_rate=0.2,
+        batch_size=5,
+        max_seq_length=1024,
+        accumulate_steps=4,
+        verbalizer="### Input: {{input}} ### Response: {{output}}",
+        response_template="### Response:",
+        gpu={"num": 1},
+        auto_update_model=True,
+    )
+
+Get configuration parameters
+----------------------------
+
+To see the current configuration parameters, call the ``get_params()`` method.
+
+.. code-block:: python
+
+    config_parameters = fine_tuner.get_params()
+    print(config_parameters)
+    {
+        'base_model': {'model_id': 'meta-llama/Meta-Llama-3-8B'},
+        'task_id': 'generation',
+        'num_epochs': 5,
+        'learning_rate': 0.2,
+        'batch_size': 5,
+        'max_seq_length': 1024,
+        'accumulate_steps': 4,
+        'verbalizer': '### Input: {{input}} ### Response: {{output}}',
+        'response_template': '### Response:',
+        'gpu': {'num': 1},
+        'name': 'Fine Tuning name',
+        'description': 'Fine Tuning description',
+        'auto_update_model': True,
+        'group_by_name': False
+    }
+
+Run fine tuning
+---------------
+
+To schedule a tuning experiment, call the ``run()`` method, which will trigger a training process. The ``run()`` method can be synchronous (``background_mode=False``) or asynchronous (``background_mode=True``).
+If you don't want to wait for the training to end, invoke the async version. It immediately returns only run details.
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.helpers import DataConnection, ContainerLocation, S3Location
+
+    tuning_details = fine_tuner.run(
+        training_data_references=[DataConnection(
+            connection_asset_id=connection_id,
+            location=S3Location(
+                bucket='fine_tuning_data',
+                path='ft_train_data.json'
+            )
+        )],
+        background_mode=False)
+
+    # OR
+
+    tuning_details = fine_tuner.run(
+        training_data_references=[DataConnection(
+            data_asset_id='5d99c11a-2060-4ef6-83d5-dc593c6455e2')
+        ],
+        background_mode=True)
+
+    # OR
+
+    tuning_details = fine_tuner.run(
+        training_data_references=[DataConnection(
+            location=ContainerLocation("path_to_file.json"))
+        ],
+        background_mode=True)
+
+Get run status, get run details
+-------------------------------
+
+If you use the ``run()`` method asynchronously, you can monitor the run details and status by using the following two methods:
+
+.. code-block:: python
+
+    status = fine_tuner.get_run_status()
+    print(status)
+    'running'
+
+    # OR
+
+    'completed'
+
+    run_details = fine_tuner.get_run_details()
+
+Get data connections
+--------------------
+
+The ``data_connections`` list contains all the training connections that you referenced while calling the ``run()`` method.
+
+.. code-block:: python
+
+    data_connections = fine_tuner.get_data_connections()
+
+    # Get data in binary format
+    binary_data = data_connections[0].read(binary=True)
+
+Summary
+-------
+
+You can see details of models in the form of a summary table. The output type is a ``pandas.DataFrame`` with model names, enhancements, the base model, an auto update option, the number of epochs used, and the last loss function value.
+
+.. code-block:: python
+
+    results = fine_tuner.summary()
+    print(results)
+
+    #                           Enhancements                    Base model  ...         loss
+    #        Model Name
+    #  model_fe09247...        [fine tuning]    meta-llama/Meta-Llama-3-8B  ...     5.433459
+
+Plot learning curves
+--------------------
+
+.. note::
+    Available only for Jupyter notebooks.
+
+To see graphically how the tuning was performed, you can view learning curve graphs.
+
+.. code-block:: python
+
+    fine_tuner.plot_learning_curve()
+
+.. image:: _static/learning_curves.png
+   :width: 600
+   :align: center
+
+Get the model identifier
+------------------------
+
+.. note::
+    The model identifier will be available only if the tuning was scheduled first and the ``auto_update_model`` parameter was set as ``True``, which is the default value.
+
+To get the ``model_id``, call the get_model_id method.
+
+.. code-block:: python
+
+    model_id = fine_tuner.get_model_id()
+    print(model_id)
+    'd854752e-76a7-4c6d-b7db-5f84dd11e827'
+
+The ``model_id`` obtained in this way can be used to create deployments and then create ModelInference.
+For more information, see the next section: :ref:`Tuned Model Inference<pt-model-inference-module>`.
