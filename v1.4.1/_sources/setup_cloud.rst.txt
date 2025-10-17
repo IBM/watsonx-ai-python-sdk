@@ -1,0 +1,113 @@
+IBM watsonx.ai for IBM Cloud
+============================
+
+Requirements
+------------
+For information on how to start working with IBM watsonx.ai for IBM Cloud, refer to `Getting started with Cloud Pak for Data as a Service <https://dataplatform.cloud.ibm.com/docs/content/wsj/getting-started/get-started-wdp.html?audience=wdp&context=wx>`_.
+
+Supported machine learning frameworks
+-------------------------------------
+For a list of supported machine learning frameworks (models) on IBM watsonx.ai for IBM Cloud, refer to `Supported frameworks and software specifications <https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/pm_service_supported_frameworks.html?context=wx&audience=wdp&locale=en>`_.
+
+.. _Cloud Authentication:
+
+Authentication
+--------------
+To use watsonx.ai APIs, create an instance of APIClient with authentication details.
+
+**Note:** Depending on the region of your provisioned service instance, use one of the following as your URL:
+
+    * Dallas: ``https://us-south.ml.cloud.ibm.com``
+    * Frankfurt: ``https://eu-de.ml.cloud.ibm.com``
+    * London: ``https://eu-gb.ml.cloud.ibm.com``
+    * Sydney: ``https://au-syd.ml.cloud.ibm.com`` (supported in ``1.1.23`` and newer)
+    * Tokyo: ``https://jp-tok.ml.cloud.ibm.com``
+    * Toronto: ``https://ca-tor.ml.cloud.ibm.com`` (supported in ``1.2.1`` and newer)
+    * Mumbai (AWS): ``https://ap-south-1.aws.wxai.ibm.com`` (supported in ``1.3.26`` and newer)
+
+
+**Note:** To determine your `api_key`, refer to `IBM Cloud console API keys <https://cloud.ibm.com/iam/apikeys>`_.
+
+Example of creating the client using an API key:
+
+.. code-block:: python
+
+   from ibm_watsonx_ai import APIClient
+   from ibm_watsonx_ai import Credentials
+
+   credentials = Credentials(
+                      url = "https://us-south.ml.cloud.ibm.com",
+                      api_key = IAM_API_KEY
+                     )
+
+   client = APIClient(credentials)
+
+
+
+
+Example of creating the client using a token:
+
+.. code-block:: python
+
+   from ibm_watsonx_ai import APIClient
+   from ibm_watsonx_ai import Credentials
+
+   credentials = Credentials(
+                      url = "https://us-south.ml.cloud.ibm.com",
+                      token = "***********",
+                     )
+
+   client = APIClient(credentials)
+
+**Note:** Setting a default space ID or project ID is mandatory. For details, refer to the ``client.set.default_space()`` API in this document.
+
+.. hint::
+    You can copy the project_id from the Project's Manage tab (Project -> Manage -> General -> Details).
+
+MCSP AWS environment
+--------------------
+MCSP AWS uses the same authentication method as standard IBM Cloud environment:
+
+.. code-block:: python
+
+   from ibm_watsonx_ai import APIClient
+   from ibm_watsonx_ai import Credentials
+
+   credentials = Credentials(
+                      url = "https://ap-south-1.aws.wxai.ibm.com",  # MCSP AWS url
+                      api_key = IAM_API_KEY  # api key generated from MCSP AWS UI
+                     )
+
+   client = APIClient(credentials)
+
+Firewall settings
+-----------------
+Although the above setup is sufficient for most environments, environments behind a firewall may need an additional adjustment.
+The following endpoints are used by ``ibm-watsonx-ai`` and need to be whitelisted to ensure correct functioning of the module:
+
+.. code-block::
+
+    https://au-syd.ml.cloud.ibm.com
+    https://ca-tor.ml.cloud.ibm.com
+    https://eu-de.ml.cloud.ibm.com
+    https://eu-gb.ml.cloud.ibm.com
+    https://jp-tok.ml.cloud.ibm.com
+    https://us-south.ml.cloud.ibm.com
+
+    https://api.au-syd.dai.cloud.ibm.com
+    https://api.ca-tor.dai.cloud.ibm.com
+    https://api.dataplatform.cloud.ibm.com
+    https://api.eu-de.dataplatform.cloud.ibm.com
+    https://api.eu-gb.dataplatform.cloud.ibm.com
+    https://api.jp-tok.dataplatform.cloud.ibm.com
+
+    https://iam.cloud.ibm.com
+
+MCSP AWS:
+
+.. code-block::
+
+    https://ap-south-1.aws.wxai.ibm.com
+    https://api.ap-south-1.aws.data.ibm.com
+
+    https://account-iam.platform.saas.ibm.com
