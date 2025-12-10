@@ -1,0 +1,213 @@
+Tuned Model Inference
+=====================
+
+.. _pt-model-inference-module:
+
+This section shows how to deploy a model and use the ``ModelInference`` class with the created deployment.
+
+You can query ``generate_text`` in one of two ways:
+    - the :ref:`deployments<generate_text_deployments>` module
+    - the :ref:`ModelInference<generate_text_ModelInference>` module
+
+Working with deployments
+------------------------
+
+This section describes methods for working with deployments. Before you begin, create a client and set the
+``project_id`` or ``space_id``.
+
+.. _api_client_init:
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient
+
+    client = APIClient(credentials)
+    client.set.default_project("7ac03029-8bdd-4d5f-a561-2c4fd1e40705")
+
+To create a deployment with specific parameters, call the following lines:
+
+.. tab-set::
+
+    .. tab-item:: Prompt Tuning
+
+        .. code-block:: python
+
+            from datetime import datetime
+
+            model_id = prompt_tuner.get_model_id()
+
+            meta_props = {
+                client.deployments.ConfigurationMetaNames.NAME: "PT DEPLOYMENT SDK - project",
+                client.deployments.ConfigurationMetaNames.ONLINE: {},
+                client.deployments.ConfigurationMetaNames.SERVING_NAME : f"pt_sdk_deployment_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}"
+            }
+            deployment_details = client.deployments.create(model_id, meta_props)
+
+    .. tab-item:: Fine Tuning
+
+        .. code-block:: python
+
+            from datetime import datetime
+
+            model_id = fine_tuner.get_model_id()
+            hw_spec_id = client.hardware_specifications.get_id_by_name("WX-S")
+
+            meta_props = {
+                client.deployments.ConfigurationMetaNames.NAME: "FT DEPLOYMENT SDK - project",
+                client.deployments.ConfigurationMetaNames.ONLINE: {},
+                client.deployments.ConfigurationMetaNames.SERVING_NAME : f"ft_sdk_deployment_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}",
+                client.deployments.ConfigurationMetaNames.HARDWARE_SPEC: {
+                    "id": hw_spec_id,
+                    "num_nodes": 1
+                }
+            }
+            deployment_details = client.deployments.create(model_id, meta_props)
+
+To get a deployment_id from details, use the ``id`` from ``metadata``.
+
+.. code-block:: python
+
+    deployment_id = deployment_details["metadata"]["id"]
+    print(deployment_id)
+    "7091629c-f88a-4e90-b7f0-4f414aec9c3a"
+
+.. _generate_text_deployments:
+
+You can directly query ``generate_text`` using the deployments module.
+
+.. code-block:: python
+
+    client.deployments.generate_text(prompt="Example prompt", deployment_id=deployment_id)
+
+Creating ``ModelInference`` instance
+------------------------------------
+
+Start by defining the parameters. They will later be used by the module.
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
+
+    generate_params = {GenParams.MAX_NEW_TOKENS: 25, GenParams.STOP_SEQUENCES: ["\n"]}
+
+Create the ModelInference by using credentials and ``project_id`` / ``space_id``, or the previously initialized
+APIClient (see :ref:`APIClient initialization<api_client_init>`).
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.foundation_models import ModelInference
+
+    tuned_model = ModelInference(
+        deployment_id=deployment_id,
+        params=generate_params,
+        credentials=credentials,
+        project_id=project_id,
+    )
+
+    # OR
+
+    tuned_model = ModelInference(
+        deployment_id=deployment_id, params=generate_params, api_client=client
+    )
+
+.. _generate_text_modelinference:
+
+You can directly query ``generate_text`` using the ``ModelInference`` object.
+
+.. code-block:: python
+
+    tuned_model.generate_text(prompt="Example prompt")
+
+Importing data
+--------------
+
+To use ModelInference, an example data might be needed.
+
+.. code-block:: python
+
+    import pandas as pd
+
+    filename = "car_rental_prompt_tuning_testing_data.json"
+
+    url = "https://raw.github.com/IBM/watson-machine-learning-samples/master/cloud/data/prompt_tuning/car_rental_prompt_tuning_testing_data.json"
+    if not os.path.isfile(filename):
+        wget.download(url)
+
+    data = pd.read_json(filename)
+
+Analyzing satisfaction
+----------------------
+
+.. note::
+
+    The satisfaction analysis was performed for a specific example, **car rental**, and it may not work in the case of
+    other data sets.
+
+To analyze the satisfaction, prepare batch with prompts, calculate the accuracy of the tuned model, and compare it with
+the base model.
+
+.. code-block:: python
+
+    prompts = list(data.input)
+    satisfaction = list(data.output)
+    prompts_batch = ["\n".join([prompt]) for prompt in prompts]
+
+Calculate the accuracy of the based model:
+
+.. code-block:: python
+
+    from sklearn.metrics import accuracy_score, f1_score
+
+    base_model = ModelInference(
+        model_id="google/flan-t5-xl", params=generate_params, api_client=client
+    )
+    base_model_results = base_model.generate_text(prompt=prompts_batch)
+    print(
+        f"base model accuracy_score: {accuracy_score(satisfaction, [int(x) for x in base_model_results])}, base model f1_score: {f1_score(satisfaction, [int(x) for x in base_model_results])}"
+    )
+    "base model accuracy_score: 0.965034965034965, base model f1_score: 0.9765258215962441"
+
+Calculate the accuracy of the tuned model:
+
+.. code-block:: python
+
+    tuned_model_results = tuned_model.generate_text(prompt=prompts_batch)
+    print(
+        f"accuracy_score: {accuracy_score(satisfaction, [int(x) for x in tuned_model_results])}, f1_score: {f1_score(satisfaction, [int(x) for x in tuned_model_results])}"
+    )
+    "accuracy_score: 0.972027972027972, f1_score: 0.9811320754716981"
+
+Generate methods
+----------------
+
+A detailed explanation of available generate methods with exact parameters can be found in the :ref:`ModelInferece
+class<model-inference-class>`.
+
+With the previously created ``tuned_model`` object, it is possible to generate a text stream (generator) using defined
+inference and ``generate_text_stream()`` method.
+
+.. code-block:: python
+
+    for token in tuned_model.generate_text_stream(prompt=input_prompt):
+        print(token, end="")
+    "$10 Powerchill Leggings"
+
+Get a more detailed result with ``generate()``.
+
+.. code-block:: python
+
+    details = tuned_model.generate(prompt=input_prompt, params=gen_params)
+    print(details)
+    {
+        "model_id": "google/flan-t5-xl",
+        "created_at": "2023-11-17T15:32:57.401Z",
+        "results": [
+            {
+                "generated_text": "$10 Powerchill Leggings",
+                "generated_token_count": 8,
+                "input_token_count": 73,
+                "stop_reason": "eos_token",
+            }
+        ],
+        "system": {"warnings": []},
+    }

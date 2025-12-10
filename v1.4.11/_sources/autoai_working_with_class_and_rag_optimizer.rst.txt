@@ -1,0 +1,451 @@
+Working with AutoAI RAG class and rag_optimizer
+===============================================
+
+The :ref:`AutoAI experiment class<autoai-class>` is responsible for creating experiments and scheduling training. All
+experiment results are stored automatically in the user-specified Cloud Object Storage (COS). Then the AutoAI feature
+can fetch the results and provide them directly to the user for further usage.
+
+Configure rag_optimizer with one data source
+--------------------------------------------
+
+For an AutoAI object initialization, you need watsonx.ai credentials (with your API key and URL) and either the
+``project_id`` or ``space_id``.
+
+.. hint::
+
+    - You can copy the project_id from the Project's Manage tab (Project -> Manage -> General -> Details).
+    - For more information about RAG Optimizer parameters, please refer to :ref:`autoai_rag_parameters`.
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.experiment import AutoAI
+    from ibm_watsonx_ai.foundation_models.schema import (
+        AutoAIRAGModelConfig,
+        AutoAIRAGCustomModelConfig,
+        AutoAIRAGModelParams,
+        AutoAIRAGRetrievalConfig,
+        AutoAIRAGHybridRankerParams,
+        HybridRankerStrategy,
+        AutoAIRAGLanguageConfig,
+        AutoAIRAGGenerationConfig,
+    )
+
+    experiment = AutoAI(
+        wx_credentials,
+        space_id="<PASTE_SPACE_ID_HERE>",
+    )
+
+    foundation_model = AutoAIRAGModelConfig(
+        model_id="ibm/granite-13b-instruct-v2",
+        parameters=AutoAIRAGModelParams(
+            max_sequence_length=4096,
+        ),
+        prompt_template_text="<PROMPT_TEMPLATE_TEXT>",
+        context_template_text="<CONTEXT_TEMPLATE_TEXT>",
+        word_to_token_ratio=1.5,
+    )
+
+    custom_foundation_model = AutoAIRAGCustomModelConfig.get_sample_params()
+    custom_foundation_model["deployment_id"] = "<PASTE_DEPLOYMENT_ID_HERE>"
+    custom_foundation_model["space_id"] = "<PASTE_SPACE_ID_HERE>"
+    # OR custom_foundation_model["project_id"] = "<PASTE_PROJECT_ID_HERE>"
+
+    fms = ["meta-llama/llama-3-70b-instruct", foundation_model, custom_foundation_model]
+
+    language_config = AutoAIRAGLanguageConfig(
+        auto_detect=True,
+    )
+
+    generation_config = AutoAIRAGGenerationConfig(
+        language=language_config,
+        foundation_models=fms,
+    )
+
+    # Provide `hybrid_ranker` only for hybrid search
+    retrieval_config = AutoAIRAGRetrievalConfig(
+        method="window",
+        number_of_chunks=5,
+        window_size=4,
+        hybrid_ranker=AutoAIRAGHybridRankerParams(
+            strategy=HybridRankerStrategy.RRF,
+            sparse_vectors={"model_id": "bm25"},
+            alpha=0.9,
+            k=70,
+        ),
+    )
+
+    chunking_config = {"method": "recursive", "chunk_size": 256, "chunk_overlap": 128}
+
+    rag_optimizer = experiment.rag_optimizer(
+        name="AutoAI RAG test",
+        description="Sample description",
+        embedding_models=["ibm/slate-125m-english-rtrvr", "intfloat/multilingual-e5-large"],
+        chunking=[chunking_config],
+        generation=generation_config,
+        retrieval=[retrieval_config],
+        max_number_of_rag_patterns=5,
+        optimization_metrics=[AutoAI.RAGMetrics.ANSWER_CORRECTNESS],
+    )
+
+Get configuration parameters
+----------------------------
+
+To see the current configuration parameters, call the ``get_params()`` method.
+
+.. code-block:: python
+
+    config_parameters = rag_optimizer.get_params()
+    print(config_parameters)
+    {
+        "name": "AutoAI RAG test",
+        "description": "Sample description",
+        "chunking": [{"method": "recursive", "chunk_size": 256, "chunk_overlap": 128}],
+        "embedding_models": [
+            "ibm/slate-125m-english-rtrvr",
+            "intfloat/multilingual-e5-large",
+        ],
+        "retrieval": [
+            {
+                "method": "window",
+                "number_of_chunks": 5,
+                "window_size": 4,
+                "hybrid_ranker": {
+                    "strategy": "rrf",
+                    "sparse_vectors": {"model_id": "bm25"},
+                    "alpha": 0.9,
+                    "k": 70,
+                },
+            }
+        ],
+        "generation": {
+            "foundation_models": [
+                {"model_id": "meta-llama/llama-3-70b-instruct"},
+                {
+                    "model_id": "ibm/granite-13b-instruct-v2",
+                    "parameters": {
+                        "decoding_method": "sample",
+                        "min_new_tokens": 5,
+                        "max_new_tokens": 300,
+                        "max_sequence_length": 4096,
+                    },
+                    "prompt_template_text": "My question {question} related to these documents {reference_documents}.",
+                    "context_template_text": "My document {document}",
+                    "word_to_token_ratio": 1.5,
+                },
+                {
+                    "deployment_id": "<PASTE_DEPLOYMENT_ID_HERE>",
+                    "space_id": "<PASTE_SPACE_ID_HERE>",
+                    "parameters": {
+                        "decoding_method": "sample",
+                        "min_new_tokens": 5,
+                        "max_new_tokens": 300,
+                        "max_sequence_length": 4096,
+                    },
+                    "prompt_template_text": "My question {question} related to these documents {reference_documents}.",
+                    "context_template_text": "My document {document}",
+                    "word_to_token_ratio": 1.5,
+                },
+            ]
+        },
+        "max_number_of_rag_patterns": 5,
+        "optimization_metrics": ["answer_correctness"],
+    }
+
+Run rag_optimizer
+-----------------
+
+To schedule an AutoAI RAG experiment, call the ``run()`` method. This will trigger a training and an optimization
+process on watsonx.ai. The ``run()`` method can be synchronous (``background_mode=False``) or asynchronous
+(``background_mode=True``). If you don't want to wait for the fit to end, invoke the async version. It immediately
+returns only run details.
+
+.. code-block:: python
+
+    run_details = rag_optimizer.run(
+        input_data_references=[input_data_connection],
+        test_data_references=[test_data_connection],
+        results_reference=results_connection,
+        background_mode=True,
+    )
+
+    # OR
+
+    run_details = rag_optimizer.run(
+        input_data_references=[input_data_connection],
+        test_data_references=[test_data_connection],
+        results_reference=results_connection,
+        background_mode=False,
+    )
+
+Get the run status and run details
+----------------------------------
+
+If you use the ``run()`` method asynchronously, you can monitor the run details and status using the following two
+methods:
+
+.. code-block:: python
+
+    status = rag_optimizer.get_run_status()
+    print(status)
+
+    "running"
+
+    # OR
+
+    "completed"
+
+    run_details = rag_optimizer.get_run_details()
+    print(run_details)
+
+RAG Optimizer summary
+---------------------
+
+It is possible to get a ranking of all the computed pattern, sorted based on a scoring metric supplied when configuring
+the optimizer (``optimization_metrics`` parameter). The output type is a ``pandas.DataFrame`` with pattern names,
+computation timestamps, machine learning metrics, and the number of enhancements implemented in each of the pattern.
+
+.. code-block:: python
+
+    rag_optimizer.summary()
+    rag_optimizer.summary(scoring="answer_correctness")
+    rag_optimizer.summary(scoring=["answer_correctness", "context_correctness"])
+
+    # Result:
+    #                  mean_answer_correctness  ...  ci_high_faithfulness
+    # Pattern_Name
+    # Pattern3                        0.79165   ...                0.5102
+    # Pattern1                        0.72915   ...                0.4839
+    # Pattern2                        0.64585   ...                0.8333
+    # Pattern4                        0.64585   ...                0.5312
+
+Get pattern details
+-------------------
+
+To see the pattern details, use the ``get_pattern_details()`` method. If you leave ``pattern_name`` empty, the method
+returns the details of the best computed pattern.
+
+.. code-block:: python
+
+    pattern_params = rag_optimizer.get_pattern_details(pattern_name="Pattern3")
+    print(pattern_params)
+    {
+        "composition_steps": [
+            "model_selection",
+            "chunking",
+            "embeddings",
+            "retrieval",
+            "generation",
+        ],
+        "duration_seconds": 44,
+        "location": {
+            "evaluation_results": "default_autoai_rag_out/a829b2a4-a894-4625-8d00-55b66e1f0dc5/Pattern1/evaluation_results.json",
+            "indexing_notebook": "default_autoai_rag_out/a829b2a4-a894-4625-8d00-55b66e1f0dc5/Pattern1/indexing_notebook.ipynb",
+            "inference_notebook": "default_autoai_rag_out/a829b2a4-a894-4625-8d00-55b66e1f0dc5/Pattern1/inference_notebook.ipynb",
+            "inference_service_code": "default_autoai_rag_out/a829b2a4-a894-4625-8d00-55b66e1f0dc5/Pattern1/inference_ai_service.gz",
+            "inference_service_metadata": "default_autoai_rag_out/a829b2a4-a894-4625-8d00-55b66e1f0dc5/Pattern1/inference_service_metadata.json",
+        },
+        "name": "Pattern1",
+        "settings": {
+            "chunking": {"chunk_overlap": 128, "chunk_size": 256, "method": "recursive"},
+            "embeddings": {
+                "model_id": "ibm/slate-125m-english-rtrvr",
+                "truncate_input_tokens": 512,
+                "truncate_strategy": "left",
+            },
+            "generation": {
+                "context_template_text": "[Document]\n{document}\n[End]",
+                "model_id": "ibm/granite-13b-instruct-v2",
+                "parameters": {
+                    "decoding_method": "greedy",
+                    "max_new_tokens": 1000,
+                    "max_sequence_length": 8192,
+                    "min_new_tokens": 1,
+                },
+                "prompt_template_text": "<|system|>\nYou are Granite Chat, an AI language model developed by IBM. You are a cautious assistant. You carefully follow instructions. You are helpful and harmless and you follow ethical guidelines and promote positive behavior.<|user|>\nYou are an AI language model designed to function as a specialized Retrieval Augmented Generation (RAG) assistant. When generating responses, prioritize correctness, i.e., ensure that your response is grounded in context and user query. Always make sure that your response is relevant to the question. \nAnswer Length: detailed\n{reference_documents}\nRespond exclusively in the language of the question, regardless of any other language used in the provided context. Ensure that your entire response is in the same language as the question.\n{question} \n\n<|assistant|>",
+                "word_to_token_ratio": 2.4473,
+            },
+            "retrieval": {
+                "hybrid_ranker": {
+                    "k": 70,
+                    "sparse_vectors": {"model_id": "bm25"},
+                    "strategy": "rrf",
+                },
+                "method": "window",
+                "number_of_chunks": 5,
+                "window_size": 4,
+            },
+            "vector_store": {
+                "datasource_type": "milvus",
+                "distance_metric": "cosine",
+                "index_name": "autoai_rag_a829b2a4_20250530080430",
+                "operation": "upsert",
+                "schema": {
+                    "fields": [
+                        {
+                            "description": "Primary key",
+                            "name": "pk",
+                            "role": "pk",
+                            "type": "string",
+                        },
+                        {
+                            "description": "text field",
+                            "name": "text",
+                            "role": "text",
+                            "type": "string",
+                        },
+                        {
+                            "description": "document name field",
+                            "name": "document_id",
+                            "role": "document_name",
+                            "type": "string",
+                        },
+                        {
+                            "description": "chunk starting token position in the source document",
+                            "name": "start_index",
+                            "role": "start_index",
+                            "type": "number",
+                        },
+                        {
+                            "description": "chunk number per document",
+                            "name": "sequence_number",
+                            "role": "sequence_number",
+                            "type": "number",
+                        },
+                        {
+                            "description": "vector embeddings",
+                            "name": "vector",
+                            "role": "vector_embeddings",
+                            "type": "array",
+                        },
+                        {
+                            "description": "Sparse vectors",
+                            "name": "sparse_embeddings",
+                            "role": "sparse_vector_embeddings",
+                            "type": "array",
+                        },
+                    ],
+                    "id": "autoai_rag_1.1",
+                    "name": "Document schema using open-source loaders",
+                    "type": "struct",
+                },
+            },
+        },
+        "settings_importance": {
+            "chunking": [
+                {"importance": 0.09090909, "parameter": "chunk_size"},
+                {"importance": 0.09090909, "parameter": "chunk_overlap"},
+            ],
+            "embeddings": [{"importance": 0.09090909, "parameter": "embedding_model"}],
+            "generation": [{"importance": 0.09090909, "parameter": "foundation_model"}],
+            "retrieval": [
+                {"importance": 0.09090909, "parameter": "retrieval_method"},
+                {"importance": 0.09090909, "parameter": "window_size"},
+                {"importance": 0.09090909, "parameter": "number_of_chunks"},
+                {"importance": 0.09090909, "parameter": "hybrid_ranker_strategy"},
+                {"importance": 0.09090909, "parameter": "hybrid_ranker_k"},
+            ],
+        },
+    }
+
+Get pattern
+-----------
+
+Use the ``get_pattern()`` method to load a specific pattern. If you leave ``pattern_name`` empty, the method returns the
+details of the best computed pattern.
+
+.. code-block:: python
+
+    pattern = rag_optimizer.get_pattern(pattern_name="Pattern3")
+    print(type(pattern))
+    "ibm_watsonx_ai.foundation_models.extensions.rag.pattern.pattern.RAGPattern"
+
+Get inference and indexing notebooks
+------------------------------------
+
+To download specified inference notebook from Service use the ``get_inference_notebook()``. If you leave
+``pattern_name`` empty, the method download notebook of the best computed pattern.
+
+.. code-block:: python
+
+    rag_optimizer.get_inference_notebook(pattern_name="Pattern3")
+
+To download specified indexing notebook from Service use the ``get_indexing_notebook()``. If you leave ``pattern_name``
+empty, the method download notebook of the best computed pattern.
+
+.. code-block:: python
+
+    rag_optimizer.get_indexing_notebook(pattern_name="Pattern3")
+
+Get logs
+--------
+
+To download logs of an AutoAI RAG job use ``get_logs()``.
+
+.. code-block:: python
+
+    rag_optimizer.get_logs()
+
+Get evaluation results
+----------------------
+
+To download evaluation results of an AutoAI RAG job use ``get_evaluation_results()``. If you leave ``pattern_name``
+empty, the method download notebook of the best computed pattern.
+
+.. code-block:: python
+
+    rag_optimizer.get_evaluation_results(pattern_name="Pattern1")
+
+Online deployment
+-----------------
+
+To deploy a ``inference_service``/``inference_function`` please use below methods.
+
+.. tab-set::
+
+    .. tab-item:: Deploy ``inference_service``
+
+        .. note::
+            Supported since version 1.2.0
+
+        .. code-block:: python
+
+            pattern = rag_optimizer.get_pattern()
+
+            deployment_details = pattern.inference_service.deploy(
+                name="inference_service deployment",
+                space_id="<SPACE_ID>",
+            )
+
+        To override vector store `connection_id`, `index_name` or set specific scope id (project_id/space_id) that will be used in deployment, please use below:
+
+        .. code-block:: python
+
+            deployment_details = pattern.inference_service.deploy(
+                name="Example deployment name",
+                store_params={"software_spec_id": "<ID of the custom sw spec>"},
+                deploy_params={
+                    "online": {
+                        "parameters": {
+                            "vector_store_settings": {
+                                "connection_id": "<connection_to_vector_store>",
+                                "index_name": "<index_name>",
+                                "project_id": "<project_id>",
+                            }
+                        }
+                    }
+                }
+            )
+
+    .. tab-item:: Deploy ``inference_function``
+
+        .. note::
+            Deprecated since version 1.3.26
+
+        .. code-block:: python
+
+            pattern = rag_optimizer.get_pattern()
+
+            deployment_details = pattern.inference_function.deploy(
+                name="inference_function deployment",
+                space_id="<SPACE_ID>",
+            )

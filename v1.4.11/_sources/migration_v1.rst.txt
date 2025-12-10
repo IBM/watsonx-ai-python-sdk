@@ -1,0 +1,244 @@
+V1 Migration Guide
+==================
+
+.. raw:: html
+
+    <div style="text-align: justify;">
+
+The new ``ibm_watsonx_ai`` Python SDK 1.0 is backward compatible in most common scenarios, but a few minor adjustments
+in code might be needed.
+
+.. raw:: html
+
+    </div>
+
+What's new?
+-----------
+
+Refactor and Cleanup
+~~~~~~~~~~~~~~~~~~~~
+
+This major release marks a thorough refactoring and cleanup of the codebase. We've diligently worked to improve code
+readability and enhance overall performance. As a result, you can expect a more efficient and maintainable package.
+
+New authorization
+~~~~~~~~~~~~~~~~~
+
+In ``ibm_watsonx_ai`` 1.0, ``Credentials``, a new class, was introduced and it replaces the credentials dictionary. For
+examples and more information, see :doc:`Authentication Cloud <setup_cloud>` and :doc:`Authentication <setup_cpd>`
+
+✅ New approach
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient
+    from ibm_watsonx_ai import Credentials
+
+    credentials = Credentials(
+        url="https://us-south.ml.cloud.ibm.com",
+        token="***********",
+    )
+
+    client = APIClient(credentials)
+
+❌ Old approach
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient
+
+    credentials = {
+        "url": "https://us-south.ml.cloud.ibm.com",
+        "token": "***********",
+    }
+
+    client = APIClient(credentials)
+
+Easier project and space setup
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Starting from ``ibm_watsonx_ai`` 1.0, you can set the default space or project while initializing the APIClient object.
+
+✅ New approach
+
+.. code-block:: python
+
+    client_project = APIClient(credentials, project_id=project_id)
+    client_space = APIClient(credentials, space_id=space_id)
+
+❌ Old approach
+
+.. code-block:: python
+
+    client_project = APIClient(credentials)
+    client_project.set.default_project(project_id)
+
+    client_space = APIClient(credentials)
+    client_space.set.default_space(space_id)
+
+Foundation model functions moved under APIClient
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Starting from ``ibm_watsonx_ai`` 1.0, foundation model functions (``get_model_specs``, ``get_custom_model_specs``,
+``get_model_lifecycle``, ``get_model_specs_with_prompt_tuning_support``, ``get_embedding_model_specs``) are moved into
+the ``client.foundation_models`` object.
+
+Old versions of the functions are not removed but will no longer work because they lack authentication.
+
+✅ New approach - Using functions from `client.foundation_models`.
+
+.. code-block:: python
+
+    client.foundation_models.get_model_specs()
+
+    client.foundation_models.get_custom_model_specs()
+    client.foundation_models.get_custom_model_specs(
+        model_id="mistralai/Mistral-7B-Instruct-v0.2"
+    )
+    client.foundation_models.get_custom_model_specs(limit=20)
+    client.foundation_models.get_custom_model_specs(limit=20, get_all=True)
+
+    client.foundation_models.get_model_lifecycle(model_id="ibm/granite-13b-instruct-v2")
+
+    client.foundation_models.get_model_specs_with_prompt_tuning_support()
+
+    client.foundation_models.get_embeddings_model_specs()
+
+❌ Old approach - Using functions from the `ibm_watsonx_ai.foundation_models` module.
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.foundation_models import (
+        get_model_specs,
+        get_custom_model_specs,
+        get_model_lifecycle,
+        get_model_specs_with_prompt_tuning_support,
+        get_embedding_model_specs,
+    )
+
+    get_model_specs(url="https://us-south.ml.cloud.ibm.com")
+
+    get_custom_model_specs(api_client=client)
+    get_custom_model_specs(credentials=credentials)
+    get_custom_model_specs(api_client=client, model_id="mistralai/Mistral-7B-Instruct-v0.2")
+    get_custom_model_specs(api_client=client, limit=20)
+    get_custom_model_specs(api_client=client, limit=20, get_all=True)
+
+    get_model_lifecycle(
+        url="https://us-south.ml.cloud.ibm.com", model_id="ibm/granite-13b-instruct-v2"
+    )
+
+    get_model_specs_with_prompt_tuning_support(url="https://us-south.ml.cloud.ibm.com")
+
+    get_embedding_model_specs(url="https://us-south.ml.cloud.ibm.com")
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+
+- The ``client.<resource>.list()`` methods don't print the table with listed assets. They return the table as
+  ``pandas.DataFrame``. The optional parameter for the ``return_as_df`` methods was removed.
+
+✅ New approach - Access to credential fields as class attributes.
+
+.. code-block:: python
+
+    conn_list = client.connections.list()  ## table not printed
+
+❌ Old approach - Table with listed resources printed.
+
+.. code-block:: python
+
+    conn_list = client.connections.list()
+    ### Table returned as pandas.DataFrame `conn_list` object and printed output:
+    # ---------------------------  ------------------------------------  --------------------  ------------------------------------
+    # NAME                         ID                                    CREATED               DATASOURCE_TYPE_ID
+    # Connection to COS            71738a79-6585-4f33-bf4a-18907abcf06a  2024-04-25T10:42:23Z  193a97c1-4475-4a19-b90c-295c4fdc6517
+    # ---------------------------  ------------------------------------  --------------------  ------------------------------------
+
+- Methods and parameters that were marked as deprecated in ``ibm_watsonx_ai v0`` were removed. For example:
+
+✅ New approach - Use the method that replaced the deprecated one, for ``get_uid`` it's ``get_id``
+
+.. code-block:: python
+
+    asset_id = client.data_assets.get_id(asset_details)
+
+❌ Old approach - Deprecated ``get_uid`` method called
+
+.. code-block:: python
+
+    client.data_assets.get_uid(asset_details)
+
+- ``client.credentials`` and ``client.wml_credentials`` returns a ``Credentials`` object instead of a dictionary.
+
+✅ New approach - Access to credential fields as class attributes.
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient
+    from ibm_watsonx_ai import Credentials
+
+    credentials = Credentials(
+        url="https://us-south.ml.cloud.ibm.com",
+        token="***********",
+    )
+
+    client = APIClient(credentials)
+
+    url = client.credentials.url
+    # OR
+    url = credentials.url
+
+❌ Old approach - Access to credential fields as keys in a dictionary.
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient
+
+    credentials = {
+        "url": "https://us-south.ml.cloud.ibm.com",
+        "token": "***********",
+    }
+    client = APIClient(credentials)
+    url = client.wml_credentials.get("url")
+
+- Parameter changes in ``service.score(...)`` for online deployment
+
+``service.score(...)`` has an additional ``forecast_window`` parameter added before the ``transaction_id`` parameter.
+From ``ibm_watsonx_ai`` 1.0.0, in the ``service.score(...)`` function, you need to pass all named parameters except for
+the ``payload`` parameter.
+
+✅ New approach - named parameters and a new parameter.
+
+.. code-block:: python
+
+    predictions = service.score(
+        {
+            "observations": AbstractTestTSAsync.observations,
+            "supporting_features": AbstractTestTSAsync.supporting_features,
+        },
+        forecast_window=1,
+        transaction_id=transaction_id,
+    )
+
+❌ Old approach - all parameters are not named, the ``forecast_window`` parameter is absent
+
+.. code-block:: python
+
+    predictions = service.score(
+        {
+            "observations": AbstractTestTSAsync.observations,
+            "supporting_features": AbstractTestTSAsync.supporting_features,
+        },
+        transaction_id,
+    )
+
+Deprecations
+~~~~~~~~~~~~
+
+- Initializing ``APIClient`` with ``credentials`` as a dictionary is deprecated.
+- All parameters with ``wml`` in the name are deprecated. They were renamed to:
+      - ``wml_credentials`` -> ``credentials``
+      - ``wml_client`` -> ``api_client``.
+- ``id`` naming was aligned in parameters and methods and all ``uid`` were replaced by ``id``. Methods that were using
+  ``uid`` were removed or marked as deprecated.

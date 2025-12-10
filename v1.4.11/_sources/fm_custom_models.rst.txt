@@ -1,0 +1,339 @@
+.. _fm_custom_models:
+
+Custom models
+=============
+
+The custom models of `watsonx.ai` client might differ depending on the product offering. Go to your product section to
+see the steps for model deployment.
+
+- `IBM watsonx.ai for IBM Cloud <#id1>`_
+- `IBM watsonx.ai software with IBM Cloud Pak for Data <#id2>`_
+
+IBM watsonx.ai for IBM Cloud
+----------------------------
+
+This section shows how to create task credentials, store and deploy a model, and use the ModelInference module with the
+created deployment on IBM watsonx.ai for IBM Cloud.
+
+Initialize an APIClient object
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Initialize an ``APIClient`` object if needed. For more details about supported ``APIClient`` initialization, see
+:doc:`setup`.
+
+.. code-block::
+
+    from ibm_watsonx_ai import APIClient
+
+    client = APIClient(credentials)
+    client.set.default_project(project_id=project_id)
+    # or client.set.default_space(space_id=space_id)
+
+Add Task Credentials
+~~~~~~~~~~~~~~~~~~~~
+
+.. warning::
+
+    If not already added, Task Credentials are required on IBM watsonx.ai for IBM Cloud to make a deployment.
+
+With task credentials, you can deploy a custom foundation model and avoid token expiration issues. For more details, see
+`Adding task credentials <https://www.ibm.com/docs/en/watsonx/saas?topic=projects-adding-task-credentials>`_.
+
+To list available task credentials, use the ``list`` method:
+
+.. code-block::
+
+    client.task_credentials.list()
+
+If the list is empty, you can create new task credentials with the ``store`` method:
+
+.. code-block::
+
+    client.task_credentials.store()
+
+To get the status of available task credentials, use the ``get_details`` method:
+
+.. code-block::
+
+    client.task_credentials.get_details()
+
+Store the model in the service repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To store a model as an asset in the repo, you must first create proper ``metadata``.
+
+For Cloud, you need to have an active connection to Cloud Object Storage. To see how to create a COS connection, refer
+to :ref:`working-with-connection-asset`.
+
+Get the parameters for the ``MODEL_LOCATION`` field below from the COS connection.
+
+.. code-block:: python
+
+    metadata = {
+        client.repository.ModelMetaNames.NAME: "custom FM asset",
+        client.repository.ModelMetaNames.SOFTWARE_SPEC_ID: sw_spec_id,
+        client.repository.ModelMetaNames.TYPE: client.repository.ModelAssetTypes.CUSTOM_FOUNDATION_MODEL_1_0,
+        client.repository.ModelMetaNames.MODEL_LOCATION: {
+            "file_path": "path/to/custom/model/files/inside/bucket",
+            "bucket": "watsonx-llm-models",
+            "connection_id": "5e891c6b-3aa9-4f01-8e2d-785d81797466",
+        },
+    }
+
+Store the model
+~~~~~~~~~~~~~~~
+
+After creating the proper ``metadata``, you can store the model using ``client.repository.store_model()``.
+
+.. code-block:: python
+
+    stored_model_details = client.repository.store_model(
+        model="Google/flan-t5-small", meta_props=metadata
+    )
+
+To get the ``id`` of a stored asset, use the obtained details.
+
+.. code-block:: python
+
+    stored_model_asset_id = client.repository.get_model_id(stored_model_details)
+
+List all stored custom foundation models and filter them by framework type.
+
+.. code-block:: python
+
+    client.repository.list(framework_filter="custom_foundation_model_1.0")
+
+Deploy the custom foundation model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To create a new deployment of a custom foundation model, you need to define a dictionary with deployment ``metadata``.
+Specify the deployment ``NAME``, ``DESCRIPTION`` and ``HARDWARE_SPEC`` fields, and the ``name`` and ``num_nodes`` of the
+requested hardware. For the ``name`` field, enter a GPU ID available in your cluster. For more information about listing
+available GPU configurations, see https://cloud.ibm.com/apidocs/watsonx-ai#mgerrorresponse-yaml. For the ``num_nodes``
+field, provide a number.
+
+Only online deployments are supported, so the ``ONLINE`` field is required.
+
+Optional: At this stage, you can overwrite model parameters. To overwrite them, pass a dictionary with new parameters
+values in the ``FOUNDATION_MODEL`` field.
+
+You also need to provide the ``id`` of the stored model asset to create the deployment.
+
+.. code-block:: python
+
+    meta_props = {
+        client.deployments.ConfigurationMetaNames.NAME: "custom_fm_deployment",
+        client.deployments.ConfigurationMetaNames.DESCRIPTION: "Testing deployment using custom foundation model",
+        client.deployments.ConfigurationMetaNames.ONLINE: {},
+        client.deployments.ConfigurationMetaNames.HARDWARE_SPEC: {
+            "name": "1a100-80g",
+            "num_nodes": 1,
+        },
+        # optionally overwrite model parameters here
+        client.deployments.ConfigurationMetaNames.FOUNDATION_MODEL: {
+            "max_input_tokens": 256
+        },
+        client.deployments.ConfigurationMetaNames.SERVING_NAME: "test_byom_fm_01",
+    }
+    deployment_details = client.deployments.create(stored_model_asset_id, meta_props)
+
+Once the deployment creation process is done, ``client.deployments.create`` returns a dictionary with the deployment
+details, which can be used to retrieve the deployment ``id``.
+
+.. code-block:: python
+
+    deployment_id = client.deployments.get_id(deployment_details)
+
+You can list all existing deployments in the working space or project scope with the ``list`` method:
+
+.. code-block:: python
+
+    client.deployments.list()
+
+Work with deployments
+~~~~~~~~~~~~~~~~~~~~~
+
+For information on working with foundation model deployments, see :doc:`Models/ ModelInference for
+Deployments<fm_deployments>`.
+
+IBM watsonx.ai software with IBM Cloud Pak® for Data
+----------------------------------------------------
+
+.. note::
+
+    Available in IBM watsonx.ai for IBM Cloud Pak® for Data 5.0 and later.
+
+This section shows how to list custom models specifications, store and deploy a model, and use the ModelInference module
+with the created deployment on IBM watsonx.ai for IBM Cloud Pak® for Data.
+
+Initialize the APIClient object
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Initialize the ``APIClient`` object if needed. For information about supported ``APIClient`` initialization, see
+:doc:`setup`.
+
+.. code-block::
+
+    from ibm_watsonx_ai import APIClient
+
+    client = APIClient(credentials)
+    client.set.default_project(project_id=project_id)
+    # or client.set.default_space(space_id=space_id)
+
+List model specifications
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. warning::
+
+    Only applicable for IBM watsonx.ai for IBM Cloud Pak® for Data 5.0 and later.
+
+.. warning::
+
+    The model needs to be explicitly stored and deployed in the repository to be used/listed.
+
+To list available custom models on PVC, use the code block below. To get the specification of a specific model, provide
+the ``model_id``.
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.foundation_models import get_custom_model_specs
+
+    get_custom_model_specs(api_client=client)
+    # OR
+    get_custom_model_specs(credentials=credentials)
+    # OR
+    get_custom_model_specs(api_client=client, model_id="mistralai/Mistral-7B-Instruct-v0.2")
+
+Store the model in the service repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To store a model as an asset in the repo, you must first create proper ``metadata``.
+
+.. note::
+
+    There are two distinct software specifications available for custom models, each optimized for a specific model
+    architecture. These specifications ensure the most effective deployment and utilization of the model's capabilities:
+
+        - ``watsonx-cfm-caikit-1.0`` - recommended for models with ``t5`` or ``mt5`` architecture,
+        - ``watsonx-cfm-caikit-1.1`` - recommended for all other model architectures.
+
+    .. warning::
+
+        The ``watsonx-cfm-caikit-1.0`` specification is currently in a *constricted* state on IBM Cloud Pak® for Data
+        5.3 release. Some functionality may be limited.
+
+.. code-block:: python
+
+    sw_spec_id = client.software_specifications.get_id_by_name("watsonx-cfm-caikit-1.1")
+
+    metadata = {
+        client.repository.ModelMetaNames.NAME: "custom FM asset",
+        client.repository.ModelMetaNames.SOFTWARE_SPEC_ID: sw_spec_id,
+        client.repository.ModelMetaNames.TYPE: client.repository.ModelAssetTypes.CUSTOM_FOUNDATION_MODEL_1_0,
+    }
+
+Store the model
+~~~~~~~~~~~~~~~
+
+After storing the model as an asset, you can store the model using ``client.repository.store_model()``.
+
+.. code-block:: python
+
+    stored_model_details = client.repository.store_model(
+        model="mistralai/Mistral-7B-Instruct-v0.2", meta_props=metadata
+    )
+
+To get the ``id`` of the stored asset, use the obtained details.
+
+.. code-block:: python
+
+    model_asset_id = client.repository.get_model_id(stored_model_details)
+
+List all stored custom foundation models and filter them by framework type.
+
+.. code-block:: python
+
+    client.repository.list(framework_filter="custom_foundation_model_1.0")
+
+Define the hardware specification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To deploy a stored custom foundation model, you need to define hardware specifications. You can use a custom hardware
+specification or pre-defined T-shirt sizes. ``APIClient`` has a dedicated module to work with :ref:`Hardware
+Specifications<core-api-hardware-specification>`. Few key methods are:
+
+- List all defined hardware specifications:
+
+.. code-block:: python
+
+    client.hardware_specifications.list()
+
+- Retrieve the details of defined hardware specifications:
+
+.. code-block:: python
+
+    client.hardware_specifications.get_details(
+        client.hardware_specifications.get_id_by_name("M")
+    )
+
+- Define custom hardware specifications:
+
+.. code-block:: python
+
+    meta_props = {
+        client.hardware_specifications.ConfigurationMetaNames.NAME: "Custom GPU hw spec",
+        client.hardware_specifications.ConfigurationMetaNames.NODES: {
+            "cpu": {"units": "2"},
+            "mem": {"size": "128Gi"},
+            "gpu": {"num_gpu": 1},
+        },
+    }
+
+    hw_spec_details = client.hardware_specifications.store(meta_props)
+
+Deploy the custom foundation model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To create a new deployment of a custom foundation model, you need to define a dictionary with deployment ``metadata``.
+Specify the deployment ``NAME``, ``DESCRIPTION``, and hardware specification.
+
+Only online deployments are supported, so the ``ONLINE`` field is required.
+
+Optional: At this stage, you can overwrite model parameters. To overwrite them, pass a dictionary with new parameters
+values in the ``FOUNDATION_MODEL`` field.
+
+You also need to provide the ``id`` of the stored model asset to create the deployment.
+
+.. code-block:: python
+
+    metadata = {
+        client.deployments.ConfigurationMetaNames.NAME: "Custom FM Deployment",
+        client.deployments.ConfigurationMetaNames.DESCRIPTION: "Deployment of custom foundation model with SDK",
+        client.deployments.ConfigurationMetaNames.ONLINE: {},
+        client.deployments.ConfigurationMetaNames.HARDWARE_SPEC: {
+            "name": "Custom GPU hw spec"
+        },  # name or id supported here
+        client.deployments.ConfigurationMetaNames.FOUNDATION_MODEL: {
+            "max_new_tokens": 128
+        },  # optional
+    }
+    deployment_details = client.deployments.create(model_asset_id, metadata)
+
+Once the deployment creation process is done, ``client.deployments.create`` returns a dictionary with deployment
+details, which can be used to retrieve the deployment ``id``.
+
+.. code-block:: python
+
+    deployment_id = client.deployments.get_id(deployment_details)
+
+You can list all existing deployments in the working space or project scope with the ``list`` method:
+
+.. code-block:: python
+
+    client.deployments.list()
+
+Work with deployments
+~~~~~~~~~~~~~~~~~~~~~
+
+For information on working with foundation model deployments, see :doc:`Models/ ModelInference for
+Deployments<fm_deployments>`.
