@@ -1,0 +1,121 @@
+#############################
+ Configuring the HTTP Client
+#############################
+
+.. note::
+
+    Supported since version 1.3.0
+
+****************
+ What is HTTPX?
+****************
+
+HTTPX is a fully featured HTTP client for Python 3, which provides synchronous and asynchronous request handling. See
+`here <https://www.python-httpx.org>`_
+
+The ``ibm-watsonx-ai`` client uses ``httpx.Client`` in the following classes: **ModelInference, Embeddings and methods
+related to the deployments management and scoring**.
+
+The ``ibm-watsonx-ai`` client uses ``httpx.AsyncClient`` in **ModelInference** class.
+
+The ``httpx.Client`` and ``httpx.AsyncClient`` are utilized in the ``ibm-watsonx-ai`` client to enhance performance by:
+    - Reducing latency across requests
+    - Minimizing network congestion
+
+***********************************
+ Default HTTP Client Configuration
+***********************************
+
+By default, the ``ibm-watsonx-ai`` client is configured with the following settings:
+
+- **Timeouts:**
+      - ``read, write and pool``: **1800s**
+      - ``connect``: **10s**
+- **Limits:**
+      - ``max_connections``: **10**
+      - ``max_keepalive_connections``: **10**
+      - ``keepalive_expiry``: **5**
+
+The ``ibm-watsonx-ai`` client automatically handles **proxies** provided in credentials and **verify** settings to
+create an appropriate transport for ``httpx``.
+
+*****************************
+ Customizing the HTTP Client
+*****************************
+
+Apart from using the default client, there are two ways to configure the HTTP client (both ``httpx.Client`` and
+``httpx.AsyncClient``):
+
+Using ``HttpClientConfig``
+==========================
+
+To customize timeouts and limits, use ``HttpClientConfig``:
+
+**Example:**
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient, Credentials
+    from ibm_watsonx_ai.utils.utils import HttpClientConfig
+    import httpx
+
+    credentials = Credentials(url="<url>", api_key="<api_key>")
+
+    limits = httpx.Limits(max_connections=5)
+    timeout = httpx.Timeout(7)
+    http_config = HttpClientConfig(timeout=timeout, limits=limits)
+    client = APIClient(
+        credentials, httpx_client=http_config, async_httpx_client=http_config
+    )
+
+.. note::
+
+    If you provide configuration via `HttpClientConfig`, it must be passed to both `httpx_client` and
+    `async_httpx_client`. These clients operate independently, and the configuration of one does not impact the other.
+
+Explicitly providing ``httpx.Client``
+=====================================
+
+You can also explicitly pass an ``httpx.Client`` and/or an ``httpx.AsyncClient`` instances:
+
+**Example:**
+
+.. code-block:: python
+
+    import httpx
+    from ibm_watsonx_ai import APIClient, Credentials
+
+    credentials = Credentials(url="<url>", api_key="<api_key>")
+    timeout = 10.0
+    proxy = "http://localhost:8030"
+
+    httpx_client = httpx.Client(proxy=proxy, timeout=timeout)
+    async_httpx_client = httpx.AsyncClient(proxy=proxy, timeout=timeout)
+    client = APIClient(
+        credentials, httpx_client=httpx_client, async_httpx_client=async_httpx_client
+    )
+
+.. note::
+
+    In this example, the `timeout` and `proxy` parameters are explicitly set. As a result, other parameters, such as
+    `limits`, will take their default values from `httpx`. This means that `httpx_client` in the example will have its
+    `limits` set to `Limits(max_connections=100, max_keepalive_connections=20)`. However, if `httpx_client` is not
+    specified, the `limits` parameter defaults to `Limits(max_connections=10, max_keepalive_connections=10,
+    keepalive_expiry=5)`. The same behavior applies to `async_httpx_client`.
+
+.. note::
+
+    When explicitly passing an httpx.Client and/or an httpx.AsyncClient, users assume full responsibility for
+    configuring all client options correctly. All unset parameters will be filled with httpx defaults. This includes
+    ensuring that any proxy settings provided in credentials are also explicitly defined in the httpx.Client and/or
+    httpx.AsyncClient configuration.
+
+.. note::
+
+    When providing clients explicitly, keep in mind that they operate independently. If only one type of client (e.g.,
+    ``httpx.AsyncClient``) is provided, the other type is instantiated with default settings.
+
+Additional Considerations
+=========================
+
+It is recommended to read the :doc:`rate_limit` section to understand request handling and the retry mechanism.
