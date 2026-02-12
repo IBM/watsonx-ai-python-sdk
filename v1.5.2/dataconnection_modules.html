@@ -1,0 +1,786 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="IterableDatasets Modules" href="iterabledatasets_modules.html"><link rel="prev" title="Working with DataConnection" href="autoai_working_with_dataconnection.html">
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
+        <title>DataConnection Modules - IBM watsonx.ai</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystyle2.css?v=4014603e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --font-stack: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif;
+  --font-stack--monospace: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, Lucida Console, monospace;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">IBM watsonx.ai</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><div class="sidebar-scroll"><a class="sidebar-brand" href="index.html">
+  
+  <span class="sidebar-brand-text">IBM watsonx.ai</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="setup.html">Setup</a><input aria-label="Toggle navigation of Setup" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup_cloud.html">IBM watsonx.ai for IBM Cloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup_cpd.html">IBM watsonx.ai software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="httpx_configuration.html">Configuring the HTTP Client</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html">Best Practices</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="api.html">API</a><input aria-label="Toggle navigation of API" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="base.html">Base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_api.html">Core</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="dataconnection.html">Data Connections</a><input aria-label="Toggle navigation of Data Connections" checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="autoai_working_with_dataconnection.html">Working with DataConnection</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">DataConnection Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="iterabledatasets_modules.html">IterableDatasets Modules</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="autoai.html">AutoAI</a><input aria-label="Toggle navigation of AutoAI" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoai_working_with_class_and_optimizer.html">Working with AutoAI class and optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoai_working_with_class_and_rag_optimizer.html">Working with AutoAI RAG class and rag_optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoai_rag_schema.html">AutoAI RAG Parameter Scheme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoai_experiment.html">AutoAI experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoai_deployment_modules.html">Deployment Modules for AutoAI models</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="foundation_models.html">Foundation Models</a><input aria-label="Toggle navigation of Foundation Models" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="fm_embeddings.html">Embeddings</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="fm_models.html">Models</a><input aria-label="Toggle navigation of Models" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="fm_model_inference.html">ModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fm_ts_model_inference.html">TSModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fm_audio_model_inference.html">AudioModelInference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fm_model.html">Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fm_deployments.html"><code class="docutils literal notranslate"><span class="pre">ModelInference</span></code> for Deployments</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="prompt_tuner.html">Tuning</a><input aria-label="Toggle navigation of Tuning" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="pt_tune_experiment_run.html">Working with TuneExperiment and PromptTuner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ft_tune_experiment_run.html">Working with TuneExperiment and FineTuner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="it_tune_experiment_run.html">Working with TuneExperiment and ILabTuner (BETA)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pt_model_inference.html">Tuned Model Inference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tune_experiment.html">Tune Experiment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ilab_tuner.html">InstructLab Experiment (BETA)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="prompt_template_manager.html">Prompt Template Manager</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="fm_extensions.html">Extensions</a><input aria-label="Toggle navigation of Extensions" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="fm_extensions_langchain.html">LangChain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fm_extensions_llamaindex.html">LlamaIndex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fm_extensions_rag.html">RAG</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="fm_helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_custom_models.html">Custom models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_text_detection.html">Text Detection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_text_extraction.html">Text Extractions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_text_classification.html">Text Classification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_schema.html">Parameter Scheme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_rerank.html">Rerank</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_deploy_on_demand.html">Deploy on Demand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rate_limit.html">Rate Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_toolkit.html">Toolkit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fm_vector_index.html">VectorIndexes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="model_gateway.html">Model Gateway (BETA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="save_models.html">Saving external models</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="samples.html">Samples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration from <code class="docutils literal notranslate"><span class="pre">ibm_watson_machine_learning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration_v1.html">V1 Migration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+</div></div>
+
+  <h3>Tags</h3>
+  <ul>
+    
+      
+      
+      <li><a href="../v1.1.26/dataconnection_modules.html">v1.1</a></li>
+    
+      
+      
+      <li><a href="../v1.2.10/dataconnection_modules.html">v1.2</a></li>
+    
+      
+      
+      <li><a href="../v1.3.42/dataconnection_modules.html">v1.3</a></li>
+    
+      
+      
+      <li><a href="../v1.4.11/dataconnection_modules.html">v1.4</a></li>
+    
+      
+      
+      <li><a href="dataconnection_modules.html">v1.5</a></li>
+    
+  </ul>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/dataconnection_modules.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="dataconnection-modules">
+<h1>DataConnection Modules<a class="headerlink" href="#dataconnection-modules" title="Link to this heading">¶</a></h1>
+<section id="dataconnection">
+<h2>DataConnection<a class="headerlink" href="#dataconnection" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.DataConnection">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.helpers.connections.connections.</span></span><span class="sig-name descname"><span class="pre">DataConnection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_asset_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_asset_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#DataConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataConnection</span></code></p>
+<p>You need a Data Storage Connection class for Service training metadata (input data).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>connection</strong> (<em>NFSConnection</em><em> or </em><em>ConnectionAsset</em><em>, </em><em>optional</em>) – connection parameters of a specific type</p></li>
+<li><p><strong>location</strong> (<em>Union</em><em>[</em><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.S3Location" title="ibm_watsonx_ai.helpers.connections.connections.S3Location"><em>S3Location</em></a><em>, </em><em>FSLocation</em><em>, </em><em>AssetLocation</em><em>]</em>) – required location parameters of a specific type</p></li>
+<li><p><strong>data_asset_id</strong> (<em>str</em><em>, </em><em>optional</em>) – data asset ID, if the DataConnection should point to a data asset</p></li>
+<li><p><strong>connection_asset_id</strong> (<em>str</em><em>, </em><em>optional</em>) – connection asset ID, if the DataConnection should point to a connection asset</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.DataConnection.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#DataConnection.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.download" title="Link to this definition">¶</a></dt>
+<dd><p>Download a dataset stored in a remote data storage and save to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em><em> | </em><em>Path</em>) – path to the file where data will be downloaded</p>
+</dd>
+</dl>
+<p><strong>Examples</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">document_reference</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="p">(</span>
+    <span class="n">connection_asset_id</span><span class="o">=</span><span class="s2">&quot;&lt;connection_id&gt;&quot;</span><span class="p">,</span>
+    <span class="n">location</span><span class="o">=</span><span class="n">S3Location</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;&lt;bucket_name&gt;&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;path/to/file&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">document_reference</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;results.json&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.DataConnection.download_folder">
+<span class="sig-name descname"><span class="pre">download_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#DataConnection.download_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.download_folder" title="Link to this definition">¶</a></dt>
+<dd><p>Download files from a folder and subfolders stored in a remote data storage and save to a local directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>local_dir</strong> (<em>str</em><em> | </em><em>Path</em><em>, </em><em>optional</em>) – path to the local directory where data will be downloaded, download to current working directory if not provided</p>
+</dd>
+</dl>
+<p><strong>Examples</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">folder_reference</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="p">(</span>
+    <span class="n">connection_asset_id</span><span class="o">=</span><span class="s2">&quot;&lt;connection_id&gt;&quot;</span><span class="p">,</span>
+    <span class="n">location</span><span class="o">=</span><span class="n">S3Location</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;&lt;bucket_name&gt;&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;path/to/folder&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">folder_reference</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">local_dir</span><span class="o">=</span><span class="s2">&quot;./data&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.DataConnection.from_dict">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#DataConnection.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.from_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Create a DataConnection object from a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>connection_data</strong> (<em>dict</em>) – dictionary data structure with information about the data connection reference</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataConnection object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection" title="ibm_watsonx_ai.helpers.connections.connections.DataConnection">DataConnection</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.DataConnection.from_studio">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_studio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#DataConnection.from_studio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.from_studio" title="Link to this definition">¶</a></dt>
+<dd><p>Create DataConnections from the credentials stored (connected) in Watson Studio. Only for COS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – path in the COS bucket to the training dataset</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list with DataConnection objects</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection" title="ibm_watsonx_ai.helpers.connections.connections.DataConnection">DataConnection</a>]</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data_connections</span> <span class="o">=</span> <span class="n">DataConnection</span><span class="o">.</span><span class="n">from_studio</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;iris_dataset.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.DataConnection.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">with_holdout_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excel_sheet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_to_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_batch_rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rows_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_percentage_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#DataConnection.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.read" title="Link to this definition">¶</a></dt>
+<dd><p>Download a dataset that is stored in a remote data storage. Returns batch up to 1 GB.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>with_holdout_split</strong> (<em>bool</em><em>, </em><em>optional</em>) – if <cite>True</cite>, data will be split to train and holdout dataset as it was by AutoAI</p></li>
+<li><p><strong>csv_separator</strong> (<em>str</em><em>, </em><em>optional</em>) – separator/delimiter for the CSV file</p></li>
+<li><p><strong>excel_sheet</strong> (<em>str</em><em>, </em><em>optional</em>) – excel file sheet name to use, use only when the xlsx file is an input,
+support for the number of the sheet is deprecated</p></li>
+<li><p><strong>encoding</strong> (<em>str</em><em>, </em><em>optional</em>) – encoding type of the CSV file</p></li>
+<li><p><strong>raw</strong> (<em>bool</em><em>, </em><em>optional</em>) – if <cite>False</cite>, simple data is preprocessed (the same as in the backend),
+if <cite>True</cite>, data is not preprocessed</p></li>
+<li><p><strong>binary</strong> (<em>bool</em><em>, </em><em>optional</em>) – indicates to retrieve data in binary mode, the result will be a python binary type variable</p></li>
+<li><p><strong>read_to_file</strong> (<em>str</em><em> or </em><em>Path</em><em>, </em><em>optional</em>) – stream read data to a file under the path specified as the value of this parameter,
+use this parameter to prevent keeping data in-memory</p></li>
+<li><p><strong>number_of_batch_rows</strong> (<em>int</em><em>, </em><em>optional</em>) – number of rows to read in each batch when reading from the flight connection</p></li>
+<li><p><strong>sampling_type</strong> (<em>str</em><em>, </em><em>optional</em>) – a sampling strategy on how to read the data</p></li>
+<li><p><strong>sample_size_limit</strong> (<em>int</em><em>, </em><em>optional</em>) – upper limit for the overall data to be downloaded in bytes, default: 1 GB</p></li>
+<li><p><strong>sample_rows_limit</strong> (<em>int</em><em>, </em><em>optional</em>) – upper limit for the overall data to be downloaded in a number of rows</p></li>
+<li><p><strong>sample_percentage_limit</strong> (<em>float</em><em>, </em><em>optional</em>) – upper limit for the overall data to be downloaded
+in the percent of all dataset, this parameter is ignored, when <cite>sampling_type</cite> parameter is set
+to <cite>first_n_records</cite>, must be a float number between 0 and 1</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If more than one of: <cite>sample_size_limit</cite>, <cite>sample_rows_limit</cite>, <cite>sample_percentage_limit</cite> are set,
+then downloaded data is limited to the lowest threshold.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>one of the following:</p>
+<ul class="simple">
+<li><p>pandas.DataFrame that contains dataset from remote data storage : Xy_train</p></li>
+<li><p>Tuple[pandas.DataFrame, pandas.DataFrame, pandas.DataFrame, pandas.DataFrame] : X_train, X_holdout, y_train, y_holdout</p></li>
+<li><p>Tuple[pandas.DataFrame, pandas.DataFrame] : X_test, y_test that contains training data and holdout data from
+remote storage</p></li>
+<li><p>bytes object, auto holdout split from backend (only train data provided)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p><strong>Examples</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">train_data_connections</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">get_data_connections</span><span class="p">()</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">train_data_connections</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>  <span class="c1"># all train data</span>
+
+<span class="c1"># or</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_holdout</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_holdout</span> <span class="o">=</span> <span class="n">train_data_connections</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+    <span class="n">with_holdout_split</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>  <span class="c1"># train and holdout data</span>
+</pre></div>
+</div>
+<p>Your train and test data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">training_data_reference</span><span class="o">=</span><span class="p">[</span><span class="n">DataConnection</span><span class="p">],</span>
+    <span class="n">training_results_reference</span><span class="o">=</span><span class="n">DataConnection</span><span class="p">,</span>
+    <span class="n">test_data_reference</span><span class="o">=</span><span class="n">DataConnection</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">test_data_connection</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">get_test_data_connections</span><span class="p">()</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">test_data_connection</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>  <span class="c1"># only holdout data</span>
+
+<span class="c1"># and</span>
+
+<span class="n">train_data_connections</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">get_data_connections</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">train_connections</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>  <span class="c1"># only train data</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.DataConnection.set_client">
+<span class="sig-name descname"><span class="pre">set_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#DataConnection.set_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.set_client" title="Link to this definition">¶</a></dt>
+<dd><p>To enable write/read operations with a connection to a service, set an initialized service client in the connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a>) – API client to connect to a service</p>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DataConnection</span><span class="o">.</span><span class="n">set_client</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="n">api_client</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.DataConnection.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#DataConnection.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.to_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Convert a DataConnection object to a dictionary representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataConnection dictionary representation</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.DataConnection.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remote_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#DataConnection.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.write" title="Link to this definition">¶</a></dt>
+<dd><p>Upload a file to a remote data storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>str</em><em>, </em><em>Path</em><em>, </em><em>pandas.DataFrame</em>) – local path to the dataset or pandas.DataFrame with data</p></li>
+<li><p><strong>remote_name</strong> (<em>str</em>) – name of dataset to be stored in the remote data storage</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="s3location">
+<h2>S3Location<a class="headerlink" href="#s3location" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.S3Location">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.helpers.connections.connections.</span></span><span class="sig-name descname"><span class="pre">S3Location</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bucket</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#S3Location"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.S3Location" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLocation</span></code></p>
+<p>Connection class to a COS data storage in S3 format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bucket</strong> (<em>str</em>) – COS bucket name</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – COS data path in the bucket</p></li>
+<li><p><strong>excel_sheet</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the excel sheet, if the chosen dataset uses an excel file for Batched Deployment scoring</p></li>
+<li><p><strong>model_location</strong> (<em>str</em><em>, </em><em>optional</em>) – path to the pipeline model in the COS</p></li>
+<li><p><strong>training_status</strong> (<em>str</em><em>, </em><em>optional</em>) – path to the training status JSON in the COS</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.S3Location.get_location">
+<span class="sig-name descname"><span class="pre">get_location</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#S3Location.get_location"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.S3Location.get_location" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="cloudassetlocation">
+<h2>CloudAssetLocation<a class="headerlink" href="#cloudassetlocation" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.CloudAssetLocation">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.helpers.connections.connections.</span></span><span class="sig-name descname"><span class="pre">CloudAssetLocation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asset_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#CloudAssetLocation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.CloudAssetLocation" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AssetLocation</span></code></p>
+<p>Connection class to data assets as input data references to a batch deployment job on Cloud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>asset_id</strong> (<em>str</em>) – asset ID of the file loaded on space on Cloud</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="deploymentoutputassetlocation">
+<h2>DeploymentOutputAssetLocation<a class="headerlink" href="#deploymentoutputassetlocation" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.DeploymentOutputAssetLocation">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.helpers.connections.connections.</span></span><span class="sig-name descname"><span class="pre">DeploymentOutputAssetLocation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#DeploymentOutputAssetLocation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.DeploymentOutputAssetLocation" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLocation</span></code></p>
+<p>Connection class to data assets where output of batch deployment will be stored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of CSV file to be saved as a data asset</p></li>
+<li><p><strong>description</strong> (<em>str</em><em>, </em><em>optional</em>) – description of the data asset</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="containerlocation">
+<h2>ContainerLocation<a class="headerlink" href="#containerlocation" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.ContainerLocation">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.helpers.connections.connections.</span></span><span class="sig-name descname"><span class="pre">ContainerLocation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#ContainerLocation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.ContainerLocation" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLocation</span></code></p>
+<p>Connection class to default COS in user Project/Space.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.ContainerLocation.get_location">
+<span class="sig-name descname"><span class="pre">get_location</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#ContainerLocation.get_location"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.ContainerLocation.get_location" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.ContainerLocation.prepend_container_id_to_path">
+<span class="sig-name descname"><span class="pre">prepend_container_id_to_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">container_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#ContainerLocation.prepend_container_id_to_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.ContainerLocation.prepend_container_id_to_path" title="Link to this definition">¶</a></dt>
+<dd><p>Prepend project / space ID to path.
+For projects and spaces stored in shared buckets, their ID must be prepended to the path.
+The assignment is skipped if the path already starts with <code class="docutils literal notranslate"><span class="pre">container_id</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>container_id</strong> (<em>str</em>) – id of project / space</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.ContainerLocation.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#ContainerLocation.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.ContainerLocation.to_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Get a json dictionary representing this model.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="githublocation">
+<h2>GithubLocation<a class="headerlink" href="#githublocation" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.GithubLocation">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.helpers.connections.connections.</span></span><span class="sig-name descname"><span class="pre">GithubLocation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">secret_manager_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#GithubLocation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.GithubLocation" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLocation</span></code></p>
+<p>Connection class to a Github.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>secret_manager_url</strong> (<em>str</em>) – url of Secrets Manager service where the Github PAT and url are stored.</p></li>
+<li><p><strong>secret_id</strong> (<em>str</em>) – ID of the secret with Github PAT and url in the Secrets Manager</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – path within github repo to the file</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.helpers.connections.connections.GithubLocation.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/helpers/connections/connections.html#GithubLocation.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.helpers.connections.connections.GithubLocation.to_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Return a json dictionary representing this model.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="iterabledatasets_modules.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">IterableDatasets Modules</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="autoai_working_with_dataconnection.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Working with DataConnection</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023-2026, IBM
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">DataConnection Modules</a><ul>
+<li><a class="reference internal" href="#dataconnection">DataConnection</a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection"><code class="docutils literal notranslate"><span class="pre">DataConnection</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.download"><code class="docutils literal notranslate"><span class="pre">DataConnection.download()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.download_folder"><code class="docutils literal notranslate"><span class="pre">DataConnection.download_folder()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.from_dict"><code class="docutils literal notranslate"><span class="pre">DataConnection.from_dict()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.from_studio"><code class="docutils literal notranslate"><span class="pre">DataConnection.from_studio()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.read"><code class="docutils literal notranslate"><span class="pre">DataConnection.read()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.set_client"><code class="docutils literal notranslate"><span class="pre">DataConnection.set_client()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.to_dict"><code class="docutils literal notranslate"><span class="pre">DataConnection.to_dict()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.DataConnection.write"><code class="docutils literal notranslate"><span class="pre">DataConnection.write()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#s3location">S3Location</a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.S3Location"><code class="docutils literal notranslate"><span class="pre">S3Location</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.S3Location.get_location"><code class="docutils literal notranslate"><span class="pre">S3Location.get_location()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cloudassetlocation">CloudAssetLocation</a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.CloudAssetLocation"><code class="docutils literal notranslate"><span class="pre">CloudAssetLocation</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#deploymentoutputassetlocation">DeploymentOutputAssetLocation</a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.DeploymentOutputAssetLocation"><code class="docutils literal notranslate"><span class="pre">DeploymentOutputAssetLocation</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#containerlocation">ContainerLocation</a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.ContainerLocation"><code class="docutils literal notranslate"><span class="pre">ContainerLocation</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.ContainerLocation.get_location"><code class="docutils literal notranslate"><span class="pre">ContainerLocation.get_location()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.ContainerLocation.prepend_container_id_to_path"><code class="docutils literal notranslate"><span class="pre">ContainerLocation.prepend_container_id_to_path()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.ContainerLocation.to_dict"><code class="docutils literal notranslate"><span class="pre">ContainerLocation.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#githublocation">GithubLocation</a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.GithubLocation"><code class="docutils literal notranslate"><span class="pre">GithubLocation</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.helpers.connections.connections.GithubLocation.to_dict"><code class="docutils literal notranslate"><span class="pre">GithubLocation.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    </body>
+</html>
