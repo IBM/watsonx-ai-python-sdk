@@ -1,0 +1,81 @@
+######################
+ Model Gateway (BETA)
+######################
+
+.. note::
+
+    Model Gateway is in currently in beta stage and available only on IBM watsonx.ai for IBM Cloud. Breaking changes in
+    API may be introduced in the future.
+
+Model Gateway provides proxy for inference requests to many model providers. The feature contain easy model usage with
+load balancing.
+
+*********
+ Gateway
+*********
+
+.. autoclass:: ibm_watsonx_ai.gateway.Gateway
+    :members:
+    :exclude-members:
+
+***********
+ Providers
+***********
+
+.. autoclass:: ibm_watsonx_ai.gateway.providers.Providers
+    :members:
+    :exclude-members:
+
+********
+ Models
+********
+
+.. autoclass:: ibm_watsonx_ai.gateway.models.Models
+    :members:
+    :exclude-members:
+
+.. autoclass:: ibm_watsonx_ai.gateway.enums.GatewayModelFunctions
+    :members:
+    :exclude-members:
+
+**********
+ Policies
+**********
+
+.. autoclass:: ibm_watsonx_ai.gateway.policies.Policies
+    :members:
+    :exclude-members:
+
+************
+ RateLimits
+************
+
+.. autoclass:: ibm_watsonx_ai.gateway.rate_limits.RateLimitSettings
+    :members:
+    :exclude-members:
+
+.. autoclass:: ibm_watsonx_ai.gateway.rate_limits.RateLimits
+    :members:
+    :exclude-members:
+
+Get rate limit details for model requests
+=========================================
+
+In order to get details of a request, which returned an error because of rate limits, you should use ``try-except`` to
+catch the ``APIRequestFailure`` exception. The caught exception has the ``response`` property, which is the underlying
+``httpx.Response`` instance. Using that instance, you can retrieve the response headers, which contain information about
+the rate limit.
+
+.. code-block:: python
+
+    try:
+        response = gateway.completions.create(
+            model_id, "The default voltage provided in USB is "
+        )
+    except APIRequestFailure as exc:
+        error_response = exc.response
+        rate_limit_headers = {
+            name: value
+            for name, value in error_response.headers
+            if name.startswith("x-ratelimit-")
+        }
