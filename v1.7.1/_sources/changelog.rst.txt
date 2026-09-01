@@ -1,0 +1,1416 @@
+###########
+ Changelog
+###########
+
+*******
+ 1.7.1
+*******
+
+🐛 Bug Fixes:
+
+- Removed breaking change with imports from ``ibm_watsonx_ai.utils.auth.base_auth``
+
+*******
+ 1.7.0
+*******
+
+🐛 Bug Fixes:
+
+- Fixed ``TypeError`` in deployment scoring scenario, where all values are integers
+- Replaced usage of ``curl`` with ``httpx`` in ``Volume.upload_file`` method
+
+*******
+ 1.6.2
+*******
+
+🚀 Features:
+
+- Added ``GatewayInference`` class support
+
+*******
+ 1.6.1
+*******
+
+🐛 Bug Fixes:
+
+- Case-insensitive parsing of boolean strings for ``WX_CLIENT_VERIFY_REQUESTS`` and ``Credentials.verify``
+- Introduce check whether Utility Agent Tools endpoint exists
+- Added conversion of ``NaN`` values to ``None`` for numerical columns of ``pd.DataFrame`` when performing deployment scoring
+
+*******
+ 1.6.0
+*******
+
+🚀 Features:
+
+- Add ``GatewayModelFunctions`` ``StrEnum`` for model function definitions in ModelGateway
+
+🐛 Bug Fixes:
+
+- allow downloads of all attachments even with duplicates
+- ONNX pipeline retrieval
+- Check content import state before promoting model to space
+- Fix for AutoRAG git based project functionality
+
+********
+ 1.5.14
+********
+
+🚀 Features:
+
+- Support chat parameters for calculating max input tokens
+
+********
+ 1.5.13
+********
+
+🚀 Features:
+
+- Added support for Python 3.14
+- Support `context_window` for AutoAI RAG experiments within Model Gateway
+- Add additional casting to query in get_window_documents() to increase stability
+
+🐛 Bug Fixes:
+
+- Add automatic batching for Gateway embeddings exceeding 1000 elements
+- Reduce redundant ``v2/projects`` and ``v2/spaces`` requests when the same scope is applied
+
+********
+ 1.5.11
+********
+
+🚀 Features:
+
+- Display Python-native warnings when ``system.warnings`` field is present in API response
+
+🐛 Bug Fixes:
+
+- Trusted profile authentication prefers api key over token from env variables
+- Fix ``HybridSemanticChunker`` handling when no breakpoint chunks are detected
+- ``BaseSchema.to_dict()`` now recursively converts dataclass objects in dict fields
+- Fix "OutOfMemory" error during getting details of 200+ resources with async methods
+- Fix AutoAI ONNX model deployment error
+
+********
+ 1.5.10
+********
+
+🚀 Features:
+
+- include ``account_id`` in ``Credentials`` to enable multi-tenant support
+
+🐛 Bug Fixes:
+
+- Fixed error with ``None`` value appearing as httpx request's result
+- Never return none from `handle_request` and `handle_async_request`
+
+*******
+ 1.5.9
+*******
+
+🚀 Features:
+
+- Added support for container-specific models in Model Gateway
+- Added support for Semantic Schema
+
+*******
+ 1.5.6
+*******
+
+🚀 Features:
+
+- Introduce user-friendly and unique ``document_id`` syntax
+- Support Batch Inference
+
+🐛 Bug Fixes:
+
+- Fix OutOfMemory error during getting details of 200+ resources
+- remove cache wrapper from `_get_details` ang `_aget_details` methods in Projects and Spaces class
+- Documentation links with page anchors now redirect to correct section
+
+*******
+ 1.5.5
+*******
+
+🚀 Features:
+
+- Added support for custom authentication URLs
+- Implemented missing async requests for models created via ``Models.astore()`` using a training ID
+- Integrated ``Embeddings`` and ``VectorStore`` with the Model Gateway
+- Merged overlapping retrieved chunks from the same document
+
+🐛 Bug Fixes:
+
+- Ensured proxies passed via environment variables are respected during ``httpx`` client initialization
+- Improved error message when ``model_limits`` are missing in model details
+
+*******
+ 1.5.4
+*******
+
+🚀 Features:
+
+- Added support for US-EAST (AWS) region
+- Added support for IBM Cloud Pak® for Data 5.4
+- Added ``attachments`` field to the return value of ``Assets.get_details()``
+- Added ``py.typed`` file in compliance with PEP 561
+
+🐛 Bug Fixes:
+
+- Fixed token expiration issue occurring after 12-hour runs
+- Migrated import from ``langchain.text_splitter`` to ``langchain_text_splitters``
+
+*******
+ 1.5.2
+*******
+
+🐛 Bug Fixes:
+
+- Added new client error for missing foundation models on CPD
+
+*******
+ 1.5.1
+*******
+
+🐛 Bug Fixes:
+
+- Fixed ``HTTPResponse`` object has no attribute ``getheaders`` exception
+- Auto refreshing flight headers
+- Fixed default values when storing AIService
+
+*******
+ 1.5.0
+*******
+
+🚀 Features:
+
+- Consolidate HTTP request handling by implementing ``httpx`` throughout the ``ibm_watsonx_ai`` library
+- Added support for updating Functions and AI Services with the ``update`` field available as an optional parameter
+- Optimized ``APIClient`` initialization by removing unnecessary ``projects``/``spaces`` calls when ``scope_validation=False``
+
+🐛 Bug Fixes:
+
+- Store files correctly using ``ContainerLocation``
+
+********
+ 1.4.11
+********
+
+🐛 Bug Fixes:
+
+- Add missing cast to string for file names in PUT requests
+
+********
+ 1.4.10
+********
+
+🚀 Features:
+
+- Tenant-level encryption support added
+- Update error message in BaseDocumentsIterableDataset
+
+*******
+ 1.4.9
+*******
+
+🐛 Bug Fixes:
+
+- Prevent overriding ``model_id`` on ``ModelInference`` instances to ensure correct inference behavior
+- Added more detailed error message if the package extension is missing for model loading
+- fix MCP server implementation
+- Fixed unknown attribute ``async_httpx_client`` in ICP Auth
+- Remove unnecessary columns from `RAGOptimizer.summary()` data frame
+
+*******
+ 1.4.7
+*******
+
+🚀 Features:
+
+- Added ``RateLimit`` class to Model Gateway
+
+🐛 Bug Fixes:
+
+- Fix for "null" value in the numeric column block conversion to numeric type after downloading dataset from Flight
+- Convert column types while reading from Flight to correct numeric types
+- Fix incorrect dependencies check
+
+*******
+ 1.4.6
+*******
+
+🚀 Features:
+
+- Added support for ``INIT`` for AIService meta_props
+- Add `repetition_penalty` and `length_penalty` to `TextChatParameters`
+
+🐛 Bug Fixes:
+
+- Add return to Training.cancel()
+- Fix for checking if provided URL relates to Cloud
+
+*******
+ 1.4.5
+*******
+
+🚀 Features:
+
+- Added support for ``settings`` param in ``DatabaseKnowledgeBase``
+- Support `custom` object in `FineTuner.run()`
+- Add support of Model Gateway on CPD
+
+*******
+ 1.4.4
+*******
+
+🐛 Bug Fixes:
+
+- Change DataConnection.download_folder method in case of NFSLocation
+- Check if CPD before checking if datasource type is `volumes`
+- Update RemoteFileStorage conversion
+
+*******
+ 1.4.3
+*******
+
+🚀 Features:
+
+- Added support for specifying ``hardware_spec`` as dict in batch deployment
+- Add Path to public method signatures
+
+🐛 Bug Fixes:
+
+- Support absolute path provided in `FSLocation.path` for uploading and downloading data
+- Use new Vector Store parameters only if set to non-default for CPD <= 5.2
+- Set `raise_error_for_list` to True for all `_validate_type` calls with lists
+- Modify warning read in BaseModelInference._return_guardrails_stats
+
+*******
+ 1.4.2
+*******
+
+🚀 Features:
+
+- Added support for knowledge base references in AutoAI RAG
+- Added support for specifying BYOM functions
+- Support custom ``text_field/query_field`` parameter in VectorStore adapters
+
+🐛 Bug Fixes:
+
+- Accept verify as path to cert file
+
+*******
+ 1.4.1
+*******
+
+🚀 Features:
+
+- Add SDK support for One-click RAG
+- Added methods for listing models with LoRA and QLoRA fine tuning support
+- WDU text classification support added
+- Added support for custom ``document_id``, ``sequence_number`` and ``text`` fields in ``VectorStore``
+- Add support for int values for holdout_size
+
+*******
+ 1.4.0
+*******
+
+🚀 Features:
+
+- Refactored ``get_model_specs`` to return all available models (previously limited to text generation). Introduced ``get_text_generation_model_specs`` as a dedicated method for retrieving only text generation models
+- Support new chat parameters - ``chat_template_kwargs``, ``reasoning_effort``, ``include_reasoning``
+- Added limit to ``Connections.get_details`` and ``Connections.list`` methods
+- Add attempt_activation param to Deployments.get_details
+- Removed support for ``IBM Cloud Pak® for Data 4.8.x``
+
+🐛 Bug Fixes:
+
+- Fixed default setting of Flight hostname on SOD clusters
+
+********
+ 1.3.40
+********
+
+🚀 Features:
+
+- Enable APIClient initialization with `5.3` CPD version
+
+🐛 Bug Fixes:
+
+- Added missing imports in ``Training`` and ``BaseDataConnection`` classes
+- Fixed checking software specification lifecycle in shiny
+- Fixed APIClient initialization for watsonx.ai lightweight clusters
+
+********
+ 1.3.39
+********
+
+🚀 Features:
+
+- Added support for chat mode & parameters
+- Added ``RemoteFileStorageLocation`` class
+- Added async methods to ``Repository`` class
+- Added option to include ``SPEC_STATE`` and ``SPEC_REPLACEMENT`` columns in ``client.deployments.list()``
+- Added async methods to ``Models`` class
+- Added support for automatically filled ``documentation.functions`` and ``documentation.init``
+- Added async methods to ``Deployments`` class
+- Added async methods to ``AIServices`` class
+- Added async methods to ``ModelDefinition`` class
+- Added async methods to ``Functions`` class
+- Added async methods to ``Pipelines`` class
+- Added async methods to ``Experiments`` class
+- Added async methods to ``Assets`` class
+- Added async methods to ``Spaces`` class
+- Added async methods to ``SwSpec`` class
+- Added async methods to ``PkgExtn`` class
+
+🐛 Bug Fixes:
+
+- Removed deprecated params from ``get_sample_params``
+- Fix ``NoDocumentsLoaded`` error message
+- add empty file check to prevent unclear error
+- Removed unsupported arguments for storing HDF5 model using Keras v3
+
+********
+ 1.3.38
+********
+
+🚀 Features:
+
+- Added filters param in ``get_model_specs`` method, added ``get_text_generation_model_specs`` method
+- remove daub_adaptive_subsampling_max_mem_usage filed from sdk
+- Update ``TextChatResponseFormat`` and related classes, introduce ``TextChatResponseJsonSchema``
+- Add support for chat parameters for ``DeploymentModelInference`` on Cloud
+
+🐛 Bug Fixes:
+
+- Raise error when user calls ``set_token`` with None
+- Improve error handling for service unavailability in authentication flow
+- Text extractor converts timestamp while extracting xlsx file
+- Added deprecation warnings on AutoAIRAG text gen params
+
+********
+ 1.3.37
+********
+
+🚀 Features:
+
+- Present AutoAI RAG settings importance as pd.DataFrame
+
+🐛 Bug Fixes:
+
+- Fix destination path for uploading file to FS on CPD with ``remote_name`` defined
+- Fix for AWS token generation
+- Fix source project/space during Batch creation
+- Fix download folder without slash in location path on CPD
+- Block container use on CPD space
+
+********
+ 1.3.36
+********
+
+🚀 Features:
+
+- Make ``instance_id`` optional in APIClient
+- Added support for ``guided_*`` parameters in ``text/chat`` endpoint
+
+🐛 Bug Fixes:
+
+- unify type of ``_datasource_type`` attr
+
+********
+ 1.3.35
+********
+
+🚀 Features:
+
+- Support for trusted profile with token
+
+🐛 Bug Fixes:
+
+- Updated function parsing using ``ast`` library
+
+********
+ 1.3.34
+********
+
+🚀 Features:
+
+- Add new param for ``TabularIterableDataset`` to control casting strings to float and bool
+- Added informative error if ``restricted`` connection is passed to VectorStores
+- Added support for ``runtime_definitions`` API
+- Support fine-tuning live metrics in ``FineTuner.plot_learning_curve`` and ``FineTuner.summary``
+- Added ``delete`` method to ``Training`` class
+
+🐛 Bug Fixes:
+
+- Added prepending of project / space ID to ``ContainerLocation.path`` for shared buckets
+- Update Batch.run_job to properly import ``pd.Dataframe``
+- Accept ``FLIGHT_SERVICE_LOCATION`` with schema for backward compatibility
+- Extended retry logic in ``FlightConnection`` class
+- Added "event: error" handling in ``chat_stream/achat_stream`` methods
+
+********
+ 1.3.33
+********
+
+🚀 Features:
+
+- Added ``FineTuner.get_logs()`` method to allow getting logs for completed FT training
+- Added support for ``max_completion_tokens`` param in ``/ml/v1//text/chat`` endpoint
+- Added support for ``/ml/v1/audio/transcriptions`` endpoint
+
+🐛 Bug Fixes:
+
+- Fixed setting SSL parameter in ``get_db2()`` method
+- Compliance with breaking changes delivered in ``mcp`` package
+- Added support for ``.yaml`` files with end of directives markers
+- Used ``FLIGHT_SERVICE_LOCATION`` environment variable when provided
+
+********
+ 1.3.32
+********
+
+🚀 Features:
+
+- Implement dedicated VectorStore for DB2
+- Add ``skip_fallback`` to ``DataConnection.read``
+- Support loading and deploying ONNX models
+- Added ``SEMANTIC_CONFIG`` to ``TextExtractionsV2ParametersMetaNames`` enum
+- Added ``force`` flag to artifact delete methods
+
+🐛 Bug Fixes:
+
+- Brought back ``TabularIterableDataset.connection`` property
+- Remove incorrect closing queue in documents loader
+- Fix getting fine-tuning run details including metrics on CPD
+
+********
+ 1.3.31
+********
+
+🚀 Features:
+
+- Trusted profiles authentication support
+- Tools support for BYOM chat
+
+🐛 Bug Fixes:
+
+- Fixed downloading AutoAI's results assets in notebook scenario
+- Replace problematic chars in documents with question marks when generating document_id
+- Fixed configuration for Git Based Projects
+
+********
+ 1.3.30
+********
+
+🐛 Bug Fixes:
+
+- Improved writing to file while downloading data_assets with ``binary=True``.
+
+********
+ 1.3.29
+********
+
+🚀 Features:
+
+- Improved loading all documents from subfolders.
+- Load AI service generated in AutoAI RAG experiment in get_pattern method.
+- ``TabularDocumentsIterableDataset`` added.
+
+********
+ 1.3.28
+********
+
+🚀 Features:
+
+- Changed AutoAI RAG experiment ``test_data_references`` as optional field.
+- Added support for ``FolderAssets``.
+
+🐛 Bug Fixes:
+
+- Decreased number of requests to ``datasource_types`` API.
+- Removed delay in ``client.spaces.store()`` method.
+
+********
+ 1.3.27
+********
+
+🚀 Features:
+
+- Added support for ``documentation.init`` and ``documentation.functions`` in AI services
+
+🐛 Bug Fixes:
+
+- Fix ``results_reference.location.path`` for Fine Tuning
+
+********
+ 1.3.26
+********
+
+🚀 Features:
+
+- Add ``future_data`` as a param in ``forecast()`` method instead of kwargs
+- Deprecate ``inference_function`` and ``indexing_function``
+
+🐛 Bug Fixes:
+
+- Improve elastic strategy
+- Added support for initializing Volumes only on CPD
+- Add checking for models supporting function chat only
+- Handle custom datasource types in list method
+- Fixed downloading AutoAI's artifacts on AWS
+- Fix for storing package extensions on AWS
+- Lock token generation
+
+********
+ 1.3.25
+********
+
+🚀 Features:
+
+- Fixed ``DataConnection`` methods for AWS IBM Cloud
+- Add Semantic Chunker
+- Model Gateway - support for beta release
+
+🐛 Bug Fixes:
+
+- Double token generation fix
+
+********
+ 1.3.24
+********
+
+🚀 Features:
+
+- Add ``to_langchain_tool`` method to ``Retriever`` class
+- Support loading ``xml`` files
+- Add methods to runtime context
+- Add suffix path ai service deployment
+- Added support for Vector Index assets
+
+🐛 Bug Fixes:
+
+- Add missing docstring example for TS BYOM
+- Map all private AWS wx.ai endpoints to public platform
+
+********
+ 1.3.23
+********
+
+🐛 Bug Fixes:
+
+- Improvements for private AWS endpoints
+
+********
+ 1.3.22
+********
+
+🚀 Features:
+
+- Added support for Granite Guardian in ``generate``, ``generate_stream`` methods
+- ``get_copy`` method added to ``APIClient``
+- Add async methods for ``Embeddings``
+
+🐛 Bug Fixes:
+
+- Add fallback for adding documents to Elasticsearch vector store
+- Add error when external ``VectorStore`` used
+
+********
+ 1.3.21
+********
+
+🐛 Bug Fixes:
+
+- ``TSModelInference`` not working when client has project or space is provided
+
+********
+ 1.3.20
+********
+
+🚀 Features:
+
+- Add support for ``time_series`` BYOM on Cloud
+
+********
+ 1.3.19
+********
+
+🚀 Features:
+
+- Support for ``container`` data reference and folder download for ``FS`` and ``Container`` location on CPD
+
+🐛 Bug Fixes:
+
+- Changed Flight service connection closing time
+- Add text field to hybrid strategy
+
+********
+ 1.3.18
+********
+
+🚀 Features:
+
+- Support for authorization in AWS environments
+
+🐛 Bug Fixes:
+
+- Added retries for ``client.connections.get_datasource_type_details_by_id()``
+- Auth method has timedelta set automatically when not provided
+
+********
+ 1.3.17
+********
+
+🐛 Bug Fixes:
+
+- Fix passing vector field names for Elasticsearch
+
+********
+ 1.3.16
+********
+
+🐛 Bug Fixes:
+
+- Updated CPD version requirements for ``TextExtractionsV2`` class
+- Disable inference function in ``RagPattern``
+
+********
+ 1.3.15
+********
+
+🚀 Features:
+
+- Support for hybrid search in AutoAI RAG experiments
+
+********
+ 1.3.14
+********
+
+🚀 Features:
+
+- Deprecation warning for Prompt Tuning with CPD 5.2
+- Added support for Python 3.13
+- Added support for Guardian (Text Detection)
+
+🐛 Bug Fixes:
+
+- Patch payload generation for CPD 5.2 fixed
+
+********
+ 1.3.13
+********
+
+🐛 Bug Fixes:
+
+- Use ``pymilvus<2.5.7`` in ``rag`` dependencies
+
+********
+ 1.3.12
+********
+
+🚀 Features:
+
+- WDU 2.0 adaption for TextExtractions
+- AutoAI RAG support for BYOM
+- Allowed passing connection args without ``connection_id`` and langchain VS
+- Enable store base Foundation Models on Cloud
+
+🐛 Bug Fixes:
+
+- Removed setting ``first_line_header`` Flight interaction property when reading data in binary mode and removed ``quote_character`` when reading ``csv`` files
+- Added support for deleting Deployment Jobs on CPD 5.1 version and lower
+
+********
+ 1.3.11
+********
+
+🚀 Features:
+
+- AutoAI RAG adjustments for the preview
+- Added support for folder download
+
+🐛 Bug Fixes:
+
+- Updated url in ``load_file_from_file_system``
+- Fixed logic to check if the deployment update was successful
+- Fixed AutoAI-Generated Notebook
+- Fixed ``summary`` method, added support BYOM for ``get_pattern``
+- Modify message for missing cryptography package error in ``text_loader.py``
+
+*******
+ 1.3.8
+*******
+
+🚀 Features:
+
+- Rework Toolkit class
+
+🐛 Bug Fixes:
+
+- Improved ``Deployments.update()`` to wait for the deployment to be ready
+- Improve model store response handling for CPD 5.2
+
+*******
+ 1.3.6
+*******
+
+🚀 Features:
+
+- Add converters for utility agent tools
+- Improve flight retry logic
+- ``.yaml`` documents supported in Document Loader
+
+🐛 Bug Fixes:
+
+- ``ModelInference`` should set project/space when ``deployment_id`` and ``validate`` is provided
+- Disable TokenBucket for CPD
+
+*******
+ 1.3.5
+*******
+
+🚀 Features:
+
+- Implementation of hybrid search - RAG
+- `.json` documents supported in document loader
+- Added initial support for CP4D 5.2
+- Add `get_space_id()` to `RuntimeContext`
+- `.pptx` documents supported in document loader
+
+🐛 Bug Fixes:
+
+- Validation of training data reference type moved to back-end repository Service
+- Updated error message for AutoAI RAG run
+
+*******
+ 1.3.3
+*******
+
+🚀 Features:
+
+- Added `get_headers` method to `APIClient` class
+
+*******
+ 1.3.2
+*******
+
+🚀 Features:
+
+- Add default params to RAGPattern AI service
+- Added support for `retrieval` parameter of AutoAI RAG
+- Added support for `generation` parameter of AutoAI RAG
+- Add async httpx client
+- Expose `gradient_checkpointing` parameter to users for fine-tuning
+- Assets `duplicate_action` parameter support added
+- Support for tooling in `Repository.store_ai_service` method
+- Trashed assets module added to SDK
+
+🐛 Bug Fixes:
+
+- Fix removing tmp file
+- Removed requirement for default preset for AI service run
+- Fix for hanging of job when the passed benchmark data path is non existing
+- Added deprecation for SentenceTransformerEmbeddings class
+- Fixed building docs
+- Replaced `project_lib` package removed in RT 25.1 with `ibm_watson_studio_lib`
+- Added support for number columns in CSV-s and Excel files
+- Fixed `summary` method when Fine-Tuning experiment has 1 epoch
+
+*******
+ 1.3.1
+*******
+
+🚀 Features:
+
+- Introduce httpx client in deployments, foundation models
+
+🐛 Bug Fixes:
+
+- support data fields to detached prompt template
+
+*******
+ 1.3.0
+*******
+
+🚀 Features:
+
+- Introduce httpx client in deployments, foundation models
+
+🐛 Bug Fixes:
+
+- support data fields to detached prompt template
+
+********
+ 1.2.10
+********
+
+🚀 Features:
+
+- Handle retry more robustly
+- add reference documents to ragpattern service stream
+- Support for `Utility Agent Tools`
+
+🐛 Bug Fixes:
+
+- Verify is set correctly for httpx client
+- Support for deployment of ai service generated in experiments with chroma vector store
+- Fixed validation version parameter only for CPD
+- Fixed extra-space for `time_limit` parameter in `GenTextParamsMetaNames`
+
+*******
+ 1.2.9
+*******
+
+🚀 Features:
+
+- Change authentication method in flight and refactor to allow private RT
+- Added support for window search with Elastisearch
+
+🐛 Bug Fixes:
+
+- Change approach to listing limit of resources
+- Proxies setting for httpx fixed
+- Raise error when adding not chunked documents to vector store
+
+*******
+ 1.2.8
+*******
+
+🚀 Features:
+
+- Add `get_all` param to `AutoPipelinesRuns.list()` and set `200` as default listed records number
+
+🐛 Bug Fixes:
+
+- Allow inference deployments without providing project_id or space_id
+- `APIClient.set_token` is correctly changing authentication method
+- Updated concurrency_limit default value to 8
+- Improved CP4D version value handling
+- Convert strings with regex causing `SyntaxWarning` to raw strings
+- Added missing parameters to ``TextChatParameters`` dataclass
+
+*******
+ 1.2.7
+*******
+
+🚀 Features:
+
+- Added ``get_all`` param to ``RAGEngine.get_details()``
+
+🐛 Bug Fixes:
+
+- Allow passing ``concurrency_limit`` in init Embeddings
+- Raise error that AutoAI RAG is not available only if response is 404
+- Return ``usage`` metadata when running ``ModelInference.chat_stream()`` method
+
+*******
+ 1.2.6
+*******
+
+🚀 Features:
+
+- Support for reading documents from NFS folder
+
+*******
+ 1.2.5
+*******
+
+🚀 Features:
+
+- Support for LoRA/QLoRA Tuning in watsonx.ai Software 5.1.1 and latest
+
+🐛 Bug Fixes:
+
+- Replace only the first occurrence in the response text of stream mode
+- Added error to handle method not allowed in run AI Services
+- Disable warnings from ``pypdf.PdfReader`` in ``TextLoader``
+
+*******
+ 1.2.4
+*******
+
+🚀 Features:
+
+- Added support to generate token from ``zen-service-broker-secret``
+- Added support for AI Services on CPD 5.1.1 and latest
+- Added indexing step to autogenerated inference AI service in ChromaDB scenario in RAGPattern
+- Added support for native async stream methods for text generation and chat
+
+🐛 Bug Fixes:
+
+- Fixed authentication error during text generation with using ``meta-llama/llama-3-1-8b-instruct``
+- Check file extension with lowercase filename
+- Raise error when error event occurs during generating stream
+- Removed default list length limit for WML Resources
+- Improved error message for creating connections with invalid payload
+
+*******
+ 1.2.2
+*******
+
+🚀 Features:
+
+- Added integration with ILAB/wx.ai
+
+🐛 Bug Fixes:
+
+- Import pyarrow only when FlightConnection is used
+- Closing httpx.Response in retry mechanism
+
+*******
+ 1.2.1
+*******
+
+🚀 Features:
+
+- Introduced support for AI-Service within RAGPattern
+- Implemented validation for CPD url to ensure correctness
+- Added support for new ``status`` object in get AutoAI RAG run response
+- Removed potential scheme in ``flight_location``
+
+🐛 Bug Fixes:
+
+- Rename parameter name ``word_to_token_factor`` to ``word_to_token_ratio`` in prompt builder
+- Enhanced ``AutoPipelinesRuns.get_run_details()`` to retrieve the latest run across all endpoints and raise an error when resources are unavailable
+- Added custom timeout to close persistent connection
+- Task Credentials support improvements
+- Discover all available assets instead of limited to 100
+- Fixed endpoints for API DataPlatform
+- Disable warnings logger for ``LangChainChunker.split_documents()``
+
+********
+ 1.1.26
+********
+
+🐛 Bug Fixes:
+
+- Get the latest run including both endpoints and raise an error if empty resources - `TuneRuns.get_run_details()`
+- Added validation of storage details in project/ space details for Container DataConnection
+- Added `fs` as model supported training data references type
+- Updated the cancel_run method in RAGOptimizer to avoid returning cached training details
+
+********
+ 1.1.25
+********
+
+🚀 Features:
+
+- Add cancel job to the text extractions
+- Support for Deploy on Demand
+- Added `word_to_token_factor` parameter to RAGPattern constructor
+- Add batch size param to embeddings
+- Updated add_documents method in milvus_adapter
+
+🐛 Bug Fixes:
+
+- add batch size to dict only if customized
+- Added training data references type validation in repository.store_model
+- Disable logging `NotS3Connection` in one case
+- Pagination support added to lookup datasources types
+- Pagination added for datasources
+
+********
+ 1.1.24
+********
+
+🚀 Features:
+
+- Add support for IBM watsonx.data Milvus connection
+- Added method to get chat model specs with function calling support
+- Add support for achat method
+
+🐛 Bug Fixes:
+
+- Improve storing AI services content
+
+********
+ 1.1.23
+********
+
+🚀 Features:
+
+- Support for Sydney watsonx.ai API endpoint
+- Add 'Large' option for HardwareRequestSizes
+
+🐛 Bug Fixes:
+
+- Update connections to enable AutoAI RAG experiment
+
+********
+ 1.1.22
+********
+
+🚀 Features:
+
+- Adjusted ``ai_service`` support to align with recent changes in the AI services backend
+- Added deprecation warning on Model class
+- Support for writing to FSLocation
+- Add get id by name for spaces
+
+🐛 Bug Fixes:
+
+- Downgraded the ``grpcio`` version to ``>=1.54.3``
+- Remove flag from RagPattern constructor
+- Updated `show` schema method
+- Update text extraction delete job
+- SSL error fixed on FIPS cluster when downloading documents from COS folder
+- save Milvus's SSL certificate file in temporary file
+- Improve error message for creating connections with invalid payload
+- Update set_api_client method
+
+********
+ 1.1.17
+********
+
+🚀 Features:
+
+- Added documentation for Fine-Tuning: `Working with TuneExperiment and FineTuner <https://ibm.github.io/watsonx-ai-python-sdk/ft_tune_experiment_run.html>`_
+
+🐛 Bug Fixes:
+
+- Improved error reporting for ``DataConnection.read()`` when attempting to read from a database with the flight service disabled
+- Added a generic error message for failed attempts to download datasets due to flight service issues
+- Restricted Python version compatibility to versions below 3.13
+- Migrated dependencies to LangChain version 0.3.x
+
+********
+ 1.1.16
+********
+
+🚀 Features:
+
+- Introduced support for loading text from Markdown files in the TextLoader class
+- Added an enum for rerank models: ``client.foundation_models.RerankModels``
+- Enhanced the ``get_details`` method with an optional name parameter
+- Implemented the ``set_api_client`` method in the ModelInference class
+
+🐛 Bug Fixes:
+
+- Added 429 error handling for the ``set.default_project`` method's project_id component
+- Improved error handling during data loading operations
+- Fixed an issue where the ``get_id_by_name`` method raised an error when no ID was found for the specified name
+
+********
+ 1.1.15
+********
+
+🚀 Features:
+
+- Introduced support for AI services
+- Added support for Rerank functionality: `Rerank Documentation <https://ibm.github.io/watsonx-ai-python-sdk/fm_rerank.html>`_
+- Added support for Text Extraction results in Markdown format.
+
+🐛 Bug Fixes:
+
+- Updated the route for CPD token generation for CPD versions 5.1 and above
+- Disabled AutoAI TSAD in the SDK for CPD versions starting from 5.1
+
+********
+ 1.1.14
+********
+
+🚀 Features:
+
+- Added support for the Chat API
+
+🐛 Bug Fixes:
+
+- Automatically added the ``https://`` prefix to the COS connection ``endpoint_url`` if missing.
+
+********
+ 1.1.13
+********
+
+🚀 Features:
+
+- Introduced the ``get_evaluation_results`` method in the ``RAGOptimizer`` class
+- Added support for CPD version 5.1
+
+🐛 Bug Fixes:
+
+- Corrected the example value for ``TextExtractionsMetaNames``
+- Relaxed version constraints for LangChain packages
+
+********
+ 1.1.12
+********
+
+🚀 Features:
+
+- Added the option to install ``langchain_community`` with the ``[rag]`` option
+
+🐛 Bug Fixes:
+
+- Fixed an issue with ``DataConnection`` as a container folder.
+- Updated the ``load()`` method docstring in the documentation.
+- Added support for platform URLs in credentials.
+
+********
+ 1.1.11
+********
+
+🚀 Features:
+
+- Added integration for AutoAI RAG SDK: `Working with AutoAI RAG class and rag_optimizer <https://ibm.github.io/watsonx-ai-python-sdk/autoai_working_with_class_and_rag_optimizer.html>`_
+
+🐛 Bug Fixes:
+
+- Increased ``batch_size`` reduction in AutoAI RAG experiments
+
+********
+ 1.1.10
+********
+
+🐛 Bug Fixes:
+
+- Added a timeout to ``DocumentsIterableDataset`` iteration
+- Included a private development URL in the platform map
+
+*******
+ 1.1.9
+*******
+
+🚀 Features:
+
+- Introduced support for Fine-Tuning
+- Added support for native asynchronous methods for model inference
+
+*******
+ 1.1.8
+*******
+
+🚀 Features:
+
+- Added support for MCSP
+
+🐛 Bug Fixes:
+
+- Fixed an issue with reading JSON files without binary mode, resolving problems with reading Prompt Tuning files
+
+*******
+ 1.1.7
+*******
+
+🚀 Features:
+
+- Added a timeout for persistent connections
+
+🐛 Bug Fixes:
+
+- Set a default ``max_sequence_length`` to avoid model limits errors
+
+*******
+ 1.1.6
+*******
+
+🚀 Features:
+
+- Added support for ``ConnectionAsset`` without a specified location
+
+🐛 Bug Fixes:
+
+- Resolved an issue where model specification filters were not available in version 4.8
+- Fixed a bug related to unsupported connection types
+- Aligned logging for improved consistency
+
+*******
+ 1.1.5
+*******
+
+🚀 Features:
+
+- Implemented Keep-Alive and persistent connections for tokenization
+- Added support for the text extraction endpoint: `Text Extractions Documentation <https://ibm.github.io/watsonx-ai-python-sdk/fm_text_extraction.html>`_
+
+🐛 Bug Fixes:
+
+- Resolved the issue with missing ``python-docx``
+
+*******
+ 1.1.4
+*******
+
+🚀 Features:
+
+- Introduced support for Hardware Request field instead of the Hardware Specification
+- Added an asynchronous ``generate`` method
+- Implemented support for the ``api_client`` parameter in ``DocumentIterableDataset``
+
+🐛 Bug Fixes:
+
+- Fixed an issue with storing ``TaskCredential``
+- Improved de-duplication in the ``add_documents`` method of the vector store to include both text and its document ID
+
+*******
+ 1.1.3
+*******
+
+🚀 Features:
+
+- Introduced support for Bring Your Own Model (BYOM)
+
+🐛 Bug Fixes:
+
+- Set ``input_shape`` during training, addressing issues with dataset training data
+- Removed the timeout for reading documents
+- Implemented improvements to the Documents Dataset
+
+*******
+ 1.1.2
+*******
+
+🐛 Bug Fixes:
+
+- Resolved an issue caused by a breaking change in ``setuptools`` version 71.0.1
+
+*******
+ 1.1.1
+*******
+
+🐛 Bug Fixes:
+
+- Added a setter for the ``ServiceInstance.details`` property
+
+*******
+ 1.1.0
+*******
+
+🚀 Features:
+
+- Added Keep-Alive functionality for FoundationModels requests
+- Introduced support for the private ``wml-fvt`` endpoint
+- Added installation support for RAG group packages
+
+🐛 Bug Fixes:
+
+- Improved performance of the ``APIClient`` initialization
+- Disabled lifecycle checks when validation is turned off
+- Updated Scikit-learn for federated learning support
+- Resolved issues with reading data from NFS connections in Git-based projects
+- Changed the default behavior to read files on the cloud with Flight Service enabled
+
+********
+ 1.0.10
+********
+
+🚀 Features:
+
+- Added support for different input modes of Prompt Templates(``PromptTemplate``, ``FreeformPromptTemplate``, ``DetachedPromptTemplate``).
+
+🐛 Bug Fixes:
+
+- Fixed validation for tech preview models.
+- Fixed set project for git-based-project in new scenario.
+- Fixed used filters for ``get_model_specs`` method.
+
+*******
+ 1.0.9
+*******
+
+🚀 Features:
+
+- Added support for tech preview models
+- Added additional information in request headers.
+- Extend VectorStore functionalities via concrete wrappers(For Vector Index notebooks)
+
+*******
+ 1.0.8
+*******
+
+🚀 Features:
+
+- Added ``validate_prompt_variables`` parameter to generate method in ``Model`` and ``ModelInference`` class.
+- Added ``hardware_spec`` support in Batch class.
+
+🐛 Bug Fixes:
+
+- Fixed correct schema for timeseries-anomaly-prediction prediction type.
+
+*******
+ 1.0.6
+*******
+
+🐛 Bug Fixes:
+
+- Added more clear Error message when user pass invalid credentials.
+- Fixed "Invalid authorization token" error when initializing the client with the "USER_ACCESS_TOKEN" environment variable on a cluster
+
+*******
+ 1.0.5
+*******
+
+🚀 Features:
+
+- Added auto-generated Enum classes (TextModels, EmbeddingModels, PromptTunableModels) with available models
+
+🐛 Bug Fixes:
+
+- Better filtering of supported runtimes for r-scripts
+- Fixed downloading model content to file
+- Improved scaling Prompt Tuning charts
+- Provided a clearer error message when a user passes an incorrect URL to the cluster
+
+*******
+ 1.0.4
+*******
+
+🚀 Features:
+
+- Added forecast_window parameter support for online deployment scoring
+
+*******
+ 1.0.3
+*******
+
+🚀 Features:
+
+- Milvus support for RAG extension
+- Autogenerated changelog
+- Travis is tagging the version during push into production
+
+🐛 Bug Fixes:
+
+- Reading data assets as binary when flight is unavailable
+- next resource generator type fixed, other internal type issues fixed
+- Reading tabular dataset with non-unique columns
+- Deprecation warnings removed when using fm_model_inference
+
+*******
+ 1.0.2
+*******
+
+🚀 Features:
+
+- Added get and get_item methods for better compatibility with SDK v0
+
+🐛 Bug Fixes:
+
+- Relaxed package version checking
+- Fixed AutoAI initialization without version in credentials
+- Fixed calls to wx endpoints in git base project
+- Fixed backward compatibility of WebService and Batch class for credentials in dictionary
+
+*******
+ 1.0.1
+*******
+
+🐛 Bug Fixes:
+
+- Hotfix for imports
+
+*******
+ 1.0.0
+*******
+
+🚀 Features:
+
+- RAGutils module added
+- Getting foundation models specs moved under foundation models object
+- Credentials as object + proxies supported
+- WCA service support
+
+🐛 Bug Fixes:
+
+- Minor corrections/improvements to Foundation Models module

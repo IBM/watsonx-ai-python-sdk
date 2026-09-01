@@ -1,0 +1,412 @@
+################
+ Best Practices
+################
+
+**********
+ Overview
+**********
+
+The ``ibm-watsonx-ai`` Python SDK provides convenient access to IBM watsonx.ai services, including foundation models,
+training, deployment, and inference. It is designed to accelerate AI development and enable interaction with foundation
+models via a Pythonic interface.
+
+****************
+ Best Practices
+****************
+
+Keep Your SDK Up to Date
+========================
+
+Always install the latest version of the SDK to benefit from new features, performance improvements, and security
+patches. Regular updates ensure you have access to the newest capabilities and bug fixes.
+
+.. code-block:: bash
+
+    pip install --upgrade ibm-watsonx-ai
+
+Authentication Setup
+====================
+
+The ``ibm-watsonx-ai`` SDK supports various authentication configurations. To get started, review the examples provided
+for both :ref:`IBM watsonx.ai for IBM Cloud <Cloud Authentication>` and :ref:`IBM watsonx.ai software <CPD
+Authentication>` solutions.
+
+.. note::
+
+    When using the SaaS solution, ensure you use the endpoint dedicated to the region where your project or space is
+    created. This is crucial for proper functionality and to avoid potential issues related to regional restrictions or
+    performance.
+
+Discover Available Models
+=========================
+
+The variety of LLM models may differ across SaaS regions and CPD installations. Use the following enums to quickly check
+which models are available in your environment:
+
+Chat Models
+-----------
+
+Models with support for chat interactions:
+
+.. code-block:: python
+
+    api_client.foundation_models.ChatModels
+
+.. note::
+
+    You can use the ``show()`` method to get key-value pairs of available chat models.
+
+.. code-block:: python
+
+    api_client.foundation_models.ChatModels.show()
+
+The enums can be easily converted to a list:
+
+.. code-block:: python
+
+    list(api_client.foundation_models.ChatModels)
+
+Text Generation Models
+----------------------
+
+Models with support for text generation:
+
+.. code-block:: python
+
+    api_client.foundation_models.TextModels
+
+Embedding Models
+----------------
+
+Models for generating embeddings:
+
+.. code-block:: python
+
+    api_client.foundation_models.EmbeddingModels
+
+Rerank Models
+-------------
+
+Models that can be used for reranking:
+
+.. code-block:: python
+
+    api_client.foundation_models.RerankModels
+
+Time Series Models
+------------------
+
+Models for time series forecasting:
+
+.. code-block:: python
+
+    api_client.foundation_models.TimeSeriesModels
+
+Efficient Model Inference
+=========================
+
+When interacting with foundation models, initialize the appropriate client once and reuse it across inference calls to
+avoid redundant setup and improve performance.
+
+.. warning::
+
+    **Avoid Rate Limit Errors (429 Status Code)**
+
+    Repeatedly initializing ``APIClient`` or ``ModelInference`` objects can trigger rate limit errors because each
+    initialization sends authentication requests to the server. When you exceed the rate limit, you'll receive a ``429
+    Too Many Requests`` error.
+
+    **How to avoid this:**
+
+    - Initialize ``APIClient`` and ``ModelInference`` **once** at the start of your application
+    - **Reuse** the same instances throughout your code
+    - **Never** initialize these objects inside loops or repeated function calls
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient
+    from ibm_watsonx_ai.foundation_models import ModelInference
+
+    api_client = APIClient(credentials, project_id="your_project_id")
+
+    model_granite = ModelInference(
+        model_id="ibm/granite-3-3-8b-instruct", api_client=api_client
+    )
+
+    model_llama = ModelInference(
+        model_id="meta-llama/llama-3-3-70b-instruct", api_client=api_client
+    )
+
+Optimize Loop Performance
+-------------------------
+
+When calling models in a loop, keep the initialization of ``ModelInference`` outside the loop to limit the number of
+requests sent in each iteration and reduce delays.
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient
+    from ibm_watsonx_ai.foundation_models import ModelInference
+
+    api_client = APIClient(credentials, project_id="your_project_id")
+
+    model_granite = ModelInference(
+        model_id="ibm/granite-3-3-8b-instruct", api_client=api_client
+    )
+
+    responses = []
+    for messages in list_of_chat_messages:
+        # No class initializations in the loop
+        responses.append(model_granite.chat(messages))
+
+Install RAG Dependencies
+========================
+
+The RAG modules (``ibm_watsonx_ai.foundation_models.extensions.rag``) and document reading functionality
+(``ibm_watsonx_ai.data_loaders.datasets.documents.DocumentsIterableDataset``) require additional packages. Install all
+required dependencies using the ``[rag]`` option:
+
+.. code-block:: bash
+
+    pip install -U ibm-watsonx-ai[rag]
+
+Respect Rate Limits and Quotas
+==============================
+
+Always respect service usage limits to avoid throttling or denial of service. Implement retry logic with exponential
+backoff where appropriate to handle temporary failures gracefully.
+
+Leverage Documentation Resources
+================================
+
+Refer to the comprehensive SDK documentation for examples, API references, and configuration guidance:
+
+- `This documentation <https://ibm.github.io/watsonx-ai-python-sdk/>`_ - use the search window if needed
+- `API documentation <https://cloud.ibm.com/docs?tab=api-docs>`_
+
+Enable Logging for Debugging
+============================
+
+Use Python's built-in logging module to trace SDK activity, especially during development and troubleshooting. This
+helps you understand what's happening under the hood and diagnose issues more effectively.
+
+.. code-block:: python
+
+    import logging
+
+    logging.basicConfig(level=logging.DEBUG)
+
+Handle API Exceptions Properly
+==============================
+
+Always catch exceptions related to API requests, as network operations are inherently unreliable. Proper exception
+handling allows you to:
+
+- Avoid application crashes
+- Provide meaningful error messages to users
+- Implement fallback logic
+- Control application flow gracefully
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.wml_client_error import ApiRequestFailure
+
+    try:
+        deployment_details = api_client.deployments.create(model_asset_id, meta_props)
+    except ApiRequestFailure as e:
+        # Handle API request failure without breaking the application.
+        # Logging provides useful context for debugging.
+        logger.debug(
+            f"API request failed with status code {e.response.status_code}, details: {e}"
+        )
+
+Configure HTTP Client for Better Performance
+============================================
+
+By default, ``httpx`` manages connection pooling automatically. However, explicitly providing your own ``httpx.Limits``
+or ``httpx.Timeout`` configuration is often a better choice because it allows you to control resource usage and improve
+application stability under load.
+
+For detailed information about ``APIClient`` with ``httpx`` configuration, see: `Configuring the HTTP Client
+<https://ibm.github.io/watsonx-ai-python-sdk/httpx_configuration.html>`_
+
+Example with custom limits and timeout:
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient
+    from ibm_watsonx_ai.utils.utils import HttpClientConfig
+    import httpx
+
+    limits = httpx.Limits(max_connections=5)
+    timeout = httpx.Timeout(7)
+    http_config = HttpClientConfig(timeout=timeout, limits=limits)
+    api_client = APIClient(
+        credentials, httpx_client=http_config, async_httpx_client=http_config
+    )
+
+Use Asynchronous Methods
+========================
+
+.. note::
+
+    The ``APIClient`` allows you to operate in both synchronous and asynchronous applications.
+
+If you need to speed up your application, use asynchronous methods. Async operations allow your application to handle
+multiple requests concurrently, significantly improving performance for I/O-bound tasks.
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient
+    from ibm_watsonx_ai.foundation_models import ModelInference
+
+    api_client = APIClient(credentials, project_id="your_project_id")
+
+    model = ModelInference(
+        model_id="ibm/granite-3-3-8b-instruct",
+        api_client=api_client,
+    )
+
+    messages = [
+        {"role": "user", "content": "What is 1 + 1"},
+    ]
+    response = await model.achat(messages=messages)
+
+Switch Between Projects and Spaces
+==================================
+
+Understanding Projects and Spaces
+---------------------------------
+
+We distinguish two types of working environments:
+
+- **Project**: A collaborative workspace where you work with data and other assets to achieve a specific goal
+- **Space**: Used to deploy various assets and manage your deployments
+
+Working with Projects
+---------------------
+
+Set your client with a specified project when you want to gather data via ``DataConnection`` or work with development
+assets:
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient
+    from ibm_watsonx_ai.helpers import DataConnection
+
+    api_client = APIClient(credentials, project_id="your_project_id")
+
+    data_connection = DataConnection(data_asset_id="your_asset_id")
+    data_connection.set_client(api_client)
+
+    data = data_connection.read()
+
+Promoting Assets to Spaces
+--------------------------
+
+After creating a deployment or promoting a resource (such as a notebook, model, or other asset) from a project to a
+space, you must switch the working environment to the corresponding space_id to access it.
+
+.. code-block:: python
+
+    # Publish asset from project to space
+    promoted_asset_id = api_client.spaces.promote(
+        "your_asset_id",
+        source_project_id="your_project_id",
+        target_space_id="your_space_id",
+    )
+
+    api_client.set.default_space(space_id="your_space_id")
+
+    data_connection = DataConnection(data_asset_id=promoted_asset_id)
+    data_connection.set_client(api_client)
+
+Configure SSL Verification Properly
+===================================
+
+Instead of adding the ``verify`` flag directly to ``APIClient``, pass it to the ``Credentials`` object. This ensures
+consistent SSL verification behavior across all API calls.
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import Credentials
+
+    credentials = Credentials(verify=...)
+
+Use Modern Naming Conventions
+=============================
+
+Use the latest naming convention by using ``id`` instead of the deprecated ``uid``. For example, the ``get_uid`` and
+``get_job_uid`` methods are deprecated; use the recommended ``get_id`` and ``get_job_id`` instead.
+
+.. code-block:: python
+
+    api_client.deployments.get_id(deployment_details)
+
+Thread-Safe Client Usage
+========================
+
+When using ``APIClient`` in a multi-threaded environment, ensure that the client is initialized only once and shared
+across threads. The client is thread-safe and can be safely used from multiple threads simultaneously.
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient
+    from concurrent.futures import ThreadPoolExecutor
+
+    api_client = APIClient(credentials, project_id="your_project_id")
+
+    payload = [(deployment_id, scoring_payload)]
+
+    with ThreadPoolExecutor(max_workers=n) as exec:
+        response = list(exec.map(lambda args: api_client.deployments.score(*args), payload))
+
+In this example, the same ``APIClient`` instance (api_client) is shared across threads, ensuring efficient resource
+usage.
+
+Customize HTTPX Logging with Event Hooks
+========================================
+
+HTTPX allows you to register event hooks on the client to monitor specific types of events. This is useful for
+debugging, monitoring, and logging HTTP requests and responses.
+
+.. code-block:: python
+
+    def log_request(request):
+        print(f"Request event hook: {request.method} {request.url} - Waiting for response")
+
+
+    def log_response(response):
+        request = response.request
+        print(
+            f"Response event hook: {request.method} {request.url} - Status {response.status_code}"
+        )
+
+
+    api_client = APIClient(credentials, project_id="your_project_id")
+
+    api_client.httpx_client.event_hooks["request"] = [log_request]
+    api_client.httpx_client.event_hooks["response"] = [log_response]
+
+For more details, see the official documentation: `Event Hooks <https://www.python-httpx.org/advanced/event-hooks/>`_
+
+Access Authentication Tokens Securely
+=====================================
+
+.. note::
+
+    **Never hardcode** tokens directly in source code or notebooks. Store them in environment variables or use a secure
+    secrets manager.
+
+Most methods in the ``ibm_watsonx_ai`` library require authentication to access secured APIs or private resources. An
+authentication token is used to securely identify the user or application making the request.
+
+If you have an initialized ``APIClient``, you can easily access its token:
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import APIClient
+
+    api_client = APIClient(credentials, project_id="your_project_id")
+
+    token = api_client.token

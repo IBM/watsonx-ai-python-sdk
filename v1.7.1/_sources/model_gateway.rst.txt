@@ -1,0 +1,47 @@
+###############
+ Model Gateway
+###############
+
+.. note::
+
+    Model Gateway is currently in beta stage and available only on IBM watsonx.ai for IBM Cloud. Breaking changes in the
+    API may be introduced in the future.
+
+Model Gateway is a unified inference proxy for IBM watsonx.ai that lets you register multiple external LLM providers
+under a single endpoint and call any registered model through a consistent SDK API — without changing application code
+when switching providers.
+
+Key capabilities:
+
+- **Multi-provider routing** — connect IBM watsonx.ai, OpenAI, Azure OpenAI, Anthropic, and others, then reference any
+  model by its provider model ID or a custom alias.
+- **Load balancing** — distribute traffic across providers and model replicas automatically.
+- **Rate limiting** — enforce request- and token-level quotas per tenant, provider, or model using a token-bucket
+  algorithm.
+- **Access policies** — apply fine-grained access-control rules (action, resource, subject) to control who can use which
+  models.
+
+******************
+ Typical workflow
+******************
+
+1. **Create a** :class:`~ibm_watsonx_ai.gateway.Gateway` **client** using your IBM Cloud credentials or an existing
+   :class:`~ibm_watsonx_ai.APIClient`.
+2. **Register a provider** with :meth:`gateway.providers.create() <ibm_watsonx_ai.gateway.providers.Providers.create>` —
+   supply the provider type (e.g. ``"openai"``) and authenticate with an API key or a Secrets Manager CRN.
+3. **Register a model** with :meth:`gateway.models.create() <ibm_watsonx_ai.gateway.models.Models.create>` — link the
+   model to the provider and optionally assign a human-friendly alias.
+4. **Run inference** via one of two interfaces:
+
+   - :class:`~ibm_watsonx_ai.gateway.GatewayInference` — high-level, model bound at construction time, supports
+     ``chat``, ``chat_stream``, ``generate``, ``generate_stream``, and their async variants, with instance-level default
+     parameters.
+   - ``gateway.chat.completions.create()`` / ``gateway.completions.create()`` / ``gateway.embeddings.create()`` —
+     stateless, low-level, one call per request.
+
+For a full annotated example see :ref:`gateway-quick-start` in the API reference.
+
+.. toctree::
+
+    gateway
+    gateway_inference
