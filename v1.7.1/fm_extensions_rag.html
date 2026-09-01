@@ -1812,6 +1812,144 @@ this method has to return True.</p>
 </section>
 <section id="db2vectorstore">
 <h3>DB2VectorStore<a class="headerlink" href="#db2vectorstore" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.</span></span><span class="sig-name descname"><span class="pre">DB2VectorStore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_store</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_name_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'document_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_sequence_number_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sequence_number'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/db2_adapter.html#DB2VectorStore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter" title="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.langchain_vector_store_adapter.LangChainVectorStoreAdapter"><code class="xref py py-class docutils literal notranslate"><span class="pre">LangChainVectorStoreAdapter</span></code></a></p>
+<p>DB2VectorStore vector store client for a RAG pattern.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – api client is required if connecting by connection_id, defaults to None</p></li>
+<li><p><strong>connection_id</strong> (<em>str</em><em>, </em><em>optional</em>) – connection asset ID, defaults to None</p></li>
+<li><p><strong>vector_store</strong> (<em>langchain_db2.DB2VS</em><em>, </em><em>optional</em>) – initialized langchain_db2 vector store, defaults to None</p></li>
+<li><p><strong>embedding_function</strong> (<a class="reference internal" href="fm_embeddings.html#ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings" title="ibm_watsonx_ai.foundation_models.embeddings.base_embeddings.BaseEmbeddings"><em>BaseEmbeddings</em></a><em> | </em><em>LCEmbeddings</em><em>, </em><em>optional</em>) – dense embedding function, defaults to None</p></li>
+<li><p><strong>table_name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the DB2 table name, defaults to None</p></li>
+<li><p><strong>document_name_field</strong> (<em>str</em><em>, </em><em>optional</em>) – mapping field for document name, defaults to <cite>document_id</cite></p></li>
+<li><p><strong>chunk_sequence_number_field</strong> (<em>str</em><em>, </em><em>optional</em>) – mapping field for chunk sequence number, defaults to <cite>sequence_number</cite></p></li>
+<li><p><strong>text_field</strong> (<em>str</em><em>, </em><em>optional</em>) – mapping field for text field</p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em><em>, </em><em>optional</em>) – keyword arguments that will be directly passed to <cite>langchain_db2.DB2VS</cite> constructor</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Example:</strong></p>
+<p>To connect, provide the connection asset ID.
+You can use custom embeddings to add and search documents.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Credentials</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DB2VectorStore</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibm_watsonx_ai.foundation_models.embeddings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Embeddings</span>
+
+<span class="n">credentials</span> <span class="o">=</span> <span class="n">Credentials</span><span class="p">(</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="n">IAM_API_KEY</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://us-south.ml.cloud.ibm.com&quot;</span>
+<span class="p">)</span>
+
+<span class="n">api_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;&lt;PROJECT_ID&gt;&quot;</span><span class="p">)</span>
+
+<span class="n">embedding</span> <span class="o">=</span> <span class="n">Embeddings</span><span class="p">(</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="n">EmbeddingTypes</span><span class="o">.</span><span class="n">IBM_SLATE_30M_ENG</span><span class="p">,</span> <span class="n">api_client</span><span class="o">=</span><span class="n">api_client</span>
+<span class="p">)</span>
+
+<span class="n">vector_store</span> <span class="o">=</span> <span class="n">DB2VectorStore</span><span class="p">(</span>
+    <span class="n">api_client</span><span class="p">,</span>
+    <span class="n">connection_id</span><span class="o">=</span><span class="s2">&quot;***&quot;</span><span class="p">,</span>
+    <span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;my_test_collection&quot;</span><span class="p">,</span>
+    <span class="n">embedding_function</span><span class="o">=</span><span class="n">embedding</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">vector_store</span><span class="o">.</span><span class="n">add_documents</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;document one content&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;ibm.com&quot;</span><span class="p">},</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;document two content&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;ibm.com&quot;</span><span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="c1"># [&#39;4CDDAF00329B3DF9&#39;, &#39;B8AE97421A8857E7&#39;]</span>
+
+<span class="n">vector_store</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;one&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># [Document(metadata={&#39;url&#39;: &#39;ibm.com&#39;}, page_content=&#39;document one content&#39;)]</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.add_documents">
+<span class="sig-name descname"><span class="pre">add_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/db2_adapter.html#DB2VectorStore.add_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.add_documents" title="Link to this definition">¶</a></dt>
+<dd><p>Embed documents and add to the vectorstore.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>content</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>list</em><em>[</em><em>dict</em><em>] </em><em>| </em><em>list</em><em>[</em><em>langchain_core.documents.Document</em><em>]</em>) – Documents to add to the vectorstore.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of IDs of the added texts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/db2_adapter.html#DB2VectorStore.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Clear table by removing all records.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/db2_adapter.html#DB2VectorStore.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.count" title="Link to this definition">¶</a></dt>
+<dd><p>Count number of records in table.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.from_dict">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/db2_adapter.html#DB2VectorStore.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.from_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Creates <code class="docutils literal notranslate"><span class="pre">DB2VectorStore</span></code> using only a primitive data type dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_client</strong> (<a class="reference internal" href="base.html#client.APIClient" title="client.APIClient"><em>APIClient</em></a><em>, </em><em>optional</em>) – initialised APIClient used in vector store constructor, defaults to None</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – dict in schema like the <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code> method</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>reconstructed DB2VectorStore</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore" title="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore">DB2VectorStore</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.get_client">
+<span class="sig-name descname"><span class="pre">get_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/db2_adapter.html#DB2VectorStore.get_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.get_client" title="Link to this definition">¶</a></dt>
+<dd><p>Get langchain_db2.DB2VS instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ibm_watsonx_ai/foundation_models/extensions/rag/vector_stores/adapters/db2_adapter.html#DB2VectorStore.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.to_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Serialize <code class="docutils literal notranslate"><span class="pre">DB2VectorStore</span></code> into a dict that allows reconstruction using the <code class="docutils literal notranslate"><span class="pre">from_dict</span></code> class method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict for the from_dict initialization</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>VectorStoreSerializationError</strong> – when instance is not serializable</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="basevectorstore">
 <h3>BaseVectorStore<a class="headerlink" href="#basevectorstore" title="Link to this heading">¶</a></h3>
@@ -2475,7 +2613,18 @@ and can be found in the LangChain documentation.</p>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#db2vectorstore">DB2VectorStore</a></li>
+<li><a class="reference internal" href="#db2vectorstore">DB2VectorStore</a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore"><code class="docutils literal notranslate"><span class="pre">DB2VectorStore</span></code></a><ul>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.add_documents"><code class="docutils literal notranslate"><span class="pre">DB2VectorStore.add_documents()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.clear"><code class="docutils literal notranslate"><span class="pre">DB2VectorStore.clear()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.count"><code class="docutils literal notranslate"><span class="pre">DB2VectorStore.count()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.from_dict"><code class="docutils literal notranslate"><span class="pre">DB2VectorStore.from_dict()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.get_client"><code class="docutils literal notranslate"><span class="pre">DB2VectorStore.get_client()</span></code></a></li>
+<li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.adapters.db2_adapter.DB2VectorStore.to_dict"><code class="docutils literal notranslate"><span class="pre">DB2VectorStore.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#basevectorstore">BaseVectorStore</a><ul>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore"><code class="docutils literal notranslate"><span class="pre">BaseVectorStore</span></code></a><ul>
 <li><a class="reference internal" href="#ibm_watsonx_ai.foundation_models.extensions.rag.vector_stores.base_vector_store.BaseVectorStore.add_documents"><code class="docutils literal notranslate"><span class="pre">BaseVectorStore.add_documents()</span></code></a></li>
