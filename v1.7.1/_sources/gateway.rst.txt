@@ -1,0 +1,177 @@
+#######################
+ Gateway API Reference
+#######################
+
+.. _gateway-quick-start:
+
+*************
+ Quick start
+*************
+
+The steps below walk through the full lifecycle: connecting to Model Gateway, registering an IBM watsonx.ai provider and
+IBM models, then running inference through both the high-level and low-level interfaces.
+
+.. note::
+
+    The way a provider is authenticated differs between deployment targets:
+
+    - **IBM Cloud** — pass ``secret_crn_id`` pointing to a secret in IBM Secrets Manager. Credentials never appear in
+      your code.
+    - **Cloud Pak for Data (CPD)** — pass ``data`` inline with ``base_url``, ``apikey``, and ``project_id``, because CPD
+      does not have IBM Secrets Manager.
+
+    This difference applies to every provider type (``"watsonxai"``, ``"nim"``, etc.). The ``data`` dict keys vary per
+    provider — ``"watsonxai"`` requires ``base_url``, ``apikey``, and ``project_id``; ``"nim"`` requires only
+    ``apikey``.
+
+.. code-block:: python
+
+    from ibm_watsonx_ai import Credentials
+    from ibm_watsonx_ai.gateway import Gateway, GatewayInference
+
+    # Step 1 — Create a Gateway client
+    credentials = Credentials(url="https://us-south.ml.cloud.ibm.com", api_key="...")
+    gateway = Gateway(credentials=credentials)
+
+    # Step 2 — Register an IBM watsonx.ai provider
+    #
+    # IBM Cloud: use secret_crn_id (recommended — keeps credentials out of your code)
+    provider_details = gateway.providers.create(
+        provider="watsonxai",
+        name="My watsonx.ai connection",
+        secret_crn_id="crn:v1:bluemix:public:secrets-manager:us-south:a/<account-id>::",
+    )
+    #
+    # CPD: use data with inline credentials (Secrets Manager is not available on CPD)
+    # provider_details = gateway.providers.create(
+    #     provider="watsonxai",
+    #     name="My watsonx.ai connection",
+    #     data={
+    #         "base_url": "https://<cpd-host>/",
+    #         "apikey": "<cpd-api-key>",
+    #         "project_id": "<project-id>",
+    #     },
+    # )
+    provider_id = gateway.providers.get_id(provider_details)
+
+    # Step 3 — Register models under the provider
+    # `alias` is optional but lets you reference the model by a stable, short name
+    # regardless of the underlying provider model ID.
+    #
+    # Chat model (supports chat completions)
+    chat_model_details = gateway.models.create(
+        provider_id=provider_id,
+        model="meta-llama/llama-3-3-70b-instruct",
+        alias="llama",
+    )
+    #
+    # Text generation model (supports text completions)
+    text_model_details = gateway.models.create(
+        provider_id=provider_id,
+        model="ibm/granite-4-h-small",
+        alias="granite",
+    )
+
+    # Step 4 — Run inference via the high-level GatewayInference interface
+    # The model is bound once at construction time; all sampling parameters set
+    # here become instance-level defaults that can be overridden per call.
+    gateway_inference = GatewayInference(
+        model="llama",
+        credentials=credentials,
+        temperature=0.3,
+        max_tokens=512,
+    )
+
+    response = gateway_inference.chat(messages=[{"role": "user", "content": "Hello!"}])
+    print(response["choices"][0]["message"]["content"])
+
+    # Streaming variant — yields Server-Sent Event chunks as they arrive
+    for chunk in gateway_inference.chat_stream(
+        messages=[{"role": "user", "content": "Tell me a joke."}]
+    ):
+        print(chunk, end="", flush=True)
+
+    # Step 5 — Run inference via the low-level Gateway interface
+    # Stateless — model is passed per call, no instance-level defaults.
+    response = gateway.chat.completions.create(
+        model="llama",
+        messages=[{"role": "user", "content": "What is 2 + 2?"}],
+    )
+    print(response["choices"][0]["message"]["content"])
+
+    # Text completions (generate-style) — use a text generation model
+    response = gateway.completions.create(
+        model="granite",
+        prompt="The capital of France is",
+    )
+    print(response["choices"][0]["text"])
+
+*********
+ Gateway
+*********
+
+.. autoclass:: ibm_watsonx_ai.gateway.Gateway
+    :members:
+    :exclude-members:
+
+***********
+ Providers
+***********
+
+.. autoclass:: ibm_watsonx_ai.gateway.providers.Providers
+    :members:
+    :exclude-members:
+
+********
+ Models
+********
+
+.. autoclass:: ibm_watsonx_ai.gateway.models.Models
+    :members:
+    :exclude-members:
+
+.. autoclass:: ibm_watsonx_ai.gateway.enums.GatewayModelFunctions
+    :members:
+    :exclude-members:
+
+**********
+ Policies
+**********
+
+.. autoclass:: ibm_watsonx_ai.gateway.policies.Policies
+    :members:
+    :exclude-members:
+
+************
+ RateLimits
+************
+
+.. autoclass:: ibm_watsonx_ai.gateway.rate_limits.RateLimitSettings
+    :members:
+    :exclude-members:
+
+.. autoclass:: ibm_watsonx_ai.gateway.rate_limits.RateLimits
+    :members:
+    :exclude-members:
+
+Get rate limit details for model requests
+=========================================
+
+In order to get details of a request, which returned an error because of rate limits, you should use ``try-except`` to
+catch the ``APIRequestFailure`` exception. The caught exception has the ``response`` property, which is the underlying
+``httpx.Response`` instance. Using that instance, you can retrieve the response headers, which contain information about
+the rate limit.
+
+.. code-block:: python
+
+    try:
+        response = gateway.completions.create(
+            model_id, "The default voltage provided in USB is "
+        )
+    except APIRequestFailure as exc:
+        error_response = exc.response
+        rate_limit_headers = {
+            name: value
+            for name, value in error_response.headers
+            if name.startswith("x-ratelimit-")
+        }

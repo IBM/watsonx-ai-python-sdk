@@ -1,0 +1,154 @@
+####################################
+ ``ModelInference`` for Deployments
+####################################
+
+This section shows how to use the ModelInference module with a created deployment.
+
+You can infer text or chat with deployed model in one of two ways:
+    - the :ref:`deployments <deploy_generate_text_deployments>` module
+    - the :ref:`ModelInference <deploy_generate_text_ModelInference>` module
+
+*****************************
+ Infer text with deployments
+*****************************
+
+.. _deploy_generate_text_deployments:
+
+You can directly query ``generate_text`` or ``generate_text_stream`` using the deployments module.
+
+.. code-block:: python
+
+    client.deployments.generate_text(prompt="Example prompt", deployment_id=deployment_id)
+
+    # OR
+
+    for chunk in client.deployments.generate_text_stream(
+        deployment_id=deployment_id, prompt=input_prompt
+    ):
+        print(chunk, end="", flush=True)
+
+***********************
+ Chat with deployments
+***********************
+
+You can directly call ``chat`` or ``chat_stream`` using the deployments module.
+
+.. code-block:: python
+
+    messages = [{"role": "user", "content": "How are you?"}]
+    chat_response = client.deployments.chat(deployment_id=deployment_id, messages=messages)
+    print(chat_response["choices"][0]["message"]["content"])
+
+    # OR
+
+    for chunk in client.deployments.chat_stream(
+        deployment_id=deployment_id, messages=messages
+    ):
+        if chunk["choices"]:
+            print(chunk["choices"][0]["delta"].get("content", ""), end="", flush=True)
+
+**************************************
+ Creating ``ModelInference`` instance
+**************************************
+
+.. _deploy_generate_text_modelinference:
+
+Start by defining the parameters. They will later be used by the module.
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
+
+    generate_params = {GenParams.MAX_NEW_TOKENS: 25, GenParams.STOP_SEQUENCES: ["\n"]}
+
+Create the ModelInference by using credentials and ``project_id`` / ``space_id``, or the previously initialized
+APIClient (see :ref:`APIClient initialization <api_client_init>`).
+
+.. code-block:: python
+
+    from ibm_watsonx_ai.foundation_models import ModelInference
+
+    deployed_model = ModelInference(
+        deployment_id=deployment_id,
+        params=generate_params,
+        credentials=credentials,
+        project_id=project_id,
+    )
+
+    # OR
+
+    deployed_model = ModelInference(
+        deployment_id=deployment_id, params=generate_params, api_client=client
+    )
+
+A detailed explanation of available methods with exact parameters can be found in the :ref:`ModelInferece class
+<model-inference-class>`.
+
+You can directly query ``generate_text`` using the ``ModelInference`` object.
+
+.. code-block:: python
+
+    deployed_model.generate_text(prompt="Example prompt")
+
+Also, you can ``chat`` using the same instance.
+
+.. code-block:: python
+
+    messages = [{"role": "user", "content": "How are you?"}]
+    deployed_model.chat(messages=messages)
+
+******************
+ Generate methods
+******************
+
+With the previously created ``deployed_model`` object, it is possible to generate a text stream (generator) using a
+defined inference and the ``generate_text_stream()`` method.
+
+.. code-block:: python
+
+    for chunk in deployed_model.generate_text_stream(prompt=input_prompt):
+        print(chunk, end="", flush=True)
+    "$10 Powerchill Leggings"
+
+And also receive more detailed result with ``generate()``.
+
+.. code-block:: python
+
+    details = deployed_model.generate(prompt=input_prompt, params=gen_params)
+    print(details)
+    {
+        "model_id": "google/flan-t5-xl",
+        "created_at": "2023-11-17T15:32:57.401Z",
+        "results": [
+            {
+                "generated_text": "$10 Powerchill Leggings",
+                "generated_token_count": 8,
+                "input_token_count": 73,
+                "stop_reason": "eos_token",
+            }
+        ],
+        "system": {"warnings": []},
+    }
+
+**************
+ Chat methods
+**************
+
+You can chat with the previously created ``deployed_model`` object using ``chat()`` method.
+
+.. code-block:: python
+
+    messages = [{"role": "user", "content": "How are you?"}]
+    chat_response = deployed_model.chat(messages=messages)
+    print(chat_response["choices"][0]["message"]["content"])
+
+It is also possible to chat in streaming mode (generator) using a defined instance and the ``chat_stream()`` method.
+
+.. code-block:: python
+
+    messages = [{"role": "user", "content": "How are you?"}]
+    chat_stream_response = deployed_model.chat_stream(messages=messages)
+
+    for chunk in chat_stream_response:
+        if chunk["choices"]:
+            print(chunk["choices"][0]["delta"].get("content", ""), end="", flush=True)
